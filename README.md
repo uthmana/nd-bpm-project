@@ -24,7 +24,7 @@ Install the project by running either of the following:
 Clone the repository with the following command:
 
 ```bash
-git clone
+git clone https://github.com/uthmana/nd-bpm-project.git
 ```
 
 Run in terminal this command:
