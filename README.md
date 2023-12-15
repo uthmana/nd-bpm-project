@@ -1,9 +1,9 @@
 ### Introduction
 
-We are seeking skilled developers to create a robust Business Process Management (BPM) system
-for a services provider in the industry items sector. The system will streamline the entire process of
+ND Project is a robust Business Process Management (BPM) system
+for a services provider in the industry items sector. The system streamline the entire process of
 accepting faulty products, servicing them, and returning them to customers. This comprehensive
-solution will include modules for stock management, customer management, fault records, user
+solution include modules for stock management, customer management, fault records, user
 roles and permissions, notifications, and more.
 
 ### Technology Stack
