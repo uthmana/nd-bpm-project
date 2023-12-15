@@ -99,7 +99,7 @@ const Navbar = (props: {
               </div>
               <div className="ml-2 flex h-full w-full flex-col justify-center rounded-lg px-1 text-sm">
                 <p className="mb-1 text-left text-base font-bold text-gray-900 dark:text-white">
-                  New Update: Horizon UI Dashboard PRO
+                  New Update: ND Dashboard PRO
                 </p>
                 <p className="font-base text-left text-xs text-gray-900 dark:text-white">
                   A new update for your downloaded item is available!
@@ -113,7 +113,7 @@ const Navbar = (props: {
               </div>
               <div className="ml-2 flex h-full w-full flex-col justify-center rounded-lg px-1 text-sm">
                 <p className="mb-1 text-left text-base font-bold text-gray-900 dark:text-white">
-                  New Update: Horizon UI Dashboard PRO
+                  New Update: ND Dashboard PRO
                 </p>
                 <p className="font-base text-left text-xs text-gray-900 dark:text-white">
                   A new update for your downloaded item is available!
@@ -122,8 +122,8 @@ const Navbar = (props: {
             </button>
           </div>
         </Dropdown>
-        {/* start Horizon PRO */}
-        <Dropdown
+        {/* start ND PRO */}
+        {/* <Dropdown
           button={
             <p className="cursor-pointer">
               <IoMdInformationCircleOutline className="h-4 w-4 text-gray-600 dark:text-white" />
@@ -163,7 +163,7 @@ const Navbar = (props: {
               Try Horizon Free
             </a>
           </div>
-        </Dropdown>
+        </Dropdown> */}
         <div
           className="cursor-pointer text-gray-600"
           onClick={() => {
@@ -207,7 +207,7 @@ const Navbar = (props: {
 
             <div className="ml-4 mt-3 flex flex-col">
               <a
-                href=" "
+                href="/admin/profile"
                 className="text-sm text-gray-800 dark:text-white hover:dark:text-white"
               >
                 Profile Settings
@@ -219,7 +219,7 @@ const Navbar = (props: {
                 Newsletter Settings
               </a>
               <a
-                href=" "
+                href="/auth/sign-in"
                 className="mt-3 text-sm font-medium text-red-500 hover:text-red-500"
               >
                 Log Out

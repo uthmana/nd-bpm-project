@@ -3,8 +3,15 @@ import InputField from 'components/fields/InputField';
 import Default from 'components/auth/variants/DefaultAuthLayout';
 import { FcGoogle } from 'react-icons/fc';
 import Checkbox from 'components/checkbox';
+import { useRouter } from 'next/navigation';
 
 function SignInDefault() {
+  const router = useRouter();
+  const handleLogIn = (e) => {
+    e.preventDefault();
+    router.push('/admin');
+  };
+
   return (
     <Default
       maincard={
@@ -17,7 +24,7 @@ function SignInDefault() {
             <p className="mb-9 ml-1 text-base text-gray-600">
               Enter your email and password to sign in!
             </p>
-            <div className="mb-6 flex h-[50px] w-full items-center justify-center gap-2 rounded-xl bg-lightPrimary hover:cursor-pointer dark:bg-navy-800 dark:text-white">
+            {/* <div className="mb-6 flex h-[50px] w-full items-center justify-center gap-2 rounded-xl bg-lightPrimary hover:cursor-pointer dark:bg-navy-800 dark:text-white">
               <div className="rounded-full text-xl">
                 <FcGoogle />
               </div>
@@ -29,7 +36,7 @@ function SignInDefault() {
               <div className="h-px w-full bg-gray-200 dark:!bg-navy-700" />
               <p className="text-base text-gray-600"> or </p>
               <div className="h-px w-full bg-gray-200 dark:!bg-navy-700" />
-            </div>
+            </div> */}
             {/* Email */}
             <InputField
               variant="auth"
@@ -51,12 +58,12 @@ function SignInDefault() {
             />
             {/* Checkbox */}
             <div className="mb-4 flex items-center justify-between px-2">
-              <div className="mt-2 flex items-center">
+              {/* <div className="mt-2 flex items-center">
                 <Checkbox />
                 <p className="ml-2 text-sm font-medium text-navy-700 dark:text-white">
                   Keep me logged In
                 </p>
-              </div>
+              </div> */}
               <a
                 className="text-sm font-medium text-brand-500 hover:text-brand-600 dark:text-white"
                 href=" "
@@ -64,20 +71,12 @@ function SignInDefault() {
                 Forgot Password?
               </a>
             </div>
-            <button className="linear w-full rounded-xl bg-brand-500 py-3 text-base font-medium text-white transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200">
+            <button
+              onClick={handleLogIn}
+              className="linear w-full rounded-xl bg-brand-500 py-3 text-base font-medium text-white transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200"
+            >
               Sign In
             </button>
-            <div className="mt-4">
-              <span className="text-sm font-medium text-navy-700 dark:text-gray-500">
-                Not registered yet?
-              </span>
-              <a
-                href="/auth/sign-up/default"
-                className="ml-1 text-sm font-medium text-brand-500 hover:text-brand-600 dark:text-white"
-              >
-                Create an account
-              </a>
-            </div>
           </div>
         </div>
       }

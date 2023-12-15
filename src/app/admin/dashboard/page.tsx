@@ -1,21 +1,32 @@
 'use client';
 import MiniCalendar from 'components/calendar/MiniCalendar';
-import WeeklyRevenue from 'components/rtl/dashboard/WeeklyRevenue';
-import TotalSpent from 'components/rtl/dashboard/TotalSpent';
-import PieChartCard from 'components/rtl/dashboard/PieCard';
+import WeeklyRevenue from 'components/admin/default/WeeklyRevenue';
+import TotalSpent from 'components/admin/default/TotalSpent';
+import PieChartCard from 'components/admin/default/PieChartCard';
 import { IoMdHome } from 'react-icons/io';
 import { IoDocuments } from 'react-icons/io5';
 import { MdBarChart, MdDashboard } from 'react-icons/md';
 
-import Widget from 'components/rtl/dashboard/Widget';
-import CheckTable from 'components/rtl/dashboard/CheckTable';
-import ComplexTable from 'components/rtl/dashboard/ComplexTable';
-import DailyTraffic from 'components/rtl/dashboard/DailyTraffic';
-import TaskCard from 'components/rtl/dashboard/Tasks';
-import tableDataCheck from 'variables/dashboards/rtl/tableDataCheck';
-import tableDataComplex from 'variables/dashboards/rtl/tableDataComplex';
+import Widget from 'components/widget/Widget';
+import CheckTable from 'components/admin/default/CheckTable';
+import ComplexTable from 'components/admin/default/ComplexTable';
+import DailyTraffic from 'components/admin/default/DailyTraffic';
+import TaskCard from 'components/admin/default/TaskCard';
+import tableDataCheck from 'variables/data-tables/tableDataCheck';
+import tableDataComplex from 'variables/data-tables/tableDataComplex';
+
+import { getUsers } from '../../../../apiRequest';
+import { useEffect } from 'react';
 
 const Dashboard = () => {
+  useEffect(() => {
+    const users = async () => {
+      const { data, status } = await getUsers();
+      console.log(data, status);
+    };
+    users();
+  }, []);
+
   return (
     <div>
       {/* Card widget */}

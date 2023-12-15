@@ -15,64 +15,26 @@ import TaskCard from 'components/admin/default/TaskCard';
 import tableDataCheck from 'variables/data-tables/tableDataCheck';
 import tableDataComplex from 'variables/data-tables/tableDataComplex';
 
-const Dashboard = () => {
+import { getUsers } from '../../../../apiRequest';
+import { useEffect } from 'react';
+
+const Process = () => {
+  useEffect(() => {
+    const users = async () => {
+      const { data, status } = await getUsers();
+      console.log(data, status);
+    };
+    users();
+  }, []);
+
   return (
     <div>
-      {/* Card widget */}
-
-      <div className="mt-3 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 3xl:grid-cols-6">
-        <Widget
-          icon={<MdBarChart className="h-7 w-7" />}
-          title={'Earnings'}
-          subtitle={'$340.5'}
-        />
-        <Widget
-          icon={<IoDocuments className="h-6 w-6" />}
-          title={'Spend this month'}
-          subtitle={'$642.39'}
-        />
-        <Widget
-          icon={<MdBarChart className="h-7 w-7" />}
-          title={'Sales'}
-          subtitle={'$574.34'}
-        />
-        <Widget
-          icon={<MdDashboard className="h-6 w-6" />}
-          title={'Your Balance'}
-          subtitle={'$1,000'}
-        />
-        <Widget
-          icon={<MdBarChart className="h-7 w-7" />}
-          title={'New Tasks'}
-          subtitle={'145'}
-        />
-        <Widget
-          icon={<IoMdHome className="h-6 w-6" />}
-          title={'Total Projects'}
-          subtitle={'$2433'}
-        />
-      </div>
-
-      {/* Charts */}
-
-      <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
-        <TotalSpent />
-        <WeeklyRevenue />
-      </div>
-
       {/* Tables & Charts */}
 
       <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-2">
         {/* Check Table */}
         <div>
           <CheckTable tableData={tableDataCheck} />
-        </div>
-
-        {/* Traffic chart & Pie Chart */}
-
-        <div className="grid grid-cols-1 gap-5 rounded-[20px] md:grid-cols-2">
-          <DailyTraffic />
-          <PieChartCard />
         </div>
 
         {/* Complex Table , Task & Calendar */}
@@ -92,4 +54,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Process;
