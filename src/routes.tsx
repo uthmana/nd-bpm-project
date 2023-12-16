@@ -20,6 +20,7 @@ import {
   MdOutlineMultilineChart,
   MdRestore,
   MdSettings,
+  MdTaskAlt,
 } from 'react-icons/md';
 
 const routes = [
@@ -73,22 +74,16 @@ const routes = [
     icon: <MdOutlineBusiness className="h-6 w-6" />,
   },
   {
-    name: 'Fault Record',
-    layout: '/admin',
-    path: 'fault',
-    icon: <MdBrokenImage className="h-6 w-6" />,
-  },
-  {
-    name: 'Machines Users',
-    layout: '/admin',
-    path: 'machine',
-    icon: <MdRestore className="h-6 w-6" />,
-  },
-  {
     name: 'Process',
     layout: '/admin',
     path: 'process',
     icon: <MdGroupWork className="h-6 w-6" />,
+  },
+  {
+    name: 'Invoices',
+    layout: '/admin',
+    path: 'invoice',
+    icon: <MdTaskAlt className="h-6 w-6" />,
   },
   {
     name: 'Email',

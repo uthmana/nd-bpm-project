@@ -4,6 +4,7 @@ import Default from 'components/auth/variants/DefaultAuthLayout';
 import { FcGoogle } from 'react-icons/fc';
 import Checkbox from 'components/checkbox';
 import { useRouter } from 'next/navigation';
+import NextLink from 'next/link';
 
 function SignInDefault() {
   const router = useRouter();
@@ -45,6 +46,7 @@ function SignInDefault() {
               placeholder="mail@simmmple.com"
               id="email"
               type="text"
+              name="email"
             />
 
             {/* Password */}
@@ -55,6 +57,7 @@ function SignInDefault() {
               placeholder="Min. 8 characters"
               id="password"
               type="password"
+              name="password"
             />
             {/* Checkbox */}
             <div className="mb-4 flex items-center justify-between px-2">
@@ -64,12 +67,12 @@ function SignInDefault() {
                   Keep me logged In
                 </p>
               </div> */}
-              <a
+              <NextLink
+                href="/auth/forgot-password"
                 className="text-sm font-medium text-brand-500 hover:text-brand-600 dark:text-white"
-                href=" "
               >
                 Forgot Password?
-              </a>
+              </NextLink>
             </div>
             <button
               onClick={handleLogIn}
