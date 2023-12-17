@@ -5,10 +5,11 @@ import { FcGoogle } from 'react-icons/fc';
 import Checkbox from 'components/checkbox';
 import { useRouter } from 'next/navigation';
 import NextLink from 'next/link';
+import Button from 'components/button/button';
 
 function SignInDefault() {
   const router = useRouter();
-  const handleLogIn = (e) => {
+  const handleLogIn = (e: any) => {
     e.preventDefault();
     router.push('/admin');
   };
@@ -74,12 +75,8 @@ function SignInDefault() {
                 Forgot Password?
               </NextLink>
             </div>
-            <button
-              onClick={handleLogIn}
-              className="linear w-full rounded-xl bg-brand-500 py-3 text-base font-medium text-white transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200"
-            >
-              Sign In
-            </button>
+
+            <Button onClick={handleLogIn} text="Sign In" />
           </div>
         </div>
       }

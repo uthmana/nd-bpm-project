@@ -11,6 +11,7 @@ function InputField(props: {
   type?: string;
   name: string;
   onChange?: any;
+  value?: string;
 }) {
   const {
     label,
@@ -24,6 +25,7 @@ function InputField(props: {
     onChange,
     name,
     required,
+    value,
   } = props;
 
   return (
@@ -37,6 +39,7 @@ function InputField(props: {
         {label}
       </label>
       <input
+        value={value}
         onChange={onChange}
         disabled={disabled}
         type={type}
@@ -44,7 +47,7 @@ function InputField(props: {
         name={name}
         required={required}
         placeholder={placeholder}
-        className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${
+        className={`mt-1 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${
           disabled === true
             ? '!border-none !bg-gray-100 dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)]'
             : state === 'error'

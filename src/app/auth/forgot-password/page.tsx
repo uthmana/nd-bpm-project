@@ -5,6 +5,7 @@ import { FcGoogle } from 'react-icons/fc';
 import Checkbox from 'components/checkbox';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
+import Button from 'components/button/button';
 
 function ForgotPassword() {
   const forgotForm = useRef(null);
@@ -48,9 +49,7 @@ function ForgotPassword() {
             name="email"
             required
           />
-          <button className="linear w-full rounded-xl bg-brand-500 py-3 text-base font-medium text-white transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200">
-            Send Email
-          </button>
+          <Button text="Send Email" />
         </form>
       </div>
     );

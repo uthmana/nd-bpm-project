@@ -7,13 +7,13 @@ import {
   MdHome,
   MdPerson,
   MdOutlineLogout,
-  MdEmail,
   MdGroupWork,
   MdOutlineBusiness,
   MdOutlineGroups3,
   MdOutlineMultilineChart,
   MdSettings,
   MdTaskAlt,
+  MdLocalOffer,
 } from 'react-icons/md';
 
 const routes = [
@@ -54,10 +54,10 @@ const routes = [
     icon: <MdTaskAlt className="h-6 w-6" />,
   },
   {
-    name: 'Email',
+    name: 'Offer',
     layout: '/admin',
-    path: 'email',
-    icon: <MdEmail className="h-6 w-6" />,
+    path: 'offer',
+    icon: <MdLocalOffer className="h-6 w-6" />,
   },
   {
     name: 'Users',
