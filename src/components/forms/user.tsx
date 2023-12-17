@@ -39,7 +39,7 @@ export default function User({ onSubmit, data }: userForm) {
   return (
     <form
       onSubmit={onSubmit}
-      className="mx-auto w-full max-w-[400px] rounded bg-white p-5 dark:bg-opacity-10"
+      className="mx-auto w-full max-w-[400px] rounded-[20px] bg-white p-5 dark:bg-opacity-10"
     >
       <NextLink href="/admin/users" className="flex items-center gap-2 text-sm">
         <span>
