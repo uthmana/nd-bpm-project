@@ -13,7 +13,7 @@ export default function Create() {
 
   return (
     <div className="mt-12">
-      <UserForm onSubmit={handleSubmit} />
+      <UserForm title="Create User" onSubmit={handleSubmit} />
     </div>
   );
 }

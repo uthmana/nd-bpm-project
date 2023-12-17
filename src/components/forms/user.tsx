@@ -18,9 +18,10 @@ type data = {
 type userForm = {
   onSubmit: (e: any) => void;
   data?: data;
+  title?: string;
 };
 
-export default function User({ onSubmit, data }: userForm) {
+export default function User({ onSubmit, data, title }: userForm) {
   const initialValues = data
     ? data
     : { username: '', email: '', password: '', role: '', status: '' };
@@ -48,9 +49,12 @@ export default function User({ onSubmit, data }: userForm) {
         Back to Users
       </NextLink>
 
-      <h1 className="my-5 text-center text-[24px] font-bold dark:text-white">
-        Create User
-      </h1>
+      {title ? (
+        <h1 className="my-5 text-center text-[24px] font-bold dark:text-white">
+          {title}
+        </h1>
+      ) : null}
+
       <InputField
         label="Username"
         onChange={handleValues}

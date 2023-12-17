@@ -21,7 +21,7 @@ export default function Edit() {
 
   return (
     <div className="mt-12">
-      <UserForm onSubmit={handleSubmit} data={data} />
+      <UserForm title="Edit User" onSubmit={handleSubmit} data={data} />
     </div>
   );
 }
