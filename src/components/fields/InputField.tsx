@@ -29,7 +29,7 @@ function InputField(props: {
   } = props;
 
   return (
-    <div className={`${extra}`}>
+    <div className={``}>
       <label
         htmlFor={id}
         className={`text-sm text-navy-700 dark:text-white ${
@@ -55,7 +55,7 @@ function InputField(props: {
             : state === 'success'
             ? 'border-green-500 text-green-500 placeholder:text-green-500 dark:!border-green-400 dark:!text-green-400 dark:placeholder:!text-green-400'
             : 'border-gray-200 dark:!border-white/10 dark:text-white'
-        }`}
+        } ${extra}`}
       />
     </div>
   );

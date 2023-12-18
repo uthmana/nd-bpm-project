@@ -174,7 +174,7 @@ function MainTable({ tableData, onEdit, onDelete, onAdd }: MainTable) {
       <header className="relative flex items-center justify-between pt-6">
         <div className="text-md font-medium text-navy-700 dark:text-white">
           <Search
-            extra="h-[38px] w-[300px] max-w-[300px]"
+            extra="!h-[38px] w-[300px] max-w-[300px]"
             onSubmit={(val) => setGlobalFilter(val)}
             onChange={(val) => setGlobalFilter(val)}
           />
@@ -182,7 +182,7 @@ function MainTable({ tableData, onEdit, onDelete, onAdd }: MainTable) {
 
         <Button
           text="ADD"
-          extra="w-[100px] h-[38px]"
+          extra="!w-[100px] h-[38px]"
           onClick={onAdd}
           icon={<MdAdd className="h-6 w-6" />}
         />

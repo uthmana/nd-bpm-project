@@ -6,12 +6,19 @@ import Checkbox from 'components/checkbox';
 import { useRouter } from 'next/navigation';
 import NextLink from 'next/link';
 import Button from 'components/button/button';
+import { useEffect, useState } from 'react';
 
 function SignInDefault() {
   const router = useRouter();
+  const [submitting, setSubmitting] = useState(false);
+
   const handleLogIn = (e: any) => {
     e.preventDefault();
-    router.push('/admin');
+    setSubmitting(true);
+    //TOD: Handle submit
+    setTimeout(() => {
+      router.push('/admin');
+    }, 1000);
   };
 
   return (
@@ -76,7 +83,7 @@ function SignInDefault() {
               </NextLink>
             </div>
 
-            <Button onClick={handleLogIn} text="Sign In" />
+            <Button loading={submitting} onClick={handleLogIn} text="Sign In" />
           </div>
         </div>
       }
