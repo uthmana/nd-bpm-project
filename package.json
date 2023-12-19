@@ -11,6 +11,7 @@
     "@chakra-ui/tooltip": "^2.2.6",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
+    "@prisma/client": "^5.7.1",
     "@tanstack/react-table": "^8.7.9",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.3.0",
@@ -45,7 +46,9 @@
     "export": "next export",
     "lint": "next lint",
     "predeploy": "yarn run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d build",
+    "debug": "nodemon --inspect=0.0.0.0:9229 --exec 'npx next'",
+    "dev1": "cross-env NODE_OPTIONS='--inspect' next dev"
   },
   "eslintConfig": {
     "extends": [
@@ -82,6 +85,7 @@
     "eslint": "^8.23.0",
     "eslint-config-next": "^13.3.2",
     "gh-pages": "^3.2.3",
+    "nodemon": "^3.0.2",
     "postcss": "^8.4.30",
     "prettier": "^2.8.3",
     "prettier-plugin-tailwindcss": "^0.2.1",

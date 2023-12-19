@@ -114,5 +114,11 @@ const routes = [
     path: 'sign-in',
     icon: <MdOutlineLogout className="h-6 w-6" />,
   },
+  {
+    name: 'To do',
+    layout: '/admin',
+    Path: 'todo',
+    icon: <MdLock className="h-6 w-6" />,
+  },
 ];
 export default routes;
