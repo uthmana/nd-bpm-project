@@ -1,16 +1,17 @@
 import { getSession } from 'next-auth/react';
 import axios from 'axios';
-import { log } from '../src/utils/log';
-export * from './auth';
+import { log } from '../../../utils/log';
 
 export async function fetchAPI(endpoint, method, data, header, accessToken) {
-  const session = await getSession();
+  // const session = await getSession();
 
   let API_URL = '/api/';
   const headers = {
-    ...header,
+    'Content-Type': 'application/json',
     Platform: 'web',
   };
+
+  console.log(endpoint, method, data);
 
   //let token = accessToken ? accessToken : session?.user?.accessToken;
   //token ? (headers['Authorization'] = `Bearer ${token}`) : '';
@@ -49,12 +50,4 @@ export async function fetchAPI(endpoint, method, data, header, accessToken) {
     status: res.status,
     response: res,
   };
-}
-
-export async function getAvatars() {
-  return fetchAPI('avatars');
-}
-
-export async function getUsers() {
-  return fetchAPI('users');
 }

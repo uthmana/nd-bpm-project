@@ -29,7 +29,7 @@ export async function UPDATE() {}
 
 // pages/api/userApi.ts
 import { NextResponse, NextRequest } from 'next/server';
-import prisma from 'lib/db';
+import prisma from 'app/lib/db1';
 
 export async function POST(req: Request) {
   try {

@@ -15,7 +15,7 @@ import TaskCard from 'components/admin/default/TaskCard';
 import tableDataCheck from 'variables/data-tables/tableDataCheck';
 import tableDataComplex from 'variables/data-tables/tableDataComplex';
 
-import { getUsers } from '../../../../apiRequest';
+import { getUsers } from '../../lib/apiRequest';
 import { useEffect } from 'react';
 
 const Dashboard = () => {

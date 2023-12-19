@@ -12,6 +12,17 @@ function SidebarHorizon(props: { routes: IRoute[]; [x: string]: any }) {
         open ? 'translate-x-0' : '-translate-x-96 xl:translate-x-0'
       }`}
     >
+      <div
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen(!open);
+        }}
+        className={`absolute left-0 top-0 -z-[50] h-screen w-screen xl:hidden ${
+          !open ? 'pointer-events-none hidden ' : ''
+        }`}
+      >
+        <span className="hidden">overlay</span>
+      </div>
       <span
         className="absolute right-4 top-4 block cursor-pointer xl:hidden"
         onClick={() => setOpen(false)}

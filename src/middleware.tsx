@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { isAuthenticated } from './lib/auth';
+import { isAuthenticated } from '../src/app/lib/auth';
 
 // Limit the middleware to paths starting with `/api/`
 export const config = {
