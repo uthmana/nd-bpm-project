@@ -1,5 +1,5 @@
 // Custom components
-function InputField(props: {
+function TextArea(props: {
   id: string;
   label: string;
   extra?: string;
@@ -8,7 +8,6 @@ function InputField(props: {
   state?: string;
   disabled?: boolean;
   required?: boolean;
-  type?: string;
   name: string;
   onChange?: any;
   value?: string;
@@ -17,7 +16,6 @@ function InputField(props: {
     label,
     id,
     extra,
-    type,
     placeholder,
     variant,
     state,
@@ -38,17 +36,16 @@ function InputField(props: {
       >
         {label}
       </label>
-      <input
+      <textarea
+        rows={3}
         value={value}
         onChange={onChange}
         disabled={disabled}
-        type={type}
         id={id}
         name={name}
         required={required}
         placeholder={placeholder}
-        min="0"
-        className={`mt-1 flex h-10 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${
+        className={`mt-1 flex w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${
           disabled === true
             ? '!border-none !bg-gray-100 dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)]'
             : state === 'error'
@@ -62,4 +59,4 @@ function InputField(props: {
   );
 }
 
-export default InputField;
+export default TextArea;

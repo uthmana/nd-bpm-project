@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import UserForm from 'components/forms/user';
+import CustomerForm from 'components/forms/customer';
 import { useRouter } from 'next/navigation';
 
 export default function Create() {
@@ -8,12 +8,12 @@ export default function Create() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(e);
-    router.push('/admin/users');
+    router.push('/admin/customer');
   };
 
   return (
     <div className="mt-12">
-      <UserForm title="Add User" onSubmit={handleSubmit} />
+      <CustomerForm title="Add Customer" onSubmit={handleSubmit} />
     </div>
   );
 }

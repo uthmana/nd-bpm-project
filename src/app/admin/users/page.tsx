@@ -1,8 +1,9 @@
 'use client';
 
 import MainTable from 'components/admin/data-tables/mainTable';
-import tableDataMain from 'variables/data-tables/tableDataMain';
+import { userTableData } from 'variables/data-tables/tableDataMain';
 import { useRouter } from 'next/navigation';
+
 const Users = () => {
   const router = useRouter();
 
@@ -28,7 +29,8 @@ const Users = () => {
         onAdd={onAdd}
         onDelete={onDelete}
         onEdit={onEdit}
-        tableData={tableDataMain}
+        tableData={userTableData}
+        variant="user"
       />
     </div>
   );
