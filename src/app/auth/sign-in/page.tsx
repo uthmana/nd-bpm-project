@@ -6,7 +6,6 @@ import NextLink from 'next/link';
 import Button from 'components/button/button';
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { login, getUsers } from '../../../app/lib/apiRequest';
 
 function SignInDefault() {
   const router = useRouter();
@@ -20,16 +19,16 @@ function SignInDefault() {
 
   const handleLogIn = async (e: any) => {
     e.preventDefault();
-    //setSubmitting(true);
-    //TOD: Handle submit
-    //const { status, data } = await login(values);
-    //console.log(status, data);
-    try {
-      await signIn('credentials', { ...values, redirect: false });
-      // router.push('/admin');
-    } catch (error) {
-      alert(error.message);
-    }
+    setSubmitting(true);
+    const { email, password } = values;
+    signIn('credentials', { email, password, redirect: false }).then((res) => {
+      if (res && res.ok) {
+        router.push('/admin');
+      } else {
+        console.log('error', res);
+      }
+      setSubmitting(false);
+    });
   };
 
   return (
