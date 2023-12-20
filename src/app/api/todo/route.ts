@@ -10,3 +10,7 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ message: 'Created Todo' }, { status: 200 });
 }
+
+export async function GET(req: Request) {
+  const { id } = await req.json();
+}
