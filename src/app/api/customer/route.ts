@@ -4,30 +4,42 @@ import prisma from '../../lib/db1';
 
 export async function POST(req: Request) {
   try {
-    const { name, email, password, roleId } = await req.json();
-    if (!name || !roleId || !email || !password) {
+    const { name, email, password, roleId, PostalCode, adress, phoneNumber } =
+      await req.json();
+    if (
+      !name ||
+      !roleId ||
+      !email ||
+      !password ||
+      !PostalCode ||
+      !adress ||
+      !phoneNumber
+    ) {
       return NextResponse.json({ message: 'You are missing a required data' });
     }
-    const newUser = await prisma.user.create({
+    const newCustomer = await prisma.customer.create({
       data: {
         name: name,
         email: email,
         password: password,
         roleId: roleId,
+        PostalCode: PostalCode,
+        adress: adress,
+        phoneNumber: phoneNumber,
       },
     });
 
-    return NextResponse.json({ message: `Created ${name} user` });
+    return NextResponse.json({ message: `Created ${name} customer` });
   } catch (error) {
-    console.error('Error creating user:', error);
+    console.error('Error creating customer:', error);
     return NextResponse.json({ error: 'Internal Server Error' });
   }
 }
 
 export async function GET(req: NextRequest) {
   try {
-    const users: User[] = await prisma.user.findMany();
-    return NextResponse.json(users);
+    const customerdata: customer[] = await prisma.customer.findMany();
+    return NextResponse.json(customerdata);
   } catch (error) {
     console.error('Error fetching users:', error);
     return NextResponse.json({ error: 'Internal Server Error' });
@@ -35,12 +47,12 @@ export async function GET(req: NextRequest) {
 }
 
 export async function DELETE(req: Request) {
-  const { id }: Partial<User> = await req.json();
+  const { id }: Partial<customer> = await req.json();
 
-  if (!id) return NextResponse.json({ message: 'User id required' });
+  if (!id) return NextResponse.json({ message: 'customer id required' });
 
-  const res = await prisma.user.delete({ where: { id } });
-  return NextResponse.json({ message: `User ${id} deleted` });
+  const res = await prisma.customer.delete({ where: { id } });
+  return NextResponse.json({ message: `customer ${id} deleted` });
 }
 
 export async function PUT(req: Request) {
@@ -62,7 +74,7 @@ export async function PUT(req: Request) {
       },
     });
 
-    return NextResponse.json({ message: `Updated ${name} user ` });
+    return NextResponse.json({ message: `Updated ${name} customer ` });
   } catch (error) {
     console.error('Error updating user', error);
     return NextResponse.json({ error: 'Internal Server Error' });

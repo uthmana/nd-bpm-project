@@ -10,6 +10,7 @@ export const TodoItem = ({ todos }: { todos: Todo[] }) => {
       headers: {
         'Content-Type': 'application/json',
       },
+
       body: JSON.stringify({
         completed: !todo.complete,
       }),

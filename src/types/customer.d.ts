@@ -1,8 +1,10 @@
-type User = {
+type customer = {
   roleId: number;
   name: string;
   email: string;
   password: string;
   id: int;
-  role: string;
+  phoneNumber: string;
+  adress: string;
+  PostalCode: string;
 };
