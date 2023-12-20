@@ -15,6 +15,8 @@ import {
 import avatar from '/public/img/avatars/avatar4.png';
 import Image from 'next/image';
 import Search from 'components/search/search';
+import { useSession } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 
 const Navbar = (props: {
   onOpenSidenav: () => void;
@@ -23,6 +25,12 @@ const Navbar = (props: {
   [x: string]: any;
 }) => {
   const { onOpenSidenav, brandText, mini, hovered } = props;
+
+  const { data: session } = useSession();
+  const handleSignOut = () => {
+    signOut({ callbackUrl: '/auth/sign-in' });
+  };
+
   const [darkmode, setDarkmode] = React.useState(
     document.body.classList.contains('dark'),
   );
@@ -191,11 +199,11 @@ const Navbar = (props: {
           }
           classNames={'py-2 top-8 -left-[180px] w-max'}
         >
-          <div className="flex h-48 w-56 flex-col justify-start rounded-[20px] bg-white bg-cover bg-no-repeat shadow-xl shadow-shadow-500 dark:!bg-navy-700 dark:text-white dark:shadow-none">
+          <div className="flex w-56 flex-col justify-start rounded-[20px] bg-white bg-cover bg-no-repeat pb-5 shadow-xl shadow-shadow-500 dark:!bg-navy-700 dark:text-white dark:shadow-none">
             <div className="ml-4 mt-3">
               <div className="flex items-center gap-2">
                 <p className="text-sm font-bold text-navy-700 dark:text-white">
-                  👋 Hey, Adela
+                  👋 Merhaba, {session?.user.name}
                 </p>{' '}
               </div>
             </div>
@@ -208,18 +216,18 @@ const Navbar = (props: {
               >
                 Profile Settings
               </a>
-              <a
+              {/* <a
                 href=" "
                 className="mt-3 text-sm text-gray-800 dark:text-white hover:dark:text-white"
               >
                 Newsletter Settings
-              </a>
-              <a
-                href="/auth/sign-in"
-                className="mt-3 text-sm font-medium text-red-500 hover:text-red-500"
+              </a> */}
+              <button
+                onClick={handleSignOut}
+                className="mt-3 block text-left text-sm font-medium text-red-500 hover:text-red-500"
               >
                 Log Out
-              </a>
+              </button>
             </div>
           </div>
         </Dropdown>
