@@ -1,35 +1,7 @@
 // pages/api/userApi.ts
-/*
-import { NextResponse, NextRequest } from 'next/server';
-import prisma from 'lib/db';
-
-export async function POST(req: Request) {
-  try {
-    const { name, email, password }: User = await req.json();
-    const newUser = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password,
-      },
-    });
-
-    return NextResponse.json(newUser);
-  } catch (error) {
-    console.error('Error creating user:', error);
-    NextResponse.json({ error: 'Internal Server Error' });
-  }
-}
-
-export async function GET() {}
-
-export async function DELETE() {}
-export async function UPDATE() {}
-*/
-
-// pages/api/userApi.ts
 import { NextResponse, NextRequest } from 'next/server';
 import prisma from 'app/lib/db1';
+import { RiLayoutRightLine } from 'react-icons/ri';
 
 export async function POST(req: Request) {
   try {
@@ -50,8 +22,14 @@ export async function POST(req: Request) {
   }
 }
 
+//http://localhost:3000/admin/users/1
 export async function GET(req: Request) {
   try {
+    const { id }: User = await req.json();
+    if (id) {
+      const user = await prisma.user.findUnique({ where: { id: Number(id) } });
+      return NextResponse.json(user);
+    }
     const users = await prisma.user.findMany();
     return NextResponse.json(users);
   } catch (error) {
