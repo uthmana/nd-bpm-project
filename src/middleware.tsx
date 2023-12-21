@@ -1,18 +1,24 @@
-import { NextRequest } from 'next/server';
-import { isAuthenticated } from '../src/app/lib/auth';
+import { NextResponse } from 'next/server';
+import { NextRequestWithAuth, withAuth } from 'next-auth/middleware';
 
-// Limit the middleware to paths starting with `/api/`
+export default withAuth(
+  function middleware(req: NextRequestWithAuth) {
+    if (
+      (req.nextUrl.pathname.startsWith('/admin/offer') ||
+        req.nextUrl.pathname.startsWith('/admin/users') ||
+        req.nextUrl.pathname.startsWith('/admin/settings')) &&
+      req.nextauth.token?.role !== 'admin'
+    ) {
+      return NextResponse.rewrite(new URL('/denied', req.url));
+    }
+  },
+  {
+    callbacks: {
+      authorized: ({ token }) => !!token,
+    },
+  },
+);
+
 export const config = {
-  matcher: '/api/:function*',
+  matcher: ['/admin/:path*'],
 };
-
-export function middleware(request: NextRequest) {
-  // Call our authentication function to check the request
-  if (!isAuthenticated(request)) {
-    // Respond with JSON indicating an error message
-    return Response.json(
-      { success: false, message: 'authentication failed' },
-      { status: 401 },
-    );
-  }
-}

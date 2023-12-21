@@ -1,58 +1,32 @@
-// pages/api/userApi.ts
-/*
-import { NextResponse, NextRequest } from 'next/server';
-import prisma from 'lib/db';
+import { NextRequest, NextResponse } from 'next/server';
+
+import prisma from '../../lib/db1';
 
 export async function POST(req: Request) {
   try {
-    const { name, email, password }: User = await req.json();
+    const { name, email, password, roleId } = await req.json();
+    if (!name || !roleId || !email || !password) {
+      return NextResponse.json({ message: 'You are missing a required data' });
+    }
     const newUser = await prisma.user.create({
       data: {
-        name,
-        email,
-        password,
+        name: name,
+        email: email,
+        password: password,
+        roleId: roleId,
       },
     });
 
-    return NextResponse.json(newUser);
-  } catch (error) {
-    console.error('Error creating user:', error);
-    NextResponse.json({ error: 'Internal Server Error' });
-  }
-}
-
-export async function GET() {}
-
-export async function DELETE() {}
-export async function UPDATE() {}
-*/
-
-// pages/api/userApi.ts
-import { NextResponse, NextRequest } from 'next/server';
-import prisma from 'app/lib/db1';
-
-export async function POST(req: Request) {
-  try {
-    const { name, email, password }: User = await req.json();
-
-    const newUser = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password,
-      },
-    });
-
-    return NextResponse.json(newUser);
+    return NextResponse.json({ message: `Created ${name} user` });
   } catch (error) {
     console.error('Error creating user:', error);
     return NextResponse.json({ error: 'Internal Server Error' });
   }
 }
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
-    const users = await prisma.user.findMany();
+    const users: User[] = await prisma.user.findMany();
     return NextResponse.json(users);
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -61,34 +35,36 @@ export async function GET(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  try {
-    const { id } = await req.json();
-    const deletedUser = await prisma.user.delete({
-      where: {
-        id: id,
-      },
-    });
+  const { id }: Partial<User> = await req.json();
 
-    return NextResponse.json(deletedUser);
-  } catch (error) {
-    console.error('Error deleting user:', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
-  }
+  if (!id) return NextResponse.json({ message: 'User id required' });
+
+  const res = await prisma.user.delete({ where: { id } });
+  return NextResponse.json({ message: `User ${id} deleted` });
 }
 
-export async function UPDATE(req: Request) {
+export async function PUT(req: Request) {
   try {
-    const { id, updatedFields } = await req.json();
-    const updatedUser = await prisma.user.update({
+    const result: User = await req.json();
+    if (!result.name || !result.roleId || !result.email || !result.password) {
+      return NextResponse.json({ message: 'You are missing a required data' });
+    }
+    const { name, email, password, roleId, id } = result;
+    const newUser = await prisma.user.update({
       where: {
         id: id,
       },
-      data: updatedFields,
+      data: {
+        name,
+        email,
+        password,
+        roleId,
+      },
     });
 
-    return NextResponse.json(updatedUser);
+    return NextResponse.json({ message: `Updated ${name} user ` });
   } catch (error) {
-    console.error('Error updating user:', error);
+    console.error('Error updating user', error);
     return NextResponse.json({ error: 'Internal Server Error' });
   }
 }

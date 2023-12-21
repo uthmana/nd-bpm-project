@@ -24,7 +24,7 @@ const Customers = () => {
   };
 
   return (
-    <div className="mt-12 w-full">
+    <div className="mt-3 w-full">
       <MainTable
         onAdd={onAdd}
         onDelete={onDelete}

@@ -9,14 +9,27 @@ export const authOptions = {
       name: 'Credentials',
       credentials: {},
       async authorize(credentials, req) {
-        console.log('authorize req', req);
+        console.log('authorize req', { credentials });
         const { email, password } = credentials;
         try {
-          const { status, data: user } = await login({ email, password });
-          if (status === 200 && user) {
+          // const { status, data: user } = await login({ email, password });
+          // if (status === 200 && user) {
+          //   return user;
+          // }
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_BASE_PATH}/api/login`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ email, password }),
+            },
+          );
+          const user = await res.json();
+          if (res.status === 200 && user) {
             return user;
           }
-
           return null;
         } catch {
           throw new Error('Email or Password is invalid');
