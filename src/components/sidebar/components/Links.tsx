@@ -91,14 +91,14 @@ export const SidebarLinks = ({ routes }): JSX.Element => {
       {/* Sign Out Button */}
       <button
         onClick={handleSignOut}
-        className="relative mb-3 flex hover:cursor-pointer"
+        className="absolute bottom-3 mb-3 flex hover:cursor-pointer"
       >
-        <li className="my-[3px] flex cursor-pointer items-center px-8">
+        <div className="my-[3px] flex cursor-pointer items-center px-8">
           <span className={'font-medium text-gray-600'}>{<SignoutIcon />}</span>
           <p className={'leading-1 ml-4 flex font-medium text-gray-600'}>
             Sign Out
           </p>
-        </li>
+        </div>
       </button>
     </>
   );
