@@ -13,6 +13,7 @@ import {
   MdSettings,
   MdTaskAlt,
   MdLocalOffer,
+  MdLock
 } from 'react-icons/md';
 
 const routes = [
