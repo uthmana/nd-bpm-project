@@ -1,4 +1,9 @@
+import DashboardSkeleton from '../components/skeleton';
+
 export default function Loading() {
-  // Or a custom loading skeleton component
-  return <p>Loading...</p>;
+  return (
+    <section className="h-full w-full">
+      <DashboardSkeleton />
+    </section>
+  );
 }

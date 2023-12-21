@@ -1,11 +1,11 @@
 /* eslint-disable */
-import React, { ReactEventHandler } from 'react';
+import React, { ReactEventHandler, useEffect, useState } from 'react';
 import { useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import NavLink from 'components/link/NavLink';
 import DashIcon from 'components/icons/DashIcon';
 import SignoutIcon from 'components/icons/SignoutIcon';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 
 type user = {
   name: string;
@@ -20,11 +20,17 @@ type SessionType = {
 // chakra imports
 
 export const SidebarLinks = ({ routes }): JSX.Element => {
+  const { data: session, status } = useSession();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user) {
+      setUser(session?.user);
+    }
+  }, [session, status]);
+
   // Chakra color mode
   const pathname = usePathname();
-  //const { routes } = props;
-  //TODO: add seesion type
-
   // verifies if routeName is the one active (in browser input)
   const activeRoute = useCallback(
     (routeName: string) => {
@@ -37,8 +43,12 @@ export const SidebarLinks = ({ routes }): JSX.Element => {
     signOut({ callbackUrl: '/auth/sign-in' });
   };
 
-  const createLinks = (routes: RoutesType[]) => {
+  const createLinks = (routes: RoutesType[], user: user) => {
     return routes.map((route, index) => {
+      if (route.role === 'admin' && user?.role !== 'admin') {
+        return null;
+      }
+
       return (
         <NavLink key={index} href={route.layout + '/' + route.path}>
           <div className="relative mb-3 flex hover:cursor-pointer">
@@ -76,7 +86,7 @@ export const SidebarLinks = ({ routes }): JSX.Element => {
   // BRAND
   return (
     <>
-      {createLinks(routes)}
+      {createLinks(routes, user)}
 
       {/* Sign Out Button */}
       <button
