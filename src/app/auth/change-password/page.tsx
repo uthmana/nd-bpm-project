@@ -1,11 +1,9 @@
 'use client';
 import InputField from 'components/fields/InputField';
 import Default from 'components/auth/variants/DefaultAuthLayout';
-import { FcGoogle } from 'react-icons/fc';
-import Checkbox from 'components/checkbox';
 import { useRouter } from 'next/navigation';
-import NextLink from 'next/link';
 import Button from 'components/button/button';
+import nd_logo from '/public/img/auth/nd_logo.webp';
 
 function ChangePassword() {
   const router = useRouter();
@@ -16,20 +14,25 @@ function ChangePassword() {
   return (
     <Default
       maincard={
-        <div className="mb-16 mt-16 flex h-full w-full items-center justify-center px-2 md:mx-0 md:px-0 lg:mb-10 lg:items-center lg:justify-start">
+        <div className="mt-[120px] flex h-[380px] w-full items-center justify-center px-2 md:mx-0 md:mt-0 md:h-full md:px-0 md:pb-16 lg:mb-10 lg:items-center lg:justify-start">
           <form
             onSubmit={handleChangePassword}
-            className="mt-[10vh] w-full max-w-full flex-col items-center md:pl-4 lg:pl-0 xl:max-w-[420px]"
+            className="mx-auto w-full max-w-[360px] flex-col items-center md:pl-4 lg:pl-0"
           >
+            <img
+              src={nd_logo.src}
+              className="absolute top-16 md:top-32"
+              width={80}
+            />
             <h3 className="mb-8 text-4xl font-bold text-navy-700 dark:text-white">
-              Change Password
+              Şifre Değiştir
             </h3>
 
             {/* Password */}
             <InputField
               variant="auth"
               extra="mb-3"
-              label="New Password*"
+              label="Yeni Şifre*"
               placeholder="Min. 8 characters"
               id="password"
               type="password"
@@ -38,13 +41,13 @@ function ChangePassword() {
             <InputField
               variant="auth"
               extra="mb-6"
-              label="Repeat Password*"
+              label="Şifreyi tekrarla*"
               placeholder="Min. 8 characters"
               id="password"
               type="password"
               name="password"
             />
-            <Button text="  Save" />
+            <Button text="Kaydet" />
           </form>
         </div>
       }

@@ -38,6 +38,7 @@ export default function Admin({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-full w-full bg-background-100 dark:bg-background-900">
       <Sidebar
+        key={user?.emal}
         user={user}
         routes={routes}
         open={open}
@@ -55,6 +56,7 @@ export default function Admin({ children }: { children: React.ReactNode }) {
           {/* Routes */}
           <div>
             <Navbar
+              key={user?.emal}
               user={user}
               onOpenSidenav={() => setOpen(!open)}
               secondary={getActiveNavbar(routes, pathname)}

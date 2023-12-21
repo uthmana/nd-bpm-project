@@ -9,7 +9,6 @@ export const authOptions = {
       name: 'Credentials',
       credentials: {},
       async authorize(credentials, req) {
-        console.log('authorize req', { credentials });
         const { email, password } = credentials;
         try {
           // const { status, data: user } = await login({ email, password });
@@ -61,6 +60,7 @@ export const authOptions = {
          */
         token.role = user.role;
         token.email = user.email;
+        token.name = user.name;
       }
 
       return token;
@@ -69,6 +69,7 @@ export const authOptions = {
       if (session.user) {
         session.user.role = token.role;
         session.user.email = token.email;
+        session.user.name = token.name;
       }
 
       return session;
