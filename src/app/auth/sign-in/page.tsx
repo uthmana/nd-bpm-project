@@ -7,21 +7,54 @@ import Button from 'components/button/button';
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import nd_logo from '/public/img/auth/nd_logo.webp';
+import { emailRegex } from '../../../utils';
 
 function SignInDefault() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [values, setValues] = useState({ email: '', password: '' });
+  const [emailState, setEmailState] = useState('');
+  const [passwordState, setPasswordState] = useState('');
+  const [error, setError] = useState(false);
 
   const handleValues = (event) => {
-    const newVal = { [event.target?.name]: event.target?.value };
+    const key = event.target?.name;
+    const value = event.target?.value;
+    setError(false);
+    if (key === 'email') {
+      setEmailState('');
+    }
+    if (key === 'password') {
+      setPasswordState('');
+    }
+    const newVal = { [key]: value };
     setValues({ ...values, ...newVal });
   };
 
   const handleLogIn = async (e: any) => {
     e.preventDefault();
-    setSubmitting(true);
+
+    //Form Validation
     const { email, password } = values;
+    if (!email && !password) {
+      setEmailState('error');
+      setPasswordState('error');
+      return;
+    }
+    if (!email) {
+      setEmailState('error');
+      return;
+    }
+    if (!password) {
+      setPasswordState('error');
+      return;
+    }
+    if (email && !emailRegex.test(email)) {
+      setEmailState('error');
+      return;
+    }
+
+    setSubmitting(true);
     await signIn('credentials', {
       email,
       password,
@@ -30,7 +63,7 @@ function SignInDefault() {
       if (res && res.ok) {
         router.push('/admin');
       } else {
-        console.log('error', res);
+        setError(true);
       }
       setSubmitting(false);
     });
@@ -56,6 +89,13 @@ function SignInDefault() {
             <p className="mb-9 ml-1 text-base text-gray-600">
               Oturum açmak için e-posta adresinizi ve şifrenizi girin!
             </p>
+
+            {error ? (
+              <p className="mb-3 w-full rounded-md bg-red-500 p-2 text-center text-sm  font-bold text-white">
+                E-posta veya Şifre hatalı
+              </p>
+            ) : null}
+
             <InputField
               variant="auth"
               extra="mb-3"
@@ -64,7 +104,9 @@ function SignInDefault() {
               id="email"
               type="text"
               name="email"
+              length={50}
               onChange={(e) => handleValues(e)}
+              state={emailState}
             />
 
             {/* Password */}
@@ -76,6 +118,8 @@ function SignInDefault() {
               id="password"
               type="password"
               name="password"
+              state={passwordState}
+              length={30}
               onChange={(e) => handleValues(e)}
             />
             {/* Checkbox */}

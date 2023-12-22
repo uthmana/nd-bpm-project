@@ -2,13 +2,14 @@
 import React from 'react';
 import StockForm from 'components/forms/stock';
 import { useRouter } from 'next/navigation';
+import { log } from 'utils';
 
 export default function Edit() {
   const router = useRouter();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(e);
+    log(e);
     router.push('/admin/stock');
   };
 

@@ -1,11 +1,9 @@
 'use client';
-import { PropsWithChildren, useState } from 'react';
-import AuthProvider from 'app/providers/sessionProvider';
+import { PropsWithChildren } from 'react';
 
 // Chakra imports
 
 // Layout components
-import { SidebarContext } from 'contexts/SidebarContext';
 import React from 'react';
 import { isWindowAvailable } from 'utils/navigation';
 import FixedPlugin from 'components/fixedPlugin/FixedPlugin';

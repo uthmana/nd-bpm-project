@@ -6,6 +6,7 @@ import InputField from 'components/fields/InputField';
 import Button from 'components/button/button';
 import Select from 'components/select/page';
 import { MdOutlineArrowBack } from 'react-icons/md';
+import { log } from 'utils';
 
 type data = {
   username: string;
@@ -31,7 +32,7 @@ export default function User({ onSubmit, data, title }: userForm) {
   const handleValues = (event) => {
     const newVal = { [event.target?.name]: event.target?.value };
     setValues({ ...values, ...newVal });
-    console.log(values);
+    log(values);
   };
 
   const role = ['Admin', 'Super', 'Normal', 'Tech'];
