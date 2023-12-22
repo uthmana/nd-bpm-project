@@ -2,12 +2,13 @@
 import React from 'react';
 import UserForm from 'components/forms/user';
 import { useRouter } from 'next/navigation';
+import { log } from 'utils';
 
 export default function Create() {
   const router = useRouter();
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(e);
+    log(e);
     router.push('/admin/users');
   };
 

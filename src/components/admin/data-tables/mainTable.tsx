@@ -72,7 +72,6 @@ function MainTable({
 
   let defaultData = tableData;
 
-  //console.log(newcolumns);
   let columns: any;
   switch (variant) {
     case 'customer':
