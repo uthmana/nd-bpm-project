@@ -3,7 +3,7 @@ const Footer = () => {
     <div className="flex w-full flex-col items-center justify-between px-1 pb-8 pt-3 lg:px-8 xl:flex-row">
       <p className="mb-4 text-center text-sm font-medium text-gray-600 sm:!mb-0 md:text-lg">
         <span className="mb-4 text-center text-sm text-gray-600 sm:!mb-0 md:text-base">
-          ©{new Date().getFullYear()} ND Project. All Rights Reserved.
+          ©{new Date().getFullYear()} ND Türkiye Proces. Tüm Hakkları Saklıdır.
         </span>
       </p>
       <div>
@@ -14,7 +14,7 @@ const Footer = () => {
               href="#"
               className="text-base font-medium text-gray-600 hover:text-gray-600"
             >
-              Support
+              Yardım Merkezi
             </a>
           </li>
           <li>
@@ -23,7 +23,7 @@ const Footer = () => {
               href="#"
               className="text-base font-medium text-gray-600 hover:text-gray-600"
             >
-              License
+              Lisans
             </a>
           </li>
           <li>
@@ -32,7 +32,7 @@ const Footer = () => {
               href="#"
               className="text-base font-medium text-gray-600 hover:text-gray-600"
             >
-              Terms of Use
+              Kullanım Şartları
             </a>
           </li>
           <li>
@@ -41,7 +41,7 @@ const Footer = () => {
               href="#"
               className="text-base font-medium text-gray-600 hover:text-gray-600"
             >
-              Privacy
+              Gizlilik
             </a>
           </li>
         </ul>

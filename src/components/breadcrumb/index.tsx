@@ -11,7 +11,7 @@ export default function Breadcrump(props: { brandText: string }) {
           className="text-sm font-normal text-navy-700 hover:underline dark:text-white dark:hover:text-white"
           href=" "
         >
-          Pages
+          Sayfa
           <span className="mx-1 text-sm text-navy-700 hover:text-navy-700 dark:text-white">
             {' '}
             /{' '}
@@ -25,12 +25,9 @@ export default function Breadcrump(props: { brandText: string }) {
         </a>
       </div>
       <p className="shrink text-[33px] capitalize text-navy-700 dark:text-white">
-        <a
-          href="#"
-          className="font-bold capitalize hover:text-navy-700 dark:hover:text-white"
-        >
+        <span className="font-bold capitalize hover:text-navy-700 dark:hover:text-white">
           {brandText}
-        </a>
+        </span>
       </p>
     </div>
   );
