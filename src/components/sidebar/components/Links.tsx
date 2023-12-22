@@ -13,10 +13,6 @@ type user = {
   role: string;
 };
 
-type SessionType = {
-  user?: user;
-};
-
 // chakra imports
 
 export const SidebarLinks = ({ routes }): JSX.Element => {
@@ -50,14 +46,18 @@ export const SidebarLinks = ({ routes }): JSX.Element => {
       }
 
       return (
-        <NavLink key={index} href={route.layout + '/' + route.path}>
-          <div className="relative mb-3 flex hover:cursor-pointer">
+        <NavLink
+          className="w-full"
+          key={index}
+          href={route.layout + '/' + route.path}
+        >
+          <div className="relative mb-3 flex w-full hover:cursor-pointer">
             <li
-              className="my-[3px] flex cursor-pointer items-center px-8"
+              className="group my-[3px] flex w-full cursor-pointer items-center px-8"
               key={index}
             >
               <span
-                className={`${
+                className={`font-bold transition ease-in group-hover:text-brand-500 dark:group-hover:text-white ${
                   activeRoute(route.path) === true
                     ? 'font-bold text-brand-500 dark:text-white'
                     : 'font-medium text-gray-600'
@@ -66,7 +66,7 @@ export const SidebarLinks = ({ routes }): JSX.Element => {
                 {route.icon ? route.icon : <DashIcon />}{' '}
               </span>
               <p
-                className={`leading-1 ml-4 flex ${
+                className={`leading-1 ml-4 flex transition ease-in group-hover:text-brand-500 dark:group-hover:text-white  ${
                   activeRoute(route.path) === true
                     ? 'font-bold text-navy-700 dark:text-white'
                     : 'font-medium text-gray-600'
@@ -91,12 +91,22 @@ export const SidebarLinks = ({ routes }): JSX.Element => {
       {/* Sign Out Button */}
       <button
         onClick={handleSignOut}
-        className="absolute bottom-3 mb-3 flex hover:cursor-pointer"
+        className="group absolute bottom-3 mb-3 flex hover:cursor-pointer"
       >
         <div className="my-[3px] flex cursor-pointer items-center px-8">
-          <span className={'font-medium text-gray-600'}>{<SignoutIcon />}</span>
-          <p className={'leading-1 ml-4 flex font-medium text-gray-600'}>
-            Sign Out
+          <span
+            className={
+              'font-medium text-gray-600 transition ease-in group-hover:text-brand-500 dark:group-hover:text-white '
+            }
+          >
+            {<SignoutIcon />}
+          </span>
+          <p
+            className={
+              'leading-1 ml-4 flex font-medium text-gray-600 transition ease-in group-hover:text-brand-500 dark:group-hover:text-white '
+            }
+          >
+            Çikiş
           </p>
         </div>
       </button>

@@ -39,7 +39,7 @@ export default function Profile({ user }) {
             href="/admin/profile"
             className="text-sm text-gray-800 dark:text-white hover:dark:text-white"
           >
-            Profile Settings
+            Profil Ayarları
           </a>
           {/* <a
                   href=" "
@@ -51,7 +51,7 @@ export default function Profile({ user }) {
             onClick={handleSignOut}
             className="mt-3 block text-left text-sm font-medium text-red-500 hover:text-red-500"
           >
-            Log Out
+            Çikiş Yap
           </button>
         </div>
       </div>

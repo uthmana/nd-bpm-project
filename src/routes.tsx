@@ -13,72 +13,74 @@ import {
   MdSettings,
   MdTaskAlt,
   MdLocalOffer,
-  MdLock
+  MdLock,
 } from 'react-icons/md';
+
+const iconStyle = 'h-6 w-6 !hover:text-[black] dark:!hover:text-white';
 
 const routes = [
   {
-    name: 'Dashboard',
+    name: 'Panel',
     layout: '/admin',
     path: 'dashboard',
     role: 'normal',
-    icon: <MdHome className="h-6 w-6" />,
+    icon: <MdHome className={`${iconStyle}`} />,
   },
   {
-    name: 'Stock',
+    name: 'Stok',
     layout: '/admin',
     path: 'stock',
     role: 'normal',
-    icon: <MdOutlineMultilineChart className="h-6 w-6" />,
+    icon: <MdOutlineMultilineChart className={`${iconStyle}`} />,
   },
   {
-    name: 'Customers',
+    name: 'Müşteri',
     layout: '/admin',
     path: 'customer',
     role: 'normal',
-    icon: <MdOutlineGroups3 className="h-6 w-6" />,
+    icon: <MdOutlineGroups3 className={`${iconStyle}`} />,
   },
   {
-    name: 'Entry',
+    name: 'Ürün Girişi',
     layout: '/admin',
     path: 'entry',
     role: 'normal',
-    icon: <MdOutlineBusiness className="h-6 w-6" />,
+    icon: <MdOutlineBusiness className={`${iconStyle}`} />,
   },
   {
-    name: 'Process',
+    name: 'Proses',
     layout: '/admin',
     path: 'process',
     role: 'normal',
-    icon: <MdGroupWork className="h-6 w-6" />,
+    icon: <MdGroupWork className={`${iconStyle}`} />,
   },
   {
-    name: 'Invoice',
+    name: 'İrsalye',
     layout: '/admin',
     path: 'invoice',
     role: 'normal',
-    icon: <MdTaskAlt className="h-6 w-6" />,
+    icon: <MdTaskAlt className={`${iconStyle}`} />,
   },
   {
-    name: 'Offer',
+    name: 'Tekif',
     layout: '/admin',
     path: 'offer',
     role: 'admin',
-    icon: <MdLocalOffer className="h-6 w-6" />,
+    icon: <MdLocalOffer className={`${iconStyle}`} />,
   },
   {
-    name: 'Users',
+    name: 'Kullanıcılar',
     layout: '/admin',
     path: 'users',
     role: 'admin',
-    icon: <MdPerson className="h-6 w-6" />,
+    icon: <MdPerson className={`${iconStyle}`} />,
   },
   {
-    name: 'Settings',
+    name: 'Ayarlar',
     layout: '/admin',
     path: 'settings',
     role: 'admin',
-    icon: <MdSettings className="h-6 w-6" />,
+    icon: <MdSettings className={`${iconStyle}`} />,
   },
 ];
 export default routes;
