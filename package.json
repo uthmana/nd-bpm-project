@@ -52,7 +52,7 @@
     "deploy": "gh-pages -d build",
     "debug": "nodemon --inspect=0.0.0.0:9229 --exec 'npx next'",
     "dev1": "cross-env NODE_OPTIONS='--inspect' next dev",
-    "production:build": "npx prisma generate && npx migrate deploy"
+    "production:build": "npx prisma generate && npx migrate deploy && next build"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
