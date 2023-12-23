@@ -6,6 +6,7 @@ export async function fetchAPI(endpoint, method, data, header, accessToken) {
   const session = await getSession();
 
   let API_URL = `${process.env.NEXT_PUBLIC_BASE_PATH}/api/`;
+  axios.defaults.timeout = 60000;
   const headers = {
     'Content-Type': 'application/json',
     Platform: 'web',
