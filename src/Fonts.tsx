@@ -1,9 +1,10 @@
 import React from 'react';
+import { log } from 'utils';
 
 export default function Fonts() {
   const prefix = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
-  console.log({ prefix });
+  log({ prefix });
 
   return (
     <style

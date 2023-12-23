@@ -72,7 +72,6 @@ function MainTable({
 
   let defaultData = tableData;
 
-  //console.log(newcolumns);
   let columns: any;
   switch (variant) {
     case 'customer':
@@ -123,7 +122,7 @@ function MainTable({
               EMAIL
             </p>
           ),
-          cell: (info) => (
+          cell: (info: any) => (
             <p className="text-sm font-bold text-navy-700 dark:text-white">
               {info.getValue()}
             </p>
@@ -136,7 +135,7 @@ function MainTable({
               PHONE
             </p>
           ),
-          cell: (info) => (
+          cell: (info: any) => (
             <p className="text-sm font-bold text-navy-700 dark:text-white">
               {info.getValue()}
             </p>
@@ -149,7 +148,7 @@ function MainTable({
               ADDRESS
             </p>
           ),
-          cell: (info) => (
+          cell: (info: any) => (
             <p className="text-sm font-bold text-navy-700 dark:text-white">
               {info.getValue()}
             </p>
@@ -162,7 +161,7 @@ function MainTable({
               POSTAL CODE
             </p>
           ),
-          cell: (info) => (
+          cell: (info: any) => (
             <p className="text-sm font-bold text-navy-700 dark:text-white">
               {info.getValue()}
             </p>
@@ -244,7 +243,7 @@ function MainTable({
               QUANTITY
             </p>
           ),
-          cell: (info) => (
+          cell: (info: any) => (
             <p className="flex text-sm font-bold text-navy-700 dark:text-white">
               {info.getValue()}
 
@@ -263,7 +262,7 @@ function MainTable({
               PRICE
             </p>
           ),
-          cell: (info) => (
+          cell: (info: any) => (
             <p className="text-sm font-bold text-navy-700 dark:text-white">
               {info.getValue()}
             </p>
@@ -276,7 +275,7 @@ function MainTable({
               DESCRIPTION
             </p>
           ),
-          cell: (info) => (
+          cell: (info: any) => (
             <p className="text-sm font-bold text-navy-700 dark:text-white">
               {info.getValue()}
             </p>
@@ -289,7 +288,7 @@ function MainTable({
               DATE
             </p>
           ),
-          cell: (info) => (
+          cell: (info: any) => (
             <p className="text-sm font-bold text-navy-700 dark:text-white">
               {info.getValue()}
             </p>
@@ -302,7 +301,7 @@ function MainTable({
               VENDOR
             </p>
           ),
-          cell: (info) => (
+          cell: (info: any) => (
             <p className="text-sm font-bold text-navy-700 dark:text-white">
               {info.getValue()}
             </p>
@@ -371,7 +370,7 @@ function MainTable({
               EMAIL
             </p>
           ),
-          cell: (info) => (
+          cell: (info: any) => (
             <p className="text-sm font-bold text-navy-700 dark:text-white">
               {info.getValue()}
             </p>
@@ -384,7 +383,7 @@ function MainTable({
               PASSWORD
             </p>
           ),
-          cell: (info) => (
+          cell: (info: any) => (
             <p className="text-sm font-bold text-navy-700 dark:text-white">
               {info.getValue()}
             </p>
@@ -397,7 +396,7 @@ function MainTable({
               ROLE
             </p>
           ),
-          cell: (info) => (
+          cell: (info: any) => (
             <p className="text-sm font-bold text-navy-700 dark:text-white">
               {info.getValue()}
             </p>
@@ -423,7 +422,7 @@ function MainTable({
               DATE
             </p>
           ),
-          cell: (info) => (
+          cell: (info: any) => (
             <p className="text-sm font-bold text-navy-700 dark:text-white">
               {info.getValue()}
             </p>

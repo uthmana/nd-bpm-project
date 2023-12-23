@@ -1,6 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { Todo } from '@prisma/client';
+import { Todo } from 'types/todo';
 
 export const TodoItem = ({ todos }: { todos: Todo[] }) => {
   const router = useRouter();

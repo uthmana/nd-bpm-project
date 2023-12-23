@@ -14,6 +14,7 @@ import DailyTraffic from 'components/admin/default/DailyTraffic';
 import TaskCard from 'components/admin/default/TaskCard';
 import tableDataCheck from 'variables/data-tables/tableDataCheck';
 import tableDataComplex from 'variables/data-tables/tableDataComplex';
+import { log } from 'utils';
 
 import { getUsers } from '../../lib/apiRequest';
 import { useEffect } from 'react';
@@ -22,7 +23,7 @@ const Process = () => {
   useEffect(() => {
     const users = async () => {
       const { data, status } = await getUsers();
-      console.log(data, status);
+      log(data, status);
     };
     users();
   }, []);

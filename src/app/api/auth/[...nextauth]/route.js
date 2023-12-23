@@ -1,6 +1,6 @@
 // ** Third Party Imports
 import NextAuth from 'next-auth';
-import { authOptions } from '../../../lib/auth/options';
+import { authOptions } from '../../../lib/authOptions';
 
 const handler = NextAuth(authOptions);
 

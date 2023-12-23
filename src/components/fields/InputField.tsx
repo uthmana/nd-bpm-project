@@ -12,6 +12,7 @@ function InputField(props: {
   name: string;
   onChange?: any;
   value?: string;
+  length?: number;
 }) {
   const {
     label,
@@ -26,6 +27,7 @@ function InputField(props: {
     name,
     required,
     value,
+    length,
   } = props;
 
   return (
@@ -48,7 +50,8 @@ function InputField(props: {
         required={required}
         placeholder={placeholder}
         min="0"
-        className={`mt-1 flex h-10 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${
+        maxLength={length}
+        className={`text-bold mt-1 flex h-10 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${
           disabled === true
             ? '!border-none !bg-gray-100 dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)]'
             : state === 'error'

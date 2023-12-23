@@ -3,18 +3,18 @@ import axios from 'axios';
 import { log } from '../../../utils/log';
 
 export async function fetchAPI(endpoint, method, data, header, accessToken) {
-  // const session = await getSession();
+  const session = await getSession();
 
-  let API_URL = '/api/';
+  let API_URL = `${process.env.NEXT_PUBLIC_BASE_PATH}/api/`;
   const headers = {
     'Content-Type': 'application/json',
     Platform: 'web',
   };
 
-  console.log(endpoint, method, data);
+  log(endpoint, method, data);
 
-  //let token = accessToken ? accessToken : session?.user?.accessToken;
-  //token ? (headers['Authorization'] = `Bearer ${token}`) : '';
+  let token = accessToken ? accessToken : session?.user?.accessToken;
+  token ? (headers['Authorization'] = `Bearer ${token}`) : '';
 
   if (typeof window === 'undefined') {
     // SERVER SIDE LOGS

@@ -1,5 +1,5 @@
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { login } from '../../lib/apiRequest';
+import { login } from '../apiRequest';
 
 export const authOptions = {
   // ** Please refer to https://next-auth.js.org/configuration/options#providers for more `providers` options
@@ -9,25 +9,10 @@ export const authOptions = {
       name: 'Credentials',
       credentials: {},
       async authorize(credentials, req) {
-        console.log('authorize req', { credentials });
         const { email, password } = credentials;
         try {
-          // const { status, data: user } = await login({ email, password });
-          // if (status === 200 && user) {
-          //   return user;
-          // }
-          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_BASE_PATH}/api/login`,
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ email, password }),
-            },
-          );
-          const user = await res.json();
-          if (res.status === 200 && user) {
+          const { status, data: user } = await login({ email, password });
+          if (status === 200 && user) {
             return user;
           }
           return null;
@@ -61,6 +46,7 @@ export const authOptions = {
          */
         token.role = user.role;
         token.email = user.email;
+        token.name = user.name;
       }
 
       return token;
@@ -69,6 +55,7 @@ export const authOptions = {
       if (session.user) {
         session.user.role = token.role;
         session.user.email = token.email;
+        session.user.name = token.name;
       }
 
       return session;

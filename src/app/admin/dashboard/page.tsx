@@ -18,6 +18,7 @@ import tableDataComplex from 'variables/data-tables/tableDataComplex';
 import { getUsers } from '../../lib/apiRequest';
 import { Suspense, useEffect, useState } from 'react';
 import Loading from 'app/loading';
+import { log } from 'utils';
 
 const Dashboard = () => {
   const [isLoading, setIsloading] = useState(true);
@@ -29,7 +30,7 @@ const Dashboard = () => {
       setTimeout(() => {
         setIsloading(false);
       }, 3000);
-      console.log(data, status);
+      log(data, status);
     };
     users();
   }, []);

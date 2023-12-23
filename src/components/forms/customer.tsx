@@ -7,6 +7,7 @@ import Button from 'components/button/button';
 import Select from 'components/select/page';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import TextArea from 'components/fields/textArea';
+import { log } from 'utils';
 
 type data = {
   username: string;
@@ -54,7 +55,7 @@ export default function Customer({ onSubmit, data, title }: userForm) {
   const handleValues = (event) => {
     const newVal = { [event.target?.name]: event.target?.value };
     setValues({ ...values, ...newVal });
-    console.log(values);
+    log(values);
   };
 
   return (
