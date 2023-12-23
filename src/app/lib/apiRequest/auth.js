@@ -7,3 +7,7 @@ export async function login(payload) {
 export async function sendForgotEmail(payload) {
   return fetchAPI('send', 'post', payload);
 }
+
+export async function changePassword(payload) {
+  return fetchAPI('changePassword', 'post', payload);
+}
