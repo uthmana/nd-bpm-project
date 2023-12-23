@@ -106,7 +106,7 @@ export const SidebarLinks = ({ routes }): JSX.Element => {
               'leading-1 ml-4 flex font-medium text-gray-600 transition ease-in group-hover:text-brand-500 dark:group-hover:text-white '
             }
           >
-            Çikiş
+            Çıkış Yap
           </p>
         </div>
       </button>

@@ -8,14 +8,13 @@ export async function POST(req: Request) {
     if (!name || !roleId || !email || !password) {
       return NextResponse.json({ message: 'You are missing a required data' });
     }
-    const newUser = await prisma.user.create({
-      data: {
-        name: name,
-        email: email,
-        password: password,
-        roleId: roleId,
-      },
-    });
+    // const newUser: Partial<User> = await prisma.user.create({
+    //   data: {
+    //     name: name,
+    //     email: email,
+    //     password: password,
+    //   },
+    // });
 
     return NextResponse.json({ message: `Created ${name} user` });
   } catch (error) {
@@ -26,7 +25,7 @@ export async function POST(req: Request) {
 
 export async function GET(req: NextRequest) {
   try {
-    const users: User[] = await prisma.user.findMany();
+    const users = await prisma.user.findMany();
     return NextResponse.json(users);
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -58,7 +57,6 @@ export async function PUT(req: Request) {
         name,
         email,
         password,
-        roleId,
       },
     });
 

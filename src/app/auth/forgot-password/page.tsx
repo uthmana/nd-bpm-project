@@ -6,6 +6,7 @@ import Button from 'components/button/button';
 import nd_logo from '/public/img/auth/nd_logo.webp';
 import { emailRegex } from 'utils';
 import NextLink from 'next/link';
+import { sendForgotEmail } from 'app/lib/apiRequest';
 
 function ForgotPassword() {
   const forgotForm = useRef(null);
@@ -13,28 +14,43 @@ function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [emailState, setEmailState] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleValues = (event) => {
+  const handleValues = (e) => {
     setEmailState('');
+    setEmail(e.target.elements?.email?.value);
   };
 
-  const handleforgotPassword = (e) => {
+  const handleforgotPassword = async (e) => {
     e.preventDefault();
-    const emailValue = e.target.elements.email.value;
-
+    let emailValue = e.target.elements?.email?.value;
     setError('');
     setEmail(emailValue);
     if (!emailValue) {
       setEmailState('error');
       return;
     }
-    if (emailValue && !emailRegex.test(email)) {
+    if (emailValue && !emailRegex.test(emailValue)) {
       setError('error');
       return;
     }
 
-    //TODO: Send email
-    setStep(1);
+    //Send Email
+    setIsSubmitting(true);
+    const { status, data } = await sendForgotEmail({
+      email: emailValue,
+      subject: 'Şifre Yenile',
+      message: 'Lütfen gelen kutunuzu kontrol edin.',
+    });
+
+    if (status === 200) {
+      setStep(1);
+      setIsSubmitting(false);
+      return;
+    }
+
+    setError('error');
+    setIsSubmitting(false);
   };
 
   const resendEmail = () => {
@@ -87,8 +103,9 @@ function ForgotPassword() {
             name="email"
             state={emailState}
             onChange={(e) => handleValues(e)}
+            value={email}
           />
-          <Button text="Gönder" />
+          <Button loading={isSubmitting} text="Gönder" />
         </form>
       </div>
     );
@@ -121,15 +138,14 @@ function ForgotPassword() {
 
           <p className="text-black mb-9 ml-1 text-base dark:text-white">
             Şifrenizi sıfırlamak için
-            <span className="font-semibold">{email}</span> adresine e-posta
+            <span className="font-semibold"> {email} </span> adresine e-posta
             gönderdik. Lütfen gelen kutunuzu kontrol edin.
           </p>
-          <button
+          <Button
             onClick={resendEmail}
-            className="linear w-full rounded-xl bg-brand-500 py-3 text-base font-medium text-white transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200"
-          >
-            Resend Email
-          </button>
+            loading={isSubmitting}
+            text="Tekrar Gönder"
+          />
         </div>
       </div>
     );

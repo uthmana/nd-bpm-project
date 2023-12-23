@@ -51,7 +51,7 @@ export default function Profile({ user }) {
             onClick={handleSignOut}
             className="mt-3 block text-left text-sm font-medium text-red-500 hover:text-red-500"
           >
-            Çikiş Yap
+            Çıkış Yap
           </button>
         </div>
       </div>

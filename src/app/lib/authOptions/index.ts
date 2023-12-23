@@ -1,14 +1,15 @@
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { login } from '../apiRequest';
+import { NextAuthOptions } from 'next-auth';
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
   // ** Please refer to https://next-auth.js.org/configuration/options#providers for more `providers` options
   providers: [
     CredentialsProvider({
       // ** The name to display on the sign in form (e.g. 'Sign in with...')
       name: 'Credentials',
       credentials: {},
-      async authorize(credentials, req) {
+      async authorize(credentials: any, req) {
         const { email, password } = credentials;
         try {
           const { status, data: user } = await login({ email, password });
@@ -53,7 +54,7 @@ export const authOptions = {
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.role = token.role;
+        session.user.role = token.role as string;
         session.user.email = token.email;
         session.user.name = token.name;
       }
