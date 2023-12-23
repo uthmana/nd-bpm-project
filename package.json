@@ -44,7 +44,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "next build",
     "start": "next start",
     "export": "next export",
     "lint": "next lint",
