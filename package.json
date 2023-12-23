@@ -44,15 +44,14 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
     "export": "next export",
     "lint": "next lint",
     "predeploy": "yarn run build",
     "deploy": "gh-pages -d build",
     "debug": "nodemon --inspect=0.0.0.0:9229 --exec 'npx next'",
-    "dev1": "cross-env NODE_OPTIONS='--inspect' next dev",
-    "production:build": "npx prisma generate && npx migrate deploy && next build"
+    "dev1": "cross-env NODE_OPTIONS='--inspect' next dev"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
