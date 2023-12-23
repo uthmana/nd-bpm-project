@@ -44,6 +44,7 @@ export async function GET(req: NextRequest) {
   //   console.error('Error fetching users:', error);
   //   return NextResponse.json({ error: 'Internal Server Error' });
   // }
+  return NextResponse.json({ message: 'development' });
 }
 
 export async function DELETE(req: Request) {
