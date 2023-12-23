@@ -6,6 +6,12 @@ import { NextResponse } from 'next/server';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
+  //TODO: check send type
+
+  //if(type === 'send email for change-password'){
+  //localhost://3000/auth/change-password?token=fdgffgfdgfdghdf
+  //}
+
   try {
     const formData = await request.json();
     console.log('formData', formData);
