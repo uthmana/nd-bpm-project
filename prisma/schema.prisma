@@ -6,37 +6,36 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
 model Todo {
-
- id String @id @default(uuid())
-  title String
-  complete Boolean
+  id        String   @id @default(uuid())
+  title     String
+  complete  Boolean
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-
 model User {
-  id            String    @id @default(uuid())
+  id            String       @id @default(uuid())
   name          String
-  email         String?   @unique
+  email         String?      @unique
   password      String?
-  role          UserRole   @default(NORMAL)   
-  status        UserStatus @default(ACTIVE) // Set the default status to "ACTIVE"
-  address       Address?    // Added address field
+  role          UserRole     @default(NORMAL)
+  status        UserStatus   @default(ACTIVE) // Set the default status to "ACTIVE"
+  address       Address? // Added address field
   contactInfo   ContactInfo? // Added contactInfo field
-  emailVerified DateTime? @map("email_verified")
+  emailVerified DateTime?    @map("email_verified")
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
   accounts      Account[]
   sessions      Session[]
-  userType      UserType? @default(CUSTOMER)  // Added userType field
+  userType      UserType?    @default(CUSTOMER) // Added userType field
+
   @@map("users")
 }
 
@@ -84,7 +83,6 @@ model VerificationRequest {
   @@unique([identifier, token])
 }
 
-
 enum UserRole {
   ADMIN
   SUPER
@@ -99,26 +97,38 @@ enum UserStatus {
   PENDING
   // Add more statuses as needed
 }
+
 model Address {
-  id        String  @id @default(cuid())
-  street    String
-  city      String
-  state     String
-  zipCode   String
-  user      User?   @relation(fields: [userId], references: [id])
-  userId    String? @unique @default(cuid())
+  id      String  @id @default(cuid())
+  street  String
+  city    String
+  state   String
+  zipCode String
+  user    User?   @relation(fields: [userId], references: [id])
+  userId  String? @unique @default(cuid())
 }
 
 model ContactInfo {
-  id      String  @id @default(cuid())
-  phone   String
-  email   String
-  user    User    @relation(fields: [userId], references: [id])
-  userId  String  @unique @default(cuid())
+  id     String @id @default(cuid())
+  phone  String
+  email  String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique @default(cuid())
 }
 
 enum UserType {
   CUSTOMER
   NON_CUSTOMER
   // Add more user types as needed
+}
+
+model Customer {
+  id          String   @id @default(uuid())
+  name        String
+  email       String?  @unique
+  password    String?
+  roleId      UserRole @default(NORMAL)
+  PostalCode  String?
+  address     String?
+  phoneNumber String?
 }

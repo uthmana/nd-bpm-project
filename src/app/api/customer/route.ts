@@ -24,7 +24,6 @@ export async function POST(req: Request) {
         password: password,
         roleId: roleId,
         PostalCode: PostalCode,
-        adress: adress,
         phoneNumber: phoneNumber,
       },
     });
@@ -38,7 +37,7 @@ export async function POST(req: Request) {
 
 export async function GET(req: NextRequest) {
   try {
-    const customerdata: customer[] = await prisma.customer.findMany();
+    const customerdata = await prisma.customer.findMany();
     return NextResponse.json(customerdata);
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -70,7 +69,6 @@ export async function PUT(req: Request) {
         name,
         email,
         password,
-        roleId,
       },
     });
 
