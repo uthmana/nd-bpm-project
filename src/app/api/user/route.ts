@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-
 import prisma from '../../lib/db1';
 
 export async function POST(req: Request) {
@@ -15,7 +14,6 @@ export async function POST(req: Request) {
     //     password: password,
     //   },
     // });
-
     return NextResponse.json({ message: `Created ${name} user` });
   } catch (error) {
     console.error('Error creating user:', error);
