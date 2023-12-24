@@ -38,14 +38,9 @@ function InputField(props: {
 
   const handlePassword = (e: any) => {
     e.stopPropagation();
-    const inputType = inputElem.current.type;
-    if (inputType === 'password') {
-      setShowPassword(true);
-      inputElem.current.type = 'text';
-      return;
-    }
-    inputElem.current.type = 'password';
-    setShowPassword(false);
+    const inputType = inputElem.current?.type;
+    inputElem.current.type = inputType === 'password' ? 'text' : 'password';
+    setShowPassword(inputType === 'password' ? true : false);
   };
 
   return (
@@ -85,7 +80,7 @@ function InputField(props: {
           className="absolute bottom-[1px] right-0 cursor-pointer p-3"
           onClick={handlePassword}
         >
-          <EyeIcon open={showPassword} />
+          {<EyeIcon open={showPassword} />}
         </span>
       ) : null}
     </div>
