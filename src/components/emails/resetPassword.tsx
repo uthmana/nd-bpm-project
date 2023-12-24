@@ -6,7 +6,7 @@ export default function ResetPassword({ token }) {
   return (
     <main className="flex h-screen w-screen items-center justify-center bg-[black] py-32 text-lg text-white">
       <div className="mx-auto flex h-full w-[400px] flex-col gap-9">
-        <Image
+        <img
           className="h-11 w-11"
           src="https://nd-bpm-project.vercel.app/_next/static/media/nd_logo.c299b55c.webp"
           alt={'ND Logo'}
@@ -14,9 +14,8 @@ export default function ResetPassword({ token }) {
 
         <h1>Şifre Sıfırla.</h1>
         <p>Şifrenizi sıfırlamak için aşağıdaki linke tıklayınız </p>
-
         <a
-          className="w-max rounded-xl bg-brand-500 px-6 py-3 text-base font-medium"
+          className="!w-max !rounded-xl !bg-brand-500 !px-6 !py-3 !text-base !font-medium"
           target="_blank"
           href={`https://nd-bpm-project.vercel.app/auth/change-password?${token}`}
         >

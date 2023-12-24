@@ -22,6 +22,8 @@ export async function POST(request: Request) {
 
   const formData = await request.json();
 
+  console.log({ formData });
+
   const emailBody: any = {
     from: 'ND <majeed@ndindustriesbmp.com>',
     to: formData.email,
