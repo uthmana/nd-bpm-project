@@ -17,12 +17,12 @@ function ChangePassword() {
   });
   // console.log('useSearchParams', token);
 
-  const handleValues = (event) => {
+  const handleValues = (event, token) => {
     const key = event.target?.name;
     const value = event.target?.value;
     const newVal = { [key]: value };
     setValues({ token: token, ...values, ...newVal });
-    console.log({ token: token, ...values, ...newVal });
+    //console.log({ token: token, ...values, ...newVal });
   };
 
   const handleChangePassword = (e) => {

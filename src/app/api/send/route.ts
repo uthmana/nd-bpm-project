@@ -16,14 +16,10 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   //TODO: check email type
-  // check from the database if the address exist
-  // if email type is forgot-password send change password link a "localhost://3000/auth/change-password?token=fdgffgfdgfdghdf"
-  //}
+  // check from the database if the email address exist
 
   const formData = await request.json();
-
-  console.log({ formData });
-
+ 
   const emailBody: any = {
     from: 'ND <majeed@ndindustriesbmp.com>',
     to: formData.email,
