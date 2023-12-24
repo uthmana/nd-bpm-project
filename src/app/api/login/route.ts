@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import prisma from 'app/lib/db1';
 
 // ** Fake user data
 // ** Please remove below user data in production and verify user with Real Database
@@ -48,7 +49,7 @@ const users = [
     delete: '4',
   },
 ];
-
+/*
 export async function POST(req: Request) {
   const body = await req.json();
   const { email, password } = body;
@@ -59,6 +60,49 @@ export async function POST(req: Request) {
     return NextResponse.json(
       { message: 'Email or Password is invalid' },
       { status: 404 },
+    );
+  }
+}
+*/
+
+export async function POST(req: Request) {
+  try {
+    const { email, password }: Partial<User> = await req.json();
+
+    if (!email || !password) {
+      return NextResponse.json(
+        { message: 'Email and password are required' },
+        { status: 400 },
+      );
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (user) {
+      const passwordMatch = await compare(password, user.password);
+
+      if (passwordMatch) {
+        // Passwords match, return success
+        return NextResponse.json(user, { status: 200 });
+      } else {
+        // Passwords don't match
+        return NextResponse.json(
+          { message: 'Email or password is incorrect' },
+          { status: 401 },
+        );
+      }
+    } else {
+      // User not found
+      return NextResponse.json(
+        { message: 'Email or password is incorrect' },
+        { status: 401 },
+      );
+    }
+  } catch (error) {
+    console.error('Error during login:', error);
+    return NextResponse.json(
+      { message: 'Internal server error' },
+      { status: 500 },
     );
   }
 }
