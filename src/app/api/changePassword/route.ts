@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
+import { hash } from 'bcryptjs';
 
-const secretKey = process.env.NEXTAUTH_SECRET
-const validityMinutes = process.env.CHANGE_PASSWORD_SESSION_TIME
+const secretKey = process.env.NEXTAUTH_SECRET;
+const validityMinutes = process.env.CHANGE_PASSWORD_SESSION_TIME;
 
 function decryptAndCheckValidity(encryptedText, secret, validityMinutes) {
   const decipher = crypto.createDecipher('aes-256-cbc', secret);
-  let decrypted = decipher.update(encryptedText, 'hex', 'utf-8');
+  let decrypted: string = decipher.update(encryptedText, 'hex', 'utf-8');
   decrypted += decipher.final('utf-8');
 
   // Extract timestamp from decrypted data
@@ -27,31 +28,31 @@ function decryptAndCheckValidity(encryptedText, secret, validityMinutes) {
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const { encryptedToken , newPassword } = body;
+  const { encryptedToken, newPassword } = body;
   if (encryptedToken && newPassword) {
-
     // Extract timestamp and email from decrypted data token
-    const { email, timestamp, isValid } = decryptAndCheckValidity(encryptedToken, secretKey, validityMinutes);
-    
+    const { email, timestamp, isValid } = decryptAndCheckValidity(
+      encryptedToken,
+      secretKey,
+      validityMinutes,
+    );
+
     console.log('Decrypted Data:', email);
     console.log('Timestamp:', new Date(timestamp));
     console.log('Is Valid:', isValid);
-   
 
-   if(isValid){
+    if (isValid) {
       //token session is valid and password can be updated
-
+      const password = await hash(newPassword, 12);
       //update password (password need to be encrypted )
       await prisma.user.update({
         where: { email: email },
-        data: { newPassword },
+        data: { password },
       });
+    } else {
+      console.log('Session Time out. Request for new password change link');
+    }
 
-   }else{
-    console.log("Session Time out. Request for new password change link")
-   }
-
-    
     return NextResponse.json(
       { message: 'Password Changed :)' },
       { status: 200 },

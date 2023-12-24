@@ -21,9 +21,6 @@ function encryptWithTimestamp(text, secret, validityMinutes) {
 }
 
 export async function POST(request: Request) {
-  //TODO: check email type
-  // check from the database if the email address exist
-
   const formData = await request.json();
   const emailBody: any = {
     from: 'ND <majeed@ndindustriesbmp.com>',
