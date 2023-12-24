@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from 'app/lib/db1';
+import { compare } from 'bcryptjs';
 
 // ** Fake user data
 // ** Please remove below user data in production and verify user with Real Database
