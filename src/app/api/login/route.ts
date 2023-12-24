@@ -55,6 +55,7 @@ export async function POST(req: Request) {
   //TODO: query database for the user
   //Compare password
   //Check for active user
+
   //Create user token
 
   const user = users.find((u) => u.email === email && u.password === password);
