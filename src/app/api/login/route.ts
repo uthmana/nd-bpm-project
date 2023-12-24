@@ -53,6 +53,11 @@ const users = [
 export async function POST(req: Request) {
   const body = await req.json();
   const { email, password } = body;
+  //TODO: query database for the user
+  //Compare password
+  //Check for active user
+  //Create user token
+
   const user = users.find((u) => u.email === email && u.password === password);
   if (user) {
     return NextResponse.json(user, { status: 200 });

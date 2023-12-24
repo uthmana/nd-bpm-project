@@ -4,8 +4,8 @@ export async function GET(req: Request) {
   try {
     const id = req.url.slice(req.url.lastIndexOf('/') + 1);
 
-    const user: User = await prisma.user.findUnique({
-      where: { id: Number(id) },
+    const user: Partial<User> = await prisma.user.findUnique({
+      where: { id: id },
     });
     if (!user.id) return NextResponse.json({ message: 'User not found' });
 
@@ -15,5 +15,3 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Internal Server Error' });
   }
 }
-
-

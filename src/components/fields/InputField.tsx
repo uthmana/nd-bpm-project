@@ -1,4 +1,7 @@
 // Custom components
+import EyeIcon from 'components/icons/EyeIcon';
+import { useRef, useState } from 'react';
+
 function InputField(props: {
   id: string;
   label: string;
@@ -30,8 +33,18 @@ function InputField(props: {
     length,
   } = props;
 
+  const inputElem = useRef(null);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handlePassword = (e: any) => {
+    e.stopPropagation();
+    const inputType = inputElem.current?.type;
+    inputElem.current.type = inputType === 'password' ? 'text' : 'password';
+    setShowPassword(inputType === 'password' ? true : false);
+  };
+
   return (
-    <div className={``}>
+    <div className={`relative`}>
       <label
         htmlFor={id}
         className={`text-sm text-navy-700 dark:text-white ${
@@ -41,6 +54,7 @@ function InputField(props: {
         {label}
       </label>
       <input
+        ref={inputElem}
         value={value}
         onChange={onChange}
         disabled={disabled}
@@ -61,6 +75,14 @@ function InputField(props: {
             : 'border-gray-200 dark:!border-white/10 dark:text-white'
         } ${extra}`}
       />
+      {name === 'password' ? (
+        <span
+          className="absolute bottom-[1px] right-0 cursor-pointer p-3"
+          onClick={handlePassword}
+        >
+          {<EyeIcon open={showPassword} />}
+        </span>
+      ) : null}
     </div>
   );
 }
