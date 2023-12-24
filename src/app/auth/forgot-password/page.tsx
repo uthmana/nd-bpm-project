@@ -38,7 +38,8 @@ function ForgotPassword() {
     //Send Email
     setIsSubmitting(true);
     const { status, data } = await sendForgotEmail({
-      type: 'send_email_for_change_password',
+      type: 'forgotPassword',
+
       email: emailValue,
       subject: 'Şifre Yenile',
       message: 'Lütfen gelen kutunuzu kontrol edin.',
