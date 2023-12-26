@@ -11,7 +11,9 @@ function decryptWithTimestamp(encryptedData: string, key: Buffer): string {
   const iv = Buffer.from(ivHex, 'hex');
 
   const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+  // eslint-disable-next-line no-use-before-define
   let decrypted = decipher.update(encrypted, 'hex', 'utf-8');
+  // eslint-disable-next-line no-use-before-define
   decrypted += decipher.final('utf-8');
 
   const decryptedObject = JSON.parse(decrypted);
