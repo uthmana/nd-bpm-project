@@ -11,3 +11,7 @@ export async function sendForgotEmail(payload) {
 export async function changePassword(payload) {
   return fetchAPI('changePassword', 'post', payload);
 }
+
+export async function register(payload) {
+  return fetchAPI('user', 'put', payload);
+}

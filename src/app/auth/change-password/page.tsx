@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Button from 'components/button/button';
 import nd_logo from '/public/img/auth/nd_logo.webp';
 import { useState } from 'react';
+import { changePassword } from 'app/lib/apiRequest';
+import { toast } from 'react-toastify';
 
 function ChangePassword() {
   const router = useRouter();
@@ -22,18 +24,25 @@ function ChangePassword() {
     const value = event.target?.value;
     const newVal = { [key]: value };
     setValues({ token: token, ...values, ...newVal });
-    console.log({ token: token, ...values, ...newVal });
+    //console.log({ token: token, ...values, ...newVal });
   };
 
-  const handleChangePassword = (e) => {
+  const handleChangePassword = async (e) => {
     e.preventDefault();
     if (token && values.newPassword) {
       console.log({ token, newPassword: values.newPassword });
-      //TODO: Make changePassword backend call
-      // router.push('/auth/sign-in');
-      return;
+      const { status, data } = await changePassword({
+        encryptedToken: token,
+        newPassword: values.newPassword,
+      });
+      if (status === 200) {
+        toast.success('Şifre yenileme işlemi başarılı');
+        router.push('/auth/sign-in');
+        return;
+      } else {
+        toast.error('Şifre yenileme işlemi başarısız !');
+      }
     }
-    alert('token');
   };
 
   return (
@@ -62,7 +71,7 @@ function ChangePassword() {
               id="password"
               type="password"
               name="newPassword"
-              onChange={(e) => handleValues(e)}
+              onChange={(e: any) => handleValues(e)}
             />
             <InputField
               variant="auth"

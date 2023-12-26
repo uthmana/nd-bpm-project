@@ -3,6 +3,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import 'react-toastify/dist/ReactToastify.css';
 
 @layer base {
   html {
@@ -34,4 +35,31 @@ input.defaultCheckbox::before path {
 
 input:checked.defaultCheckbox::before {
   opacity: 1;
+}
+
+.popup-container {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+.popup-body {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  transform: translate(-50%, -50%);
+  margin: auto;
+  height: fit-content;
+  min-height: 200px;
+  width: fit-content;
+  min-width: 400px;
+  border-radius: 15px;
+  border-color: black;
+  background: white;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }

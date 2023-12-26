@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Card from 'components/card';
 import { MdModeEdit, MdOutlineDelete, MdAdd } from 'react-icons/md';
 import {
@@ -19,10 +19,9 @@ type UserObj = {
   id: string;
   name: string;
   email: string;
-  password: string;
   role: string;
-  status: boolean;
-  date: string;
+  status: string;
+  createdAt: string;
   edit: string;
   delete: string;
 };
@@ -72,390 +71,368 @@ function MainTable({
 
   let defaultData = tableData;
 
-  let columns: any;
-  switch (variant) {
-    case 'customer':
-      columns = [
-        columnHelper.accessor('id', {
-          id: 'id',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              ID
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('first_name', {
-          id: 'first_name',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              FIRST NAME
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('last_name', {
-          id: 'last_name',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              LAST NAME
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('email', {
-          id: 'email',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              EMAIL
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('phone', {
-          id: 'phone',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              PHONE
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('address', {
-          id: 'address',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              ADDRESS
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('postal_code', {
-          id: 'postal_code',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              POSTAL CODE
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('edit', {
-          id: 'edit',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              EDIT
-            </p>
-          ),
-          cell: (info) => (
-            <button onClick={() => onEdit(info.getValue())}>
-              <MdModeEdit className="h-5 w-5" />
-            </button>
-          ),
-        }),
-        columnHelper.accessor('delete', {
-          id: 'delete',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              DELETE
-            </p>
-          ),
-          cell: (info) => (
-            <button onClick={() => onDelete(info.getValue())}>
-              <MdOutlineDelete className="h-5 w-5" />
-            </button>
-          ),
-        }),
-      ];
-      break;
-    case 'stock':
-      columns = [
-        columnHelper.accessor('id', {
-          id: 'id',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              ID
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('product_name', {
-          id: 'product_name',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              PRODUCT NAME
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('stock_location', {
-          id: 'stock_location',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              LOCATION
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('quantity', {
-          id: 'quantity',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              QUANTITY
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="flex text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
+  const columns = useMemo(() => {
+    //let columns: any;
+    let col: any;
+    switch (variant) {
+      case 'customer':
+        col = [
+          columnHelper.accessor('id', {
+            id: 'id',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                ID
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('first_name', {
+            id: 'first_name',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                FIRST NAME
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('last_name', {
+            id: 'last_name',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                LAST NAME
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('email', {
+            id: 'email',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                EMAIL
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('phone', {
+            id: 'phone',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                PHONE
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('address', {
+            id: 'address',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                ADDRESS
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('postal_code', {
+            id: 'postal_code',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                POSTAL CODE
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('edit', {
+            id: 'edit',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                EDIT
+              </p>
+            ),
+            cell: (info) => (
+              <button onClick={() => onEdit(info.getValue())}>
+                <MdModeEdit className="h-5 w-5" />
+              </button>
+            ),
+          }),
+          columnHelper.accessor('delete', {
+            id: 'delete',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                DELETE
+              </p>
+            ),
+            cell: (info) => (
+              <button onClick={() => onDelete(info.getValue())}>
+                <MdOutlineDelete className="h-5 w-5" />
+              </button>
+            ),
+          }),
+        ];
+        break;
+      case 'stock':
+        col = [
+          columnHelper.accessor('id', {
+            id: 'id',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                ID
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('product_name', {
+            id: 'product_name',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                PRODUCT NAME
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('stock_location', {
+            id: 'stock_location',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                LOCATION
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('quantity', {
+            id: 'quantity',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                QUANTITY
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="flex text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
 
-              {info.getValue() < 5 ? (
-                <IoMdArrowDown className="h-5 w-5 text-red-500" />
-              ) : (
-                <IoMdArrowUp className="h-5 w-5 text-green-500" />
-              )}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('price', {
-          id: 'price',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              PRICE
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('description', {
-          id: 'description',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              DESCRIPTION
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('date', {
-          id: 'date',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              DATE
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('vendor', {
-          id: 'vendor',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              VENDOR
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('edit', {
-          id: 'edit',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              EDIT
-            </p>
-          ),
-          cell: (info) => (
-            <button onClick={() => onEdit(info.getValue())}>
-              <MdModeEdit className="h-5 w-5" />
-            </button>
-          ),
-        }),
-        columnHelper.accessor('delete', {
-          id: 'delete',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              DELETE
-            </p>
-          ),
-          cell: (info) => (
-            <button onClick={() => onDelete(info.getValue())}>
-              <MdOutlineDelete className="h-5 w-5" />
-            </button>
-          ),
-        }),
-      ];
-      break;
-    case 'user':
-      columns = [
-        columnHelper.accessor('id', {
-          id: 'id',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              ID
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('name', {
-          id: 'name',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              NAME
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('email', {
-          id: 'email',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              EMAIL
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('password', {
-          id: 'password',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              PASSWORD
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('role', {
-          id: 'role',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              ROLE
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('status', {
-          id: 'status',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              STATUS
-            </p>
-          ),
-          cell: (info) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue() ? 'Active' : 'Passive'}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('date', {
-          id: 'date',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              DATE
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('edit', {
-          id: 'edit',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              EDIT
-            </p>
-          ),
-          cell: (info) => (
-            <button onClick={() => onEdit(info.getValue())}>
-              <MdModeEdit className="h-5 w-5" />
-            </button>
-          ),
-        }),
-        columnHelper.accessor('delete', {
-          id: 'delete',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              DELETE
-            </p>
-          ),
-          cell: (info) => (
-            <button onClick={() => onDelete(info.getValue())}>
-              <MdOutlineDelete className="h-5 w-5" />
-            </button>
-          ),
-        }),
-      ];
-  }
+                {info.getValue() < 5 ? (
+                  <IoMdArrowDown className="h-5 w-5 text-red-500" />
+                ) : (
+                  <IoMdArrowUp className="h-5 w-5 text-green-500" />
+                )}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('price', {
+            id: 'price',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                PRICE
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('description', {
+            id: 'description',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                DESCRIPTION
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('date', {
+            id: 'date',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                DATE
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('vendor', {
+            id: 'vendor',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                VENDOR
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('edit', {
+            id: 'edit',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                EDIT
+              </p>
+            ),
+            cell: (info) => (
+              <button onClick={() => onEdit(info.getValue())}>
+                <MdModeEdit className="h-5 w-5" />
+              </button>
+            ),
+          }),
+          columnHelper.accessor('delete', {
+            id: 'delete',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                DELETE
+              </p>
+            ),
+            cell: (info) => (
+              <button onClick={() => onDelete(info.getValue())}>
+                <MdOutlineDelete className="h-5 w-5" />
+              </button>
+            ),
+          }),
+        ];
+        break;
+      case 'user':
+        col = [
+          columnHelper.accessor('name', {
+            id: 'name',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                AD SOYAD
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('email', {
+            id: 'email',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                E-POSTA
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('role', {
+            id: 'role',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                ROLÜ
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('status', {
+            id: 'status',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                DURUM
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('createdAt', {
+            id: 'createdAt',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                TARIH
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('id', {
+            id: 'id',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                DÜZENLE
+              </p>
+            ),
+            cell: (info) => (
+              <button onClick={() => onEdit(info.getValue())}>
+                <MdModeEdit className="h-5 w-5" />
+              </button>
+            ),
+          }),
+          columnHelper.accessor('id', {
+            id: 'id',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                SİL
+              </p>
+            ),
+            cell: (info) => (
+              <button onClick={() => onDelete(info.getValue())}>
+                <MdOutlineDelete className="h-5 w-5" />
+              </button>
+            ),
+          }),
+        ];
+    }
+    return col;
+  }, []);
 
   const [data, setData] = React.useState(() => [...defaultData]);
   const table = useReactTable({
@@ -490,8 +467,8 @@ function MainTable({
         </div>
 
         <Button
-          text="ADD"
-          extra="!w-[100px] h-[38px]"
+          text="EKLE"
+          extra="!w-[100px] h-[38px] font-bold"
           onClick={onAdd}
           icon={<MdAdd className="h-6 w-6" />}
         />
@@ -581,14 +558,14 @@ function MainTable({
             {'>>'}
           </button>
           <span className="flex items-center gap-1 text-[12px]">
-            <div>Page</div>
+            <div>Sayfa</div>
             <strong>
               {table.getState().pagination.pageIndex + 1} of{' '}
               {table.getPageCount()}
             </strong>
           </span>
           <span className="ml-4 flex items-center gap-1 text-[12px]">
-            Go to page:
+            Sayfaya git:
             <input
               type="number"
               defaultValue={table.getState().pagination.pageIndex + 1}
@@ -608,7 +585,7 @@ function MainTable({
           >
             {[10, 20, 30, 40, 50].map((pageSize) => (
               <option key={pageSize} value={pageSize}>
-                Show {pageSize}
+                Göster {pageSize}
               </option>
             ))}
           </select>

@@ -40,6 +40,7 @@ export async function fetchAPI(endpoint, method, data, header, accessToken) {
       log('API return 400', response);
     }
     return {
+      error: response,
       data: [],
       status: response?.status,
       response: response?.data,

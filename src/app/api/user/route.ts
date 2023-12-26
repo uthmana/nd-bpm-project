@@ -1,30 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-
 import prisma from '../../lib/db1';
+import { hash } from 'bcryptjs';
+import { checkUserRole } from 'utils/auth';
 
-export async function POST(req: Request) {
-  try {
-    const { name, email, password, roleId } = await req.json();
-    if (!name || !roleId || !email || !password) {
-      return NextResponse.json({ message: 'You are missing a required data' });
-    }
-    // const newUser: Partial<User> = await prisma.user.create({
-    //   data: {
-    //     name: name,
-    //     email: email,
-    //     password: password,
-    //   },
-    // });
-
-    return NextResponse.json({ message: `Created ${name} user` });
-  } catch (error) {
-    console.error('Error creating user:', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
-  }
-}
-
+//All users
 export async function GET(req: NextRequest) {
   try {
+    const allowedRoles = ['ADMIN'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+    }
+
     const users = await prisma.user.findMany();
     return NextResponse.json(users);
   } catch (error) {
@@ -33,36 +20,38 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function DELETE(req: Request) {
-  const { id }: Partial<User> = await req.json();
-
-  if (!id) return NextResponse.json({ message: 'User id required' });
-
-  const res = await prisma.user.delete({ where: { id } });
-  return NextResponse.json({ message: `User ${id} deleted` });
-}
-
+// Create user
 export async function PUT(req: Request) {
   try {
+    const allowedRoles = ['ADMIN'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+    }
+
     const result: User = await req.json();
-    if (!result.name || !result.roleId || !result.email || !result.password) {
+    if (!result.name || !result.email || !result.password) {
       return NextResponse.json({ message: 'You are missing a required data' });
     }
-    const { name, email, password, roleId, id } = result;
-    const newUser = await prisma.user.update({
-      where: {
-        id: id,
-      },
+    const { name, role, status, email, password } = result;
+    const hashed_password = await hash(password, 12);
+    const user = await prisma.user.create({
       data: {
         name,
-        email,
-        password,
+        role,
+        status,
+        email: email.toLowerCase(),
+        password: hashed_password,
       },
     });
-
-    return NextResponse.json({ message: `Updated ${name} user ` });
+    return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
-    console.error('Error updating user', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
+    if (error?.code === 'P2002') {
+      return NextResponse.json(
+        { error: 'Email already Exit' },
+        { status: 404 },
+      );
+    }
+    return NextResponse.json({ error: 'Error ocured while creating user' });
   }
 }

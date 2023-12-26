@@ -7,80 +7,29 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
-model Todo {
-  id        String   @id @default(uuid())
-  title     String
-  complete  Boolean
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
+
+
+
+
 
 model User {
-  id            String       @id @default(uuid())
-  name          String
-  email         String?      @unique
-  password      String?
-  role          UserRole     @default(NORMAL)
-  status        UserStatus   @default(ACTIVE) // Set the default status to "ACTIVE"
-  address       Address? // Added address field
-  contactInfo   ContactInfo? // Added contactInfo field
-  emailVerified DateTime?    @map("email_verified")
-  image         String?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  accounts      Account[]
-  sessions      Session[]
-  userType      UserType?    @default(CUSTOMER) // Added userType field
+  id          String       @id @default(uuid())
+  name        String
+  email       String?      @unique
+  password    String
+  role        String       @default("NORMAL")
+  token       String?
+  status      String       @default("ACTIVE")
+  address     Address? // Added address field
+  contactInfo ContactInfo? // Added contactInfo field
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   @@map("users")
-}
-
-model Account {
-  id                String   @id @default(cuid())
-  userId            String   @map("user_id")
-  type              String?
-  provider          String
-  providerAccountId String   @map("provider_account_id")
-  token_type        String?
-  refresh_token     String?  @db.Text
-  access_token      String?  @db.Text
-  expires_at        Int?
-  scope             String?
-  id_token          String?  @db.Text
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-  @@map("accounts")
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  userId       String?  @map("user_id")
-  sessionToken String   @unique @map("session_token") @db.Text
-  accessToken  String?  @map("access_token") @db.Text
-  expires      DateTime
-  user         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  @@map("sessions")
-}
-
-model VerificationRequest {
-  id         String   @id @default(cuid())
-  identifier String
-  token      String   @unique
-  expires    DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  @@unique([identifier, token])
 }
 
 enum UserRole {
@@ -88,14 +37,11 @@ enum UserRole {
   SUPER
   NORMAL
   TECH
-  // Add more roles as needed
 }
 
 enum UserStatus {
   ACTIVE
-  INACTIVE
-  PENDING
-  // Add more statuses as needed
+  PASSIVE
 }
 
 model Address {
@@ -116,19 +62,45 @@ model ContactInfo {
   userId String @unique @default(cuid())
 }
 
-enum UserType {
-  CUSTOMER
-  NON_CUSTOMER
-  // Add more user types as needed
+model Customer {
+  id           String    @id @default(uuid())
+  name         String
+  email        String?   @unique
+  password     String?
+  PostalCode   String?
+  address      String?
+  phoneNumber  String?
+  phoneNumber2 String?
+  code         String?
+  definition   String?
+  taxNo        String?
+  tax_Office   String?
+  currency     Currency? @default(TL)
+  cardType     CardType? @default(ALICI_SATICI)
 }
 
-model Customer {
-  id          String   @id @default(uuid())
-  name        String
-  email       String?  @unique
-  password    String?
-  roleId      UserRole @default(NORMAL)
-  PostalCode  String?
-  address     String?
-  phoneNumber String?
+model Offer {
+  id         String      @id @default(uuid())
+  name       String
+  createdAt  DateTime    @default(now())
+  status     OfferStatus @default(PENDING)
+  customerId String
+}
+
+enum OfferStatus {
+  SENT
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum Currency {
+  TL
+  USD
+}
+
+enum CardType {
+  ALICI_SATICI
+  ALICI
+  SATICI
 }

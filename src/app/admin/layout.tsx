@@ -15,6 +15,7 @@ import Sidebar from 'components/sidebar';
 import Footer from 'components/footer/Footer';
 import Breadcrump from 'components/breadcrumb';
 import { useSession } from 'next-auth/react';
+import { ToastContainer } from 'react-toastify';
 
 export default function Admin({ children }: { children: React.ReactNode }) {
   // states and functions
@@ -72,6 +73,7 @@ export default function Admin({ children }: { children: React.ReactNode }) {
           </div>
         </main>
       </div>
+      <ToastContainer position="bottom-right" theme="colored" />
     </div>
   );
 }
