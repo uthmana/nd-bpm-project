@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
-//import crypto from 'crypto';
 import { hash } from 'bcryptjs';
 import prisma from 'app/lib/db1';
-// eslint-disable-next-line no-use-before-define
-import crypto from 'node:crypto';
+
 
 const secretKey = process.env.CHANGE_PASSWORD_SECRET;
 const validityMinutes = process.env.CHANGE_PASSWORD_SESSION_TIME;
