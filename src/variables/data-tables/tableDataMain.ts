@@ -4,7 +4,7 @@ type UserObj = {
   email: string;
   password: string;
   role: string;
-  status: boolean;
+  status: string;
   date: string;
   edit: string;
   delete: string;
@@ -42,7 +42,7 @@ export const userTableData: UserObj[] = [
     email: 'example@mail.com',
     password: 'Password',
     role: 'Admin',
-    status: true,
+    status: 'ACTIVE',
     date: '12/12/2023',
     edit: '1',
     delete: '1',
@@ -53,7 +53,7 @@ export const userTableData: UserObj[] = [
     email: 'example@mail.com',
     password: 'Password',
     role: 'super',
-    status: true,
+    status: 'ACTIVE',
     date: '12/12/2023',
     edit: '2',
     delete: '2',
@@ -64,7 +64,7 @@ export const userTableData: UserObj[] = [
     email: 'example@mail.com',
     password: 'Password',
     role: 'normal',
-    status: true,
+    status: 'ACTIVE',
     date: '12/12/2023',
     edit: '3',
     delete: '3',
@@ -75,7 +75,7 @@ export const userTableData: UserObj[] = [
     email: 'example@mail.com',
     password: 'Password',
     role: 'tech',
-    status: true,
+    status: 'ACTIVE',
     date: '12/12/2023',
     edit: '4',
     delete: '4',

@@ -34,7 +34,7 @@ const Search = ({ extra, onSubmit, onChange, debounce = 500 }: Search) => {
         type="text"
         onKeyUp={(e) => onChange(searchText)}
         onChange={(e) => setSearchText(e.target.value)}
-        placeholder="Search..."
+        placeholder="Arama..."
         className="block h-full w-full rounded-full bg-lightPrimary text-sm font-medium text-navy-700 outline-none placeholder:!text-gray-400 dark:bg-navy-900 dark:text-white dark:placeholder:!text-white sm:w-fit"
       />
     </form>

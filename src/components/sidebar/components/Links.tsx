@@ -41,7 +41,10 @@ export const SidebarLinks = ({ routes }): JSX.Element => {
 
   const createLinks = (routes: RoutesType[], user: user) => {
     return routes.map((route, index) => {
-      if (route.role === 'admin' && user?.role !== 'admin') {
+      if (
+        route.role === 'admin' &&
+        user?.role?.toLocaleLowerCase() !== 'admin'
+      ) {
         return null;
       }
 

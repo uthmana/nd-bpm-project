@@ -29,14 +29,14 @@ export async function POST(request: Request) {
         },
       });
 
-      await tx.account.create({
-        data: {
-          userId: id,
-          type: 'credentials',
-          provider: 'credentials',
-          providerAccountId: id,
-        },
-      });
+      // await tx.account.create({
+      //   data: {
+      //     userId: id,
+      //     type: 'credentials',
+      //     provider: 'credentials',
+      //     providerAccountId: id,
+      //   },
+      // });
 
       await tx.customer.create({
         data: {

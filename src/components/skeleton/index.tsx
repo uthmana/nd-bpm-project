@@ -64,7 +64,6 @@ export function LatestInvoicesSkeleton() {
     <div
       className={`${shimmer} relative flex w-full flex-col overflow-hidden md:col-span-4`}
     >
-      <div className="mb-4 h-8 w-36 rounded-md bg-gray-100" />
       <div className="flex grow flex-col justify-between rounded-xl bg-gray-100 p-4">
         <div className="bg-white px-6">
           <InvoiceSkeleton />
@@ -213,6 +212,16 @@ export function InvoicesTableSkeleton() {
           </table>
         </div>
       </div>
+    </div>
+  );
+}
+
+export function UserFormSkeleton() {
+  return (
+    <div className="w-full">
+      <InvoicesMobileSkeleton />
+      <InvoicesMobileSkeleton />
+      <InvoicesMobileSkeleton />
     </div>
   );
 }

@@ -9,7 +9,7 @@ import { MdOutlineArrowBack } from 'react-icons/md';
 import { log } from 'utils';
 
 type data = {
-  username: string;
+  name: string;
   email: string;
   password: string;
   role: string;
@@ -20,34 +20,45 @@ type userForm = {
   onSubmit: (e: any) => void;
   data?: data;
   title?: string;
+  loading: boolean;
 };
 
-export default function User({ onSubmit, data, title }: userForm) {
+export default function User({ onSubmit, data, title, loading }: userForm) {
+  const role = ['ADMIN', 'SUPER', 'NORMAL', 'TECH'];
+  const status = ['ACTIVE', 'PASSIVE'];
+  const [error, setError] = useState(false);
+
   const initialValues = data
     ? data
-    : { username: '', email: '', password: '', role: '', status: '' };
+    : { name: '', email: '', password: '', role: 'ACTIVE', status: 'NORMAL' };
   const [values, setValues] = useState(initialValues);
 
-  //TODO: add input validation
   const handleValues = (event) => {
+    setError(false);
     const newVal = { [event.target?.name]: event.target?.value };
     setValues({ ...values, ...newVal });
-    log(values);
   };
 
-  const role = ['Admin', 'Super', 'Normal', 'Tech'];
-  const status = ['Active', 'Passive'];
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const { name, email, password } = values;
+    if (!name || !email || !password) {
+      setError(true);
+      return;
+    }
+    onSubmit(values);
+  };
 
   return (
     <form
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
       className="mx-auto w-full max-w-[400px] rounded-[20px] bg-white p-5 dark:bg-opacity-10"
     >
       <NextLink href="/admin/users" className="flex items-center gap-2 text-sm">
         <span>
           <MdOutlineArrowBack />
         </span>
-        Back to Users
+        Geri
       </NextLink>
 
       {title ? (
@@ -56,18 +67,24 @@ export default function User({ onSubmit, data, title }: userForm) {
         </h1>
       ) : null}
 
+      {error ? (
+        <p className="mb-3 w-full rounded-md bg-red-500 p-2 text-center text-sm  font-bold text-white">
+          Lütfen boş alanları doldurun !
+        </p>
+      ) : null}
+
       <InputField
-        label="Username"
+        label="Ad Soyad"
         onChange={handleValues}
         type="text"
-        id="username"
-        name="username"
-        placeholder="Username"
+        id="name"
+        name="name"
+        placeholder="Ad Soyad"
         extra="mb-2"
-        value={values.username}
+        value={values.name}
       />
       <InputField
-        label="Email"
+        label="E-posta"
         onChange={handleValues}
         type="email"
         id="email"
@@ -77,22 +94,22 @@ export default function User({ onSubmit, data, title }: userForm) {
         value={values.email}
       />
       <InputField
-        label="Password"
+        label="Şifre"
         onChange={handleValues}
         type="text"
         id="password"
         name="password"
-        placeholder="Password"
+        placeholder="Şifre"
         extra="mb-2"
         value={values.password}
       />
-      <Select extra="mb-2" label="Role" onChange={handleValues} name="role">
+      <Select extra="mb-2" label="Rol" onChange={handleValues} name="role">
         {role.map((item, idx) => {
           return (
             <option
               value={item}
               key={idx}
-              selected={data && data?.role === item}
+              selected={data ? data?.role === item : idx === 0}
             >
               {item}
             </option>
@@ -100,20 +117,20 @@ export default function User({ onSubmit, data, title }: userForm) {
         })}
       </Select>
 
-      <Select extra="mb-2" label="Status" onChange={handleValues} name="status">
+      <Select extra="mb-2" label="Durum" onChange={handleValues} name="status">
         {status.map((item, idx) => {
           return (
             <option
               value={item}
               key={idx}
-              selected={data && data?.status === item}
+              selected={data ? data?.status === item : idx === 0}
             >
               {item}
             </option>
           );
         })}
       </Select>
-      <Button extra="mt-4" text="SAVE" />
+      <Button loading={loading} extra="mt-4" text="SAVE" />
     </form>
   );
 }
