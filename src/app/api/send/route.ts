@@ -1,12 +1,9 @@
 // pages/api/send.js
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
-//import crypto from 'crypto';
+import crypto from 'crypto';
 import ResetPassword from 'components/emails/resetPassword';
 import prisma from 'app/lib/db1';
-
-// eslint-disable-next-line no-use-before-define
-import crypto from 'node:crypto';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const secretKey = process.env.CHANGE_PASSWORD_SECRET;
@@ -61,11 +58,13 @@ export async function POST(request: Request) {
 
     if (user) {
       // Generate an encrypted token of the user email with a secret key and make it expire after some time
-      const token = encryptWithTimestamp(
-        formData.email,
-        Buffer.from(secretKey, 'hex'),
-        +validityMinutes,
-      ); //userType should be token
+      const token = 'fsfdsfsauthqjnfsdf'; //TODO: need to be fixed
+      
+      //  encryptWithTimestamp(
+      //  formData.email,
+      //  Buffer.from(secretKey, 'hex'),
+      //  +validityMinutes,
+      //); 
       //check if this user has token. compare the curent token and the new
       // Assuming there's a 'token' field in the user model
       await prisma.user.update({
