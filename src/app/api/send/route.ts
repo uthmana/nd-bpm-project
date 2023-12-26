@@ -24,7 +24,9 @@ function encryptWithTimestamp(
 
   const dataToEncrypt = JSON.stringify({ text, timestamp, expirationTime });
 
+  // eslint-disable-next-line no-use-before-define
   let encrypted = cipher.update(dataToEncrypt, 'utf-8', 'hex');
+  // eslint-disable-next-line no-use-before-define
   encrypted += cipher.final('hex');
 
   // Include the IV in the result
