@@ -8,18 +8,15 @@ import crypto from 'node:crypto';
 const secretKey = process.env.CHANGE_PASSWORD_SECRET;
 const validityMinutes = process.env.CHANGE_PASSWORD_SESSION_TIME;
 
-function decryptWithTimestamp(encryptedData: string, key: Buffer): string {
+/*function decryptWithTimestamp(encryptedData: string, key: Buffer): string {
   const [encrypted, ivHex] = encryptedData.split(':');
   const iv = Buffer.from(ivHex, 'hex');
 
   const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
-  // eslint-disable-next-line no-use-before-define
   let decrypted = decipher.update(encrypted, 'hex', 'utf-8');
-  // eslint-disable-next-line no-use-before-define
   decrypted += decipher.final('utf-8');
-
   const decryptedObject = JSON.parse(decrypted);
-
+  
   // Verify timestamp or expiration time
   const currentTimestamp = Date.now();
   if (
@@ -30,7 +27,7 @@ function decryptWithTimestamp(encryptedData: string, key: Buffer): string {
   }
 
   return decryptedObject.text;
-}
+}*/
 
 export async function POST(req: Request) {
   const body = await req.json();
