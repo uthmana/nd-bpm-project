@@ -1,9 +1,12 @@
 // pages/api/send.js
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
-import crypto from 'crypto';
+//import crypto from 'crypto';
 import ResetPassword from 'components/emails/resetPassword';
 import prisma from 'app/lib/db1';
+
+// eslint-disable-next-line no-use-before-define
+import crypto from 'node:crypto';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const secretKey = process.env.CHANGE_PASSWORD_SECRET;
@@ -24,9 +27,7 @@ function encryptWithTimestamp(
 
   const dataToEncrypt = JSON.stringify({ text, timestamp, expirationTime });
 
-  // eslint-disable-next-line no-use-before-define
   let encrypted = cipher.update(dataToEncrypt, 'utf-8', 'hex');
-  // eslint-disable-next-line no-use-before-define
   encrypted += cipher.final('hex');
 
   // Include the IV in the result
