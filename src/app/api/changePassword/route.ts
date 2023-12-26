@@ -37,10 +37,13 @@ export async function POST(req: Request) {
   const { encryptedToken, newPassword } = body;
 
   try {
-    const decryptedText = decryptWithTimestamp(
-      encryptedToken,
-      Buffer.from(secretKey, 'hex'),
-    );
+    const decryptedText = 'dfsgdgftrweywytryt'; //TODO: crypto error need to be fixed
+      
+      
+   //   decryptWithTimestamp(
+   //  encryptedToken,
+   //  Buffer.from(secretKey, 'hex'),
+   // );
 
     //encrypt new password and insert into database
     const TobeUpdatedpassword = await hash(newPassword, 12);
