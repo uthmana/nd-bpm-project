@@ -1,7 +1,6 @@
 // pages/api/send.js
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
-import crypto from 'crypto';
 import ResetPassword from 'components/emails/resetPassword';
 import prisma from 'app/lib/db1';
 
@@ -9,7 +8,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const secretKey = process.env.CHANGE_PASSWORD_SECRET;
 const validityMinutes = process.env.CHANGE_PASSWORD_SESSION_TIME;
 
-function encryptWithTimestamp(
+/*function encryptWithTimestamp(
   text: string,
   secret: Buffer,
   validityMinutes: number,
@@ -30,7 +29,7 @@ function encryptWithTimestamp(
   // Include the IV in the result
   const result = `${encrypted}:${iv.toString('hex')}`;
   return result;
-}
+}*/
 
 export async function POST(request: Request) {
   const formData = await request.json();
