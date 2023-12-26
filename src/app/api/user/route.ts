@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../lib/db1';
 import { hash } from 'bcryptjs';
-import { Prisma } from '@prisma/client';
+import { checkUserRole } from 'utils/auth';
 
 //All users
 export async function GET(req: NextRequest) {
   try {
+    const allowedRoles = ['ADMIN'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+    }
+
     const users = await prisma.user.findMany();
     return NextResponse.json(users);
   } catch (error) {
@@ -17,6 +23,12 @@ export async function GET(req: NextRequest) {
 // Create user
 export async function PUT(req: Request) {
   try {
+    const allowedRoles = ['ADMIN'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+    }
+
     const result: User = await req.json();
     if (!result.name || !result.email || !result.password) {
       return NextResponse.json({ message: 'You are missing a required data' });

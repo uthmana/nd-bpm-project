@@ -30,7 +30,7 @@ export default function User({ onSubmit, data, title, loading }: userForm) {
 
   const initialValues = data
     ? data
-    : { name: '', email: '', password: '', role: 'ACTIVE', status: 'NORMAL' };
+    : { name: '', email: '', password: '', role: 'NORMAL', status: 'ACTIVE' };
   const [values, setValues] = useState(initialValues);
 
   const handleValues = (event) => {

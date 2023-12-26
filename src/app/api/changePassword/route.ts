@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { hash } from 'bcryptjs';
+import prisma from 'app/lib/db1';
 
 const secretKey = process.env.CHANGE_PASSWORD_SECRET;
 const validityMinutes = process.env.CHANGE_PASSWORD_SESSION_TIME;
-
 
 function decryptWithTimestamp(encryptedData: string, key: Buffer): string {
   const [encrypted, ivHex] = encryptedData.split(':');
@@ -18,7 +18,10 @@ function decryptWithTimestamp(encryptedData: string, key: Buffer): string {
 
   // Verify timestamp or expiration time
   const currentTimestamp = Date.now();
-  if (decryptedObject.expirationTime && currentTimestamp > decryptedObject.expirationTime) {
+  if (
+    decryptedObject.expirationTime &&
+    currentTimestamp > decryptedObject.expirationTime
+  ) {
     throw new Error('Time expired has expired');
   }
 
@@ -30,28 +33,28 @@ export async function POST(req: Request) {
   const { encryptedToken, newPassword } = body;
 
   try {
-    const decryptedText = decryptWithTimestamp(encryptedToken, Buffer.from(secretKey, 'hex'));
-    
+    const decryptedText = decryptWithTimestamp(
+      encryptedToken,
+      Buffer.from(secretKey, 'hex'),
+    );
+
     //encrypt new password and insert into database
-    const password = await hash(newPassword, 12);
+    const TobeUpdatedpassword = await hash(newPassword, 12);
 
     //update password of user with the token decrypted
-
-    //  await prisma.session.update({
-    //     where: { name: decryptedText },
-    //     data: { password },
-    //   });
-
-    NextResponse.json(
+    await prisma.user.update({
+      where: { email: decryptedText },
+      data: { password: TobeUpdatedpassword },
+    });
+    return NextResponse.json(
       { message: 'Password Changed :)' },
       { status: 200 },
-      );
+    );
   } catch (error) {
     console.error('Decryption Error:', error.message);
-    NextResponse.json(
+    return NextResponse.json(
       { error: 'Decryption failed or data has expired' },
-      { status: 500 },
-      );
+      { status: 401 },
+    );
   }
-
 }

@@ -17,7 +17,7 @@ export default function ResetPassword({ token }) {
         <a
           className="!w-max !rounded-xl !bg-brand-500 !px-6 !py-3 !text-base !font-medium"
           target="_blank"
-          href={`https://nd-bpm-project.vercel.app/auth/change-password?${token}`}
+          href={`https://nd-bpm-project.vercel.app/auth/change-password?token=${token}`}
         >
           Şifre Sıfırla
         </a>

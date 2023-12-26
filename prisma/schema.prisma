@@ -10,20 +10,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Todo {
-  id        String   @id @default(uuid())
-  title     String
-  complete  Boolean
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model User {
   id          String       @id @default(uuid())
   name        String
   email       String?      @unique
   password    String
   role        String       @default("NORMAL")
+  token       String?
   status      String       @default("ACTIVE")
   address     Address? // Added address field
   contactInfo ContactInfo? // Added contactInfo field
@@ -38,14 +31,11 @@ enum UserRole {
   SUPER
   NORMAL
   TECH
-  // Add more roles as needed
 }
 
 enum UserStatus {
   ACTIVE
-  INACTIVE
-  PENDING
-  // Add more statuses as needed
+  PASSIVE
 }
 
 model Address {
@@ -67,12 +57,44 @@ model ContactInfo {
 }
 
 model Customer {
-  id          String   @id @default(uuid())
-  name        String
-  email       String?  @unique
-  password    String?
-  roleId      UserRole @default(NORMAL)
-  PostalCode  String?
-  address     String?
-  phoneNumber String?
+  id           String    @id @default(uuid())
+  name         String
+  email        String?   @unique
+  password     String?
+  PostalCode   String?
+  address      String?
+  phoneNumber  String?
+  phoneNumber2 String?
+  code         String?
+  definition   String?
+  taxNo        String?
+  tax_Office   String?
+  currency     Currency? @default(TL)
+  cardType     CardType? @default(ALICI_SATICI)
+}
+
+model Offer {
+  id         String      @id @default(uuid())
+  name       String
+  createdAt  DateTime    @default(now())
+  status     OfferStatus @default(PENDING)
+  customerId String
+}
+
+enum OfferStatus {
+  SENT
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum Currency {
+  TL
+  USD
+}
+
+enum CardType {
+  ALICI_SATICI
+  ALICI
+  SATICI
 }
