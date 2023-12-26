@@ -14,7 +14,7 @@ export default function Create() {
     const { status } = await register(val);
     if (status === 200) {
       router.push('/admin/users');
-      toast.error('Yeni kullanıncı başarılı ile oluşturuldu.');
+      toast.success('Yeni kullanıncı başarılı ile oluşturuldu.');
       setIsSubmitting(false);
       return;
     }

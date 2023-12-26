@@ -20,7 +20,7 @@ const Button = ({ extra, onClick, text, disabled, icon, loading }: Button) => {
         <img src="/img/others/loading.svg" />
       ) : (
         <div className="flex">
-          <span> {icon} </span> <span> {text}</span>
+          <span> {icon} </span> <span className="font-bold"> {text}</span>
         </div>
       )}
     </button>

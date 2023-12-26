@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/db1';
 import { hash } from 'bcryptjs';
 
+//Get single user
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
   try {
     const id = route.params.id;
@@ -16,6 +17,7 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
   }
 }
 
+//Update user
 export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
     const id = route.params.id;
@@ -47,6 +49,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   }
 }
 
+//Delete user
 export async function DELETE(
   req: NextRequest,
   route: { params: { id: string } },
