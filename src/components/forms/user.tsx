@@ -42,10 +42,16 @@ export default function User({ onSubmit, data, title, loading }: userForm) {
   const handleSubmit = (e) => {
     e.preventDefault();
     const { name, email, password } = values;
-    if (!name || !email || !password) {
+
+    if (!name || !email) {
       setError(true);
       return;
     }
+    if (!data && !password) {
+      setError(true);
+      return;
+    }
+
     onSubmit(values);
   };
 

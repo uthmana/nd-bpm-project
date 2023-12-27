@@ -8,34 +8,26 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  // provider  = "postgresql"
+  // url       = env("POSTGRES_PRISMA_URL") 
+  // directUrl = env("POSTGRES_URL_NON_POOLING") 
 }
 
 model User {
-  id          String       @id @default(uuid())
-  name        String
-  email       String?      @unique
-  password    String
-  role        String       @default("NORMAL")
-  token       String?
-  status      String       @default("ACTIVE")
-  address     Address? // Added address field
-  contactInfo ContactInfo? // Added contactInfo field
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id              String       @id @default(uuid())
+  name            String
+  email           String?      @unique
+  password        String
+  role            String       @default("NORMAL")
+  status          String       @default("ACTIVE")
+  address         Address? // Added address field
+  contactInfo     ContactInfo? // Added contactInfo field
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  token           String?      @unique
+  tokenExpiryDate DateTime?
 
   @@map("users")
-}
-
-enum UserRole {
-  ADMIN
-  SUPER
-  NORMAL
-  TECH
-}
-
-enum UserStatus {
-  ACTIVE
-  PASSIVE
 }
 
 model Address {
@@ -71,6 +63,23 @@ model Customer {
   tax_Office   String?
   currency     Currency? @default(TL)
   cardType     CardType? @default(ALICI_SATICI)
+  Offers       Offer[]
+}
+
+model Stock {
+  id              String  @id @default(uuid())
+  product_code    String
+  product_name    String
+  product_barcode String
+  description     String?
+  main_group      String?
+  group1          String?
+  group2          String?
+  inventory       Int
+  unit            String?
+  current_price   String
+  curency         String
+  brand           String?
 }
 
 model Offer {
@@ -79,6 +88,19 @@ model Offer {
   createdAt  DateTime    @default(now())
   status     OfferStatus @default(PENDING)
   customerId String
+  Customer   Customer    @relation(fields: [customerId], references: [id])
+}
+
+enum UserRole {
+  ADMIN
+  SUPER
+  NORMAL
+  TECH
+}
+
+enum UserStatus {
+  ACTIVE
+  PASSIVE
 }
 
 enum OfferStatus {

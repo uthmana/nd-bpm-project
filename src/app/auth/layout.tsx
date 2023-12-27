@@ -1,12 +1,11 @@
 'use client';
 import { PropsWithChildren } from 'react';
-
 // Chakra imports
-
 // Layout components
 import React from 'react';
 import { isWindowAvailable } from 'utils/navigation';
 import FixedPlugin from 'components/fixedPlugin/FixedPlugin';
+import { ToastContainer } from 'react-toastify';
 
 // Custom Chakra theme
 
@@ -23,6 +22,7 @@ export default function AuthLayout({ children }: AuthProps) {
           {children}
         </main>
       </div>
+      <ToastContainer position="top-left" theme="colored" />
     </div>
   );
 }

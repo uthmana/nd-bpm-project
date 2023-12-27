@@ -13,7 +13,9 @@ export async function POST(req: Request) {
       );
     }
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({
+      where: { email, status: 'ACTIVE' },
+    });
 
     if (user) {
       const passwordMatch = await compare(password, user.password);
@@ -36,7 +38,6 @@ export async function POST(req: Request) {
       );
     }
   } catch (error) {
-    console.error('Error during login:', error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 },

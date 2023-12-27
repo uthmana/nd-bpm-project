@@ -36,10 +36,23 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     const id = route.params.id;
     const result: User = await req.json();
     const { name, email, password, role, status } = result;
-    if (!result.name || !result.email || !result.password) {
+
+    if (!name || !email) {
       return NextResponse.json({ message: 'You are missing a required data' });
     }
-    const pwd = await hash(password, 12);
+    const user: Partial<User> = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return NextResponse.json({ message: 'User not found.' }, { status: 404 });
+    }
+
+    let pwd = user.password;
+    if (password) {
+      pwd = await hash(password, 12);
+    }
+
     const updateUser = await prisma.user.update({
       where: {
         id: id,

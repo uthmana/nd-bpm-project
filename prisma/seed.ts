@@ -2,11 +2,18 @@ import prisma from 'app/lib/db1';
 import { users } from './user';
 
 async function main() {
-  for (let user in users) {
+  for (let i = 0; i < users.length; i++) {
     await prisma.user.upsert({
-      where: { email: 'admin@mail.com' },
-      update: {},
-      create: { ...(user as any), address: {}, contactInfo: {} },
+      where: { email: users[i].email },
+      update: { email: users[i].email },
+      create: {
+        name: users[i].name,
+        password: users[i].password,
+        role: users[i].role,
+        email: users[i].email,
+        address: {},
+        contactInfo: {},
+      },
     });
   }
 }
