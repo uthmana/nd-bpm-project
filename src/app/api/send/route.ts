@@ -3,7 +3,7 @@ import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import ResetPassword from 'components/emails/resetPassword';
-import prisma from 'app/lib/db1';
+import prisma from 'app/lib/db';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 

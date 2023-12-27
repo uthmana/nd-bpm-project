@@ -1,5 +1,5 @@
-import prisma from 'app/lib/db1';
-import { users } from './user';
+import prisma from 'app/lib/db';
+import { users } from './users';
 
 async function main() {
   for (let i = 0; i < users.length; i++) {
