@@ -58,17 +58,17 @@ export async function POST(request: Request) {
     if (user) {
       // Generate an encrypted token of the user email with a secret key and make it expire after some time
       const token = 'fsfdsfsauthqjnfsdf'; //TODO: need to be fixed
-      
+
       //  encryptWithTimestamp(
       //  formData.email,
       //  Buffer.from(secretKey, 'hex'),
       //  +validityMinutes,
-      //); 
+      //);
       //check if this user has token. compare the curent token and the new
       // Assuming there's a 'token' field in the user model
       await prisma.user.update({
         where: { email: formData.email },
-        data: { token }, //we need to create a field token to store this value instead of name.
+        data: { token: token }, //we need to create a field token to store this value instead of name.
       });
       emailBody.react = ResetPassword({ token: token });
       const { data, error } = await resend.emails.send(emailBody);
