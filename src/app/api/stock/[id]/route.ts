@@ -49,7 +49,6 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       },
       data: {
         ...result,
-        updatedAt: new Date(),
       },
     });
     if (!updateStock) {
