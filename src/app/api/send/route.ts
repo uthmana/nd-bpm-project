@@ -1,9 +1,9 @@
 // pages/api/send.js
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
-import crypto from 'crypto';
 import ResetPassword from 'components/emails/resetPassword';
 import prisma from 'app/lib/db';
+import crypto from 'crypto';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
 
     await prisma.user.update({
       where: { email: formData.email },
-      data: { token: resetPasswordToken, tokenExpiryDate }, //we need to create a field token to store this value instead of name.
+      data: { token: resetPasswordToken, tokenExpiryDate },
     });
 
     emailBody.react = ResetPassword({ token: resetPasswordToken });
