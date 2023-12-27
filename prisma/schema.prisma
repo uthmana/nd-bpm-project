@@ -60,6 +60,7 @@ model Customer {
   currency     Currency? @default(TL)
   cardType     CardType? @default(ALICI_SATICI)
   Offers       Offer[]
+  @@map("customers")
 }
 
 model Stock {
