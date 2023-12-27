@@ -39,16 +39,19 @@ type CustomerObj = {
 };
 
 type StockObj = {
-  id: string;
+  product_code: string;
   product_name: string;
-  stock_location: string;
-  quantity: string;
-  price: string;
+  product_barcode: string;
+  inventory: number;
+  current_price: string;
   description: string;
+  main_group: string;
+  group1: string;
+  group2: string;
+  brand: string;
+  unit: string;
+  curency: string;
   date: string;
-  vendor: string;
-  edit: string;
-  delete: string;
 };
 
 type MainTable = {
@@ -198,11 +201,11 @@ function MainTable({
         break;
       case 'stock':
         col = [
-          columnHelper.accessor('id', {
-            id: 'id',
+          columnHelper.accessor('product_code', {
+            id: 'product_code',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
-                ID
+                Ürün Kodu
               </p>
             ),
             cell: (info: any) => (
@@ -215,7 +218,7 @@ function MainTable({
             id: 'product_name',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
-                PRODUCT NAME
+                Ürün Adı
               </p>
             ),
             cell: (info: any) => (
@@ -224,11 +227,11 @@ function MainTable({
               </p>
             ),
           }),
-          columnHelper.accessor('stock_location', {
-            id: 'stock_location',
+          columnHelper.accessor('product_barcode', {
+            id: 'product_barcode',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
-                LOCATION
+                Ürün Barkodu
               </p>
             ),
             cell: (info: any) => (
@@ -237,30 +240,89 @@ function MainTable({
               </p>
             ),
           }),
-          columnHelper.accessor('quantity', {
-            id: 'quantity',
+          columnHelper.accessor('inventory', {
+            id: 'inventory',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
-                QUANTITY
+                Envanter
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('unit', {
+            id: 'unit',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                Birim
               </p>
             ),
             cell: (info: any) => (
               <p className="flex text-sm font-bold text-navy-700 dark:text-white">
                 {info.getValue()}
-
-                {info.getValue() < 5 ? (
-                  <IoMdArrowDown className="h-5 w-5 text-red-500" />
-                ) : (
-                  <IoMdArrowUp className="h-5 w-5 text-green-500" />
-                )}
               </p>
             ),
           }),
-          columnHelper.accessor('price', {
-            id: 'price',
+          columnHelper.accessor('current_price', {
+            id: 'current_price',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
-                PRICE
+                Anlık Maliyet Fıyati
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('curency', {
+            id: 'curency',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                Para Birimi
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('main_group', {
+            id: 'main_group',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                Ana Grubu
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('group1', {
+            id: 'group1',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                Grub 1
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('group2', {
+            id: 'group2',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                Grub 2
               </p>
             ),
             cell: (info: any) => (
@@ -273,7 +335,7 @@ function MainTable({
             id: 'description',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
-                DESCRIPTION
+                Açıklama
               </p>
             ),
             cell: (info: any) => (
@@ -286,7 +348,7 @@ function MainTable({
             id: 'date',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
-                DATE
+                Tarih
               </p>
             ),
             cell: (info: any) => (
@@ -295,11 +357,11 @@ function MainTable({
               </p>
             ),
           }),
-          columnHelper.accessor('vendor', {
-            id: 'vendor',
+          columnHelper.accessor('brand', {
+            id: 'brand',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
-                VENDOR
+                Marka
               </p>
             ),
             cell: (info: any) => (
@@ -308,8 +370,8 @@ function MainTable({
               </p>
             ),
           }),
-          columnHelper.accessor('edit', {
-            id: 'edit',
+          columnHelper.accessor('id', {
+            id: 'id',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
                 EDIT
@@ -321,8 +383,8 @@ function MainTable({
               </button>
             ),
           }),
-          columnHelper.accessor('delete', {
-            id: 'delete',
+          columnHelper.accessor('id', {
+            id: 'id',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
                 DELETE

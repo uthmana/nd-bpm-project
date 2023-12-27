@@ -63,19 +63,21 @@ model Customer {
 }
 
 model Stock {
-  id              String  @id @default(uuid())
+  id              String    @id @default(uuid())
   product_code    String
   product_name    String
-  product_barcode String
+  product_barcode String?
   description     String?
   main_group      String?
   group1          String?
   group2          String?
-  inventory       Int
+  inventory       Int?
   unit            String?
   current_price   String
   curency         String
   brand           String?
+  date            DateTime? @default(now())
+  updatedAt       DateTime? @updatedAt
 }
 
 model Offer {

@@ -11,9 +11,11 @@ export async function GET(req: NextRequest) {
     if (!hasrole) {
       return NextResponse.json({ error: 'Access forbidden', status: 403 });
     }
-
     const users = await prisma.user.findMany();
-    return NextResponse.json(users);
+    if (!users) {
+      throw new Error('User not found');
+    }
+    return NextResponse.json(users, { status: 200 });
   } catch (error) {
     console.error('Error fetching users:', error);
     return NextResponse.json({ error: 'Internal Server Error' });

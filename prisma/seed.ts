@@ -13,6 +13,7 @@ async function main() {
         email: users[i].email,
         address: {},
         contactInfo: {},
+        createdAt: new Date(),
       },
     });
   }

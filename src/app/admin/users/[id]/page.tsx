@@ -38,10 +38,10 @@ export default function Edit() {
     if (status === 200) {
       toast.success('Kullanıcı güncelleme başarılı.');
       router.push('/admin/users');
-      setIsSubmitting(true);
+      setIsSubmitting(false);
       return;
     }
-    setIsSubmitting(true);
+    setIsSubmitting(false);
     toast.error('Kullanıcı güncelleme başarısız.');
   };
 

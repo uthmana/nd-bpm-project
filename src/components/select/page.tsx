@@ -8,14 +8,14 @@ const Select = ({ name, onChange, children, label, extra }) => {
       <div className="w-full">
         <label
           htmlFor={name}
-          className={`ml-2 text-sm font-bold
+          className={`mb-3 ml-2 text-sm font-bold
           text-navy-700 dark:text-white 
         `}
         >
           {label}
         </label>
         <select
-          className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none dark:text-white`}
+          className={`flex h-[40px] w-full items-center justify-center rounded-xl border bg-white/0  text-sm outline-none dark:text-white`}
           name={name}
           onChange={onChange}
         >

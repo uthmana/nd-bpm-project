@@ -19,7 +19,6 @@ export default function Create() {
       return;
     }
     toast.error('E-post zatan var, başka bir e-posta ile deneyin!.');
-    alert('Email Already Exist');
     setIsSubmitting(false);
   };
 

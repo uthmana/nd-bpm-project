@@ -1,34 +1,63 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import StockForm from 'components/forms/stock';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { log } from 'utils';
+import { toast } from 'react-toastify';
+import { getStockById, updateStock } from 'app/lib/apiRequest';
+import { UserFormSkeleton } from 'components/skeleton';
 
 export default function Edit() {
   const router = useRouter();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    log(e);
-    router.push('/admin/stock');
-  };
+  const queryParams = useParams();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [stock, setStock] = useState([]);
 
-  const data = {
-    id: '1',
-    product_name: 'Boru',
-    stock_location: 'Murat',
-    quantity: 3,
-    price: '100',
-    description: '+111 111 111 11',
-    date: '12/12/2023',
-    vendor: 'koçtaş',
-    edit: '1',
-    delete: '1',
+  useEffect(() => {
+    const getSingleStock = async () => {
+      setIsSubmitting(true);
+      const { status, data } = await getStockById(queryParams.id);
+      if (status === 200) {
+        setStock(data);
+        setIsSubmitting(false);
+        return;
+      }
+      setIsSubmitting(false);
+    };
+    if (queryParams.id) {
+      getSingleStock();
+    }
+  }, [queryParams?.id]);
+
+  const handleSubmit = async (val) => {
+    setIsSubmitting(true);
+    if (!val) return;
+    const { status, data } = await updateStock({ ...val, id: queryParams?.id });
+    if (status === 200) {
+      toast.success('Ürün güncelleme başarılı.');
+      router.push('/admin/stock');
+      setIsSubmitting(false);
+      return;
+    }
+    setIsSubmitting(false);
+    toast.error('Ürün güncelleme başarısız.');
   };
 
   return (
     <div className="mt-12">
-      <StockForm title="Edit Stock" onSubmit={handleSubmit} data={data} />
+      {stock.length === 0 ? (
+        <div className="mx-auto max-w-[600px]">
+          <UserFormSkeleton />
+        </div>
+      ) : (
+        <StockForm
+          title="Stok Düzenle"
+          onSubmit={(val) => handleSubmit(val)}
+          data={stock as any}
+          loading={isSubmitting}
+        />
+      )}
     </div>
   );
 }

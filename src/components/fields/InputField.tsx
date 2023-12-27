@@ -16,6 +16,7 @@ function InputField(props: {
   onChange?: any;
   value?: string;
   length?: number;
+  min?: number;
 }) {
   const {
     label,
@@ -31,6 +32,7 @@ function InputField(props: {
     required,
     value,
     length,
+    min = 1,
   } = props;
 
   const inputElem = useRef(null);
@@ -63,7 +65,7 @@ function InputField(props: {
         name={name}
         required={required}
         placeholder={placeholder}
-        min="0"
+        min={min}
         maxLength={length}
         className={`text-bold mt-1 flex h-10 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${
           disabled === true
