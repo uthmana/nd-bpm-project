@@ -1,4 +1,4 @@
-// pages/api/send.js
+
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
 import ResetPassword from 'components/emails/resetPassword';
@@ -40,6 +40,7 @@ export async function POST(request: Request) {
       today.getTime() +
         parseInt(process.env.CHANGE_PASSWORD_EXPIRY_TIME) * 60000,
     );
+
 
     await prisma.user.update({
       where: { email: formData.email },
