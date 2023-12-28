@@ -52,7 +52,6 @@ export default function Stock(props: {
   const [values, setValues] = useState(initialValues);
   const [error, setError] = useState(false);
 
-  //TODO: add input validation
   const handleValues = (event) => {
     setError(false);
     const newVal = { [event.target?.name]: event.target?.value };
@@ -74,7 +73,10 @@ export default function Stock(props: {
       onSubmit={handleSubmit}
       className="mx-auto w-full max-w-[580px] rounded-[20px] bg-white p-5 dark:bg-opacity-10"
     >
-      <NextLink href="/admin/stock" className="flex items-center gap-2 text-sm">
+      <NextLink
+        href="/admin/stock"
+        className="flex items-center gap-2 text-sm dark:text-white"
+      >
         <span>
           <MdOutlineArrowBack />
         </span>
@@ -208,7 +210,7 @@ export default function Stock(props: {
           value={values.current_price}
         />
         <Select
-          extra="w-[160px] pt-1"
+          extra="w-[20%] pt-1"
           label="Para Birimi"
           onChange={handleValues}
           name="curency"

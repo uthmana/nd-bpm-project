@@ -65,7 +65,7 @@ export default function Customer({ onSubmit, data, title }: userForm) {
     >
       <NextLink
         href="/admin/customer"
-        className="flex items-center gap-2 text-sm"
+        className="flex items-center gap-2 text-sm dark:text-white"
       >
         <span>
           <MdOutlineArrowBack />

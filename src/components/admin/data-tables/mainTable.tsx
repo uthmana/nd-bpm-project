@@ -179,8 +179,11 @@ function MainTable({
               </p>
             ),
             cell: (info) => (
-              <button onClick={() => onEdit(info.getValue())}>
-                <MdModeEdit className="h-5 w-5" />
+              <button
+                className="ml-3 rounded-md bg-green-600 px-3 py-2 hover:bg-green-700"
+                onClick={() => onEdit(info.getValue())}
+              >
+                <MdModeEdit className="h-5 w-5 text-white" />
               </button>
             ),
           }),
@@ -192,8 +195,11 @@ function MainTable({
               </p>
             ),
             cell: (info) => (
-              <button onClick={() => onDelete(info.getValue())}>
-                <MdOutlineDelete className="h-5 w-5" />
+              <button
+                className="rounded-md bg-red-600 px-3 py-2 hover:bg-red-700"
+                onClick={() => onDelete(info.getValue())}
+              >
+                <MdOutlineDelete className="h-5 w-5 text-white" />
               </button>
             ),
           }),
@@ -374,12 +380,15 @@ function MainTable({
             id: 'id',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
-                EDIT
+                DÜZENLE
               </p>
             ),
             cell: (info) => (
-              <button onClick={() => onEdit(info.getValue())}>
-                <MdModeEdit className="h-5 w-5" />
+              <button
+                className="ml-3 rounded-md bg-green-600 px-3 py-2 hover:bg-green-700"
+                onClick={() => onEdit(info.getValue())}
+              >
+                <MdModeEdit className="h-5 w-5 text-white" />
               </button>
             ),
           }),
@@ -391,8 +400,11 @@ function MainTable({
               </p>
             ),
             cell: (info) => (
-              <button onClick={() => onDelete(info.getValue())}>
-                <MdOutlineDelete className="h-5 w-5" />
+              <button
+                className="rounded-md bg-red-600 px-3 py-2 hover:bg-red-700"
+                onClick={() => onDelete(info.getValue())}
+              >
+                <MdOutlineDelete className="h-5 w-5 text-white" />
               </button>
             ),
           }),
@@ -473,8 +485,11 @@ function MainTable({
               </p>
             ),
             cell: (info) => (
-              <button onClick={() => onEdit(info.getValue())}>
-                <MdModeEdit className="h-5 w-5" />
+              <button
+                className="ml-3 rounded-md bg-green-600 px-3 py-2 hover:bg-green-700"
+                onClick={() => onEdit(info.getValue())}
+              >
+                <MdModeEdit className="h-5 w-5 text-white" />
               </button>
             ),
           }),
@@ -486,8 +501,11 @@ function MainTable({
               </p>
             ),
             cell: (info) => (
-              <button onClick={() => onDelete(info.getValue())}>
-                <MdOutlineDelete className="h-5 w-5" />
+              <button
+                className="rounded-md bg-red-600 px-3 py-2 hover:bg-red-700"
+                onClick={() => onDelete(info.getValue())}
+              >
+                <MdOutlineDelete className="h-5 w-5 text-white" />
               </button>
             ),
           }),
@@ -502,7 +520,7 @@ function MainTable({
     columns,
     initialState: {
       pagination: {
-        pageSize: 20,
+        pageSize: 10,
       },
     },
     state: {
@@ -518,7 +536,7 @@ function MainTable({
     debugTable: true,
   });
   return (
-    <Card extra={'w-full h-full sm:overflow-auto px-6'}>
+    <Card extra={'w-full h-full sm:overflow-auto px-6 pb-3'}>
       <header className="relative flex items-center justify-between pt-6">
         <div className="text-md font-medium text-navy-700 dark:text-white">
           <Search
@@ -536,7 +554,7 @@ function MainTable({
         />
       </header>
 
-      <div className="mt-8 overflow-x-scroll xl:overflow-x-hidden">
+      <div className="mt-8 overflow-x-scroll">
         <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -547,7 +565,7 @@ function MainTable({
                       key={header.id}
                       colSpan={header.colSpan}
                       onClick={header.column.getToggleSortingHandler()}
-                      className="cursor-pointer border-b border-gray-200 pb-2 pr-4 pt-4 text-start dark:border-white/30"
+                      className="cursor-pointer border-b border-gray-400 pb-2 pr-4 pt-4 text-start dark:border-white/30"
                     >
                       <div className="items-center justify-between text-xs text-gray-200">
                         {flexRender(
@@ -568,16 +586,16 @@ function MainTable({
           <tbody>
             {table
               .getRowModel()
-              .rows.slice(0, 5)
+              .rows.slice()
               .map((row) => {
                 return (
-                  <tr key={row.id} className="border-b">
+                  <tr
+                    key={row.id}
+                    className="border-b border-gray-100 hover:bg-lightPrimary dark:border-gray-900 dark:hover:bg-navy-700"
+                  >
                     {row.getVisibleCells().map((cell) => {
                       return (
-                        <td
-                          key={cell.id}
-                          className="min-w-[100px] border-white/0 py-3  pr-4"
-                        >
+                        <td key={cell.id} className="min-w-[100px] px-2 py-1">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),
@@ -590,43 +608,43 @@ function MainTable({
               })}
           </tbody>
         </table>
-        <div className="my-4 flex w-full items-center gap-2">
+        <div className="sticky left-0 mb-4 mt-5 flex w-full items-center gap-2">
           <button
-            className="w-7 rounded border p-1"
+            className="w-7 rounded border p-1 dark:border-gray-800"
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
             {'<<'}
           </button>
           <button
-            className="w-7 rounded border p-1"
+            className="w-7 rounded border p-1 dark:border-gray-800"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
             {'<'}
           </button>
           <button
-            className="w-7 rounded border p-1"
+            className="w-7 rounded border p-1 dark:border-gray-800"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
             {'>'}
           </button>
           <button
-            className="w-7 rounded border p-1"
+            className="w-7 rounded border p-1 dark:border-gray-800"
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
           >
             {'>>'}
           </button>
-          <span className="flex items-center gap-1 text-[12px]">
+          <span className="flex items-center gap-1 text-[12px] dark:border-gray-800">
             <div>Sayfa</div>
             <strong>
               {table.getState().pagination.pageIndex + 1} of{' '}
               {table.getPageCount()}
             </strong>
           </span>
-          <span className="ml-4 flex items-center gap-1 text-[12px]">
+          <span className="ml-4 flex items-center gap-1 text-[12px] dark:border-gray-800">
             Sayfaya git:
             <input
               type="number"
@@ -635,11 +653,11 @@ function MainTable({
                 const page = e.target.value ? Number(e.target.value) - 1 : 0;
                 table.setPageIndex(page);
               }}
-              className="w-16 rounded border p-1"
+              className="w-16 rounded border p-1 dark:border-gray-800 dark:bg-blueSecondary"
             />
           </span>
           <select
-            className="text-[12px]"
+            className="h-7 rounded text-[12px] dark:bg-blueSecondary"
             value={table.getState().pagination.pageSize}
             onChange={(e) => {
               table.setPageSize(Number(e.target.value));

@@ -63,3 +63,30 @@ input:checked.defaultCheckbox::before {
   background: white;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: none;
+  background-color: transparent;
+}
+::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+  background-color: transparent;
+  margin-bottom: 12px;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: none;
+  background-color: gray;
+}
+
+body.dark ::-webkit-scrollbar-track {
+  -webkit-box-shadow: none;
+  background-color: #0b1437;
+}
+body.dark::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+  background-color: #0b1437;
+  margin-bottom: 12px;
+}
