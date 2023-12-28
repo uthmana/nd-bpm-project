@@ -16,12 +16,15 @@ const Users = () => {
   const [isShowPopUp, setIsShowPopUp] = useState(false);
   const [userId, setUserId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsloading] = useState(false);
 
   const getAllUsers = async () => {
+    setIsloading(true);
     const { status, data } = await getUsers();
     if (status === 200) {
       setUsers(data);
     }
+    setIsloading(false);
   };
 
   useEffect(() => {
@@ -63,7 +66,7 @@ const Users = () => {
 
   return (
     <div className="mt-3 w-full">
-      {users.length === 0 ? (
+      {isLoading ? (
         <LatestInvoicesSkeleton />
       ) : (
         <MainTable

@@ -34,18 +34,12 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
 //Update Customer
 export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
-    const allowedRoles = ['ADMIN'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
-    }
-
     const id = route.params.id;
     const result: Partial<Prisma.CustomerUpdateInput> = await req.json();
-    const { name, email, password } = result;
 
     // Validate the fields against the customer schema
     const validationErrors = await validateCustomerSchema(result);
+
     if (validationErrors.length > 0) {
       return NextResponse.json({
         error: 'Invalid data format',
@@ -64,11 +58,6 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       );
     }
 
-    let pwd = customer.password;
-    if (password) {
-      pwd = await hash(password, 12);
-    }
-
     const updateCustomer = await prisma.customer.update({
       where: {
         id: id,
@@ -77,8 +66,9 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         ...customer,
       },
     });
+
     if (updateCustomer) {
-      return NextResponse.json({ updateCustomer }, { status: 200 });
+      return NextResponse.json(updateCustomer, { status: 200 });
     }
   } catch (error) {
     console.error('Error updating customer', error);

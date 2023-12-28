@@ -25,6 +25,10 @@ export default function Admin({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (window?.innerWidth > 1200) setOpen(true);
+    const theme = localStorage.getItem('theme');
+    if (theme && !document.body.classList.contains(theme)) {
+      document.body.classList.add(theme);
+    }
   }, []);
 
   useEffect(() => {
@@ -37,7 +41,7 @@ export default function Admin({ children }: { children: React.ReactNode }) {
   if (isWindowAvailable()) document.documentElement.dir = 'ltr';
 
   return (
-    <div className="flex h-full w-full bg-background-100 dark:bg-background-900">
+    <div className="flex h-full w-full bg-background-100  dark:bg-background-900">
       <Sidebar
         key={user?.emal}
         user={user}

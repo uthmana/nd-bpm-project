@@ -54,10 +54,12 @@ CREATE TABLE "ContactInfo" (
 -- CreateTable
 CREATE TABLE "customers" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "first_name" TEXT NOT NULL,
+    "last_name" TEXT NOT NULL,
     "email" TEXT,
+    "company_name" TEXT,
     "password" TEXT,
-    "PostalCode" TEXT,
+    "postalCode" TEXT,
     "address" TEXT,
     "phoneNumber" TEXT,
     "phoneNumber2" TEXT,

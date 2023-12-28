@@ -18,16 +18,15 @@ const Stock = () => {
   const [isShowPopUp, setIsShowPopUp] = useState(false);
   const [stockId, setStockId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  //TODO: handle empty  stock
+  const [isLoading, setIsLoading] = useState(false);
 
   const getAllStocks = async () => {
-    setIsSubmitting(true);
+    setIsLoading(true);
     const { status, data } = await getStocks();
     if (status === 200) {
       setStocks(data);
     }
-    setIsSubmitting(false);
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -68,7 +67,7 @@ const Stock = () => {
 
   return (
     <div className="mt-3 w-full">
-      {stocks.length === 0 ? (
+      {isLoading ? (
         <LatestInvoicesSkeleton />
       ) : (
         <MainTable

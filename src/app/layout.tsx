@@ -11,7 +11,7 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body id={'root'}>
+      <body id={'root'} className="custom-scrollbar">
         <NextAuthSessionProvider>
           <AppWrappers>{children}</AppWrappers>
         </NextAuthSessionProvider>

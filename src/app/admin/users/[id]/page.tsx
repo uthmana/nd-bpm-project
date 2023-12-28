@@ -12,15 +12,16 @@ export default function Edit() {
   const router = useRouter();
   const queryParams = useParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsloading] = useState(false);
   const [user, setUser] = useState([]);
 
   useEffect(() => {
     const getSingleUser = async () => {
-      setIsSubmitting(true);
+      setIsloading(true);
       const { status, data } = await getUserById(queryParams.id);
       if (status === 200) {
         setUser(data);
-        setIsSubmitting(false);
+        setIsloading(false);
         return;
       }
       setIsSubmitting(false);
@@ -47,7 +48,7 @@ export default function Edit() {
 
   return (
     <div className="mt-12">
-      {user.length === 0 ? (
+      {isLoading ? (
         <div className="mx-auto max-w-[400px]">
           <UserFormSkeleton />
         </div>

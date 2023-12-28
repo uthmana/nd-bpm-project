@@ -13,14 +13,15 @@ export default function Edit() {
   const queryParams = useParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [stock, setStock] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const getSingleStock = async () => {
-      setIsSubmitting(true);
+      setIsLoading(true);
       const { status, data } = await getStockById(queryParams.id);
       if (status === 200) {
         setStock(data);
-        setIsSubmitting(false);
+        setIsLoading(false);
         return;
       }
       setIsSubmitting(false);
@@ -46,7 +47,7 @@ export default function Edit() {
 
   return (
     <div className="mt-12">
-      {stock.length === 0 ? (
+      {isLoading ? (
         <div className="mx-auto max-w-[600px]">
           <UserFormSkeleton />
         </div>

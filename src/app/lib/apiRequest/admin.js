@@ -36,3 +36,25 @@ export async function updateStock(payload) {
 export async function deleteStock(id) {
   return fetchAPI(`stock/${id}`, 'delete');
 }
+
+// customer
+
+export async function addCustomer(payload) {
+  return fetchAPI('customer', 'put', payload);
+}
+
+export async function getCustomers() {
+  return fetchAPI('customer');
+}
+
+export async function getCustomerById(id) {
+  return fetchAPI(`customer/${id}`);
+}
+
+export async function updateCustomer(payload) {
+  return fetchAPI(`customer/${payload.id}`, 'put', payload);
+}
+
+export async function deleteCustomer(id) {
+  return fetchAPI(`customer/${id}`, 'delete');
+}
