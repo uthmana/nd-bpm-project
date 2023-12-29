@@ -58,3 +58,8 @@ export async function updateCustomer(payload) {
 export async function deleteCustomer(id) {
   return fetchAPI(`customer/${id}`, 'delete');
 }
+
+//File uplaod
+export async function uploadFile(formData) {
+  return fetchAPI('upload', 'post', formData);
+}
