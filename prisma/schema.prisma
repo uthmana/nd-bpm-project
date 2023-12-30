@@ -45,23 +45,27 @@ model ContactInfo {
 }
 
 model Customer {
-  id           String    @id @default(uuid())
-  first_name   String
-  last_name    String
-  email        String?   @unique
-  company_name String?
-  password     String?
-  postalCode   String?
-  address      String?
-  phoneNumber  String?
-  phoneNumber2 String?
-  code         String?
-  definition   String?
-  taxNo        String?
-  tax_Office   String?
-  currency     Currency? @default(TL)
-  cardType     CardType? @default(ALICI_SATICI)
-  Offers       Offer[]
+  id              String    @id @default(uuid())
+  code            String?
+  cardType        CardType? @default(ALICI_SATICI)
+  taxNo           String?
+  company_name    String?
+  address         String?
+  postalCode      String?
+  phoneNumber     String?
+  phoneNumber2    String?
+  tax_Office      String?
+  taxOfficeCode   String?
+  email           String?   @unique
+  email_2         String?
+  rep_name        String
+  currency        Currency? @default(TL)
+  country_code    String
+  province_code   String
+  district_code   String
+  definition      String?
+  Offers          Offer[]
+
 
   @@map("customers")
 }
@@ -92,6 +96,73 @@ model Offer {
   status     OfferStatus @default(PENDING)
   customerId String
   Customer   Customer    @relation(fields: [customerId], references: [id])
+}
+
+// Fault Records Table
+model Fault {
+  id                          String     @id @default(uuid())
+  CustomerName                String
+  TraceabilityCode            String
+  ArrivalDate                 DateTime
+  Product                     String
+  Quantity                    Int
+  ProductCode                 String
+  ProductBatchNumber          String
+  Application                 String?
+  Standard                    String?
+  Color                       String?
+  FaultDescription            String
+  SuperUserID                 String
+  SuperUserConfirmation       Boolean
+  ConfirmationEvidence        String? 
+  TechnicalDrawingAttachment  String?  
+  InvoiceDate                 DateTime?
+  CoatingControl              Boolean?
+  MixedMaterial               Boolean?
+  MachineUserID               String
+  MachineID                   String
+  ServiceParameters           String
+  ServiceCompletion           Boolean
+  Timestamp                   DateTime
+  CleaningRequired            Boolean @default(false)
+  ProcessControlFrequency     String
+  
+  // Relationships
+  //superUser                   User      @relation("superUserFaults", fields: [SuperUserID], references: [id])
+  //machines                    Machine   @relation(fields: [MachineID], references: [id])
+}
+
+// Machines Table
+model Machine {
+  id                    String       @id @default(uuid())
+  MachineName           String
+  //TechnicalParams       TechnicalParameter[]
+
+  // Relationships
+  //faults                Fault[]   @relation("machineFaults", fields: [id], references: [id])
+}
+
+// TechnicalParameter Table
+model TechnicalParameter {
+  id              String        @id @default(uuid())
+  MachineID       String
+  ParameterName   String
+  ParameterValue  String
+
+  // Relationships
+  //machine         Machine    @relation(fields: [MachineID], references: [id])
+}
+
+// Customer Faults Table : This table will be used to handle multiple faults for a single customer.
+model CustomerFault {
+  CustomerID  String
+  FaultID     String
+
+  // Relationships
+  //customer    Customer @relation(fields: [CustomerID], references: [id])
+  //fault       Fault    @relation(fields: [FaultID], references: [id])
+
+  @@id([CustomerID, FaultID])
 }
 
 enum UserRole {
