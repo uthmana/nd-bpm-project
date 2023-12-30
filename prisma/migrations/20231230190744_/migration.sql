@@ -54,21 +54,24 @@ CREATE TABLE "ContactInfo" (
 -- CreateTable
 CREATE TABLE "customers" (
     "id" TEXT NOT NULL,
-    "first_name" TEXT NOT NULL,
-    "last_name" TEXT NOT NULL,
-    "email" TEXT,
+    "code" TEXT,
+    "cardType" "CardType" DEFAULT 'ALICI_SATICI',
+    "taxNo" TEXT,
     "company_name" TEXT,
-    "password" TEXT,
-    "postalCode" TEXT,
     "address" TEXT,
+    "postalCode" TEXT,
     "phoneNumber" TEXT,
     "phoneNumber2" TEXT,
-    "code" TEXT,
-    "definition" TEXT,
-    "taxNo" TEXT,
     "tax_Office" TEXT,
+    "taxOfficeCode" TEXT,
+    "email" TEXT,
+    "email_2" TEXT,
+    "rep_name" TEXT NOT NULL,
     "currency" "Currency" DEFAULT 'TL',
-    "cardType" "CardType" DEFAULT 'ALICI_SATICI',
+    "country_code" TEXT NOT NULL,
+    "province_code" TEXT NOT NULL,
+    "district_code" TEXT NOT NULL,
+    "definition" TEXT,
 
     CONSTRAINT "customers_pkey" PRIMARY KEY ("id")
 );
@@ -103,6 +106,64 @@ CREATE TABLE "Offer" (
     "customerId" TEXT NOT NULL,
 
     CONSTRAINT "Offer_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Fault" (
+    "id" TEXT NOT NULL,
+    "CustomerName" TEXT NOT NULL,
+    "TraceabilityCode" TEXT NOT NULL,
+    "ArrivalDate" TIMESTAMP(3) NOT NULL,
+    "Product" TEXT NOT NULL,
+    "Quantity" INTEGER NOT NULL,
+    "ProductCode" TEXT NOT NULL,
+    "ProductBatchNumber" TEXT NOT NULL,
+    "Application" TEXT,
+    "Standard" TEXT,
+    "Color" TEXT,
+    "FaultDescription" TEXT NOT NULL,
+    "SuperUserID" TEXT NOT NULL,
+    "SuperUserConfirmation" BOOLEAN NOT NULL,
+    "ConfirmationEvidence" TEXT,
+    "TechnicalDrawingAttachment" TEXT,
+    "InvoiceDate" TIMESTAMP(3),
+    "CoatingControl" BOOLEAN,
+    "MixedMaterial" BOOLEAN,
+    "MachineUserID" TEXT NOT NULL,
+    "MachineID" TEXT NOT NULL,
+    "ServiceParameters" TEXT NOT NULL,
+    "ServiceCompletion" BOOLEAN NOT NULL,
+    "Timestamp" TIMESTAMP(3) NOT NULL,
+    "CleaningRequired" BOOLEAN NOT NULL DEFAULT false,
+    "ProcessControlFrequency" TEXT NOT NULL,
+
+    CONSTRAINT "Fault_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Machine" (
+    "id" TEXT NOT NULL,
+    "MachineName" TEXT NOT NULL,
+
+    CONSTRAINT "Machine_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "TechnicalParameter" (
+    "id" TEXT NOT NULL,
+    "MachineID" TEXT NOT NULL,
+    "ParameterName" TEXT NOT NULL,
+    "ParameterValue" TEXT NOT NULL,
+
+    CONSTRAINT "TechnicalParameter_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "CustomerFault" (
+    "CustomerID" TEXT NOT NULL,
+    "FaultID" TEXT NOT NULL,
+
+    CONSTRAINT "CustomerFault_pkey" PRIMARY KEY ("CustomerID","FaultID")
 );
 
 -- CreateIndex

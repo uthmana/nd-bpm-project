@@ -40,6 +40,5 @@
     "next.config.js",
     ".next/types/**/*.ts",
     "prisma/users.ts",
-    "prisma/seed.ts"
-  ]
+    "prisma/seed.ts" ]
 }
