@@ -3,8 +3,6 @@
 import { HiX } from 'react-icons/hi';
 import Links from './components/Links';
 import { IRoute } from 'types/navigation';
-import { useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
 import nd_logo from '/public/img/auth/nd_logo.webp';
 
 function SidebarHorizon(props: { routes: IRoute[]; [x: string]: any }) {

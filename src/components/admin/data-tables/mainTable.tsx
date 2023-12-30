@@ -56,6 +56,7 @@ type StockObj = {
   unit: string;
   curency: string;
   date: string;
+  image: string;
 };
 
 type MainTable = {
@@ -312,6 +313,20 @@ function MainTable({
         break;
       case 'stock':
         col = [
+          columnHelper.accessor('image', {
+            id: 'image',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                Ürün Resmi
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="max-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
+                <img className="w-full" src={`/uploads/${info.getValue()}`} />
+              </p>
+            ),
+          }),
+
           columnHelper.accessor('product_code', {
             id: 'product_code',
             header: () => (

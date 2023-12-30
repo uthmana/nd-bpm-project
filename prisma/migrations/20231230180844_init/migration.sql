@@ -90,6 +90,7 @@ CREATE TABLE "Stock" (
     "brand" TEXT,
     "date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
+    "image" TEXT,
 
     CONSTRAINT "Stock_pkey" PRIMARY KEY ("id")
 );

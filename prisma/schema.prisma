@@ -82,6 +82,7 @@ model Stock {
   brand           String?
   date            DateTime? @default(now())
   updatedAt       DateTime? @updatedAt
+  image           String?
 }
 
 model Offer {

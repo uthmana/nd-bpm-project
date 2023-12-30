@@ -8,6 +8,7 @@ import Select from 'components/select/page';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import TextArea from 'components/fields/textArea';
 import { log } from 'utils';
+import Upload from 'components/upload';
 
 type StockObj = {
   product_code: string;
@@ -22,6 +23,7 @@ type StockObj = {
   brand: string;
   unit: string;
   curency: string;
+  image: string;
 };
 
 export default function Stock(props: {
@@ -47,16 +49,17 @@ export default function Stock(props: {
         brand: '',
         unit: '',
         curency: 'TRY',
+        image: '',
       };
 
   const [values, setValues] = useState(initialValues);
   const [error, setError] = useState(false);
+  const [file, setFile] = useState('');
 
   const handleValues = (event) => {
     setError(false);
     const newVal = { [event.target?.name]: event.target?.value };
     setValues({ ...values, ...newVal });
-    log(values);
   };
 
   const handleSubmit = (e) => {
@@ -65,7 +68,7 @@ export default function Stock(props: {
     if (!product_name || !product_code || !current_price) {
       setError(true);
     }
-    onSubmit(values);
+    onSubmit({ ...values, image: file });
   };
 
   return (
@@ -210,7 +213,7 @@ export default function Stock(props: {
           value={values.current_price}
         />
         <Select
-          extra="w-[20%] pt-1"
+          extra="!w-[100px] pt-1"
           label="Para Birimi"
           onChange={handleValues}
           name="curency"
@@ -227,6 +230,14 @@ export default function Stock(props: {
             );
           })}
         </Select>
+      </div>
+
+      <div className="my-3">
+        <Upload
+          onChange={(val) => setFile(val)}
+          fileType="all"
+          multiple={false}
+        />
       </div>
 
       <div>
