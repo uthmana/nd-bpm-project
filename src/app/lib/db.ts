@@ -1,7 +1,11 @@
 import { PrismaClient } from '@prisma/client';
 
 const prismaClientSingleton = () => {
-  return new PrismaClient();
+  return new PrismaClient({
+    datasources: {
+      db: { url: 'postgresql://postgres:mau1234@localhost:5433/postgres' },
+    },
+  });
 };
 
 declare global {

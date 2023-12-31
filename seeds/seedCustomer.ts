@@ -16,7 +16,7 @@ async function seedDatabase() {
 
       for (const row of csvData) {
         const data1: Partial<Prisma.CustomerCreateInput> = {
-          companyName: '',
+          company_name: '',
         };
 
         headers.forEach((header) => {

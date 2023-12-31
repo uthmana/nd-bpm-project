@@ -5,8 +5,6 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  // url       = env("POSTGRES_PRISMA_URL")
-  //directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model User {
@@ -16,12 +14,12 @@ model User {
   password        String?
   role            String       @default("NORMAL")
   status          String       @default("ACTIVE")
-  address         Address?
-  contactInfo     ContactInfo?
   createdAt       DateTime     @default(now())
   updatedAt       DateTime?    @updatedAt
   token           String?      @unique
   tokenExpiryDate DateTime?
+  address         Address?
+  contactInfo     ContactInfo?
 
   @@map("users")
 }
@@ -32,40 +30,39 @@ model Address {
   city    String
   state   String
   zipCode String
-  user    User?   @relation(fields: [userId], references: [id])
   userId  String? @unique @default(cuid())
+  user    User?   @relation(fields: [userId], references: [id])
 }
 
 model ContactInfo {
   id     String @id @default(cuid())
   phone  String
   email  String
-  user   User   @relation(fields: [userId], references: [id])
   userId String @unique @default(cuid())
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model Customer {
-  id              String    @id @default(uuid())
-  code            String?
-  cardType        CardType? @default(ALICI_SATICI)
-  taxNo           String?
-  company_name    String?
-  address         String?
-  postalCode      String?
-  phoneNumber     String?
-  phoneNumber2    String?
-  tax_Office      String?
-  taxOfficeCode   String?
-  email           String?   @unique
-  email_2         String?
-  rep_name        String
-  currency        Currency? @default(TL)
-  country_code    String
-  province_code   String
-  district_code   String
-  definition      String?
-  Offers          Offer[]
-
+  id            String    @id @default(uuid())
+  code          String?
+  cardType      CardType? @default(ALICI_SATICI)
+  taxNo         String?
+  company_name  String?
+  address       String?
+  postalCode    String?
+  phoneNumber   String?
+  phoneNumber2  String?
+  tax_Office    String?
+  taxOfficeCode String?
+  email         String?   @unique
+  email_2       String?
+  rep_name      String
+  currency      Currency? @default(TL)
+  country_code  String
+  province_code String
+  district_code String
+  definition    String?
+  Offers        Offer[]
 
   @@map("customers")
 }
@@ -98,69 +95,50 @@ model Offer {
   Customer   Customer    @relation(fields: [customerId], references: [id])
 }
 
-// Fault Records Table
 model Fault {
-  id                          String     @id @default(uuid())
-  CustomerName                String
-  TraceabilityCode            String
-  ArrivalDate                 DateTime
-  Product                     String
-  Quantity                    Int
-  ProductCode                 String
-  ProductBatchNumber          String
-  Application                 String?
-  Standard                    String?
-  Color                       String?
-  FaultDescription            String
-  SuperUserID                 String
-  SuperUserConfirmation       Boolean
-  ConfirmationEvidence        String? 
-  TechnicalDrawingAttachment  String?  
-  InvoiceDate                 DateTime?
-  CoatingControl              Boolean?
-  MixedMaterial               Boolean?
-  MachineUserID               String
-  MachineID                   String
-  ServiceParameters           String
-  ServiceCompletion           Boolean
-  Timestamp                   DateTime
-  CleaningRequired            Boolean @default(false)
-  ProcessControlFrequency     String
-  
-  // Relationships
-  //superUser                   User      @relation("superUserFaults", fields: [SuperUserID], references: [id])
-  //machines                    Machine   @relation(fields: [MachineID], references: [id])
+  id                         String    @id @default(uuid())
+  CustomerName               String
+  TraceabilityCode           String
+  ArrivalDate                DateTime
+  Product                    String
+  Quantity                   Int
+  ProductCode                String
+  ProductBatchNumber         String
+  Application                String?
+  Standard                   String?
+  Color                      String?
+  FaultDescription           String
+  SuperUserID                String
+  SuperUserConfirmation      Boolean
+  ConfirmationEvidence       String?
+  TechnicalDrawingAttachment String?
+  InvoiceDate                DateTime?
+  CoatingControl             Boolean?
+  MixedMaterial              Boolean?
+  MachineUserID              String
+  MachineID                  String
+  ServiceParameters          String
+  ServiceCompletion          Boolean
+  Timestamp                  DateTime
+  CleaningRequired           Boolean   @default(false)
+  ProcessControlFrequency    String
 }
 
-// Machines Table
 model Machine {
-  id                    String       @id @default(uuid())
-  MachineName           String
-  //TechnicalParams       TechnicalParameter[]
-
-  // Relationships
-  //faults                Fault[]   @relation("machineFaults", fields: [id], references: [id])
+  id          String @id @default(uuid())
+  MachineName String
 }
 
-// TechnicalParameter Table
 model TechnicalParameter {
-  id              String        @id @default(uuid())
-  MachineID       String
-  ParameterName   String
-  ParameterValue  String
-
-  // Relationships
-  //machine         Machine    @relation(fields: [MachineID], references: [id])
+  id             String @id @default(uuid())
+  MachineID      String
+  ParameterName  String
+  ParameterValue String
 }
 
-// Customer Faults Table : This table will be used to handle multiple faults for a single customer.
 model CustomerFault {
-  CustomerID  String
-  FaultID     String
-
-  // Relationships
-  //customer    Customer @relation(fields: [CustomerID], references: [id])
-  //fault       Fault    @relation(fields: [FaultID], references: [id])
+  CustomerID String
+  FaultID    String
 
   @@id([CustomerID, FaultID])
 }

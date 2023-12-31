@@ -54,7 +54,7 @@
     "dev1": "cross-env NODE_OPTIONS='--inspect' next dev"
   },
   "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "seed": "tsx seeds/seed.ts"
   },
   "eslintConfig": {
     "extends": [
