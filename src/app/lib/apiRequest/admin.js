@@ -63,3 +63,29 @@ export async function deleteCustomer(id) {
 export async function uploadFile(formData) {
   return fetchAPI('upload', 'post', formData);
 }
+
+//Faults
+export async function addFault(payload) {
+  return fetchAPI('entry', 'put', payload);
+}
+
+export async function getFaults() {
+  return fetchAPI('entry');
+}
+
+export async function getFaultById(id) {
+  return fetchAPI(`entry/${id}`);
+}
+
+export async function updateFault(payload) {
+  return fetchAPI(`entry/${payload.id}`, 'put', payload);
+}
+
+export async function deleteFault(id) {
+  return fetchAPI(`entry/${id}`, 'delete');
+}
+
+//Notification
+export async function getNotifications(payload) {
+  return fetchAPI('notification', 'get', payload);
+}

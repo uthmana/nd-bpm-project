@@ -1,10 +1,34 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Dropdown from 'components/dropdown';
 import { IoMdNotificationsOutline } from 'react-icons/io';
 import { BsArrowBarUp } from 'react-icons/bs';
+import NotificationItem from './item';
+import { useRouter } from 'next/navigation';
+import { getNotifications } from 'app/lib/apiRequest';
 
 export default function Notification({ user }) {
+  const [notifications, setNotifications] = useState([]);
+  const router = useRouter();
+
+  const getMyNotification = async (user: object) => {
+    const { data, status } = await getNotifications(user);
+    if (status === 200) {
+      setNotifications(data);
+      console.log(data);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.role) {
+      getMyNotification(user);
+    }
+  }, [user]);
+
+  const handleNotifClick = (link: string) => {
+    router.push(link);
+  };
+
   return (
     <Dropdown
       button={
@@ -12,9 +36,12 @@ export default function Notification({ user }) {
           <p className="cursor-pointer">
             <IoMdNotificationsOutline className="h-6 w-6 text-gray-600 dark:text-white" />
           </p>
-          <span className="absolute -right-2 -top-3 min-h-fit min-w-fit cursor-pointer rounded-full bg-red-500 px-[4px] py-[2px] text-[12px] font-bold text-white">
-            25
-          </span>
+
+          {notifications.length > 0 ? (
+            <span className="absolute -right-2 -top-3 min-h-fit min-w-fit cursor-pointer rounded-full bg-red-500 px-[4px] py-[2px] text-[12px] font-bold text-white">
+              {notifications.length}
+            </span>
+          ) : null}
         </>
       }
       animation="origin-[65%_0%] md:origin-top-right transition-all duration-300 ease-in-out"
@@ -23,34 +50,14 @@ export default function Notification({ user }) {
       <div className="flex w-[360px] flex-col gap-3 rounded-[20px] bg-white p-4 shadow-xl shadow-shadow-500 dark:!bg-navy-700 dark:text-white dark:shadow-none sm:w-[460px]">
         <div className="flex items-center justify-between p-3">
           <p className="text-base font-bold text-navy-700  dark:text-white">
-            BİLDİRİMLER
+            BİLDİRİMLER {user?.role}
           </p>
         </div>
-
-        {/*TODO: Create Notification item component*/}
-        <button className="flex w-full items-center ">
-          <div className="ml-2 flex h-full w-full flex-col justify-center rounded-lg px-1 text-sm">
-            <p className="mb-1 justify-start text-left  font-bold text-gray-900 dark:text-white">
-              New Update for {user?.name}
-            </p>
-            <p className="font-base text-left text-xs text-gray-900 dark:text-white">
-              A new update for your downloaded item is available!
-            </p>
-          </div>
-          <div className="flex h-[12px] w-[12px] items-center justify-center rounded-xl bg-gradient-to-b from-brandLinear to-brand-500 text-2xl text-white"></div>
-        </button>
-
-        <button className="flex w-full items-center">
-          <div className="ml-2 flex h-full w-full flex-col justify-center rounded-lg px-1 text-sm">
-            <p className="mb-1 justify-start text-left  font-bold text-gray-900 dark:text-white">
-              New Update for {user?.name}
-            </p>
-            <p className="font-base text-left text-xs text-gray-900 dark:text-white">
-              A new update for your downloaded item is available!
-            </p>
-          </div>
-          <div className="flex h-[12px] w-[12px] items-center justify-center rounded-xl bg-gradient-to-b from-brandLinear to-brand-500 text-2xl text-white"></div>
-        </button>
+        {notifications?.map((item, idx) => {
+          return (
+            <NotificationItem {...item} onClick={handleNotifClick} key={idx} />
+          );
+        })}
       </div>
     </Dropdown>
   );

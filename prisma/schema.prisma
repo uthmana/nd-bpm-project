@@ -203,6 +203,7 @@ enum NotifReceiver {
   SUPER
   NORMAL
   TECH
+  OTHER
 }
 
 enum FaultControlResult {
@@ -214,8 +215,8 @@ enum FaultControlResult {
 
 enum FaultStatus {
   PENDING
-  UNDERCONTROL
-  FaultControlResult
+  ACCEPT
+  REGECT
 }
 
 model Applications {

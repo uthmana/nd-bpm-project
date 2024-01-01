@@ -38,6 +38,16 @@ export async function PUT(req: Request) {
       throw new Error('No fault found');
     }
 
+    //Create Notification
+    const notification = await prisma.notification.create({
+      data: {
+        title: 'Ürün Girişi',
+        description: `${fault.product},${fault.application},${fault.standard},${fault.color}`,
+        receiver: 'SUPER',
+        link: `/admin/entry?q=${fault.product}`,
+      },
+    });
+
     return NextResponse.json({ fault }, { status: 200 });
   } catch (error) {
     if (error?.code === 'P2002') {

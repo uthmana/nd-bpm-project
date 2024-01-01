@@ -80,7 +80,7 @@ export default function Stock(props: {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mx-auto w-full max-w-[580px] rounded-[20px] bg-white p-5 dark:bg-opacity-10"
+      className="mx-auto w-full max-w-[780px] rounded-[20px] bg-white p-5 dark:bg-opacity-10"
     >
       <NextLink
         href="/admin/stock"
@@ -219,7 +219,7 @@ export default function Stock(props: {
           value={values.current_price}
         />
         <Select
-          extra="!w-[100px] pt-1"
+          extra="pt-1"
           label="Para Birimi"
           onChange={handleValues}
           name="curency"
