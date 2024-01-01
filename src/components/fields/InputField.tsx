@@ -14,7 +14,7 @@ function InputField(props: {
   type?: string;
   name: string;
   onChange?: any;
-  value?: string;
+  value?: number | string | any;
   length?: number;
   min?: number;
 }) {
@@ -46,7 +46,7 @@ function InputField(props: {
   };
 
   return (
-    <div className={`relative`}>
+    <div className={`relative w-full`}>
       <label
         htmlFor={id}
         className={`text-sm text-navy-700 dark:text-white ${

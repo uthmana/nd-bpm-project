@@ -1,20 +1,12 @@
 // Validation function for the customer schema
 export async function validateCustomerSchema(data) {
-  const requiredFields = ['first_name', 'last_name']; // Add other required fields
-  const schemaFields = [
-    'first_name',
-    'last_name',
-    'email',
-    'address',
-    'postalCode',
-    'company_name',
-    'phoneNumber',
-    'phoneNumber2',
-    'code',
-    'definition',
-    'taxNo',
-    'tax_Office',
-  ]; // Define all expected fields
+  const requiredFields = [
+    'rep_name',
+    'country_code',
+    'province_code',
+    'district_code',
+  ]; // Add other required fields
+  //const schemaFields = []; // Define all expected fields
 
   const missingFields = requiredFields.filter(
     (field) => !data.hasOwnProperty(field),

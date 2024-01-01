@@ -4,10 +4,17 @@ import Card from 'components/card';
 import { useRef, useState } from 'react';
 import placeholderImage from '/public/img/others/placeholder-image.svg';
 
-const Upload = ({ onChange, fileType, multiple = false }) => {
+const Upload = (props: {
+  onChange: (val: string) => void;
+  fileType?: string;
+  multiple?: boolean;
+  _fileName?: string;
+  _filePath?: string;
+}) => {
+  const { onChange, fileType, multiple = false, _fileName, _filePath } = props;
   const fileElem = useRef(null);
-  const [filePath, setFilePath] = useState('');
-  const [fileName, setFileName] = useState('');
+  const [filePath, setFilePath] = useState(_filePath ? _filePath : '');
+  const [fileName, setFileName] = useState(_fileName ? _fileName : '');
 
   const handleClick = async (e) => {
     e.preventDefault();

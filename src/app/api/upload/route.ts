@@ -1,4 +1,3 @@
-// @ts-expect-error
 import { writeFile, unlink } from 'fs/promises';
 import { NextRequest, NextResponse } from 'next/server';
 

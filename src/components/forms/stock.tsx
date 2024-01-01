@@ -14,7 +14,7 @@ type StockObj = {
   product_code: string;
   product_name: string;
   product_barcode: string;
-  inventory: 0;
+  inventory: number;
   current_price: string;
   description: string;
   main_group: string;
@@ -54,7 +54,9 @@ export default function Stock(props: {
 
   const [values, setValues] = useState(initialValues);
   const [error, setError] = useState(false);
-  const [file, setFile] = useState('');
+  const [file, setFile] = useState(
+    initialValues.image ? initialValues.image : '',
+  );
 
   const handleValues = (event) => {
     setError(false);
@@ -68,7 +70,11 @@ export default function Stock(props: {
     if (!product_name || !product_code || !current_price) {
       setError(true);
     }
-    onSubmit({ ...values, image: file });
+    onSubmit({
+      ...values,
+      inventory: parseInt(values.inventory.toString()),
+      image: file,
+    });
   };
 
   return (
@@ -187,7 +193,7 @@ export default function Stock(props: {
           placeholder="Envanter"
           extra="mb-2"
           min={1}
-          value={values.inventory?.toString()}
+          value={values.inventory}
         />
         <InputField
           label="Birim"
@@ -237,6 +243,10 @@ export default function Stock(props: {
           onChange={(val) => setFile(val)}
           fileType="all"
           multiple={false}
+          _fileName={initialValues.image ? initialValues.image : ''}
+          _filePath={
+            initialValues.image ? '/uploads/' + initialValues.image : ''
+          }
         />
       </div>
 

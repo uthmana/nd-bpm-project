@@ -1,21 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/db';
 import { checkUserRole } from 'utils/auth';
-import { Prisma } from '@prisma/client';
 import { validateCustomerSchema } from 'utils/validate';
+import { CardType, Currency, Customer } from '@prisma/client';
 
 //Get single customer
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
   try {
-    const allowedRoles = ['ADMIN'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
-    }
+    // const allowedRoles = ['ADMIN'];
+    // const hasrole = await checkUserRole(allowedRoles);
+    // if (!hasrole) {
+    //   return NextResponse.json({ error: 'Access forbidden', status: 403 });
+    // }
 
-    const id1 = route.params.id;
+    const id = route.params.id;
     const customer = await prisma.customer.findUnique({
-      where: { id: id1 },
+      where: { id },
     });
 
     if (!customer) {
@@ -23,7 +23,7 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     }
     if (!customer.id)
       return NextResponse.json({ message: 'Customer not found' });
-    return NextResponse.json({ ...customer, password: '' });
+    return NextResponse.json({ ...customer });
   } catch (error) {
     console.error('Error fetching customers:', error);
     return NextResponse.json({ error: 'Internal Server Error' });
@@ -34,10 +34,10 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
 export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
     const id = route.params.id;
-    const result: Partial<Prisma.CustomerUpdateInput> = await req.json();
+    const newCustomerData: Customer = await req.json();
 
     // Validate the fields against the customer schema
-    const validationErrors = await validateCustomerSchema(result);
+    const validationErrors = await validateCustomerSchema(newCustomerData);
 
     if (validationErrors.length > 0) {
       return NextResponse.json({
@@ -46,7 +46,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       });
     }
 
-    const customer: Partial<customer> = await prisma.customer.findUnique({
+    const customer: Customer = await prisma.customer.findUnique({
       where: { id },
     });
 
@@ -62,7 +62,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         id: id,
       },
       data: {
-        ...customer,
+        ...newCustomerData,
       },
     });
 

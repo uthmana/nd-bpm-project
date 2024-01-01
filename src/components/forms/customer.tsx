@@ -11,9 +11,9 @@ import { log } from 'utils';
 
 type CustomerObj = {
   id: string;
-  first_name: string;
-  last_name: string;
+  rep_name: string;
   email: string;
+  email_2: string;
   address: string;
   postalCode: string;
   company_name: string;
@@ -23,6 +23,12 @@ type CustomerObj = {
   definition: string;
   taxNo: string;
   tax_Office: string;
+  taxOfficeCode: string;
+  cardType: string; //ALICI_SATICI-ALICI-SATICI
+  country_code: string;
+  province_code: string;
+  district_code: string;
+  currency: string;
 };
 
 type userForm = {
@@ -36,9 +42,9 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
   const initialValues = data
     ? data
     : {
-        first_name: '',
-        last_name: '',
+        rep_name: '',
         email: '',
+        email_2: '',
         address: '',
         postalCode: '',
         company_name: '',
@@ -48,10 +54,17 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
         definition: '',
         taxNo: '',
         tax_Office: '',
+        taxOfficeCode: '',
+        country_code: '',
+        province_code: '',
+        district_code: '',
+        currency: 'TL',
+        cardType: 'ALICI_SATICI',
       };
   const [values, setValues] = useState(initialValues);
+  const cardTypes = ['ALICI_SATICI', 'ALICI', 'SATICI'];
+  const currencies = ['TL', 'USD'];
 
-  //TODO: add input validation
   const handleValues = (event) => {
     const newVal = { [event.target?.name]: event.target?.value };
     setValues({ ...values, ...newVal });
@@ -59,15 +72,15 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    //TODO: Add form validation
 
+    //TODO: Add form validation
     onSubmit(values);
   };
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="mx-auto w-full max-w-[400px] rounded-[20px] bg-white p-5 dark:bg-opacity-10"
+      className="mx-auto w-full max-w-[600px] rounded-[20px] bg-white p-5 dark:bg-opacity-10"
     >
       <NextLink
         href="/admin/customer"
@@ -87,35 +100,46 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
 
       <div className="flex flex-col gap-4 sm:flex-row">
         <InputField
-          label="Ad"
+          label="Şirket İsmi"
           onChange={handleValues}
           type="text"
-          id="first_name"
-          name="first_name"
-          placeholder="Ad"
-          extra="mb-2"
-          value={values.first_name}
+          id="company_name"
+          name="company_name"
+          placeholder="Şirket İsmi"
+          extra="mb-2 !w-full"
+          value={values.company_name}
         />
         <InputField
-          label="Soyad"
+          label="Sorumlu"
           onChange={handleValues}
           type="text"
-          id="last_name"
-          name="last_name"
-          placeholder="Soyad"
-          extra="mb-2"
-          value={values.last_name}
+          id="rep_name"
+          name="rep_name"
+          placeholder="Sorumlu"
+          extra="mb-2 w-full"
+          value={values.rep_name}
         />
       </div>
       <InputField
-        label="Email"
+        label="E-Posta"
         onChange={handleValues}
         type="text"
         id="email"
         name="email"
-        placeholder="Email"
+        placeholder="e-posta"
         extra="mb-2"
         value={values.email}
+      />
+
+      <InputField
+        label="E-Posta 2"
+        onChange={handleValues}
+        type="text"
+        id="email_2"
+        name="email_2"
+        placeholder="e-posta"
+        extra="mb-2"
+        value={values.email_2}
       />
 
       <div className="flex flex-col gap-4 sm:flex-row">
@@ -143,16 +167,6 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
       </div>
       <div className="flex flex-col gap-4 sm:flex-row">
         <InputField
-          label="Postal Kodu"
-          onChange={handleValues}
-          type="text"
-          id="postalCode"
-          name="postalCode"
-          placeholder="Postal Kodu"
-          extra="mb-2"
-          value={values.postalCode}
-        />
-        <InputField
           label="Mştr kodu"
           onChange={handleValues}
           type="text"
@@ -162,7 +176,59 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
           extra="mb-2"
           value={values.code}
         />
+
+        <InputField
+          label="Postal Kodu"
+          onChange={handleValues}
+          type="text"
+          id="postalCode"
+          name="postalCode"
+          placeholder="Postal Kodu"
+          extra="mb-2"
+          value={values.postalCode}
+        />
       </div>
+
+      <div className="flex flex-col gap-4 sm:flex-row">
+        <Select
+          extra="w-full mb-3"
+          label="Kart Türü"
+          onChange={handleValues}
+          name="cardType"
+        >
+          {cardTypes.map((item, idx) => {
+            return (
+              <option
+                value={item}
+                key={idx}
+                selected={data ? data?.cardType === item : idx === 0}
+              >
+                {item}
+              </option>
+            );
+          })}
+        </Select>
+
+        <Select
+          extra="w-full mb-3"
+          label="Para Birimi"
+          onChange={handleValues}
+          name="currency"
+        >
+          {currencies.map((item, idx) => {
+            return (
+              <option
+                value={item}
+                key={idx}
+                selected={data ? data?.currency === item : idx === 0}
+              >
+                {item}
+              </option>
+            );
+          })}
+        </Select>
+      </div>
+
       <TextArea
         label="Address"
         onChange={handleValues}
@@ -171,17 +237,6 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
         placeholder="Address"
         extra="mb-2"
         value={values.address}
-      />
-
-      <InputField
-        label="Şirket İsmi"
-        onChange={handleValues}
-        type="text"
-        id="company_name"
-        name="company_name"
-        placeholder="Şirket İsmi"
-        extra="mb-2"
-        value={values.company_name}
       />
 
       <div className="flex flex-col gap-4 sm:flex-row">
@@ -204,6 +259,49 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
           placeholder="Vergi Ofis"
           extra="mb-2"
           value={values.tax_Office}
+        />
+        <InputField
+          label="Vergi Ofis kodu"
+          onChange={handleValues}
+          type="text"
+          id="taxOfficeCode"
+          name="taxOfficeCode"
+          placeholder="Vergi Ofis kodu"
+          extra="mb-2"
+          value={values.taxOfficeCode}
+        />
+      </div>
+
+      <div className="flex flex-col gap-4 sm:flex-row">
+        <InputField
+          label="Ülke Kodu"
+          onChange={handleValues}
+          type="text"
+          id="country_code"
+          name="country_code"
+          placeholder="Ülke Kodu"
+          extra="mb-2"
+          value={values.country_code}
+        />
+        <InputField
+          label="İl Kodu"
+          onChange={handleValues}
+          type="text"
+          id="province_code"
+          name="province_code"
+          placeholder="İl Kodu"
+          extra="mb-2"
+          value={values.province_code}
+        />
+        <InputField
+          label="İlçe Kodu"
+          onChange={handleValues}
+          type="text"
+          id="district_code"
+          name="district_code"
+          placeholder="İlçe Kodu"
+          extra="mb-2"
+          value={values.district_code}
         />
       </div>
 
