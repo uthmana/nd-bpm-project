@@ -14,8 +14,8 @@ model User {
   name            String
   email           String?      @unique
   password        String?
-  role            String       @default("NORMAL")
-  status          String       @default("ACTIVE")
+  role            UserRole     @default(NORMAL)
+  status          UserStatus   @default(ACTIVE)
   createdAt       DateTime     @default(now())
   updatedAt       DateTime?    @updatedAt
   token           String?      @unique
@@ -98,32 +98,145 @@ model Offer {
 }
 
 model Fault {
-  id                         String    @id @default(uuid())
-  CustomerName               String
-  TraceabilityCode           String
-  ArrivalDate                DateTime
-  Product                    String
-  Quantity                   Int
-  ProductCode                String
-  ProductBatchNumber         String
-  Application                String?
-  Standard                   String?
-  Color                      String?
-  FaultDescription           String
-  SuperUserID                String
-  SuperUserConfirmation      Boolean
-  ConfirmationEvidence       String?
-  TechnicalDrawingAttachment String?
-  InvoiceDate                DateTime?
-  CoatingControl             Boolean?
-  MixedMaterial              Boolean?
-  MachineUserID              String
-  MachineID                  String
-  ServiceParameters          String
-  ServiceCompletion          Boolean
-  Timestamp                  DateTime
-  CleaningRequired           Boolean   @default(false)
-  ProcessControlFrequency    String
+  id                         String         @id @default(uuid())
+  customerName               String?
+  traceabilityCode           String
+  arrivalDate                DateTime?      @default(now())
+  invoiceDate                DateTime?
+  product                    String?
+  quantity                   Int?
+  productCode                String?
+  productBatchNumber         String?
+  application                String?
+  standard                   String?
+  color                      String?
+  faultDescription           String?
+  status                     FaultStatus    @default(PENDING)
+  technicalDrawingAttachment String?
+  controlInfo                String?
+  faultControForm            FaultControl[]
+}
+
+model FaultControl {
+  id                 String    @id @default(uuid())
+  faultId            String
+  customerName       String?
+  traceabilityCode   String?
+  arrivalDate        DateTime?
+  invoiceDate        DateTime?
+  product            String?
+  quantity           Int?
+  productCode        String?
+  productBatchNumber String?
+
+  fault       Fault     @relation(fields: [id], references: [id])
+  headStyle   String?
+  plating     String?
+  controlDate DateTime? @default(now())
+
+  materialMixing                   String             @default("Karışık Malzema")
+  materialMixingQty                Int?
+  materialMixingUnqualifiedQty     Int?
+  materialMixingUnqualifiedPercent Int?
+  materialMixingRemarks            String?
+  bubble                           String             @default("Kabarcık")
+  bubbleQty                        Int?
+  bubbleUnqualifiedQty             Int?
+  bubbleUnqualifiedPercent         Int?
+  bubbleRemarks                    String?
+  damagedThreads                   String             @default("Ezık Dişler")
+  damagedThreadsQty                Int?
+  damagedThreadsUnqualifiedQty     Int?
+  damagedThreadsUnqualifiedPercent Int?
+  damagedThreadsRemarks            String?
+  dirtyThreads                     String             @default("Kırlı Dişler")
+  dirtyThreadsQty                  Int?
+  dirtyThreadsUnqualifiedQty       Int?
+  dirtyThreadsUnqualifiedPercent   Int?
+  dirtyThreadsRemarks              String?
+  platingDefects                   String             @default("Kaplama Hataları")
+  platingDefectsQty                Int?
+  platingDefectsUnqualifiedQty     Int?
+  platingDefectsUnqualifiedPercent Int?
+  platingDefectsRemarks            String?
+  rusty                            String             @default("Paslı")
+  rustyQty                         Int?
+  rustyUnqualifiedQty              Int?
+  rustyUnqualifiedPercent          Int?
+  rustyRemarks                     String?
+  discoloration                    String             @default("Renk Bozulması")
+  discolorationQty                 Int?
+  discolorationUnqualifiedQty      Int?
+  discolorationUnqualifiedPercent  Int?
+  discolorationRemarks             String?
+  dusty                            String             @default("Tozlu")
+  dustyQty                         Int?
+  dustyUnqualifiedQty              Int?
+  dustyUnqualifiedPercent          Int?
+  dustyRemarks                     String?
+  other                            String             @default("Diğer")
+  otherQty                         Int?
+  otherUnqualifiedQty              Int?
+  otherUnqualifiedPercent          Int?
+  otherRemarks                     String?
+  result                           FaultControlResult
+}
+
+model Notification {
+  id          String        @id @default(uuid())
+  title       String?
+  description String?
+  image       String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime?     @updatedAt
+  receiver    NotifReceiver @default(NORMAL)
+  link        String?
+  status      NotifStatus   @default(NOT_READ)
+}
+
+enum NotifStatus {
+  READ
+  NOT_READ
+}
+
+enum NotifReceiver {
+  SUPER
+  NORMAL
+  TECH
+}
+
+enum FaultControlResult {
+  ACCEPT
+  ACCEPTANCE_WITH_CONDITION
+  PRE_PROCESS
+  REJECT
+}
+
+enum FaultStatus {
+  PENDING
+  UNDERCONTROL
+  FaultControlResult
+}
+
+model Applications {
+  id   String @id @default(uuid())
+  Name String
+}
+
+model Colors {
+  id   String @id @default(uuid())
+  name String
+}
+
+model Standards {
+  id   String @id @default(uuid())
+  name String
+}
+
+model HeadStyle {
+  id    String  @id @default(uuid())
+  name  String
+  image String?
 }
 
 model Machine {

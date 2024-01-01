@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../lib/db';
 import { hash } from 'bcryptjs';
 import { checkUserRole } from 'utils/auth';
+import { User } from '@prisma/client';
 
 //All users
 export async function GET(req: NextRequest) {
