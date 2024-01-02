@@ -15,7 +15,7 @@ const Select = ({ name, onChange, children, label, extra }) => {
           {label}
         </label>
         <select
-          className={`flex h-[40px] w-full items-center justify-center rounded-xl border bg-white/0  text-sm outline-none dark:text-white`}
+          className={`flex h-[40px] w-full items-center justify-center rounded-xl border bg-white/0 px-1  text-sm outline-none dark:text-white`}
           name={name}
           onChange={onChange}
         >

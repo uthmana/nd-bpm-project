@@ -39,7 +39,7 @@
     "**/*.tsx",
     "next.config.js",
     ".next/types/**/*.ts",
-    "prisma/users.ts",
-    "prisma/seed.ts"
+    "seeds/users.ts",
+    "seeds/seed.ts"
   ]
 }

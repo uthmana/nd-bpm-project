@@ -9,7 +9,6 @@
 
 const nextConfig = {
   swcMinify: true,
-  SECRET: process.env.NEXTAUTH_SECRET,
   assetPrefix: process.env.NEXT_PUBLIC_BASE_PATH,
   images: {
     domains: [
@@ -19,9 +18,6 @@ const nextConfig = {
     ],
     // Make ENV
     unoptimized: true,
-  },
-  experimental: {
-    appDir: true,
   },
 };
 

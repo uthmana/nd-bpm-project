@@ -1,5 +1,6 @@
-import { MdFileUpload } from "react-icons/md";
-import Card from "components/card";
+'use client';
+import { MdFileUpload } from 'react-icons/md';
+import Card from 'components/card';
 
 const Upload = () => {
   return (
@@ -16,7 +17,7 @@ const Upload = () => {
         </button>
       </div>
 
-      <div className="col-span-5 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white pl-3 pb-4 dark:!bg-navy-800">
+      <div className="col-span-5 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white pb-4 pl-3 dark:!bg-navy-800">
         <h4 className="text-left text-xl font-bold leading-9 text-navy-700 dark:text-white">
           Complete Your Profile
         </h4>
@@ -24,7 +25,10 @@ const Upload = () => {
           Stay on the pulse of distributed projects with an anline whiteboard to
           plan, coordinate and discuss
         </p>
-        <button className="linear mt-4 flex items-center justify-center rounded-xl bg-brand-500 px-2 py-2 text-base font-medium text-white transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200">
+        <button
+          type="submit"
+          className="linear mt-4 flex items-center justify-center rounded-xl bg-brand-500 px-2 py-2 text-base font-medium text-white transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200"
+        >
           Publish now
         </button>
       </div>

@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/db';
-import { hash } from 'bcryptjs';
-import { checkUserRole } from 'utils/auth';
 import { Stock } from '@prisma/client';
 
 //Get single Stock
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
   try {
     const id = route.params.id;
-    const stock: Partial<User> = await prisma.stock.findUnique({
+    const stock: Stock = await prisma.stock.findUnique({
       where: { id: id },
     });
     if (!stock) {

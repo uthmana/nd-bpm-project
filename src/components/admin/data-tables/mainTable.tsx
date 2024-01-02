@@ -14,6 +14,7 @@ import {
 import Search from 'components/search/search';
 import Button from 'components/button/button';
 import { IoMdArrowDown, IoMdArrowUp } from 'react-icons/io';
+import { formatDateTime } from 'utils';
 
 type UserObj = {
   id: string;
@@ -28,9 +29,9 @@ type UserObj = {
 
 type CustomerObj = {
   id: string;
-  first_name: string;
-  last_name: string;
+  rep_name: string;
   email: string;
+  email_2: string;
   address: string;
   postalCode: string;
   company_name: string;
@@ -40,6 +41,12 @@ type CustomerObj = {
   definition: string;
   taxNo: string;
   tax_Office: string;
+  taxOfficeCode: string;
+  cardType: string;
+  country_code: string;
+  province_code: string;
+  district_code: string;
+  currency: string;
 };
 
 type StockObj = {
@@ -56,6 +63,7 @@ type StockObj = {
   unit: string;
   curency: string;
   date: string;
+  image: string;
 };
 
 type MainTable = {
@@ -114,11 +122,11 @@ function MainTable({
     switch (variant) {
       case 'customer':
         col = [
-          columnHelper.accessor('first_name', {
-            id: 'first_name',
+          columnHelper.accessor('company_name', {
+            id: 'company_name',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
-                AD
+                ŞİRKET
               </p>
             ),
             cell: (info: any) => (
@@ -127,11 +135,12 @@ function MainTable({
               </p>
             ),
           }),
-          columnHelper.accessor('last_name', {
-            id: 'last_name',
+
+          columnHelper.accessor('rep_name', {
+            id: 'rep_name',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
-                SOYAD
+                SORUMLU
               </p>
             ),
             cell: (info: any) => (
@@ -153,6 +162,7 @@ function MainTable({
               </p>
             ),
           }),
+
           columnHelper.accessor('address', {
             id: 'address',
             header: () => (
@@ -170,7 +180,7 @@ function MainTable({
             id: 'phoneNumber',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
-                TELEFON 1
+                TELEFON
               </p>
             ),
             cell: (info: any) => (
@@ -179,19 +189,7 @@ function MainTable({
               </p>
             ),
           }),
-          columnHelper.accessor('phoneNumber2', {
-            id: 'phoneNumber2',
-            header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                TELEFON 2
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
-              </p>
-            ),
-          }),
+
           columnHelper.accessor('postalCode', {
             id: 'postalCode',
             header: () => (
@@ -206,11 +204,38 @@ function MainTable({
             ),
           }),
 
-          columnHelper.accessor('company_name', {
-            id: 'company_name',
+          columnHelper.accessor('country_code', {
+            id: 'country_code',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
-                ŞİRKET
+                ÜLKE KODU
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('province_code', {
+            id: 'province_code',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                İL KODU
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+
+          columnHelper.accessor('district_code', {
+            id: 'district_code',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                İLÇE KODU
               </p>
             ),
             cell: (info: any) => (
@@ -253,6 +278,46 @@ function MainTable({
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
                 VERGİ OFİSİ
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('taxOfficeCode', {
+            id: 'taxOfficeCode',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                Vergi Ofis Kodu
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+
+          columnHelper.accessor('cardType', {
+            id: 'cardType',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                KART TÜRÜ
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('currency', {
+            id: 'currency',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                PARA BİRİMİ
               </p>
             ),
             cell: (info: any) => (
@@ -312,6 +377,20 @@ function MainTable({
         break;
       case 'stock':
         col = [
+          columnHelper.accessor('image', {
+            id: 'image',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                Ürün Resmi
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="max-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
+                <img className="w-[40px]" src={`/uploads/${info.getValue()}`} />
+              </p>
+            ),
+          }),
+
           columnHelper.accessor('product_code', {
             id: 'product_code',
             header: () => (
@@ -342,7 +421,7 @@ function MainTable({
             id: 'product_barcode',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
-                Ürün Barkodu
+                Barkodu
               </p>
             ),
             cell: (info: any) => (
@@ -381,7 +460,7 @@ function MainTable({
             id: 'current_price',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
-                Anlık Maliyet Fıyati
+                Maliyet
               </p>
             ),
             cell: (info: any) => (
@@ -464,7 +543,7 @@ function MainTable({
             ),
             cell: (info: any) => (
               <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
+                {formatDateTime(info.getValue())}
               </p>
             ),
           }),
@@ -578,7 +657,7 @@ function MainTable({
             ),
             cell: (info: any) => (
               <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
+                {formatDateTime(info.getValue())}
               </p>
             ),
           }),

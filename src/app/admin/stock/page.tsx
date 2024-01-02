@@ -23,6 +23,8 @@ const Stock = () => {
   const getAllStocks = async () => {
     setIsLoading(true);
     const { status, data } = await getStocks();
+
+    console.log('stocks', data);
     if (status === 200) {
       setStocks(data);
     }

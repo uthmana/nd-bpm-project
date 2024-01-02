@@ -1,4 +1,3 @@
-
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
 import ResetPassword from 'components/emails/resetPassword';
@@ -41,16 +40,18 @@ export async function POST(request: Request) {
         parseInt(process.env.CHANGE_PASSWORD_EXPIRY_TIME) * 60000,
     );
 
-
     await prisma.user.update({
       where: { email: formData.email },
       data: { token: resetPasswordToken, tokenExpiryDate },
     });
 
     emailBody.react = ResetPassword({ token: resetPasswordToken });
+
     const { data, error } = await resend.emails.send(emailBody);
+
     if (error) {
-      return NextResponse.json({ error }, { status: 404 });
+      const { statusCode, message, name }: any = error;
+      return NextResponse.json({ message, name }, { status: statusCode });
     }
     return NextResponse.json({ data }, { status: 200 });
   }

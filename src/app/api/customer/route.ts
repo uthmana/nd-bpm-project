@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '../../lib/db';
-import { hash } from 'bcryptjs';
+import prisma from 'app/lib/db';
 import { Prisma } from '@prisma/client';
 import { validateCustomerSchema } from 'utils/validate';
 

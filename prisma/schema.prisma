@@ -14,14 +14,14 @@ model User {
   name            String
   email           String?      @unique
   password        String?
-  role            String       @default("NORMAL")
-  status          String       @default("ACTIVE")
-  address         Address?
-  contactInfo     ContactInfo?
+  role            UserRole     @default(NORMAL)
+  status          UserStatus   @default(ACTIVE)
   createdAt       DateTime     @default(now())
   updatedAt       DateTime?    @updatedAt
   token           String?      @unique
   tokenExpiryDate DateTime?
+  address         Address?
+  contactInfo     ContactInfo?
 
   @@map("users")
 }
@@ -32,36 +32,40 @@ model Address {
   city    String
   state   String
   zipCode String
-  user    User?   @relation(fields: [userId], references: [id])
   userId  String? @unique @default(cuid())
+  user    User?   @relation(fields: [userId], references: [id])
 }
 
 model ContactInfo {
   id     String @id @default(cuid())
   phone  String
   email  String
-  user   User   @relation(fields: [userId], references: [id])
   userId String @unique @default(cuid())
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model Customer {
-  id           String    @id @default(uuid())
-  first_name   String
-  last_name    String
-  email        String?   @unique
-  company_name String?
-  password     String?
-  postalCode   String?
-  address      String?
-  phoneNumber  String?
-  phoneNumber2 String?
-  code         String?
-  definition   String?
-  taxNo        String?
-  tax_Office   String?
-  currency     Currency? @default(TL)
-  cardType     CardType? @default(ALICI_SATICI)
-  Offers       Offer[]
+  id            String    @id @default(uuid())
+  code          String?
+  cardType      CardType? @default(ALICI_SATICI)
+  taxNo         String?
+  company_name  String?
+  address       String?
+  postalCode    String?
+  phoneNumber   String?
+  phoneNumber2  String?
+  tax_Office    String?
+  taxOfficeCode String?
+  email         String?
+  email_2       String?
+  rep_name      String
+  currency      Currency? @default(TL)
+  country_code  String
+  province_code String
+  district_code String
+  definition    String?
+  Offers        Offer[]
+  Fault         Fault[]
 
   @@map("customers")
 }
@@ -82,8 +86,10 @@ model Stock {
   brand           String?
   date            DateTime? @default(now())
   updatedAt       DateTime? @updatedAt
+  image           String?
 }
 
+//TODO: add stock relation 
 model Offer {
   id         String      @id @default(uuid())
   name       String
@@ -91,6 +97,117 @@ model Offer {
   status     OfferStatus @default(PENDING)
   customerId String
   Customer   Customer    @relation(fields: [customerId], references: [id])
+}
+
+model Fault {
+  id                         String        @id @default(uuid())
+  customerName               String?
+  traceabilityCode           String
+  arrivalDate                DateTime?     @default(now())
+  invoiceDate                DateTime?
+  product                    String?
+  quantity                   Int?
+  productCode                String?
+  productBatchNumber         String?
+  application                String?
+  standard                   String?
+  color                      String?
+  faultDescription           String?
+  status                     FaultStatus   @default(PENDING)
+  technicalDrawingAttachment String?
+  controlInfo                String?
+  faultControl               FaultControl? @relation(fields: [faultControlId], references: [id])
+  customerId                 String?
+  Customer                   Customer?     @relation(fields: [customerId], references: [id])
+  faultControlId             String?
+}
+
+model FaultControl {
+  id                    String             @id @default(uuid())
+  faultId               String
+  customerName          String?
+  traceabilityCode      String?
+  arrivalDate           DateTime?
+  invoiceDate           DateTime?
+  product               String?
+  quantity              Int?
+  productCode           String?
+  productBatchNumber    String?
+  plating               String? // red-kap,blue-kap
+  controlDate           DateTime?          @default(now())
+  image                 String?
+  productDimension      String?
+  dimensionConfirmation Boolean?
+  quantityConfirmation  Boolean?
+  dirtyThreads          Boolean?           @default(false)
+  processFrequency      String? //yazılsın-yazılmasın
+  remarks               String?
+  result                FaultControlResult
+  Fault                 Fault[]
+}
+
+model Notification {
+  id          String        @id @default(uuid())
+  title       String?
+  description String?
+  image       String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime?     @updatedAt
+  receiver    NotifReceiver @default(NORMAL)
+  link        String?
+  status      NotifStatus   @default(NOT_READ)
+}
+
+enum NotifStatus {
+  READ
+  NOT_READ
+}
+
+enum NotifReceiver {
+  SUPER
+  NORMAL
+  TECH
+  OTHER
+}
+
+enum FaultControlResult {
+  ACCEPT
+  ACCEPTANCE_WITH_CONDITION
+  PRE_PROCESS
+  REJECT
+}
+
+enum FaultStatus {
+  PENDING
+  ACCEPT
+  REGECT
+}
+
+model Applications {
+  id   String @id @default(uuid())
+  Name String
+}
+
+model Colors {
+  id   String @id @default(uuid())
+  name String
+}
+
+model Standards {
+  id   String @id @default(uuid())
+  name String
+}
+
+model Machine {
+  id          String @id @default(uuid())
+  MachineName String
+}
+
+model TechnicalParameter {
+  id             String @id @default(uuid())
+  MachineID      String
+  ParameterName  String
+  ParameterValue String
 }
 
 enum UserRole {
@@ -115,6 +232,7 @@ enum OfferStatus {
 enum Currency {
   TL
   USD
+  EUR
 }
 
 enum CardType {

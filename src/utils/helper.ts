@@ -6,6 +6,9 @@ export function isEntryPage(pathname: string) {
       return (entryPage = true);
     }
   });
-
   return entryPage;
 }
+
+export const formatDateTime = (data) => {
+  return new Date(data).toLocaleString('tr-TR');
+};

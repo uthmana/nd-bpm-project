@@ -34,12 +34,10 @@ function ForgotPassword() {
       setError('error');
       return;
     }
-
     //Send Email
     setIsSubmitting(true);
-    const { status, data } = await sendForgotEmail({
+    const { status, data, error } = await sendForgotEmail({
       type: 'forgotPassword',
-
       email: emailValue,
       subject: 'Şifre Yenile',
       message: 'Lütfen gelen kutunuzu kontrol edin.',
@@ -50,7 +48,6 @@ function ForgotPassword() {
       setIsSubmitting(false);
       return;
     }
-
     setError('error');
     setIsSubmitting(false);
   };
@@ -87,13 +84,11 @@ function ForgotPassword() {
             Şifrenizi sıfırlamak için e-postanızı girin!
           </p>
 
-          <p
-            className={`absolute mb-3 hidden w-full rounded-md bg-red-500 p-2 text-center  text-sm font-bold text-white ${
-              error ? 'block' : ''
-            }`}
-          >
-            Geçersiz e-posta girdiniz !
-          </p>
+          {error ? (
+            <p className="mb-3 block w-full rounded-md bg-red-500 p-2 text-center  text-sm font-bold text-white">
+              Beklenmeyen bir hata oluştu. Daha sonra tekrar deneyin.
+            </p>
+          ) : null}
 
           <InputField
             variant="auth"
