@@ -56,7 +56,7 @@ model Customer {
   phoneNumber2  String?
   tax_Office    String?
   taxOfficeCode String?
-  email         String?   @unique
+  email         String?
   email_2       String?
   rep_name      String
   currency      Currency? @default(TL)
@@ -65,6 +65,7 @@ model Customer {
   district_code String
   definition    String?
   Offers        Offer[]
+  Fault         Fault[]
 
   @@map("customers")
 }
@@ -88,6 +89,7 @@ model Stock {
   image           String?
 }
 
+//TODO: add stock relation 
 model Offer {
   id         String      @id @default(uuid())
   name       String
@@ -98,10 +100,10 @@ model Offer {
 }
 
 model Fault {
-  id                         String         @id @default(uuid())
+  id                         String        @id @default(uuid())
   customerName               String?
   traceabilityCode           String
-  arrivalDate                DateTime?      @default(now())
+  arrivalDate                DateTime?     @default(now())
   invoiceDate                DateTime?
   product                    String?
   quantity                   Int?
@@ -111,75 +113,37 @@ model Fault {
   standard                   String?
   color                      String?
   faultDescription           String?
-  status                     FaultStatus    @default(PENDING)
+  status                     FaultStatus   @default(PENDING)
   technicalDrawingAttachment String?
   controlInfo                String?
-  faultControForm            FaultControl[]
+  faultControl               FaultControl? @relation(fields: [faultControlId], references: [id])
+  customerId                 String?
+  Customer                   Customer?     @relation(fields: [customerId], references: [id])
+  faultControlId             String?
 }
 
 model FaultControl {
-  id                 String    @id @default(uuid())
-  faultId            String
-  customerName       String?
-  traceabilityCode   String?
-  arrivalDate        DateTime?
-  invoiceDate        DateTime?
-  product            String?
-  quantity           Int?
-  productCode        String?
-  productBatchNumber String?
-
-  fault       Fault     @relation(fields: [id], references: [id])
-  headStyle   String?
-  plating     String?
-  controlDate DateTime? @default(now())
-
-  materialMixing                   String             @default("Karışık Malzema")
-  materialMixingQty                Int?
-  materialMixingUnqualifiedQty     Int?
-  materialMixingUnqualifiedPercent Int?
-  materialMixingRemarks            String?
-  bubble                           String             @default("Kabarcık")
-  bubbleQty                        Int?
-  bubbleUnqualifiedQty             Int?
-  bubbleUnqualifiedPercent         Int?
-  bubbleRemarks                    String?
-  damagedThreads                   String             @default("Ezık Dişler")
-  damagedThreadsQty                Int?
-  damagedThreadsUnqualifiedQty     Int?
-  damagedThreadsUnqualifiedPercent Int?
-  damagedThreadsRemarks            String?
-  dirtyThreads                     String             @default("Kırlı Dişler")
-  dirtyThreadsQty                  Int?
-  dirtyThreadsUnqualifiedQty       Int?
-  dirtyThreadsUnqualifiedPercent   Int?
-  dirtyThreadsRemarks              String?
-  platingDefects                   String             @default("Kaplama Hataları")
-  platingDefectsQty                Int?
-  platingDefectsUnqualifiedQty     Int?
-  platingDefectsUnqualifiedPercent Int?
-  platingDefectsRemarks            String?
-  rusty                            String             @default("Paslı")
-  rustyQty                         Int?
-  rustyUnqualifiedQty              Int?
-  rustyUnqualifiedPercent          Int?
-  rustyRemarks                     String?
-  discoloration                    String             @default("Renk Bozulması")
-  discolorationQty                 Int?
-  discolorationUnqualifiedQty      Int?
-  discolorationUnqualifiedPercent  Int?
-  discolorationRemarks             String?
-  dusty                            String             @default("Tozlu")
-  dustyQty                         Int?
-  dustyUnqualifiedQty              Int?
-  dustyUnqualifiedPercent          Int?
-  dustyRemarks                     String?
-  other                            String             @default("Diğer")
-  otherQty                         Int?
-  otherUnqualifiedQty              Int?
-  otherUnqualifiedPercent          Int?
-  otherRemarks                     String?
-  result                           FaultControlResult
+  id                    String             @id @default(uuid())
+  faultId               String
+  customerName          String?
+  traceabilityCode      String?
+  arrivalDate           DateTime?
+  invoiceDate           DateTime?
+  product               String?
+  quantity              Int?
+  productCode           String?
+  productBatchNumber    String?
+  plating               String? // red-kap,blue-kap
+  controlDate           DateTime?          @default(now())
+  image                 String?
+  productDimension      String?
+  dimensionConfirmation Boolean?
+  quantityConfirmation  Boolean?
+  dirtyThreads          Boolean?           @default(false)
+  processFrequency      String? //yazılsın-yazılmasın
+  remarks               String?
+  result                FaultControlResult
+  Fault                 Fault[]
 }
 
 model Notification {
@@ -234,12 +198,6 @@ model Standards {
   name String
 }
 
-model HeadStyle {
-  id    String  @id @default(uuid())
-  name  String
-  image String?
-}
-
 model Machine {
   id          String @id @default(uuid())
   MachineName String
@@ -250,13 +208,6 @@ model TechnicalParameter {
   MachineID      String
   ParameterName  String
   ParameterValue String
-}
-
-model CustomerFault {
-  CustomerID String
-  FaultID    String
-
-  @@id([CustomerID, FaultID])
 }
 
 enum UserRole {
@@ -281,6 +232,7 @@ enum OfferStatus {
 enum Currency {
   TL
   USD
+  EUR
 }
 
 enum CardType {

@@ -5,7 +5,7 @@ import { Fault } from '@prisma/client';
 //All Faults
 export async function GET(req: NextRequest) {
   try {
-    const fault = await prisma.fault.findMany();
+    const fault = await prisma.fault.findMany({ where: { status: 'PENDING' } });
     if (!fault) {
       throw new Error('No fault found');
     }
@@ -21,6 +21,7 @@ export async function GET(req: NextRequest) {
 // Create Fault
 export async function PUT(req: Request) {
   try {
+    //TODO: restrict unathorized user : only normal and admin allowed
     const result: Fault = await req.json();
     const { traceabilityCode } = result;
 
@@ -44,7 +45,7 @@ export async function PUT(req: Request) {
         title: 'Ürün Girişi',
         description: `${fault.product},${fault.application},${fault.standard},${fault.color}`,
         receiver: 'SUPER',
-        link: `/admin/entry?q=${fault.product}`,
+        link: `/admin/entry/control/${fault.id}?q=view`,
       },
     });
 

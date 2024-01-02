@@ -68,6 +68,7 @@ export async function DELETE(
   route: { params: { id: string } },
 ) {
   try {
+    //TODO: restrict unathorized user : only normal and admin allowed
     const id = route.params.id;
     const deletedFault = await prisma.fault.delete({
       where: {

@@ -64,16 +64,24 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
   const [values, setValues] = useState(initialValues);
   const cardTypes = ['ALICI_SATICI', 'ALICI', 'SATICI'];
   const currencies = ['TL', 'USD'];
+  const [error, setError] = useState(false);
 
   const handleValues = (event) => {
+    setError(false);
     const newVal = { [event.target?.name]: event.target?.value };
     setValues({ ...values, ...newVal });
   };
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
+    const { taxNo, tax_Office, taxOfficeCode } = values;
 
-    //TODO: Add form validation
+    if (!taxNo || !tax_Office || !taxOfficeCode) {
+      //TODO: Add form validation
+      setError(true);
+      return;
+    }
+
     onSubmit(values);
   };
 
@@ -96,6 +104,12 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
         <h1 className="my-5 text-center text-[24px] font-bold dark:text-white">
           {title}
         </h1>
+      ) : null}
+
+      {error ? (
+        <p className="mb-3 w-full rounded-md bg-red-500 p-2 text-center text-sm  font-bold text-white">
+          Lütfen Vergi No., Vergi Ofisi ve Vergi Ofis kodu boş bırakılmamalıdır!
+        </p>
       ) : null}
 
       <div className="flex flex-col gap-4 sm:flex-row">
@@ -243,7 +257,7 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
         <InputField
           label="Vergi No."
           onChange={handleValues}
-          type="text"
+          type="number"
           id="taxNo"
           name="taxNo"
           placeholder="Vergi No."
@@ -263,7 +277,7 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
         <InputField
           label="Vergi Ofis kodu"
           onChange={handleValues}
-          type="text"
+          type="number"
           id="taxOfficeCode"
           name="taxOfficeCode"
           placeholder="Vergi Ofis kodu"

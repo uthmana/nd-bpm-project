@@ -90,186 +90,245 @@ function EntryTable({
     let col: any;
 
     const entryStatus = {
-      PENDING: 'Bekleme',
+      PENDING: 'Beklemede',
       REGECT: 'Ret',
-      ACCEPT: 'kabul',
+      ACCEPT: 'Kabul',
     };
 
-    if (variant !== 'NORMAL') {
-      col = [
-        columnHelper.accessor('technicalDrawingAttachment', {
-          id: 'technicalDrawingAttachment',
+    col = [
+      columnHelper.accessor('technicalDrawingAttachment', {
+        id: 'technicalDrawingAttachment',
+        header: () => (
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            İlgi Doküman
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="max-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue() ? (
+              <img className="w-[40px]" src={`/uploads/${info.getValue()}`} />
+            ) : (
+              ''
+            )}
+          </p>
+        ),
+      }),
+      columnHelper.accessor('traceabilityCode', {
+        id: 'traceabilityCode',
+        header: () => (
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Takip Kodu
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
+          </p>
+        ),
+      }),
+      columnHelper.accessor('arrivalDate', {
+        id: 'arrivalDate',
+        header: () => (
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Variş Tarihi
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {formatDateTime(info.getValue())}
+          </p>
+        ),
+      }),
+      columnHelper.accessor('invoiceDate', {
+        id: 'invoiceDate',
+        header: () => (
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            İrsalye Tarihi
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {formatDateTime(info.getValue())}
+          </p>
+        ),
+      }),
+      columnHelper.accessor('product', {
+        id: 'product',
+        header: () => (
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Ürün İsmi
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
+          </p>
+        ),
+      }),
+      columnHelper.accessor('quantity', {
+        id: 'quantity',
+        header: () => (
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Miktar
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
+          </p>
+        ),
+      }),
+      columnHelper.accessor('productCode', {
+        id: 'productCode',
+        header: () => (
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Ürün Kodu
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="flex text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
+          </p>
+        ),
+      }),
+      columnHelper.accessor('productBatchNumber', {
+        id: 'productBatchNumber',
+        header: () => (
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Batch No.
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
+          </p>
+        ),
+      }),
+      columnHelper.accessor('application', {
+        id: 'application',
+        header: () => (
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Uygulama
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
+          </p>
+        ),
+      }),
+      columnHelper.accessor('standard', {
+        id: 'standard',
+        header: () => (
+          <p className="text-sm font-bold text-gray-600 dark:text-white">
+            STANDART
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
+          </p>
+        ),
+      }),
+      columnHelper.accessor('color', {
+        id: 'color',
+        header: () => (
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Renk
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
+          </p>
+        ),
+      }),
+      columnHelper.accessor('faultDescription', {
+        id: 'faultDescription',
+        header: () => (
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Açıklama
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
+          </p>
+        ),
+      }),
+      columnHelper.accessor('status', {
+        id: 'status',
+        header: () => (
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            DURUM
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="rounded-lg bg-yellow-400 py-1 text-center text-sm font-bold text-navy-700">
+            {entryStatus[info.getValue()]}
+          </p>
+        ),
+      }),
+    ];
+
+    if (variant === 'NORMAL' || variant === 'ADMIN') {
+      col.push(
+        columnHelper.accessor('id', {
+          id: 'id',
           header: () => (
             <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              İlgi Doküman
+              DÜZENLE
             </p>
           ),
           cell: (info: any) => (
-            <p className="max-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue() ? (
-                <img className="w-full" src={`/uploads/${info.getValue()}`} />
-              ) : (
-                ''
-              )}
-            </p>
+            <button
+              className="ml-3 rounded-md bg-green-600 px-3 py-2 hover:bg-green-700"
+              onClick={() => onEdit(info.getValue())}
+            >
+              <MdModeEdit className="h-5 w-5 text-white" />
+            </button>
           ),
         }),
-        columnHelper.accessor('traceabilityCode', {
-          id: 'traceabilityCode',
+        columnHelper.accessor('id', {
+          id: 'id',
           header: () => (
             <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              Takip Kodu
+              DELETE
             </p>
           ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('arrivalDate', {
-          id: 'arrivalDate',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              Variş Tarihi
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {formatDateTime(info.getValue())}
-            </p>
+          cell: (info) => (
+            <button
+              className="rounded-md bg-red-600 px-3 py-2 hover:bg-red-700"
+              onClick={() => onDelete(info.getValue())}
+            >
+              <MdOutlineDelete className="h-5 w-5 text-white" />
+            </button>
           ),
         }),
-        columnHelper.accessor('invoiceDate', {
-          id: 'invoiceDate',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              İrsalye Tarihi
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {formatDateTime(info.getValue())}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('product', {
-          id: 'product',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              Ürün İsmi
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('quantity', {
-          id: 'quantity',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              Miktar
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('productCode', {
-          id: 'productCode',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              Ürün Kodu
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="flex text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('productBatchNumber', {
-          id: 'productBatchNumber',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              Batch No.
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('application', {
-          id: 'application',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              Uygulama
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('standard', {
-          id: 'standard',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              STANDART
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('color', {
-          id: 'color',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              Renk
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('faultDescription', {
-          id: 'faultDescription',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              Açıklama
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('status', {
-          id: 'status',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              DURUM
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="rounded-lg bg-yellow-400 py-1 text-center text-sm font-bold text-navy-700">
-              {entryStatus[info.getValue()]}
-            </p>
-          ),
-        }),
+      );
+      if (variant === 'ADMIN')
+        col.push(
+          columnHelper.accessor('id', {
+            id: 'id',
+            header: () => (
+              <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+                KONTROL FORMU
+              </p>
+            ),
+            cell: (info: any) => (
+              <button
+                className="ml-3 rounded-md bg-blue-600 px-3 py-2 hover:bg-blue-700"
+                onClick={() => onControl(info.getValue())}
+              >
+                <MdCheck className="h-5 w-5 text-white" />
+              </button>
+            ),
+          }),
+        );
+      return col;
+    }
+    if (variant === 'SUPER' || variant === 'TECH') {
+      col.push(
         columnHelper.accessor('id', {
           id: 'id',
           header: () => (
@@ -286,249 +345,9 @@ function EntryTable({
             </button>
           ),
         }),
-        columnHelper.accessor('id', {
-          id: 'id',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              DÜZENLE
-            </p>
-          ),
-          cell: (info: any) => (
-            <button
-              className="ml-3 rounded-md bg-green-600 px-3 py-2 hover:bg-green-700"
-              onClick={() => onEdit(info.getValue())}
-            >
-              <MdModeEdit className="h-5 w-5 text-white" />
-            </button>
-          ),
-        }),
-        columnHelper.accessor('id', {
-          id: 'id',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              DELETE
-            </p>
-          ),
-          cell: (info) => (
-            <button
-              className="rounded-md bg-red-600 px-3 py-2 hover:bg-red-700"
-              onClick={() => onDelete(info.getValue())}
-            >
-              <MdOutlineDelete className="h-5 w-5 text-white" />
-            </button>
-          ),
-        }),
-      ];
-    } else {
-      col = [
-        columnHelper.accessor('technicalDrawingAttachment', {
-          id: 'technicalDrawingAttachment',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              İlgi Doküman
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="max-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue() ? (
-                <img className="w-full" src={`/uploads/${info.getValue()}`} />
-              ) : (
-                ''
-              )}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('traceabilityCode', {
-          id: 'traceabilityCode',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              Takip Kodu
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('arrivalDate', {
-          id: 'arrivalDate',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              Variş Tarihi
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('invoiceDate', {
-          id: 'invoiceDate',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              İrsalye Tarihi
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('product', {
-          id: 'product',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              Ürün İsmi
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('quantity', {
-          id: 'quantity',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              Miktar
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('productCode', {
-          id: 'productCode',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              Ürün Kodu
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="flex text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('productBatchNumber', {
-          id: 'productBatchNumber',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              Batch No.
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('application', {
-          id: 'application',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              Uygulama
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('standard', {
-          id: 'standard',
-          header: () => (
-            <p className="text-sm font-bold text-gray-600 dark:text-white">
-              STANDART
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('color', {
-          id: 'color',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              Renk
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('faultDescription', {
-          id: 'faultDescription',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              Açıklama
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('status', {
-          id: 'status',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              DURUM
-            </p>
-          ),
-          cell: (info: any) => (
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          ),
-        }),
-        columnHelper.accessor('id', {
-          id: 'id',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              DÜZENLE
-            </p>
-          ),
-          cell: (info: any) => (
-            <button
-              className="ml-3 rounded-md bg-green-600 px-3 py-2 hover:bg-green-700"
-              onClick={() => onEdit(info.getValue())}
-            >
-              <MdModeEdit className="h-5 w-5 text-white" />
-            </button>
-          ),
-        }),
-        columnHelper.accessor('id', {
-          id: 'id',
-          header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-              DELETE
-            </p>
-          ),
-          cell: (info) => (
-            <button
-              className="rounded-md bg-red-600 px-3 py-2 hover:bg-red-700"
-              onClick={() => onDelete(info.getValue())}
-            >
-              <MdOutlineDelete className="h-5 w-5 text-white" />
-            </button>
-          ),
-        }),
-      ];
+      );
+      return col;
     }
-    return col;
   }, []);
 
   const [data, setData] = React.useState(() => [...defaultData]);
@@ -563,12 +382,14 @@ function EntryTable({
           />
         </div>
 
-        <Button
-          text="EKLE"
-          extra="!w-[140px] h-[38px] font-bold"
-          onClick={onAdd}
-          icon={<MdAdd className="ml-1 h-6 w-6" />}
-        />
+        {variant === 'NORMAL' || variant === 'ADMIN' ? (
+          <Button
+            text="EKLE"
+            extra="!w-[140px] h-[38px] font-bold"
+            onClick={onAdd}
+            icon={<MdAdd className="ml-1 h-6 w-6" />}
+          />
+        ) : null}
       </header>
 
       <div

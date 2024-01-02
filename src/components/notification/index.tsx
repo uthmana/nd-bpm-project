@@ -53,7 +53,7 @@ export default function Notification({ user }) {
       <div className="flex w-[360px] flex-col gap-3 rounded-[20px] bg-white p-4 shadow-xl shadow-shadow-500 dark:!bg-navy-700 dark:text-white dark:shadow-none sm:w-[460px]">
         <div className="flex items-center justify-between p-3">
           <p className="text-base font-bold text-navy-700  dark:text-white">
-            BİLDİRİMLER {user?.role}
+            BİLDİRİMLER
           </p>
         </div>
         {notifications?.map((item, idx) => {

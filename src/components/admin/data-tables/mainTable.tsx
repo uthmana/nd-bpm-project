@@ -386,7 +386,7 @@ function MainTable({
             ),
             cell: (info: any) => (
               <p className="max-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
-                <img className="w-full" src={`/uploads/${info.getValue()}`} />
+                <img className="w-[40px]" src={`/uploads/${info.getValue()}`} />
               </p>
             ),
           }),
@@ -421,7 +421,7 @@ function MainTable({
             id: 'product_barcode',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
-                Ürün Barkodu
+                Barkodu
               </p>
             ),
             cell: (info: any) => (
@@ -460,7 +460,7 @@ function MainTable({
             id: 'current_price',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
-                Anlık Maliyet Fıyati
+                Maliyet
               </p>
             ),
             cell: (info: any) => (
