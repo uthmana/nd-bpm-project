@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
       throw new Error('Notification not found');
     }
     const filtedNotification: Notification[] = notification.filter((item) => {
-      return item.receiver === session.user.role;
+      return item.receiver === session.user.role && item.status === 'NOT_READ';
     });
 
     return NextResponse.json(filtedNotification, { status: 200 });

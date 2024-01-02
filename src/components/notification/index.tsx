@@ -9,22 +9,12 @@ import { getNotifications, updateNotificStatus } from 'app/lib/apiRequest';
 
 export default function Notification({ user }) {
   const [notifications, setNotifications] = useState([]);
-  const [notifiStatus, setNotifiStatus] = useState([]);
   const router = useRouter();
 
   const getMyNotification = async () => {
     const { data, status } = await getNotifications();
     if (status === 200) {
-      setNotifications(
-        data
-          .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
-          .slice(0, 10),
-      );
-      setNotifiStatus(
-        data.filter((item) => {
-          return item.status === 'NOT_READ';
-        }),
-      );
+      setNotifications(data);
     }
   };
 
@@ -50,9 +40,9 @@ export default function Notification({ user }) {
             <IoMdNotificationsOutline className="h-6 w-6 text-gray-600 dark:text-white" />
           </p>
 
-          {notifiStatus.length > 0 ? (
+          {notifications.length > 0 ? (
             <span className="absolute -right-2 -top-3 flex h-[20px] min-h-fit w-[20px] min-w-fit cursor-pointer items-center justify-center rounded-full bg-red-500 p-[2px] text-[12px] font-bold text-white">
-              {notifiStatus.length}
+              {notifications.length}
             </span>
           ) : null}
         </>
