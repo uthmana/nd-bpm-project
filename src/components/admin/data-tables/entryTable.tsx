@@ -13,6 +13,7 @@ import {
 } from '@tanstack/react-table';
 import Search from 'components/search/search';
 import Button from 'components/button/button';
+import { formatDateTime } from 'utils';
 
 type FaultObj = {
   id: string;
@@ -135,7 +136,7 @@ function EntryTable({
           ),
           cell: (info: any) => (
             <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
+              {formatDateTime(info.getValue())}
             </p>
           ),
         }),
@@ -148,7 +149,7 @@ function EntryTable({
           ),
           cell: (info: any) => (
             <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
+              {formatDateTime(info.getValue())}
             </p>
           ),
         }),

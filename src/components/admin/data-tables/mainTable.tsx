@@ -14,6 +14,7 @@ import {
 import Search from 'components/search/search';
 import Button from 'components/button/button';
 import { IoMdArrowDown, IoMdArrowUp } from 'react-icons/io';
+import { formatDateTime } from 'utils';
 
 type UserObj = {
   id: string;
@@ -542,7 +543,7 @@ function MainTable({
             ),
             cell: (info: any) => (
               <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
+                {formatDateTime(info.getValue())}
               </p>
             ),
           }),
@@ -656,7 +657,7 @@ function MainTable({
             ),
             cell: (info: any) => (
               <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
+                {formatDateTime(info.getValue())}
               </p>
             ),
           }),

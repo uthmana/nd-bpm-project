@@ -89,3 +89,7 @@ export async function deleteFault(id) {
 export async function getNotifications(payload) {
   return fetchAPI('notification', 'get', payload);
 }
+
+export async function updateNotificStatus(payload) {
+  return fetchAPI(`notification`, 'post', payload);
+}

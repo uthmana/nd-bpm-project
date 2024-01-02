@@ -14,9 +14,8 @@ export async function GET(req: NextRequest) {
     if (!notification) {
       throw new Error('Notification not found');
     }
-    //TODO: fix the filter func
     const filtedNotification: Notification[] = notification.filter((item) => {
-      item.receiver === session.user.role;
+      return item.receiver === session.user.role;
     });
 
     return NextResponse.json(filtedNotification, { status: 200 });
@@ -26,19 +25,19 @@ export async function GET(req: NextRequest) {
   }
 }
 
+//Update Notification
 export async function POST(req: NextRequest) {
   try {
     const reqbody: any = await req.json();
-    if (reqbody.role !== 'ADMIN') {
-      const notification = await prisma.notification.findMany({
-        where: { receiver: reqbody.role, status: 'NOT_READ' },
-      });
-      if (!notification) {
-        throw new Error('Notification not found');
-      }
-      return NextResponse.json(notification, { status: 200 });
+    const { id } = reqbody;
+    const notification = await prisma.notification.update({
+      where: { id },
+      data: { status: 'READ' },
+    });
+    if (!notification) {
+      throw new Error('Notification not found');
     }
-    return NextResponse.json([], { status: 204 });
+    return NextResponse.json(notification, { status: 200 });
   } catch (error) {
     console.error('Error fetching users:', error);
     return NextResponse.json({ error: 'Internal Server Error' });

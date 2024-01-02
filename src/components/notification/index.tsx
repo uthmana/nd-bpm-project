@@ -5,28 +5,41 @@ import { IoMdNotificationsOutline } from 'react-icons/io';
 import { BsArrowBarUp } from 'react-icons/bs';
 import NotificationItem from './item';
 import { useRouter } from 'next/navigation';
-import { getNotifications } from 'app/lib/apiRequest';
+import { getNotifications, updateNotificStatus } from 'app/lib/apiRequest';
 
 export default function Notification({ user }) {
   const [notifications, setNotifications] = useState([]);
+  const [notifiStatus, setNotifiStatus] = useState([]);
   const router = useRouter();
 
-  const getMyNotification = async (user: object) => {
-    const { data, status } = await getNotifications(user);
+  const getMyNotification = async () => {
+    const { data, status } = await getNotifications();
     if (status === 200) {
-      setNotifications(data);
-      console.log(data);
+      setNotifications(
+        data
+          .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
+          .slice(0, 10),
+      );
+      setNotifiStatus(
+        data.filter((item) => {
+          return item.status === 'NOT_READ';
+        }),
+      );
     }
   };
 
   useEffect(() => {
     if (user?.role) {
-      getMyNotification(user);
+      getMyNotification();
     }
   }, [user]);
 
-  const handleNotifClick = (link: string) => {
-    router.push(link);
+  const handleNotifClick = async ({ id, link }) => {
+    const { status, data } = await updateNotificStatus({ id });
+    if (status === 200) {
+      getMyNotification();
+      router.push(link);
+    }
   };
 
   return (
@@ -37,9 +50,9 @@ export default function Notification({ user }) {
             <IoMdNotificationsOutline className="h-6 w-6 text-gray-600 dark:text-white" />
           </p>
 
-          {notifications.length > 0 ? (
-            <span className="absolute -right-2 -top-3 min-h-fit min-w-fit cursor-pointer rounded-full bg-red-500 px-[4px] py-[2px] text-[12px] font-bold text-white">
-              {notifications.length}
+          {notifiStatus.length > 0 ? (
+            <span className="absolute -right-2 -top-3 flex h-[20px] min-h-fit w-[20px] min-w-fit cursor-pointer items-center justify-center rounded-full bg-red-500 p-[2px] text-[12px] font-bold text-white">
+              {notifiStatus.length}
             </span>
           ) : null}
         </>
@@ -55,7 +68,11 @@ export default function Notification({ user }) {
         </div>
         {notifications?.map((item, idx) => {
           return (
-            <NotificationItem {...item} onClick={handleNotifClick} key={idx} />
+            <NotificationItem
+              {...item}
+              onClick={(val) => handleNotifClick(val)}
+              key={idx}
+            />
           );
         })}
       </div>
