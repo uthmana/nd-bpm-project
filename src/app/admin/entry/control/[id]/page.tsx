@@ -11,14 +11,13 @@ export default function EntryControl() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const queryParams = useParams();
   const [isLoading, setIsloading] = useState(false);
-  const [fault, setFault] = useState([]);
+  const [fault, setFault] = useState({} as any);
 
   useEffect(() => {
     const getSingleFault = async () => {
       setIsloading(true);
       const { status, data } = await getFaultById(queryParams.id);
       if (status === 200) {
-        console.log(data);
         setFault(data);
         setIsloading(false);
         return;

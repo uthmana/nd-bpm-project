@@ -27,19 +27,20 @@ const routes = [
     icon: <MdHome className={`${iconStyle}`} />,
   },
   {
-    name: 'Stok',
-    layout: '/admin',
-    path: 'stock',
-    role: 'normal',
-    icon: <MdOutlineMultilineChart className={`${iconStyle}`} />,
-  },
-  {
     name: 'Müşteri',
     layout: '/admin',
     path: 'customer',
     role: 'normal',
     icon: <MdOutlineGroups3 className={`${iconStyle}`} />,
   },
+  {
+    name: 'Stok',
+    layout: '/admin',
+    path: 'stock',
+    role: 'normal',
+    icon: <MdOutlineMultilineChart className={`${iconStyle}`} />,
+  },
+
   {
     name: 'Ürün Girişi',
     layout: '/admin',

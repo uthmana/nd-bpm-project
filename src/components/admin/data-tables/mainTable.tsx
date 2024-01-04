@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from 'react';
+'use client';
+import React, { useEffect, useMemo, useState } from 'react';
 import Card from 'components/card';
 import { MdModeEdit, MdOutlineDelete, MdAdd } from 'react-icons/md';
 import {
@@ -15,6 +16,7 @@ import Search from 'components/search/search';
 import Button from 'components/button/button';
 import { IoMdArrowDown, IoMdArrowUp } from 'react-icons/io';
 import { formatDateTime } from 'utils';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
 type UserObj = {
   id: string;
@@ -72,6 +74,7 @@ type MainTable = {
   onEdit: (e: any) => void;
   onDelete: (e: any) => void;
   onAdd: (e: any) => void;
+  onSearch?: (e: any) => void;
 };
 
 function MainTable({
@@ -79,10 +82,12 @@ function MainTable({
   onEdit,
   onDelete,
   onAdd,
+  onSearch,
   variant = 'user',
 }: MainTable) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState('');
+  const queryParams = useParams();
 
   let defaultData = tableData;
 
@@ -113,7 +118,6 @@ function MainTable({
     const x = e.pageX - e.currentTarget.offsetLeft;
     const walk = (x - startX) * 3; // scroll-fast
     e.currentTarget.scrollLeft = scrollLeft - walk;
-    console.log(walk);
   };
 
   const columns = useMemo(() => {
@@ -698,7 +702,7 @@ function MainTable({
     return col;
   }, []);
 
-  const [data, setData] = React.useState(() => [...defaultData]);
+  const [data, setData] = useState(() => [...defaultData]);
   const table = useReactTable({
     data,
     columns,
@@ -719,14 +723,34 @@ function MainTable({
     getPaginationRowModel: getPaginationRowModel(),
     debugTable: true,
   });
+  const [searchText, setSearchText] = useState('');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchVal = searchParams.get('q');
+
+  const handleSearchChange = (val: string) => {
+    setSearchText(val);
+    if (searchText) {
+      router.push(`/admin/customer/?q=${val}`);
+    }
+  };
+
+  useEffect(() => {
+    if (searchText) {
+      setGlobalFilter(searchVal);
+      setSearchText(searchVal);
+    }
+  }, [searchVal]);
+
   return (
     <Card extra={'w-full h-full sm:overflow-auto px-6 pb-3'}>
       <header className="relative flex items-center justify-between gap-4 pt-6">
         <div className="text-md font-medium text-navy-700 dark:text-white">
           <Search
             extra="!h-[38px] md:w-[300px] md:max-w-[300px]"
-            onSubmit={(val) => setGlobalFilter(val)}
-            onChange={(val) => setGlobalFilter(val)}
+            onSubmit={(val) => handleSearchChange(val)}
+            onChange={(val) => handleSearchChange(val)}
+            value={searchText}
           />
         </div>
 

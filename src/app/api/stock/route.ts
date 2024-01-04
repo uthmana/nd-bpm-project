@@ -22,6 +22,7 @@ export async function GET(req: NextRequest) {
 export async function PUT(req: Request) {
   try {
     const result: Stock = await req.json();
+
     const { product_name, product_code, current_price, curency } = result;
 
     if (!product_name || !product_code || !current_price || !curency) {

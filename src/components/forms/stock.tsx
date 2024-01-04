@@ -24,6 +24,7 @@ type StockObj = {
   unit: string;
   curency: string;
   image: string;
+  customerId: string;
 };
 
 export default function Stock(props: {
@@ -31,9 +32,11 @@ export default function Stock(props: {
   data?: StockObj;
   title: string;
   loading: boolean;
+  customerData?: any;
 }) {
-  const { onSubmit, data, title, loading } = props;
+  const { onSubmit, data, title, loading, customerData } = props;
   const currency = ['TRY', 'USD'];
+
   const initialValues = data
     ? data
     : {
@@ -50,6 +53,7 @@ export default function Stock(props: {
         unit: '',
         curency: 'TRY',
         image: '',
+        customerId: '',
       };
 
   const [values, setValues] = useState(initialValues);
@@ -66,8 +70,8 @@ export default function Stock(props: {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { product_name, product_code, current_price } = values;
-    if (!product_name || !product_code || !current_price) {
+    const { product_name, product_code, current_price, customerId } = values;
+    if (!product_name || !product_code || !current_price || !customerId) {
       setError(true);
     }
     onSubmit({
@@ -100,10 +104,30 @@ export default function Stock(props: {
 
       {error ? (
         <p className="mb-3 w-full rounded-md bg-red-500 p-2 text-center text-sm  font-bold text-white">
-          Lütfen boş <b> ürün adi</b>, <b> ürün kodu</b>, <b>fiyatı</b> ve para
-          birimi alanları doldurmanız lazım !
+          Lütfen <b> Müşteri </b>, <b> Ürün adi</b>,<b> Ürün kodu</b>,{' '}
+          <b>Fiyatı</b> ve Para birimi alanları boş bırakılmamalı !
         </p>
       ) : null}
+
+      <Select
+        extra="pt-1 mb-3"
+        label="Müşteri"
+        onChange={handleValues}
+        name="customerId"
+      >
+        <option value="">Müşteri Seç</option>
+        {customerData.map((item, idx) => {
+          return (
+            <option
+              value={item.id}
+              key={idx}
+              selected={data ? data?.customerId === item.id : null}
+            >
+              {item.company_name}
+            </option>
+          );
+        })}
+      </Select>
 
       <div className="mb-2 flex flex-col gap-3 sm:flex-row">
         <InputField

@@ -38,7 +38,6 @@ export async function deleteStock(id) {
 }
 
 // customer
-
 export async function addCustomer(payload) {
   return fetchAPI('customer', 'put', payload);
 }

@@ -83,7 +83,6 @@ function EntryTable({
     const x = e.pageX - e.currentTarget.offsetLeft;
     const walk = (x - startX) * 3; // scroll-fast
     e.currentTarget.scrollLeft = scrollLeft - walk;
-    console.log(walk);
   };
 
   const columns = useMemo(() => {

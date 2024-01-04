@@ -1,4 +1,16 @@
 -- CreateEnum
+CREATE TYPE "NotifStatus" AS ENUM ('READ', 'NOT_READ');
+
+-- CreateEnum
+CREATE TYPE "NotifReceiver" AS ENUM ('SUPER', 'NORMAL', 'TECH', 'OTHER');
+
+-- CreateEnum
+CREATE TYPE "FaultControlResult" AS ENUM ('ACCEPT', 'ACCEPTANCE_WITH_CONDITION', 'PRE_PROCESS', 'REJECT');
+
+-- CreateEnum
+CREATE TYPE "FaultStatus" AS ENUM ('PENDING', 'ACCEPT', 'REGECT');
+
+-- CreateEnum
 CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'SUPER', 'NORMAL', 'TECH');
 
 -- CreateEnum
@@ -8,7 +20,7 @@ CREATE TYPE "UserStatus" AS ENUM ('ACTIVE', 'PASSIVE');
 CREATE TYPE "OfferStatus" AS ENUM ('SENT', 'PENDING', 'ACCEPTED', 'REJECTED');
 
 -- CreateEnum
-CREATE TYPE "Currency" AS ENUM ('TL', 'USD');
+CREATE TYPE "Currency" AS ENUM ('TL', 'USD', 'EUR');
 
 -- CreateEnum
 CREATE TYPE "CardType" AS ENUM ('ALICI_SATICI', 'ALICI', 'SATICI');
@@ -19,8 +31,8 @@ CREATE TABLE "users" (
     "name" TEXT NOT NULL,
     "email" TEXT,
     "password" TEXT,
-    "role" TEXT NOT NULL DEFAULT 'NORMAL',
-    "status" TEXT NOT NULL DEFAULT 'ACTIVE',
+    "role" "UserRole" NOT NULL DEFAULT 'NORMAL',
+    "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
     "token" TEXT,
@@ -94,6 +106,7 @@ CREATE TABLE "Stock" (
     "date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
     "image" TEXT,
+    "customerId" TEXT,
 
     CONSTRAINT "Stock_pkey" PRIMARY KEY ("id")
 );
@@ -112,33 +125,90 @@ CREATE TABLE "Offer" (
 -- CreateTable
 CREATE TABLE "Fault" (
     "id" TEXT NOT NULL,
-    "CustomerName" TEXT NOT NULL,
-    "TraceabilityCode" TEXT NOT NULL,
-    "ArrivalDate" TIMESTAMP(3) NOT NULL,
-    "Product" TEXT NOT NULL,
-    "Quantity" INTEGER NOT NULL,
-    "ProductCode" TEXT NOT NULL,
-    "ProductBatchNumber" TEXT NOT NULL,
-    "Application" TEXT,
-    "Standard" TEXT,
-    "Color" TEXT,
-    "FaultDescription" TEXT NOT NULL,
-    "SuperUserID" TEXT NOT NULL,
-    "SuperUserConfirmation" BOOLEAN NOT NULL,
-    "ConfirmationEvidence" TEXT,
-    "TechnicalDrawingAttachment" TEXT,
-    "InvoiceDate" TIMESTAMP(3),
-    "CoatingControl" BOOLEAN,
-    "MixedMaterial" BOOLEAN,
-    "MachineUserID" TEXT NOT NULL,
-    "MachineID" TEXT NOT NULL,
-    "ServiceParameters" TEXT NOT NULL,
-    "ServiceCompletion" BOOLEAN NOT NULL,
-    "Timestamp" TIMESTAMP(3) NOT NULL,
-    "CleaningRequired" BOOLEAN NOT NULL DEFAULT false,
-    "ProcessControlFrequency" TEXT NOT NULL,
+    "customerName" TEXT,
+    "traceabilityCode" TEXT NOT NULL,
+    "arrivalDate" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "invoiceDate" TIMESTAMP(3),
+    "product" TEXT,
+    "quantity" INTEGER,
+    "productCode" TEXT,
+    "productBatchNumber" TEXT,
+    "application" TEXT,
+    "standard" TEXT,
+    "color" TEXT,
+    "faultDescription" TEXT,
+    "status" "FaultStatus" NOT NULL DEFAULT 'PENDING',
+    "technicalDrawingAttachment" TEXT,
+    "controlInfo" TEXT,
+    "customerId" TEXT,
+    "faultControlId" TEXT,
 
     CONSTRAINT "Fault_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "FaultControl" (
+    "id" TEXT NOT NULL,
+    "faultId" TEXT NOT NULL,
+    "customerName" TEXT,
+    "traceabilityCode" TEXT,
+    "arrivalDate" TIMESTAMP(3),
+    "invoiceDate" TIMESTAMP(3),
+    "product" TEXT,
+    "quantity" INTEGER,
+    "productCode" TEXT,
+    "productBatchNumber" TEXT,
+    "plating" TEXT,
+    "controlDate" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "image" TEXT,
+    "productDimension" TEXT,
+    "dimensionConfirmation" BOOLEAN,
+    "quantityConfirmation" BOOLEAN,
+    "dirtyThreads" BOOLEAN DEFAULT false,
+    "processFrequency" TEXT,
+    "remarks" TEXT,
+    "result" "FaultControlResult" NOT NULL,
+
+    CONSTRAINT "FaultControl_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Notification" (
+    "id" TEXT NOT NULL,
+    "title" TEXT,
+    "description" TEXT,
+    "image" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
+    "receiver" "NotifReceiver" NOT NULL DEFAULT 'NORMAL',
+    "link" TEXT,
+    "status" "NotifStatus" NOT NULL DEFAULT 'NOT_READ',
+
+    CONSTRAINT "Notification_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Applications" (
+    "id" TEXT NOT NULL,
+    "Name" TEXT NOT NULL,
+
+    CONSTRAINT "Applications_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Colors" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "Colors_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Standards" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "Standards_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -159,14 +229,6 @@ CREATE TABLE "TechnicalParameter" (
     CONSTRAINT "TechnicalParameter_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "CustomerFault" (
-    "CustomerID" TEXT NOT NULL,
-    "FaultID" TEXT NOT NULL,
-
-    CONSTRAINT "CustomerFault_pkey" PRIMARY KEY ("CustomerID","FaultID")
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
@@ -179,9 +241,6 @@ CREATE UNIQUE INDEX "Address_userId_key" ON "Address"("userId");
 -- CreateIndex
 CREATE UNIQUE INDEX "ContactInfo_userId_key" ON "ContactInfo"("userId");
 
--- CreateIndex
-CREATE UNIQUE INDEX "customers_email_key" ON "customers"("email");
-
 -- AddForeignKey
 ALTER TABLE "Address" ADD CONSTRAINT "Address_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
@@ -189,4 +248,13 @@ ALTER TABLE "Address" ADD CONSTRAINT "Address_userId_fkey" FOREIGN KEY ("userId"
 ALTER TABLE "ContactInfo" ADD CONSTRAINT "ContactInfo_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Stock" ADD CONSTRAINT "Stock_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Offer" ADD CONSTRAINT "Offer_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Fault" ADD CONSTRAINT "Fault_faultControlId_fkey" FOREIGN KEY ("faultControlId") REFERENCES "FaultControl"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Fault" ADD CONSTRAINT "Fault_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE SET NULL ON UPDATE CASCADE;

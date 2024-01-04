@@ -22,7 +22,6 @@ function ChangePassword() {
     newPassword: '',
     repeatPassword: '',
   });
-  // console.log('useSearchParams', token);
 
   const handleValues = (event) => {
     setError(false);
@@ -32,7 +31,6 @@ function ChangePassword() {
     const value = event.target?.value;
     const newVal = { [key]: value };
     setValues({ token: token, ...values, ...newVal });
-    //console.log({ token: token, ...values, ...newVal });
   };
 
   const handleChangePassword = async (e) => {
