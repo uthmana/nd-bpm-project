@@ -14,6 +14,7 @@ import {
 import Search from 'components/search/search';
 import Button from 'components/button/button';
 import { formatDateTime } from 'utils';
+import FileViewer from 'components/fileViewer';
 
 type FaultObj = {
   id: string;
@@ -104,11 +105,7 @@ function EntryTable({
         ),
         cell: (info: any) => (
           <p className="max-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue() ? (
-              <img className="w-[40px]" src={`/uploads/${info.getValue()}`} />
-            ) : (
-              ''
-            )}
+            {info.getValue() ? <FileViewer file={info.getValue()} /> : null}
           </p>
         ),
       }),
