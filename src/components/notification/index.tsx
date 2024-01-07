@@ -15,15 +15,6 @@ export default function Notification({ user }) {
     const { data, status } = await getNotifications();
     if (status === 200) {
       setNotifications(data);
-
-      // const not_reads = data.filter((item) => {
-      //   const today = new Date();
-      //   const tokenExpiryDate = new Date(today.getTime() * 60000 * 30);
-      //   const createdAt = Date.parse(item.createdAt);
-      //   console.log(createdAt - tokenExpiryDate.getTime());
-      //   return createdAt < tokenExpiryDate.getTime();
-      // });
-      // console.log('not_reads', not_reads, data);
     }
   };
 

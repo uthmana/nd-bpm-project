@@ -96,19 +96,6 @@ function EntryTable({
     };
 
     col = [
-      columnHelper.accessor('technicalDrawingAttachment', {
-        id: 'technicalDrawingAttachment',
-        header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            İlgi Doküman
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="max-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue() ? <FileViewer file={info.getValue()} /> : null}
-          </p>
-        ),
-      }),
       columnHelper.accessor('traceabilityCode', {
         id: 'traceabilityCode',
         header: () => (
@@ -119,32 +106,6 @@ function EntryTable({
         cell: (info: any) => (
           <p className="text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
-          </p>
-        ),
-      }),
-      columnHelper.accessor('arrivalDate', {
-        id: 'arrivalDate',
-        header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Variş Tarihi
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {formatDateTime(info.getValue())}
-          </p>
-        ),
-      }),
-      columnHelper.accessor('invoiceDate', {
-        id: 'invoiceDate',
-        header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            İrsalye Tarihi
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {formatDateTime(info.getValue())}
           </p>
         ),
       }),
@@ -200,6 +161,32 @@ function EntryTable({
           </p>
         ),
       }),
+      columnHelper.accessor('arrivalDate', {
+        id: 'arrivalDate',
+        header: () => (
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Variş Tarihi
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {formatDateTime(info.getValue())}
+          </p>
+        ),
+      }),
+      columnHelper.accessor('invoiceDate', {
+        id: 'invoiceDate',
+        header: () => (
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            İrsalye Tarihi
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {formatDateTime(info.getValue())}
+          </p>
+        ),
+      }),
       columnHelper.accessor('application', {
         id: 'application',
         header: () => (
@@ -249,6 +236,19 @@ function EntryTable({
         cell: (info: any) => (
           <p className="text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
+          </p>
+        ),
+      }),
+      columnHelper.accessor('technicalDrawingAttachment', {
+        id: 'technicalDrawingAttachment',
+        header: () => (
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            İlgi Doküman
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="max-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue() ? <FileViewer file={info.getValue()} /> : null}
           </p>
         ),
       }),

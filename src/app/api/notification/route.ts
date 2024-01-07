@@ -12,13 +12,28 @@ export async function GET(req: NextRequest) {
   try {
     const notification = await prisma.notification.findMany();
     if (!notification) {
-      throw new Error('Notification not found');
+      return NextResponse.json([], { status: 204 });
     }
+
     const filtedNotification: Notification[] = notification.filter((item) => {
+      return item.status === 'NOT_READ';
+    });
+
+    if (session.user.role === 'ADMIN') {
+      const not_reads = filtedNotification.filter((item) => {
+        const today = new Date();
+        const notificTodoy = new Date(today.getTime() - 30 * 60000);
+        const createdAt = new Date(item.createdAt);
+        return createdAt < notificTodoy;
+      });
+      return NextResponse.json(not_reads, { status: 200 });
+    }
+
+    const roleBaseNotific: Notification[] = notification.filter((item) => {
       return item.receiver === session.user.role && item.status === 'NOT_READ';
     });
 
-    return NextResponse.json(filtedNotification, { status: 200 });
+    return NextResponse.json(roleBaseNotific, { status: 200 });
   } catch (error) {
     console.error('Error fetching users:', error);
     return NextResponse.json({ error: 'Internal Server Error' });
@@ -28,8 +43,13 @@ export async function GET(req: NextRequest) {
 //Update Notification
 export async function POST(req: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
     const reqbody: any = await req.json();
     const { id } = reqbody;
+
+    if (session.user.role === 'ADMIN') {
+      return NextResponse.json([], { status: 204 });
+    }
     const notification = await prisma.notification.update({
       where: { id },
       data: { status: 'READ' },
