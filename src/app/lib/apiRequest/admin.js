@@ -92,3 +92,8 @@ export async function getNotifications(payload) {
 export async function updateNotificStatus(payload) {
   return fetchAPI(`notification`, 'post', payload);
 }
+
+// Add Entry Form Control
+export async function addControl(payload) {
+  return fetchAPI(`entryControl`, 'put', payload);
+}

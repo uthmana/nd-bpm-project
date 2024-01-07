@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import FaultForm from 'components/forms/fault';
 import { useRouter } from 'next/navigation';
 import { log } from 'utils';
-import { addFault } from '../../../lib/apiRequest';
+import { addFault } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 
 export default function Edit() {

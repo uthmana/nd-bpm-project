@@ -95,6 +95,16 @@ function EntryTable({
       ACCEPT: 'Kabul',
     };
 
+    const statusbgColor = (status) => {
+      if (status === 'ACCEPT') {
+        return 'bg-green-600 text-white';
+      }
+      if (status === 'REGECT') {
+        return 'bg-red-400 text-white';
+      }
+      return 'bg-yellow-400 text-black';
+    };
+
     col = [
       columnHelper.accessor('traceabilityCode', {
         id: 'traceabilityCode',
@@ -260,7 +270,11 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="rounded-lg bg-yellow-400 py-1 text-center text-sm font-bold text-navy-700">
+          <p
+            className={`rounded-lg px-2 py-1 text-center text-sm font-bold text-navy-700 ${statusbgColor(
+              info.getValue(),
+            )}`}
+          >
             {entryStatus[info.getValue()]}
           </p>
         ),

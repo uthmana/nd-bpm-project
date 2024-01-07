@@ -35,7 +35,6 @@ export default function Fault(props: {
   loading: boolean;
 }) {
   const { onSubmit, data, title, loading } = props;
-  const currency = ['TRY', 'USD'];
   const applications = [
     '1 - ND Microspheres 593 S',
     '2 - ND Patch',
@@ -258,7 +257,7 @@ export default function Fault(props: {
         />
       </div>
 
-      <div className="mb-2 flex flex-col gap-3 sm:flex-row">
+      <div className="mb-3 flex flex-col gap-3 sm:flex-row">
         <Select
           extra="pt-1"
           label="Uygulama"
@@ -271,27 +270,6 @@ export default function Fault(props: {
                 value={item}
                 key={idx}
                 selected={data ? data?.application === item : idx === 0}
-              >
-                {item}
-              </option>
-            );
-          })}
-        </Select>
-      </div>
-
-      <div className="mb-3 flex flex-col gap-3 sm:flex-row">
-        <Select
-          extra="pt-1"
-          label="Renk Seçimi"
-          onChange={handleValues}
-          name="color"
-        >
-          {colors.map((item, idx) => {
-            return (
-              <option
-                value={item}
-                key={idx}
-                selected={data ? data?.color === item : idx === 0}
               >
                 {item}
               </option>
@@ -311,6 +289,27 @@ export default function Fault(props: {
                 value={item}
                 key={idx}
                 selected={data ? data?.standard === item : idx === 0}
+              >
+                {item}
+              </option>
+            );
+          })}
+        </Select>
+      </div>
+
+      <div className="mb-2 flex flex-col gap-3 sm:flex-row">
+        <Select
+          extra="pt-1"
+          label="Renk Seçimi"
+          onChange={handleValues}
+          name="color"
+        >
+          {colors.map((item, idx) => {
+            return (
+              <option
+                value={item}
+                key={idx}
+                selected={data ? data?.color === item : idx === 0}
               >
                 {item}
               </option>

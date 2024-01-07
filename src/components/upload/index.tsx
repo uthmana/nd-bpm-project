@@ -96,7 +96,14 @@ const Upload = (props: {
             >
               x
             </button>
-            <img className="h-full w-full" src={filePath} />
+
+            <iframe
+              src={filePath}
+              height="100%"
+              width="100%"
+              title={fileName}
+            ></iframe>
+            {/* <img className="h-full w-full"  /> */}
           </div>
         ) : null}
       </div>

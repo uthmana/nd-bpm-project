@@ -5,7 +5,7 @@ import { Fault } from '@prisma/client';
 //All Faults
 export async function GET(req: NextRequest) {
   try {
-    const fault = await prisma.fault.findMany({ where: { status: 'PENDING' } });
+    const fault = await prisma.fault.findMany();
     if (!fault) {
       throw new Error('No fault found');
     }
