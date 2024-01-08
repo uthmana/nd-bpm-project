@@ -45,7 +45,7 @@ export async function PUT(req: Request) {
         id: faultId,
         traceabilityCode,
       },
-      data: { status: controlReult as $Enums.FaultStatus },
+      data: { status: controlReult },
     });
 
     //Create Notification

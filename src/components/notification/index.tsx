@@ -66,15 +66,17 @@ export default function Notification({ user }) {
             BİLDİRİMLER
           </p>
         </div>
-        {notifications?.map((item, idx) => {
-          return (
-            <NotificationItem
-              {...item}
-              onClick={(val) => handleNotifClick(val)}
-              key={idx}
-            />
-          );
-        })}
+        <div className="max-h-[400px] overflow-y-auto pr-3 md:max-h-[800px]">
+          {notifications?.map((item, idx) => {
+            return (
+              <NotificationItem
+                {...item}
+                onClick={(val) => handleNotifClick(val)}
+                key={idx}
+              />
+            );
+          })}
+        </div>
       </div>
     </Dropdown>
   );

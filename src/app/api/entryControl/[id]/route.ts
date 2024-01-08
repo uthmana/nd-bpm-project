@@ -60,7 +60,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       where: {
         id: faultId,
       },
-      data: { status: result as $Enums.FaultStatus },
+      data: { status: result },
     });
 
     if (!updateFault) {

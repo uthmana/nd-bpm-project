@@ -8,6 +8,8 @@ import TextArea from 'components/fields/textArea';
 import Button from 'components/button/button';
 import Select from 'components/select/page';
 import Radio from 'components/radio';
+import { MdOutlineArrowBack } from 'react-icons/md';
+import NextLink from 'next/link';
 
 export default function EntryControlForm({
   info,
@@ -130,6 +132,15 @@ export default function EntryControlForm({
 
   return (
     <div className="w-full">
+      <NextLink
+        href="/admin/entry"
+        className="mb-3 flex items-center gap-2 text-sm dark:text-white"
+      >
+        <span>
+          <MdOutlineArrowBack />
+        </span>
+        Ürün Girişe
+      </NextLink>
       <h1 className="mb-4 text-center text-2xl font-bold md:text-4xl">
         {title}
       </h1>

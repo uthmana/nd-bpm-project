@@ -91,7 +91,7 @@ function EntryTable({
 
     const entryStatus = {
       PENDING: 'Beklemede',
-      REGECT: 'Ret',
+      REJECT: 'Ret',
       ACCEPT: 'Kabul',
       ACCEPTANCE_WITH_CONDITION: 'Şartlı Kabul',
       PRE_PROCESS: 'Ön İşlem Gerekli',
@@ -101,7 +101,7 @@ function EntryTable({
       if (status === 'ACCEPT' || status === 'ACCEPTANCE_WITH_CONDITION') {
         return 'bg-green-600 text-white';
       }
-      if (status === 'REGECT') {
+      if (status === 'REJECT') {
         return 'bg-red-400 text-white';
       }
       return 'bg-yellow-400 text-black';
