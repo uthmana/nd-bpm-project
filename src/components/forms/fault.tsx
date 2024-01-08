@@ -130,7 +130,7 @@ export default function Fault(props: {
       className="mx-auto w-full max-w-[780px] rounded-[20px] bg-white p-5 dark:bg-opacity-10"
     >
       <NextLink
-        href="/admin/stock"
+        href="/admin/entry"
         className="flex items-center gap-2 text-sm dark:text-white"
       >
         <span>

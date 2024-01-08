@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
-import { FaultControl } from '@prisma/client';
+import { $Enums, FaultControl } from '@prisma/client';
 
 //All Faults
 export async function GET(req: NextRequest) {
@@ -40,15 +40,13 @@ export async function PUT(req: Request) {
       throw new Error('Error occuried while creating form control');
     }
 
-    if (controlReult !== 'REJECT') {
-      const updateFault = await prisma.fault.update({
-        where: {
-          id: faultId,
-          traceabilityCode,
-        },
-        data: { status: 'ACCEPT' },
-      });
-    }
+    const updateFault = await prisma.fault.update({
+      where: {
+        id: faultId,
+        traceabilityCode,
+      },
+      data: { status: controlReult as $Enums.FaultStatus },
+    });
 
     //Create Notification
     const notification = await prisma.notification.create({

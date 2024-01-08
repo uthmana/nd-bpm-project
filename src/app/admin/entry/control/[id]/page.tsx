@@ -2,11 +2,15 @@
 
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getFaultById } from 'app/lib/apiRequest';
+import {
+  getFaultById,
+  addControl,
+  getEntryControlByfaultId,
+  updateFaultControl,
+} from 'app/lib/apiRequest';
 import { useParams, useRouter } from 'next/navigation';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
 import EntryControlForm from 'components/forms/faultControl';
-import { addControl } from 'app/lib/apiRequest';
 
 export default function EntryControl() {
   const router = useRouter();
@@ -14,13 +18,17 @@ export default function EntryControl() {
   const queryParams = useParams();
   const [isLoading, setIsloading] = useState(false);
   const [fault, setFault] = useState({} as any);
+  const [faultcontrol, setFaultcontrol] = useState({} as any);
 
   useEffect(() => {
     const getSingleFault = async () => {
       setIsloading(true);
       const { status, data } = await getFaultById(queryParams.id);
+      const { status: controlStatus, data: controlData } =
+        await getEntryControlByfaultId(queryParams.id);
       if (status === 200) {
         setFault(data);
+        setFaultcontrol(controlData);
         setIsloading(false);
         return;
       }
@@ -33,8 +41,25 @@ export default function EntryControl() {
   }, [queryParams?.id]);
 
   const handleSubmit = async (val) => {
+    const [values, isUpdate] = val;
+    // console.log(values, isUpdate);
+
     setIsSubmitting(true);
-    const { status, data, response } = await addControl(val);
+    if (isUpdate) {
+      const { status, data, response } = await updateFaultControl(values);
+      if (status === 200) {
+        toast.success('Ürün kontrol güncelleme işlemi başarılı.');
+        router.push('/admin/entry');
+        setIsSubmitting(false);
+        return;
+      }
+      toast.error('Hata oluştu!.' + { response });
+      setIsSubmitting(false);
+      return;
+    }
+
+    // add new entry control
+    const { status, data, response } = await addControl(values);
     if (status === 200) {
       toast.success('Ürün girişi kontrol işlemi başarılı.');
       router.push('/admin/entry');
@@ -53,9 +78,9 @@ export default function EntryControl() {
         <EntryControlForm
           title={'Ürün Girişi Kontrol Formu'}
           info={fault}
-          data={''}
+          data={faultcontrol}
           isSubmitting={isSubmitting}
-          onSubmit={(val) => handleSubmit(val)}
+          onSubmit={(...val) => handleSubmit(val)}
         />
       )}
     </div>

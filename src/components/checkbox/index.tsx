@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 const Checkbox = (props: {
   id?: string;
   extra?: string;
@@ -20,12 +22,24 @@ const Checkbox = (props: {
     | 'gray';
   [x: string]: any;
 }) => {
-  const { extra, color, id, onChange, value, ...rest } = props;
+  const { extra, color, id, checked, onChange, value, ...rest } = props;
+
+  const [isChecked, setisChecked] = useState(checked || false);
+  const handleChange = (e) => {
+    if (e.target.checked) {
+      setisChecked(true);
+    } else {
+      setisChecked(false);
+    }
+    onChange(e);
+  };
+
   return (
     <input
       id={id}
       type="checkbox"
-      onChange={onChange}
+      onChange={handleChange}
+      checked={isChecked}
       value={value}
       className={`defaultCheckbox relative flex h-[20px] min-h-[20px] w-[20px] min-w-[20px] appearance-none items-center 
       justify-center rounded-md border border-gray-300 text-white/0 outline-none transition duration-[0.2s]

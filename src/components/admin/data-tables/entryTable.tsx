@@ -93,10 +93,12 @@ function EntryTable({
       PENDING: 'Beklemede',
       REGECT: 'Ret',
       ACCEPT: 'Kabul',
+      ACCEPTANCE_WITH_CONDITION: 'Şartlı Kabul',
+      PRE_PROCESS: 'Ön İşlem Gerekli',
     };
 
     const statusbgColor = (status) => {
-      if (status === 'ACCEPT') {
+      if (status === 'ACCEPT' || status === 'ACCEPTANCE_WITH_CONDITION') {
         return 'bg-green-600 text-white';
       }
       if (status === 'REGECT') {
@@ -271,7 +273,7 @@ function EntryTable({
         ),
         cell: (info: any) => (
           <p
-            className={`rounded-lg px-2 py-1 text-center text-sm font-bold text-navy-700 ${statusbgColor(
+            className={`rounded-lg px-1 py-1 text-center text-sm font-bold text-navy-700 ${statusbgColor(
               info.getValue(),
             )}`}
           >

@@ -97,3 +97,10 @@ export async function updateNotificStatus(payload) {
 export async function addControl(payload) {
   return fetchAPI(`entryControl`, 'put', payload);
 }
+
+export async function getEntryControlByfaultId(id) {
+  return fetchAPI(`entryControl/${id}`);
+}
+export async function updateFaultControl(payload) {
+  return fetchAPI(`entryControl/${payload.id}`, 'put', payload);
+}

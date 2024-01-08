@@ -16,13 +16,16 @@ export default function EntryControlForm({
   onSubmit,
   isSubmitting,
 }) {
+  const isUpdate = data && data?.id ? true : false;
   const [fault, setFault] = useState(info || {});
   const [error, setError] = useState(false);
   const [file, setFile] = useState('');
-  const [platingsOpt, setPlatingsOpt] = useState([]);
+  const [platingsOpt, setPlatingsOpt] = useState(
+    isUpdate && data.plating?.length > 0 ? data.plating.split(',') : [],
+  );
 
   const [values, setValues] = useState(
-    data
+    isUpdate
       ? data
       : {
           image: '',
@@ -104,31 +107,25 @@ export default function EntryControlForm({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const {
-      result,
-      dimensionConfirmation,
-      dirtyThreads,
-      quantityConfirmation,
-    } = values;
-
-    if (
-      !result ||
-      !dimensionConfirmation ||
-      !dirtyThreads ||
-      !quantityConfirmation
-    ) {
+    const { result } = values;
+    if (!result) {
       setError(true);
       return;
     }
 
-    onSubmit({
-      ...values,
-      image: file,
-      plating: platingsOpt.join(','),
-      dimensionConfirmation: values.dimensionConfirmation === 'true',
-      dirtyThreads: values.dirtyThreads === 'true',
-      quantityConfirmation: values.quantityConfirmation === 'true',
-    });
+    onSubmit(
+      {
+        ...values,
+        image: file,
+        plating: platingsOpt.join(','),
+        dimensionConfirmation:
+          values.dimensionConfirmation?.toString() === 'true',
+        dirtyThreads: values.dirtyThreads?.toString() === 'true',
+        quantityConfirmation:
+          values.quantityConfirmation?.toString() === 'true',
+      },
+      isUpdate,
+    );
   };
 
   return (
@@ -190,6 +187,7 @@ export default function EntryControlForm({
                   name="plating"
                   colorScheme="brandScheme"
                   me="10px"
+                  checked={isUpdate ? values.plating.includes(item) : false}
                   onChange={handlePlating}
                   value={item}
                 />
@@ -211,7 +209,11 @@ export default function EntryControlForm({
             <option value="">Malzeme seç</option>
             {materials.map((item, idx) => {
               return (
-                <option value={item} key={idx}>
+                <option
+                  value={item}
+                  key={idx}
+                  selected={isUpdate ? values.productDimension === item : null}
+                >
                   {item}
                 </option>
               );
@@ -229,7 +231,15 @@ export default function EntryControlForm({
             <option value="">Uygunluğu seç</option>
             {confirmation.map((item, idx) => {
               return (
-                <option value={item.value.toString()} key={idx}>
+                <option
+                  value={item.value.toString()}
+                  key={idx}
+                  selected={
+                    isUpdate
+                      ? values.dimensionConfirmation === item.value
+                      : null
+                  }
+                >
                   {item.name}
                 </option>
               );
@@ -245,7 +255,13 @@ export default function EntryControlForm({
             <option value="">Uygunluğu seç</option>
             {confirmation.map((item, idx) => {
               return (
-                <option value={item.value.toString()} key={idx}>
+                <option
+                  value={item.value.toString()}
+                  key={idx}
+                  selected={
+                    isUpdate ? values.quantityConfirmation === item.value : null
+                  }
+                >
                   {item.name}
                 </option>
               );
@@ -262,7 +278,13 @@ export default function EntryControlForm({
             <option value="">Temizleme seç</option>
             {dirtyConfirmation.map((item, idx) => {
               return (
-                <option value={item.value.toString()} key={idx}>
+                <option
+                  value={item.value.toString()}
+                  key={idx}
+                  selected={
+                    isUpdate ? values.dirtyThreads === item.value : null
+                  }
+                >
                   {item.name}
                 </option>
               );
@@ -278,7 +300,11 @@ export default function EntryControlForm({
             <option value="">Frekansi seç</option>
             {processConfirmation.map((item, idx) => {
               return (
-                <option value={item} key={idx}>
+                <option
+                  value={item}
+                  key={idx}
+                  selected={isUpdate ? values.processFrequency === item : null}
+                >
                   {item}
                 </option>
               );
@@ -294,8 +320,8 @@ export default function EntryControlForm({
             onChange={(val) => setFile(val)}
             fileType="all"
             multiple={false}
-            _fileName={data.image ? data.image : ''}
-            _filePath={data.image ? '/uploads/' + data.image : ''}
+            _fileName={values.image}
+            _filePath={isUpdate ? '/uploads/' + values.image : ''}
           />
         </div>
 
@@ -324,6 +350,7 @@ export default function EntryControlForm({
                     name="result"
                     value={item.value}
                     onChange={handleValues}
+                    checked={values.result === item.value}
                   />
                   <p className="ml-3 text-sm font-bold text-navy-700 dark:text-white">
                     {item.name}
