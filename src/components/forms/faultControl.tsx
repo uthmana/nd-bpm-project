@@ -213,7 +213,7 @@ export default function EntryControlForm({
         <div className="mb-8 flex flex-col gap-3 sm:flex-row">
           <Select
             extra="pt-1"
-            label="Karışık Türü"
+            label="Malzeme Türü"
             onChange={handleValues}
             name="productDimension"
           >

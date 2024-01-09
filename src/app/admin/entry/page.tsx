@@ -1,7 +1,7 @@
 'use client';
 
 import EntryTable from 'components/admin/data-tables/entryTable';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { log } from 'utils';
 import { useEffect, useState } from 'react';
 import { deleteFault, getFaults } from 'app/lib/apiRequest';
@@ -19,6 +19,9 @@ const Entry = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const searchVal = searchParams.get('q');
+  const [searchText, setSearchText] = useState(searchVal || '');
 
   const getAllFaults = async () => {
     setIsLoading(true);
@@ -32,6 +35,10 @@ const Entry = () => {
   useEffect(() => {
     getAllFaults();
   }, []);
+
+  useEffect(() => {
+    setSearchText(searchVal || '');
+  }, [searchVal]);
 
   const onAdd = () => {
     router.push('/admin/entry/create');
@@ -81,6 +88,8 @@ const Entry = () => {
           tableData={faults as any}
           variant={session?.user?.role}
           onControl={onControl}
+          searchValue={searchText}
+          key={searchVal}
         />
       )}
 

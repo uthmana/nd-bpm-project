@@ -66,17 +66,23 @@ export default function Notification({ user }) {
             BİLDİRİMLER
           </p>
         </div>
-        <div className="max-h-[400px] overflow-y-auto pr-3 md:max-h-[800px]">
-          {notifications?.map((item, idx) => {
-            return (
-              <NotificationItem
-                {...item}
-                onClick={(val) => handleNotifClick(val)}
-                key={idx}
-              />
-            );
-          })}
-        </div>
+        {notifications.length === 0 ? (
+          <div className="w-full p-4 text-center capitalize">
+            Okunmamış bildirim yok
+          </div>
+        ) : (
+          <div className="max-h-[400px] overflow-y-auto pr-3 md:max-h-[800px]">
+            {notifications?.map((item, idx) => {
+              return (
+                <NotificationItem
+                  {...item}
+                  onClick={(val) => handleNotifClick(val)}
+                  key={idx}
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
     </Dropdown>
   );

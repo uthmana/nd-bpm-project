@@ -42,6 +42,7 @@ type MainTable = {
   onDelete: (e: any) => void;
   onAdd: (e: any) => void;
   onControl: (e: any) => void;
+  searchValue: string;
 };
 
 function EntryTable({
@@ -51,12 +52,12 @@ function EntryTable({
   onAdd,
   onControl,
   variant = 'NORMAL',
+  searchValue,
 }: MainTable) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [globalFilter, setGlobalFilter] = React.useState('');
-
   let defaultData = tableData;
-
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [globalFilter, setGlobalFilter] = useState('');
+  const [search, setSearch] = useState(searchValue || '');
   const [isDown, setIsDown] = useState(false);
   const [startX, setStartX] = useState(null);
   const [scrollLeft, setScrollLeft] = useState(0);
@@ -362,7 +363,7 @@ function EntryTable({
     }
   }, []);
 
-  const [data, setData] = React.useState(() => [...defaultData]);
+  const [data, setData] = useState(() => [...defaultData]);
   const table = useReactTable({
     data,
     columns,
@@ -391,6 +392,7 @@ function EntryTable({
             extra="!h-[38px] md:w-[300px] md:max-w-[300px]"
             onSubmit={(val) => setGlobalFilter(val)}
             onChange={(val) => setGlobalFilter(val)}
+            value={search}
           />
         </div>
 

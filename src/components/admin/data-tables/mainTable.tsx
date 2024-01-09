@@ -723,24 +723,6 @@ function MainTable({
     getPaginationRowModel: getPaginationRowModel(),
     debugTable: true,
   });
-  const [searchText, setSearchText] = useState('');
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const searchVal = searchParams.get('q');
-
-  const handleSearchChange = (val: string) => {
-    setSearchText(val);
-    if (searchText) {
-      router.push(`/admin/customer/?q=${val}`);
-    }
-  };
-
-  useEffect(() => {
-    if (searchText) {
-      setGlobalFilter(searchVal);
-      setSearchText(searchVal);
-    }
-  }, [searchVal]);
 
   return (
     <Card extra={'w-full h-full sm:overflow-auto px-6 pb-3'}>
@@ -748,9 +730,8 @@ function MainTable({
         <div className="text-md font-medium text-navy-700 dark:text-white">
           <Search
             extra="!h-[38px] md:w-[300px] md:max-w-[300px]"
-            onSubmit={(val) => handleSearchChange(val)}
-            onChange={(val) => handleSearchChange(val)}
-            value={searchText}
+            onSubmit={(val) => setGlobalFilter(val)}
+            onChange={(val) => setGlobalFilter(val)}
           />
         </div>
 
