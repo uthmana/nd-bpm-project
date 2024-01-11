@@ -92,3 +92,15 @@ export async function getNotifications(payload) {
 export async function updateNotificStatus(payload) {
   return fetchAPI(`notification`, 'post', payload);
 }
+
+// Add Entry Form Control
+export async function addControl(payload) {
+  return fetchAPI(`entryControl`, 'put', payload);
+}
+
+export async function getEntryControlByfaultId(id) {
+  return fetchAPI(`entryControl/${id}`);
+}
+export async function updateFaultControl(payload) {
+  return fetchAPI(`entryControl/${payload.id}`, 'put', payload);
+}

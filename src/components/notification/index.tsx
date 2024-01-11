@@ -24,6 +24,16 @@ export default function Notification({ user }) {
     }
   }, [user]);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      getMyNotification();
+    }, 20000);
+
+    () => {
+      clearInterval(timer);
+    };
+  }, []);
+
   const handleNotifClick = async ({ id, link }) => {
     const { status, data } = await updateNotificStatus({ id });
     if (status === 200) {
@@ -56,15 +66,23 @@ export default function Notification({ user }) {
             BİLDİRİMLER
           </p>
         </div>
-        {notifications?.map((item, idx) => {
-          return (
-            <NotificationItem
-              {...item}
-              onClick={(val) => handleNotifClick(val)}
-              key={idx}
-            />
-          );
-        })}
+        {notifications.length === 0 ? (
+          <div className="w-full p-4 text-center capitalize">
+            Okunmamış bildirim yok
+          </div>
+        ) : (
+          <div className="max-h-[400px] overflow-y-auto pr-3 md:max-h-[800px]">
+            {notifications?.map((item, idx) => {
+              return (
+                <NotificationItem
+                  {...item}
+                  onClick={(val) => handleNotifClick(val)}
+                  key={idx}
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
     </Dropdown>
   );

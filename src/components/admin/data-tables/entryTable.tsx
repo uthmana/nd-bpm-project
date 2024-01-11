@@ -14,6 +14,7 @@ import {
 import Search from 'components/search/search';
 import Button from 'components/button/button';
 import { formatDateTime } from 'utils';
+import FileViewer from 'components/fileViewer';
 
 type FaultObj = {
   id: string;
@@ -41,6 +42,7 @@ type MainTable = {
   onDelete: (e: any) => void;
   onAdd: (e: any) => void;
   onControl: (e: any) => void;
+  searchValue: string;
 };
 
 function EntryTable({
@@ -50,12 +52,12 @@ function EntryTable({
   onAdd,
   onControl,
   variant = 'NORMAL',
+  searchValue,
 }: MainTable) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [globalFilter, setGlobalFilter] = React.useState('');
-
   let defaultData = tableData;
-
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [globalFilter, setGlobalFilter] = useState('');
+  const [search, setSearch] = useState(searchValue || '');
   const [isDown, setIsDown] = useState(false);
   const [startX, setStartX] = useState(null);
   const [scrollLeft, setScrollLeft] = useState(0);
@@ -90,28 +92,23 @@ function EntryTable({
 
     const entryStatus = {
       PENDING: 'Beklemede',
-      REGECT: 'Ret',
+      REJECT: 'Ret',
       ACCEPT: 'Kabul',
+      ACCEPTANCE_WITH_CONDITION: 'Şartlı Kabul',
+      PRE_PROCESS: 'Ön İşlem Gerekli',
+    };
+
+    const statusbgColor = (status) => {
+      if (status === 'ACCEPT' || status === 'ACCEPTANCE_WITH_CONDITION') {
+        return 'bg-green-600 text-white';
+      }
+      if (status === 'REJECT') {
+        return 'bg-red-400 text-white';
+      }
+      return 'bg-yellow-400 text-black';
     };
 
     col = [
-      columnHelper.accessor('technicalDrawingAttachment', {
-        id: 'technicalDrawingAttachment',
-        header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            İlgi Doküman
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="max-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue() ? (
-              <img className="w-[40px]" src={`/uploads/${info.getValue()}`} />
-            ) : (
-              ''
-            )}
-          </p>
-        ),
-      }),
       columnHelper.accessor('traceabilityCode', {
         id: 'traceabilityCode',
         header: () => (
@@ -122,32 +119,6 @@ function EntryTable({
         cell: (info: any) => (
           <p className="text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
-          </p>
-        ),
-      }),
-      columnHelper.accessor('arrivalDate', {
-        id: 'arrivalDate',
-        header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Variş Tarihi
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {formatDateTime(info.getValue())}
-          </p>
-        ),
-      }),
-      columnHelper.accessor('invoiceDate', {
-        id: 'invoiceDate',
-        header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            İrsalye Tarihi
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {formatDateTime(info.getValue())}
           </p>
         ),
       }),
@@ -203,6 +174,32 @@ function EntryTable({
           </p>
         ),
       }),
+      columnHelper.accessor('arrivalDate', {
+        id: 'arrivalDate',
+        header: () => (
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Variş Tarihi
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {formatDateTime(info.getValue())}
+          </p>
+        ),
+      }),
+      columnHelper.accessor('invoiceDate', {
+        id: 'invoiceDate',
+        header: () => (
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            İrsalye Tarihi
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {formatDateTime(info.getValue())}
+          </p>
+        ),
+      }),
       columnHelper.accessor('application', {
         id: 'application',
         header: () => (
@@ -255,6 +252,19 @@ function EntryTable({
           </p>
         ),
       }),
+      columnHelper.accessor('technicalDrawingAttachment', {
+        id: 'technicalDrawingAttachment',
+        header: () => (
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            İlgi Doküman
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="max-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue() ? <FileViewer file={info.getValue()} /> : null}
+          </p>
+        ),
+      }),
       columnHelper.accessor('status', {
         id: 'status',
         header: () => (
@@ -263,7 +273,11 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="rounded-lg bg-yellow-400 py-1 text-center text-sm font-bold text-navy-700">
+          <p
+            className={`rounded-lg px-1 py-1 text-center text-sm font-bold text-navy-700 ${statusbgColor(
+              info.getValue(),
+            )}`}
+          >
             {entryStatus[info.getValue()]}
           </p>
         ),
@@ -349,7 +363,7 @@ function EntryTable({
     }
   }, []);
 
-  const [data, setData] = React.useState(() => [...defaultData]);
+  const [data, setData] = useState(() => [...defaultData]);
   const table = useReactTable({
     data,
     columns,
@@ -378,6 +392,7 @@ function EntryTable({
             extra="!h-[38px] md:w-[300px] md:max-w-[300px]"
             onSubmit={(val) => setGlobalFilter(val)}
             onChange={(val) => setGlobalFilter(val)}
+            value={search}
           />
         </div>
 

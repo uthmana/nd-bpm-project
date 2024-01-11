@@ -2,9 +2,15 @@
 
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getFaultById } from 'app/lib/apiRequest';
+import {
+  getFaultById,
+  addControl,
+  getEntryControlByfaultId,
+  updateFaultControl,
+} from 'app/lib/apiRequest';
 import { useParams, useRouter } from 'next/navigation';
-import { formatDateTime } from 'utils';
+import { LatestInvoicesSkeleton } from 'components/skeleton';
+import EntryControlForm from 'components/forms/faultControl';
 
 export default function EntryControl() {
   const router = useRouter();
@@ -12,17 +18,21 @@ export default function EntryControl() {
   const queryParams = useParams();
   const [isLoading, setIsloading] = useState(false);
   const [fault, setFault] = useState({} as any);
+  const [faultcontrol, setFaultcontrol] = useState({} as any);
 
   useEffect(() => {
     const getSingleFault = async () => {
       setIsloading(true);
       const { status, data } = await getFaultById(queryParams.id);
+      const { status: controlStatus, data: controlData } =
+        await getEntryControlByfaultId(queryParams.id);
       if (status === 200) {
         setFault(data);
+        setFaultcontrol(controlData);
         setIsloading(false);
         return;
       }
-      setIsSubmitting(false);
+      setIsloading(true);
       //TODO: handle error
     };
     if (queryParams.id) {
@@ -30,55 +40,49 @@ export default function EntryControl() {
     }
   }, [queryParams?.id]);
 
+  const handleSubmit = async (val) => {
+    const [values, isUpdate] = val;
+    // console.log(values, isUpdate);
+
+    setIsSubmitting(true);
+    if (isUpdate) {
+      const { status, data, response } = await updateFaultControl(values);
+      if (status === 200) {
+        toast.success('Ürün kontrol güncelleme işlemi başarılı.');
+        router.push('/admin/entry');
+        setIsSubmitting(false);
+        return;
+      }
+      toast.error('Hata oluştu!.' + { response });
+      setIsSubmitting(false);
+      return;
+    }
+
+    // add new entry control
+    const { status, data, response } = await addControl(values);
+    if (status === 200) {
+      toast.success('Ürün girişi kontrol işlemi başarılı.');
+      router.push('/admin/entry');
+      setIsSubmitting(false);
+      return;
+    }
+    toast.error('Hata oluştu!.' + { response });
+    setIsSubmitting(false);
+  };
+
   return (
-    <div className="mx-auto mt-4 max-w-[700px]">
-      <h1 className="mb-3 text-center text-4xl font-bold">
-        Ürün Girişi Kontrol Formu
-      </h1>
-
-      <div className="flex w-full flex-wrap gap-4">
-        <div className="flex w-full flex-nowrap justify-between gap-2 sm:w-[50%] md:w-[30%]">
-          <h2>Müşteri no.</h2>
-          <p className="font-bold"> {fault.traceabilityCode} </p>
-        </div>
-
-        <div className="flex w-full flex-nowrap justify-between gap-2 sm:w-[50%] md:w-[30%]">
-          <h2>Ürün Tanımı</h2>
-          <p className="font-bold underline underline-offset-1">
-            {fault.faultDescription}
-          </p>
-        </div>
-
-        <div className="flex w-full flex-nowrap justify-between gap-2 sm:w-[50%] md:w-[30%]">
-          <h2>Ürün Kodu.</h2>
-          <p className="font-bold"> {fault.productCode} </p>
-        </div>
-
-        <div className="flex w-full flex-nowrap justify-between gap-2 sm:w-[50%] md:w-[30%]">
-          <h2>Şipariş No.</h2>
-          <p className="font-bold"> {fault.productBatchNumber} </p>
-        </div>
-
-        <div className="flex w-full flex-nowrap justify-between gap-2 sm:w-[50%] md:w-[30%]">
-          <h2>Miktar</h2>
-          <p className="font-bold"> {fault.quantity} </p>
-        </div>
-
-        <div className="flex w-full flex-nowrap justify-between gap-2 sm:w-[50%] md:w-[30%]">
-          <h2>Palet</h2>
-          <p className="font-bold"> {fault.product} </p>
-        </div>
-
-        <div className="flex w-full flex-nowrap justify-between gap-2 sm:w-[50%] md:w-[30%]">
-          <h2>Personel</h2>
-          <p className="font-bold"> {fault.product} </p>
-        </div>
-
-        <div className="flex w-full flex-nowrap justify-between gap-2 sm:w-[50%] md:w-[30%]">
-          <h2>Tarih</h2>
-          <p className="font-bold"> {formatDateTime(new Date())} </p>
-        </div>
-      </div>
+    <div className="mx-auto mt-4 max-w-[700px] rounded-2xl bg-white px-8 py-10">
+      {isLoading ? (
+        <LatestInvoicesSkeleton />
+      ) : (
+        <EntryControlForm
+          title={'Ürün Girişi Kontrol Formu'}
+          info={fault}
+          data={faultcontrol}
+          isSubmitting={isSubmitting}
+          onSubmit={(...val) => handleSubmit(val)}
+        />
+      )}
     </div>
   );
 }

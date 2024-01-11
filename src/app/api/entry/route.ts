@@ -5,7 +5,7 @@ import { Fault } from '@prisma/client';
 //All Faults
 export async function GET(req: NextRequest) {
   try {
-    const fault = await prisma.fault.findMany({ where: { status: 'PENDING' } });
+    const fault = await prisma.fault.findMany();
     if (!fault) {
       throw new Error('No fault found');
     }
@@ -45,7 +45,9 @@ export async function PUT(req: Request) {
         title: 'Ürün Girişi',
         description: `${fault.product},${fault.application},${fault.standard},${fault.color}`,
         receiver: 'SUPER',
-        link: `/admin/entry/control/${fault.id}?q=view`,
+        link: `/admin/entry?q=${fault?.productCode
+          ?.toLocaleLowerCase()
+          .replaceAll(' ', '%20')}`,
       },
     });
 

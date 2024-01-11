@@ -183,7 +183,9 @@ enum FaultControlResult {
 enum FaultStatus {
   PENDING
   ACCEPT
-  REGECT
+  ACCEPTANCE_WITH_CONDITION
+  PRE_PROCESS
+  REJECT
 }
 
 model Applications {
