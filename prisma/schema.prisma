@@ -22,6 +22,7 @@ model User {
   tokenExpiryDate DateTime?
   address         Address?
   contactInfo     ContactInfo?
+  Process         Process[]
 
   @@map("users")
 }
@@ -123,6 +124,8 @@ model Fault {
   customerId                 String?
   Customer                   Customer?     @relation(fields: [customerId], references: [id])
   faultControlId             String?
+  Process                    Process[]
+  Invoice                    Invoice[]
 }
 
 model FaultControl {
@@ -143,10 +146,72 @@ model FaultControl {
   dimensionConfirmation Boolean?
   quantityConfirmation  Boolean?
   dirtyThreads          Boolean?           @default(false)
-  processFrequency      String? //yazılsın-yazılmasın
+  processFrequency      String? //yazilsin-yazilmasin
   remarks               String?
   result                FaultControlResult
   Fault                 Fault[]
+}
+
+model Machine {
+  id                  String               @id @default(uuid())
+  machine_Name        String
+  technicalParameters TechnicalParameter[]
+  Process             Process[]
+}
+
+model TechnicalParameter {
+  id                     String   @id @default(uuid())
+  machineId              String?  @unique
+  viskozite              String?
+  besleme_Tipi           String?
+  besleme_Hizi           String?
+  makine_Hizi            String?
+  hava_Basinci           String?
+  firin_Bant_Hizi        String?
+  induksiyon_kW          String?
+  induksiyon_Volts       String?
+  induksiyon_kHz         String?
+  patch_Vibrasyon_hizi   String?
+  patch_Hava_Basinci     String?
+  patch_Toz_yukleme_Hizi String?
+  teach_Ayari            String?
+  delay_Ayari            String?
+  purge_Ayari            String?
+  testere_secimi         String?
+  kesim_Mesafesi         String?
+  yuva_Boyutu            String?
+  machine                Machine? @relation(fields: [machineId], references: [id])
+}
+
+model Process {
+  id          String   @id @default(uuid())
+  faultId     String
+  userId      String
+  processDate DateTime @default(now())
+  machineId   String
+  fault       Fault    @relation(fields: [faultId], references: [id])
+  machine     Machine  @relation(fields: [machineId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model FinalControl {
+  id                    String             @id @default(uuid())
+  olcu_Kontrol          String?
+  gorunum_kontrol       String?
+  tork_Kontrol          String?
+  paketleme             String?
+  kontrol_edilen_miktar String?
+  hatali_miktar         String?
+  remarks               String?
+  result                FaultControlResult
+}
+
+model Invoice {
+  id          String   @id @default(uuid())
+  faultId     String
+  invoiceDate DateTime @default(now())
+  totalAmount Float
+  fault       Fault    @relation(fields: [faultId], references: [id])
 }
 
 model Notification {
@@ -201,18 +266,6 @@ model Colors {
 model Standards {
   id   String @id @default(uuid())
   name String
-}
-
-model Machine {
-  id          String @id @default(uuid())
-  MachineName String
-}
-
-model TechnicalParameter {
-  id             String @id @default(uuid())
-  MachineID      String
-  ParameterName  String
-  ParameterValue String
 }
 
 enum UserRole {
