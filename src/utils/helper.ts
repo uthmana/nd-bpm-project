@@ -10,7 +10,7 @@ export function isEntryPage(pathname: string) {
 }
 
 export const formatDateTime = (data) => {
-  return new Date(data).toLocaleString('tr-TR');
+  return new Date(data).toLocaleString('tr-TR')?.slice(0, -3);
 };
 
 export function datesPasted(dateToCompare) {

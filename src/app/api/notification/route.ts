@@ -9,17 +9,22 @@ import { authOptions } from 'app/lib/authOptions';
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
+    if (session === null) {
+      return NextResponse.json([], { status: 404 });
+    }
 
-    const notification = await prisma.notification.findMany();
-    if (!notification || !session) {
-      return NextResponse.json([], { status: 204 });
+    const notification = await prisma.notification.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+    if (!notification) {
+      return NextResponse.json([], { status: 404 });
     }
 
     const filtedNotification: Notification[] = notification.filter((item) => {
       return item.status === 'NOT_READ';
     });
 
-    if (session?.user?.role === 'ADMIN') {
+    if (session.user.role === 'ADMIN') {
       const not_reads = filtedNotification.filter((item) => {
         const today = new Date();
         const notificTodoy = new Date(today.getTime() - 30 * 60000);
@@ -30,9 +35,7 @@ export async function GET(req: NextRequest) {
     }
 
     const roleBaseNotific: Notification[] = notification.filter((item) => {
-      return (
-        item.receiver === session?.user?.role && item.status === 'NOT_READ'
-      );
+      return item.receiver === session.user.role && item.status === 'NOT_READ';
     });
 
     return NextResponse.json(roleBaseNotific, { status: 200 });
