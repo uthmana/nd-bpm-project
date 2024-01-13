@@ -22,7 +22,6 @@ export default function Create() {
     toast.error('Beklenmeyen bir hata oluştu.');
     setIsSubmitting(false);
   };
-
   return (
     <div className="mt-12">
       <CustomerForm
