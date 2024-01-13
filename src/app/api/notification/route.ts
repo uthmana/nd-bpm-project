@@ -7,11 +7,11 @@ import { authOptions } from 'app/lib/authOptions';
 
 //All Notification
 export async function GET(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-
   try {
+    const session = await getServerSession(authOptions);
+
     const notification = await prisma.notification.findMany();
-    if (!notification) {
+    if (!notification || !session) {
       return NextResponse.json([], { status: 204 });
     }
 
@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
       return item.status === 'NOT_READ';
     });
 
-    if (session.user.role === 'ADMIN') {
+    if (session?.user?.role === 'ADMIN') {
       const not_reads = filtedNotification.filter((item) => {
         const today = new Date();
         const notificTodoy = new Date(today.getTime() - 30 * 60000);
@@ -30,7 +30,9 @@ export async function GET(req: NextRequest) {
     }
 
     const roleBaseNotific: Notification[] = notification.filter((item) => {
-      return item.receiver === session.user.role && item.status === 'NOT_READ';
+      return (
+        item.receiver === session?.user?.role && item.status === 'NOT_READ'
+      );
     });
 
     return NextResponse.json(roleBaseNotific, { status: 200 });
@@ -44,10 +46,15 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
+
+    if (!session) {
+      return NextResponse.json([], { status: 204 });
+    }
+
     const reqbody: any = await req.json();
     const { id } = reqbody;
 
-    if (session.user.role === 'ADMIN') {
+    if (session?.user?.role === 'ADMIN') {
       return NextResponse.json([], { status: 204 });
     }
     const notification = await prisma.notification.update({

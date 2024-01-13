@@ -1,5 +1,5 @@
 import fs from 'fs';
-import csvParser from 'csv-parser';
+const csv = require('csv-parser');
 import prisma from 'app/lib/db';
 import { users } from './users';
 import { machines } from './machines';
@@ -38,7 +38,7 @@ async function Customers() {
   const csvData = [];
 
   fs.createReadStream('seeds/ND_Customers.csv', { encoding: 'utf-8' })
-    .pipe(csvParser({ separator: ',' }))
+    .pipe(csv({ separator: ',' }))
     .on('data', (row) => {
       csvData.push(row);
     })
