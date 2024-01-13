@@ -173,6 +173,76 @@ CREATE TABLE "FaultControl" (
 );
 
 -- CreateTable
+CREATE TABLE "Machine" (
+    "id" TEXT NOT NULL,
+    "machine_Name" TEXT NOT NULL,
+
+    CONSTRAINT "Machine_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "TechnicalParameter" (
+    "id" TEXT NOT NULL,
+    "machineId" TEXT,
+    "viskozite" TEXT,
+    "besleme_Tipi" TEXT,
+    "besleme_Hizi" TEXT,
+    "makine_Hizi" TEXT,
+    "hava_Basinci" TEXT,
+    "firin_Bant_Hizi" TEXT,
+    "induksiyon_kW" TEXT,
+    "induksiyon_Volts" TEXT,
+    "induksiyon_kHz" TEXT,
+    "patch_Vibrasyon_hizi" TEXT,
+    "patch_Hava_Basinci" TEXT,
+    "patch_Toz_yukleme_Hizi" TEXT,
+    "teach_Ayari" TEXT,
+    "delay_Ayari" TEXT,
+    "purge_Ayari" TEXT,
+    "testere_secimi" TEXT,
+    "kesim_Mesafesi" TEXT,
+    "yuva_Boyutu" TEXT,
+
+    CONSTRAINT "TechnicalParameter_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Process" (
+    "id" TEXT NOT NULL,
+    "faultId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "processDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "machineId" TEXT NOT NULL,
+
+    CONSTRAINT "Process_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "FinalControl" (
+    "id" TEXT NOT NULL,
+    "olcu_Kontrol" TEXT,
+    "gorunum_kontrol" TEXT,
+    "tork_Kontrol" TEXT,
+    "paketleme" TEXT,
+    "kontrol_edilen_miktar" TEXT,
+    "hatali_miktar" TEXT,
+    "remarks" TEXT,
+    "result" "FaultControlResult" NOT NULL,
+
+    CONSTRAINT "FinalControl_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Invoice" (
+    "id" TEXT NOT NULL,
+    "faultId" TEXT NOT NULL,
+    "invoiceDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "totalAmount" DOUBLE PRECISION NOT NULL,
+
+    CONSTRAINT "Invoice_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Notification" (
     "id" TEXT NOT NULL,
     "title" TEXT,
@@ -211,24 +281,6 @@ CREATE TABLE "Standards" (
     CONSTRAINT "Standards_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "Machine" (
-    "id" TEXT NOT NULL,
-    "MachineName" TEXT NOT NULL,
-
-    CONSTRAINT "Machine_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "TechnicalParameter" (
-    "id" TEXT NOT NULL,
-    "MachineID" TEXT NOT NULL,
-    "ParameterName" TEXT NOT NULL,
-    "ParameterValue" TEXT NOT NULL,
-
-    CONSTRAINT "TechnicalParameter_pkey" PRIMARY KEY ("id")
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
@@ -240,6 +292,9 @@ CREATE UNIQUE INDEX "Address_userId_key" ON "Address"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ContactInfo_userId_key" ON "ContactInfo"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "TechnicalParameter_machineId_key" ON "TechnicalParameter"("machineId");
 
 -- AddForeignKey
 ALTER TABLE "Address" ADD CONSTRAINT "Address_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -258,3 +313,18 @@ ALTER TABLE "Fault" ADD CONSTRAINT "Fault_faultControlId_fkey" FOREIGN KEY ("fau
 
 -- AddForeignKey
 ALTER TABLE "Fault" ADD CONSTRAINT "Fault_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TechnicalParameter" ADD CONSTRAINT "TechnicalParameter_machineId_fkey" FOREIGN KEY ("machineId") REFERENCES "Machine"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Process" ADD CONSTRAINT "Process_faultId_fkey" FOREIGN KEY ("faultId") REFERENCES "Fault"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Process" ADD CONSTRAINT "Process_machineId_fkey" FOREIGN KEY ("machineId") REFERENCES "Machine"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Process" ADD CONSTRAINT "Process_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_faultId_fkey" FOREIGN KEY ("faultId") REFERENCES "Fault"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

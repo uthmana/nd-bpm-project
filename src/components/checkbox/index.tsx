@@ -31,7 +31,7 @@ const Checkbox = (props: {
     } else {
       setisChecked(false);
     }
-    onChange(e);
+    onChange && onChange(e);
   };
 
   return (

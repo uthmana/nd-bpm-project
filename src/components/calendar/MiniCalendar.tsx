@@ -5,13 +5,15 @@ import 'react-calendar/dist/Calendar.css';
 import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
 import 'styles/MiniCalendar.css';
 
-const MiniCalendar = () => {
+const MiniCalendar = (props: { className?: string }) => {
+  const { className } = props;
   const [value, onChange] = useState(new Date());
 
   return (
     <div>
       <Card extra="flex w-full h-full flex-col px-3 py-3">
         <Calendar
+          className={className}
           onChange={onChange}
           value={value}
           prevLabel={<MdChevronLeft className="ml-1 h-6 w-6 " />}

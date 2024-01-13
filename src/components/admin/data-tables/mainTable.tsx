@@ -87,7 +87,6 @@ function MainTable({
 }: MainTable) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState('');
-  const queryParams = useParams();
 
   let defaultData = tableData;
 
@@ -121,15 +120,27 @@ function MainTable({
   };
 
   const columns = useMemo(() => {
-    //let columns: any;
     let col: any;
     switch (variant) {
       case 'customer':
         col = [
+          columnHelper.accessor('id', {
+            id: 'id',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                SİRA NO.
+              </p>
+            ),
+            cell: ({ row }) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {row.index + 1}
+              </p>
+            ),
+          }),
           columnHelper.accessor('company_name', {
             id: 'company_name',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="min-w-[200px] text-sm font-bold text-gray-600 dark:text-white">
                 ŞİRKET
               </p>
             ),
@@ -143,7 +154,7 @@ function MainTable({
           columnHelper.accessor('rep_name', {
             id: 'rep_name',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="min-w-[100px] text-sm font-bold text-gray-600 dark:text-white">
                 SORUMLU
               </p>
             ),
@@ -170,7 +181,7 @@ function MainTable({
           columnHelper.accessor('address', {
             id: 'address',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="min-w-[200px] text-sm font-bold text-gray-600 dark:text-white">
                 ADRES
               </p>
             ),
@@ -183,7 +194,7 @@ function MainTable({
           columnHelper.accessor('phoneNumber', {
             id: 'phoneNumber',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="min-w-[120px] text-sm font-bold text-gray-600 dark:text-white">
                 TELEFON
               </p>
             ),
@@ -202,7 +213,7 @@ function MainTable({
               </p>
             ),
             cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
+              <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
                 {info.getValue()}
               </p>
             ),
@@ -216,7 +227,7 @@ function MainTable({
               </p>
             ),
             cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
+              <p className="min-w-[80px] text-sm font-bold text-navy-700 dark:text-white">
                 {info.getValue()}
               </p>
             ),
@@ -229,7 +240,7 @@ function MainTable({
               </p>
             ),
             cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
+              <p className="min-w-[90px] text-sm font-bold text-navy-700 dark:text-white">
                 {info.getValue()}
               </p>
             ),
@@ -257,7 +268,7 @@ function MainTable({
               </p>
             ),
             cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
+              <p className="min-w-[120px] text-sm font-bold text-navy-700 dark:text-white">
                 {info.getValue()}
               </p>
             ),
@@ -280,7 +291,7 @@ function MainTable({
           columnHelper.accessor('tax_Office', {
             id: 'tax_Office',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="min-w-[160px] text-sm font-bold text-gray-600 dark:text-white">
                 VERGİ OFİSİ
               </p>
             ),
@@ -294,11 +305,11 @@ function MainTable({
             id: 'taxOfficeCode',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
-                Vergi Ofis Kodu
+                VERGİ OFİS KODU
               </p>
             ),
             cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
+              <p className="min-w-[120px] text-sm font-bold text-navy-700 dark:text-white">
                 {info.getValue()}
               </p>
             ),
@@ -320,12 +331,12 @@ function MainTable({
           columnHelper.accessor('currency', {
             id: 'currency',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="text-center text-sm font-bold text-gray-600 dark:text-white">
                 PARA BİRİMİ
               </p>
             ),
             cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
+              <p className="min-w-[90px] text-center text-sm font-bold text-navy-700 dark:text-white">
                 {info.getValue()}
               </p>
             ),
@@ -354,7 +365,7 @@ function MainTable({
             ),
             cell: (info) => (
               <button
-                className="ml-3 rounded-md bg-green-600 px-3 py-2 hover:bg-green-700"
+                className="ml-3 rounded-md bg-green-600  px-2 py-1 hover:bg-green-700"
                 onClick={() => onEdit(info.getValue())}
               >
                 <MdModeEdit className="h-5 w-5 text-white" />
@@ -370,7 +381,7 @@ function MainTable({
             ),
             cell: (info) => (
               <button
-                className="rounded-md bg-red-600 px-3 py-2 hover:bg-red-700"
+                className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
                 onClick={() => onDelete(info.getValue())}
               >
                 <MdOutlineDelete className="h-5 w-5 text-white" />
@@ -381,6 +392,19 @@ function MainTable({
         break;
       case 'stock':
         col = [
+          columnHelper.accessor('id', {
+            id: 'id',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                Sira No.
+              </p>
+            ),
+            cell: ({ row }) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {row.index + 1}
+              </p>
+            ),
+          }),
           columnHelper.accessor('image', {
             id: 'image',
             header: () => (
@@ -573,7 +597,7 @@ function MainTable({
             ),
             cell: (info) => (
               <button
-                className="ml-3 rounded-md bg-green-600 px-3 py-2 hover:bg-green-700"
+                className="ml-3 rounded-md bg-green-600  px-2 py-1 hover:bg-green-700"
                 onClick={() => onEdit(info.getValue())}
               >
                 <MdModeEdit className="h-5 w-5 text-white" />
@@ -589,7 +613,7 @@ function MainTable({
             ),
             cell: (info) => (
               <button
-                className="rounded-md bg-red-600 px-3 py-2 hover:bg-red-700"
+                className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
                 onClick={() => onDelete(info.getValue())}
               >
                 <MdOutlineDelete className="h-5 w-5 text-white" />
@@ -600,6 +624,19 @@ function MainTable({
         break;
       case 'user':
         col = [
+          columnHelper.accessor('id', {
+            id: 'id',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                Sira No.
+              </p>
+            ),
+            cell: ({ row }) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {row.index + 1}
+              </p>
+            ),
+          }),
           columnHelper.accessor('name', {
             id: 'name',
             header: () => (
@@ -674,7 +711,7 @@ function MainTable({
             ),
             cell: (info) => (
               <button
-                className="ml-3 rounded-md bg-green-600 px-3 py-2 hover:bg-green-700"
+                className="ml-3 rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
                 onClick={() => onEdit(info.getValue())}
               >
                 <MdModeEdit className="h-5 w-5 text-white" />
@@ -690,7 +727,7 @@ function MainTable({
             ),
             cell: (info) => (
               <button
-                className="rounded-md bg-red-600 px-3 py-2 hover:bg-red-700"
+                className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
                 onClick={() => onDelete(info.getValue())}
               >
                 <MdOutlineDelete className="h-5 w-5 text-white" />
@@ -760,7 +797,7 @@ function MainTable({
                       key={header.id}
                       colSpan={header.colSpan}
                       onClick={header.column.getToggleSortingHandler()}
-                      className="cursor-pointer border-b border-gray-400 pb-2 pr-4 pt-4 text-start dark:border-white/30"
+                      className="cursor-pointer border-b border-gray-400 px-1 text-start dark:border-white/30"
                     >
                       <div className="items-center justify-between text-xs text-gray-200">
                         {flexRender(
@@ -790,7 +827,7 @@ function MainTable({
                   >
                     {row.getVisibleCells().map((cell) => {
                       return (
-                        <td key={cell.id} className="min-w-[100px] px-2 py-1">
+                        <td key={cell.id} className="min-w-[70px] p-1">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),

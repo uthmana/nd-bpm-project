@@ -1,6 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import Card from 'components/card';
-import { MdModeEdit, MdOutlineDelete, MdAdd, MdCheck } from 'react-icons/md';
+import {
+  MdModeEdit,
+  MdOutlineDelete,
+  MdAdd,
+  MdCheck,
+  MdCheckCircle,
+  MdCancel,
+  MdOutlineError,
+} from 'react-icons/md';
 import {
   createColumnHelper,
   flexRender,
@@ -98,17 +106,47 @@ function EntryTable({
       PRE_PROCESS: 'Ön İşlem Gerekli',
     };
 
-    const statusbgColor = (status) => {
+    const statusbgColor = (status: string) => {
       if (status === 'ACCEPT' || status === 'ACCEPTANCE_WITH_CONDITION') {
-        return 'bg-green-600 text-white';
+        return (
+          <MdCheckCircle className="me-1 text-green-500 dark:text-green-300" />
+        );
       }
       if (status === 'REJECT') {
-        return 'bg-red-400 text-white';
+        return <MdCancel className="me-1 text-red-500 dark:text-red-300" />;
       }
-      return 'bg-yellow-400 text-black';
+      return (
+        <MdOutlineError className="me-1 text-amber-500 dark:text-amber-300" />
+      );
+    };
+
+    <MdAdd className="h-5 w-5 text-white" />;
+
+    const statusbtnAction = (status: string) => {
+      if (
+        status === 'ACCEPT' ||
+        status === 'ACCEPTANCE_WITH_CONDITION' ||
+        status === 'REJECT'
+      ) {
+        return <MdCheck className="h-5 w-5 text-white" />;
+      }
+      return <MdAdd className="h-5 w-5 text-white" />;
     };
 
     col = [
+      columnHelper.accessor('id', {
+        id: 'id',
+        header: () => (
+          <p className="text-sm font-bold text-gray-600 dark:text-white">
+            SİRA NO.
+          </p>
+        ),
+        cell: ({ row }) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {(row.index + 1).toString()}
+          </p>
+        ),
+      }),
       columnHelper.accessor('traceabilityCode', {
         id: 'traceabilityCode',
         header: () => (
@@ -117,7 +155,7 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -130,7 +168,7 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -156,7 +194,7 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="flex text-sm font-bold text-navy-700 dark:text-white">
+          <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -169,7 +207,7 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -182,7 +220,7 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p className="min-w-[120px] text-sm font-bold text-navy-700 dark:text-white">
             {formatDateTime(info.getValue())}
           </p>
         ),
@@ -190,7 +228,7 @@ function EntryTable({
       columnHelper.accessor('invoiceDate', {
         id: 'invoiceDate',
         header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
             İrsalye Tarihi
           </p>
         ),
@@ -203,7 +241,7 @@ function EntryTable({
       columnHelper.accessor('application', {
         id: 'application',
         header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[200px] text-sm font-bold uppercase text-gray-600 dark:text-white">
             Uygulama
           </p>
         ),
@@ -247,7 +285,7 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -260,7 +298,7 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="max-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
+          <p className="min-w-[110px] text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue() ? <FileViewer file={info.getValue()} /> : null}
           </p>
         ),
@@ -273,13 +311,12 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => (
-          <p
-            className={`rounded-lg px-1 py-1 text-center text-sm font-bold text-navy-700 ${statusbgColor(
-              info.getValue(),
-            )}`}
-          >
-            {entryStatus[info.getValue()]}
-          </p>
+          <div className="flex min-w-[100px] items-center">
+            {statusbgColor(info.getValue())}
+            <p className="text-sm font-bold text-navy-700 dark:text-white">
+              {entryStatus[info.getValue()]}
+            </p>
+          </div>
         ),
       }),
     ];
@@ -289,13 +326,13 @@ function EntryTable({
         columnHelper.accessor('id', {
           id: 'id',
           header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            <p className="min-w-[80px] text-sm font-bold uppercase text-gray-600 dark:text-white">
               DÜZENLE
             </p>
           ),
           cell: (info: any) => (
             <button
-              className="ml-3 rounded-md bg-green-600 px-3 py-2 hover:bg-green-700"
+              className="ml-3 rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
               onClick={() => onEdit(info.getValue())}
             >
               <MdModeEdit className="h-5 w-5 text-white" />
@@ -305,13 +342,13 @@ function EntryTable({
         columnHelper.accessor('id', {
           id: 'id',
           header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            <p className="min-w-[60px] text-sm font-bold uppercase text-gray-600 dark:text-white">
               DELETE
             </p>
           ),
           cell: (info) => (
             <button
-              className="rounded-md bg-red-600 px-3 py-2 hover:bg-red-700"
+              className="rounded-md bg-red-600 px-2 py-1 hover:bg-red-700"
               onClick={() => onDelete(info.getValue())}
             >
               <MdOutlineDelete className="h-5 w-5 text-white" />
@@ -324,16 +361,16 @@ function EntryTable({
           columnHelper.accessor('id', {
             id: 'id',
             header: () => (
-              <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
                 KONTROL FORMU
               </p>
             ),
             cell: (info: any) => (
               <button
-                className="ml-3 rounded-md bg-blue-600 px-3 py-2 hover:bg-blue-700"
+                className="ml-3 flex items-center gap-1 rounded-md bg-blue-600 px-3 py-1 text-sm font-bold text-white hover:bg-blue-700"
                 onClick={() => onControl(info.getValue())}
               >
-                <MdCheck className="h-5 w-5 text-white" />
+                {statusbtnAction(info.row.original.status)} Kontrol
               </button>
             ),
           }),
@@ -345,16 +382,16 @@ function EntryTable({
         columnHelper.accessor('id', {
           id: 'id',
           header: () => (
-            <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            <p className="min-w-[130px] text-sm font-bold uppercase text-gray-600 dark:text-white">
               KONTROL FORMU
             </p>
           ),
           cell: (info: any) => (
             <button
-              className="ml-3 rounded-md bg-blue-600 px-3 py-2 hover:bg-blue-700"
+              className="ml-3 flex items-center gap-1 rounded-md bg-blue-600 px-3 py-1 text-sm font-bold text-white hover:bg-blue-700"
               onClick={() => onControl(info.getValue())}
             >
-              <MdCheck className="h-5 w-5 text-white" />
+              {statusbtnAction(info.row.original.status)} Kontrol
             </button>
           ),
         }),
@@ -453,7 +490,7 @@ function EntryTable({
                   >
                     {row.getVisibleCells().map((cell) => {
                       return (
-                        <td key={cell.id} className="min-w-[100px] px-2 py-1">
+                        <td key={cell.id} className="min-w-[80px] p-1">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),

@@ -1,20 +1,23 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { checkUserRole } from 'utils/auth';
-import { Offer } from '@prisma/client';
+import { NextRequest } from 'next/server';
+import prisma from '../../lib/db';
+import { Prisma } from '@prisma/client';
 
 //All offers
 export async function GET(req: NextRequest) {
-  try {
-    const allowedRoles = ['ADMIN'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
-    }
-    const offers = await prisma.offer.findMany();
-    if (!offers) {
-      throw new Error('User not found');
-    }
-    return NextResponse.json(offers, { status: 200 });
+  const offers = await prisma.offer.findMany({
+    take: 10,
+    where: { customerId: 'hdskdsjklcjds' },
+  });
+}
+
+export async function  PUT(req:NextRequest) {
+try{
+ 
+  const offerdata:Prisma.OfferCreateInput=await req.json();
+  const offers=await prisma.offer.create({data:{ ...offerdata}}) 
+
+  
+  return NextResponse.json({ customer }, { status: 200 });
   } catch (error) {
     console.error('Error fetching users:', error);
     return NextResponse.json({ error: 'Internal Server Error' });

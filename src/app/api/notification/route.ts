@@ -7,12 +7,17 @@ import { authOptions } from 'app/lib/authOptions';
 
 //All Notification
 export async function GET(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-
   try {
-    const notification = await prisma.notification.findMany();
+    const session = await getServerSession(authOptions);
+    if (session === null) {
+      return NextResponse.json([], { status: 404 });
+    }
+
+    const notification = await prisma.notification.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
     if (!notification) {
-      return NextResponse.json([], { status: 204 });
+      return NextResponse.json([], { status: 404 });
     }
 
     const filtedNotification: Notification[] = notification.filter((item) => {
@@ -44,10 +49,15 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
+
+    if (!session) {
+      return NextResponse.json([], { status: 204 });
+    }
+
     const reqbody: any = await req.json();
     const { id } = reqbody;
 
-    if (session.user.role === 'ADMIN') {
+    if (session?.user?.role === 'ADMIN') {
       return NextResponse.json([], { status: 204 });
     }
     const notification = await prisma.notification.update({
