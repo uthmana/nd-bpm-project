@@ -1,47 +1,48 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/db';
-import { Fault, Process } from '@prisma/client';
+import { Process } from '@prisma/client';
 
-//Get single Fault
+//Get single  Process
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
   try {
     const id = route.params.id;
-    const fault: Fault = await prisma.fault.findUnique({
+    const process: Process = await prisma.process.findUnique({
       where: { id: id },
     });
-    if (!fault) {
+    if (!process) {
       throw new Error('Fault not found');
     }
-    return NextResponse.json(fault, { status: 200 });
+    return NextResponse.json(process, { status: 200 });
   } catch (error) {
     console.error('Error fetching users:', error);
     return NextResponse.json({ error: 'Internal Server Error' });
   }
 }
 
-//Update Fault
+//Update  Process
 export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
     const id = route.params.id;
-    const result: Fault = await req.json();
-    const { traceabilityCode } = result;
+    const result: Process = await req.json();
+    //TODO: validate reqBody
+    const { faultId } = result;
 
-    if (!traceabilityCode) {
+    if (!faultId) {
       throw new Error('You are missing a required data');
     }
 
-    const fault: Fault = await prisma.fault.findUnique({
+    const process: Process = await prisma.process.findUnique({
       where: { id },
     });
 
-    if (!fault) {
+    if (!process) {
       return NextResponse.json(
         { message: 'Fault not found.' },
         { status: 404 },
       );
     }
 
-    const updateFault = await prisma.fault.update({
+    const updatedProcess = await prisma.process.update({
       where: {
         id: id,
       },
@@ -49,20 +50,20 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         ...result,
       },
     });
-    if (!updateFault) {
+    if (!updatedProcess) {
       return NextResponse.json(
         { error: 'Error occuired while updating fault' },
         { status: 401 },
       );
     }
-    return NextResponse.json(updateFault, { status: 200 });
+    return NextResponse.json(updatedProcess, { status: 200 });
   } catch (error) {
     console.error('Error updating fault', error);
     return NextResponse.json({ error: 'Internal Server Error' });
   }
 }
 
-//Delete Fault
+//Delete  Process
 export async function DELETE(
   req: NextRequest,
   route: { params: { id: string } },
@@ -70,19 +71,19 @@ export async function DELETE(
   try {
     //TODO: restrict unathorized user : only normal and admin allowed
     const id = route.params.id;
-    const deletedFault = await prisma.fault.delete({
+    const deletedProcess = await prisma.process.delete({
       where: {
         id: id,
       },
     });
-    if (!deletedFault) {
+    if (!deletedProcess) {
       return NextResponse.json(
         { error: 'Error occuired while deleting fault' },
         { status: 401 },
       );
     }
 
-    return NextResponse.json([deletedFault], { status: 200 });
+    return NextResponse.json(deletedProcess, { status: 200 });
   } catch (error) {
     console.error('Internal Server Error', error);
     return NextResponse.json({ error: 'Internal Server Error' });

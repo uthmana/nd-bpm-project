@@ -48,6 +48,33 @@ export async function PUT(req: Request) {
       data: { status: controlReult },
     });
 
+    if (controlReult === 'ACCEPT') {
+      if (updateFault) {
+        const {
+          id,
+          customerName,
+          product,
+          quantity,
+          productCode,
+          application,
+          standard,
+          color,
+        } = updateFault;
+        const process = await prisma.process.create({
+          data: {
+            faultId: id,
+            customerName,
+            product,
+            quantity,
+            productCode,
+            application,
+            standard,
+            color,
+          },
+        });
+      }
+    }
+
     //Create Notification
     const notification = await prisma.notification.create({
       data: {

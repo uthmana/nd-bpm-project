@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/db';
-import { $Enums, Fault, FaultControl } from '@prisma/client';
+import { $Enums, Fault, FaultControl, Process } from '@prisma/client';
 
 //Get single Fault Control
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
@@ -63,6 +63,75 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       data: { status: result },
     });
 
+    //Create Process starts
+    if (result !== 'ACCEPT') {
+      const processData: Process = await prisma.process.findFirst({
+        where: { faultId },
+      });
+      if (processData) {
+        const processDel = await prisma.process.delete({
+          where: { id: processData.id },
+        });
+      }
+    }
+    if (result === 'ACCEPT') {
+      const processData: Process = await prisma.process.findFirst({
+        where: { faultId },
+      });
+
+      if (!processData && updateFault) {
+        const {
+          id,
+          customerName,
+          product,
+          quantity,
+          productCode,
+          application,
+          standard,
+          color,
+        } = updateFault;
+        const processCreate = await prisma.process.create({
+          data: {
+            faultId: id,
+            customerName,
+            product,
+            quantity,
+            productCode,
+            application,
+            standard,
+            color,
+          },
+        });
+      } else {
+        if (updateFault) {
+          const {
+            id,
+            customerName,
+            product,
+            quantity,
+            productCode,
+            application,
+            standard,
+            color,
+          } = updateFault;
+
+          const processUpdate = await prisma.process.update({
+            where: { id: processData.id },
+            data: {
+              faultId: id,
+              customerName,
+              product,
+              quantity,
+              productCode,
+              application,
+              standard,
+              color,
+            },
+          });
+        }
+      }
+    }
+    //Create Process ends
     if (!updateFault) {
       return NextResponse.json(
         { error: 'Error occuired while updating fault' },
