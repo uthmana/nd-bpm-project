@@ -1,93 +1,91 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkUserRole } from 'utils/auth';
+import prisma from '../../../lib/db';
 import { Process } from '@prisma/client';
 
-//Get single process
+//Get single  Process
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
   try {
-    const allowedRoles = ['ADMIN'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
-    }
-
     const id = route.params.id;
-    const process = await prisma.process.findUnique({
+    const process: Process = await prisma.process.findUnique({
       where: { id: id },
-      include: { fault: true, machine: true, user: true },
     });
-    if (!process.id) return NextResponse.json({ message: 'Process not found' });
-    return NextResponse.json(process);
+    if (!process) {
+      throw new Error('Fault not found');
+    }
+    return NextResponse.json(process, { status: 200 });
   } catch (error) {
-    console.error('Error fetching processs:', error);
+    console.error('Error fetching users:', error);
     return NextResponse.json({ error: 'Internal Server Error' });
   }
 }
 
-//Update process
+//Update  Process
 export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
-    const allowedRoles = ['ADMIN'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
-    }
-
     const id = route.params.id;
     const result: Process = await req.json();
-    const { ...data } = result;
+    //TODO: validate reqBody
+    const { faultId } = result;
 
-    const process: Partial<Process> = await prisma.process.findUnique({
+    if (!faultId) {
+      throw new Error('You are missing a required data');
+    }
+
+    const process: Process = await prisma.process.findUnique({
       where: { id },
     });
 
     if (!process) {
       return NextResponse.json(
-        { message: 'process not found.' },
+        { message: 'Fault not found.' },
         { status: 404 },
       );
     }
 
-    const updateprocess = await prisma.process.update({
+    const updatedProcess = await prisma.process.update({
       where: {
         id: id,
       },
       data: {
-        ...data,
+        ...result,
       },
     });
-    if (updateprocess) {
-      return NextResponse.json({ updateprocess }, { status: 200 });
+    if (!updatedProcess) {
+      return NextResponse.json(
+        { error: 'Error occuired while updating fault' },
+        { status: 401 },
+      );
     }
+    return NextResponse.json(updatedProcess, { status: 200 });
   } catch (error) {
-    console.error('Error updating process', error);
+    console.error('Error updating fault', error);
     return NextResponse.json({ error: 'Internal Server Error' });
   }
 }
 
-//Delete process
+//Delete  Process
 export async function DELETE(
   req: NextRequest,
   route: { params: { id: string } },
 ) {
   try {
-    const allowedRoles = ['ADMIN'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
-    }
-
+    //TODO: restrict unathorized user : only normal and admin allowed
     const id = route.params.id;
-    const deletedprocess = await prisma.process.delete({
+    const deletedProcess = await prisma.process.delete({
       where: {
         id: id,
       },
     });
-    if (deletedprocess) {
-      return NextResponse.json({ deletedprocess }, { status: 200 });
+    if (!deletedProcess) {
+      return NextResponse.json(
+        { error: 'Error occuired while deleting fault' },
+        { status: 401 },
+      );
     }
+
+    return NextResponse.json(deletedProcess, { status: 200 });
   } catch (error) {
-    console.error('Error updating process', error);
+    console.error('Internal Server Error', error);
     return NextResponse.json({ error: 'Internal Server Error' });
   }
 }

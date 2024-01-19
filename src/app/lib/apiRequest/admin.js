@@ -104,3 +104,22 @@ export async function getEntryControlByfaultId(id) {
 export async function updateFaultControl(payload) {
   return fetchAPI(`entryControl/${payload.id}`, 'put', payload);
 }
+
+// Process
+export async function getProcess() {
+  return fetchAPI('process');
+}
+export async function deleteProcess(id) {
+  return fetchAPI(`process/${id}`, 'delete');
+}
+
+export async function addProcess(payload) {
+  return fetchAPI('process', 'put', payload);
+}
+export async function getProcessById(id) {
+  return fetchAPI(`process/${id}`);
+}
+
+export async function updateProcess(payload) {
+  return fetchAPI(`process/${payload.id}`, 'put', payload);
+}

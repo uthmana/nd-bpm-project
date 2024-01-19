@@ -21,39 +21,31 @@ import {
 } from '@tanstack/react-table';
 import Search from 'components/search/search';
 import Button from 'components/button/button';
-import { formatDateTime } from 'utils';
-import FileViewer from 'components/fileViewer';
 
-type FaultObj = {
+type ProcessObj = {
   id: string;
   customerName: string;
-  traceabilityCode: string;
-  arrivalDate: string;
-  invoiceDate: string;
   product: string;
   quantity: number;
   productCode: string;
-  productBatchNumber: string;
   application: string;
+  machineName: string;
   standard: string;
   color: string;
-  faultDescription: string;
   status: string;
-  technicalDrawingAttachment: string;
-  controlInfo: string;
 };
 
 type MainTable = {
-  tableData: FaultObj[];
+  tableData: ProcessObj[];
   variant: string;
-  onEdit: (e: any) => void;
-  onDelete: (e: any) => void;
-  onAdd: (e: any) => void;
-  onControl: (e: any) => void;
-  searchValue: string;
+  onEdit?: (e: any) => void;
+  onDelete?: (e: any) => void;
+  onAdd?: (e: any) => void;
+  onControl?: (e: any) => void;
+  searchValue?: string;
 };
 
-function EntryTable({
+function ProcessTable({
   tableData,
   onEdit,
   onDelete,
@@ -100,35 +92,22 @@ function EntryTable({
 
     const entryStatus = {
       PENDING: 'Beklemede',
-      REJECT: 'Ret',
-      ACCEPT: 'Kabul',
-      ACCEPTANCE_WITH_CONDITION: 'Şartlı Kabul',
-      PRE_PROCESS: 'Ön İşlem Gerekli',
+      PROCESSING: "Proses'de",
+      FINISHED: 'Bitti',
     };
 
     const statusbgColor = (status: string) => {
-      if (status === 'ACCEPT' || status === 'ACCEPTANCE_WITH_CONDITION') {
+      if (status === 'FINISHED') {
         return (
           <MdCheckCircle className="me-1 text-green-500 dark:text-green-300" />
         );
       }
-      if (status === 'REJECT') {
-        return <MdCancel className="me-1 text-red-500 dark:text-red-300" />;
+      if (status === 'PROCESSING') {
+        return <MdCancel className="me-1 text-amber-500 dark:text-amber-300" />;
       }
       return (
-        <MdOutlineError className="me-1 text-amber-500 dark:text-amber-300" />
+        <MdOutlineError className="me-1 text-red-500 dark:text-red-300 " />
       );
-    };
-
-    const statusbtnAction = (status: string) => {
-      if (
-        status === 'ACCEPT' ||
-        status === 'ACCEPTANCE_WITH_CONDITION' ||
-        status === 'REJECT'
-      ) {
-        return <MdCheck className="h-5 w-5 text-white" />;
-      }
-      return <MdAdd className="h-5 w-5 text-white" />;
     };
 
     col = [
@@ -145,11 +124,11 @@ function EntryTable({
           </p>
         ),
       }),
-      columnHelper.accessor('traceabilityCode', {
-        id: 'traceabilityCode',
+      columnHelper.accessor('customerName', {
+        id: 'customerName',
         header: () => (
           <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Takip Kodu
+            Müşteri
           </p>
         ),
         cell: (info: any) => (
@@ -171,6 +150,7 @@ function EntryTable({
           </p>
         ),
       }),
+
       columnHelper.accessor('quantity', {
         id: 'quantity',
         header: () => (
@@ -194,45 +174,6 @@ function EntryTable({
         cell: (info: any) => (
           <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
-          </p>
-        ),
-      }),
-      columnHelper.accessor('productBatchNumber', {
-        id: 'productBatchNumber',
-        header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Batch No.
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
-          </p>
-        ),
-      }),
-      columnHelper.accessor('arrivalDate', {
-        id: 'arrivalDate',
-        header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Variş Tarihi
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="min-w-[120px] text-sm font-bold text-navy-700 dark:text-white">
-            {formatDateTime(info.getValue())}
-          </p>
-        ),
-      }),
-      columnHelper.accessor('invoiceDate', {
-        id: 'invoiceDate',
-        header: () => (
-          <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            İrsalye Tarihi
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {formatDateTime(info.getValue())}
           </p>
         ),
       }),
@@ -275,32 +216,20 @@ function EntryTable({
           </p>
         ),
       }),
-      columnHelper.accessor('faultDescription', {
-        id: 'faultDescription',
+      columnHelper.accessor('machineName', {
+        id: 'machineName',
         header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Açıklama
+          <p className="min-w-[200px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Makine
           </p>
         ),
         cell: (info: any) => (
-          <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
       }),
-      columnHelper.accessor('technicalDrawingAttachment', {
-        id: 'technicalDrawingAttachment',
-        header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            İlgi Doküman
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="min-w-[110px] text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue() ? <FileViewer file={info.getValue()} /> : null}
-          </p>
-        ),
-      }),
+
       columnHelper.accessor('status', {
         id: 'status',
         header: () => (
@@ -317,85 +246,25 @@ function EntryTable({
           </div>
         ),
       }),
+      columnHelper.accessor('id', {
+        id: 'id',
+        header: () => (
+          <p className="min-w-[130px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+            PARAMETRE
+          </p>
+        ),
+        cell: (info: any) => (
+          <button
+            className="ml-3 flex items-center gap-1 rounded-md bg-blue-600 px-3 py-1 text-sm font-bold text-white hover:bg-blue-700"
+            onClick={() => onAdd(info.row.original)}
+          >
+            <MdAdd className="h-5 w-5 text-white" />
+            Ekle
+          </button>
+        ),
+      }),
     ];
-
-    if (variant === 'NORMAL' || variant === 'ADMIN') {
-      col.push(
-        columnHelper.accessor('id', {
-          id: 'id',
-          header: () => (
-            <p className="min-w-[80px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-              DÜZENLE
-            </p>
-          ),
-          cell: (info: any) => (
-            <button
-              className="ml-3 rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
-              onClick={() => onEdit(info.getValue())}
-            >
-              <MdModeEdit className="h-5 w-5 text-white" />
-            </button>
-          ),
-        }),
-        columnHelper.accessor('id', {
-          id: 'id',
-          header: () => (
-            <p className="min-w-[60px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-              DELETE
-            </p>
-          ),
-          cell: (info) => (
-            <button
-              className="rounded-md bg-red-600 px-2 py-1 hover:bg-red-700"
-              onClick={() => onDelete(info.getValue())}
-            >
-              <MdOutlineDelete className="h-5 w-5 text-white" />
-            </button>
-          ),
-        }),
-      );
-      if (variant === 'ADMIN')
-        col.push(
-          columnHelper.accessor('id', {
-            id: 'id',
-            header: () => (
-              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-                KONTROL FORMU
-              </p>
-            ),
-            cell: (info: any) => (
-              <button
-                className="ml-3 flex items-center gap-1 rounded-md bg-blue-600 px-3 py-1 text-sm font-bold text-white hover:bg-blue-700"
-                onClick={() => onControl(info.getValue())}
-              >
-                {statusbtnAction(info.row.original.status)} Kontrol
-              </button>
-            ),
-          }),
-        );
-      return col;
-    }
-    if (variant === 'SUPER' || variant === 'TECH') {
-      col.push(
-        columnHelper.accessor('id', {
-          id: 'id',
-          header: () => (
-            <p className="min-w-[130px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-              KONTROL FORMU
-            </p>
-          ),
-          cell: (info: any) => (
-            <button
-              className="ml-3 flex items-center gap-1 rounded-md bg-blue-600 px-3 py-1 text-sm font-bold text-white hover:bg-blue-700"
-              onClick={() => onControl(info.getValue())}
-            >
-              {statusbtnAction(info.row.original.status)} Kontrol
-            </button>
-          ),
-        }),
-      );
-      return col;
-    }
+    return col;
   }, []);
 
   const [data, setData] = useState(() => [...defaultData]);
@@ -431,14 +300,12 @@ function EntryTable({
           />
         </div>
 
-        {variant === 'NORMAL' || variant === 'ADMIN' ? (
-          <Button
+        {/* <Button
             text="EKLE"
             extra="!w-[140px] h-[38px] font-bold"
             onClick={onAdd}
             icon={<MdAdd className="ml-1 h-6 w-6" />}
-          />
-        ) : null}
+          /> */}
       </header>
 
       <div
@@ -568,5 +435,5 @@ function EntryTable({
   );
 }
 
-export default EntryTable;
-const columnHelper = createColumnHelper<FaultObj>();
+export default ProcessTable;
+const columnHelper = createColumnHelper<ProcessObj>();

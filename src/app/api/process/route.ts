@@ -1,47 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server';
+import prisma from '../../lib/db';
+import { hash } from 'bcryptjs';
 import { checkUserRole } from 'utils/auth';
-import { Process } from '@prisma/client';
+import { Process, User } from '@prisma/client';
 
-//All process
+//All  Process
 export async function GET(req: NextRequest) {
   try {
-    const allowedRoles = ['ADMIN'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
-    }
     const process = await prisma.process.findMany({
-      include: { fault: true, machine: true, user: true },
+      include: { technicalParams: true },
     });
     if (!process) {
-      throw new Error('process not found');
+      throw new Error('User not found');
     }
     return NextResponse.json(process, { status: 200 });
   } catch (error) {
-    console.error('Error fetching process:', error);
+    console.error('Error fetching users:', error);
     return NextResponse.json({ error: 'Internal Server Error' });
   }
 }
 
-// Create process
+// Create  Process
 export async function PUT(req: Request) {
   try {
-    const allowedRoles = ['ADMIN'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+    const reqBody: Process = await req.json();
+    //TODO: validate reqBody
+    const process = await prisma.process.create({
+      data: reqBody,
+    });
+
+    if (!process) {
+      throw new Error('Process not found');
+    }
+    return NextResponse.json(process, { status: 200 });
+  } catch (error) {
+    if (error?.code === 'P2002') {
+      return NextResponse.json(
+        { error: 'Error ocured while creating process' },
+        { status: 404 },
+      );
     }
 
-    const result: Process = await req.json();
-
-    const { ...data } = result;
-    const process = await prisma.process.create({
-      data: {
-        ...data,
-      },
-    });
-    return NextResponse.json({ process }, { status: 200 });
-  } catch (error) {
-    return NextResponse.json({ error: 'Error ocured while creating process' });
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 },
+    );
   }
 }

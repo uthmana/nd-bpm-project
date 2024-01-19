@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/db';
-import { Fault } from '@prisma/client';
+import { Fault, Process } from '@prisma/client';
 
 //Get single Fault
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
@@ -81,6 +81,7 @@ export async function DELETE(
         { status: 401 },
       );
     }
+
     return NextResponse.json([deletedFault], { status: 200 });
   } catch (error) {
     console.error('Internal Server Error', error);

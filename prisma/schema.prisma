@@ -10,7 +10,7 @@ datasource db {
 }
 
 model User {
-  id              String       @id @default(uuid())
+  id              String       @id @default(cuid())
   name            String
   email           String?      @unique
   password        String?
@@ -22,7 +22,6 @@ model User {
   tokenExpiryDate DateTime?
   address         Address?
   contactInfo     ContactInfo?
-  Process         Process[]
 
   @@map("users")
 }
@@ -46,7 +45,7 @@ model ContactInfo {
 }
 
 model Customer {
-  id            String    @id @default(uuid())
+  id            String    @id @default(cuid())
   code          String?
   cardType      CardType? @default(ALICI_SATICI)
   taxNo         String?
@@ -73,7 +72,7 @@ model Customer {
 }
 
 model Stock {
-  id              String    @id @default(uuid())
+  id              String    @id @default(cuid())
   product_code    String
   product_name    String
   product_barcode String?
@@ -95,7 +94,7 @@ model Stock {
 
 //TODO: add stock relation 
 model Offer {
-  id         String      @id @default(uuid())
+  id         String      @id @default(cuid())
   name       String
   createdAt  DateTime    @default(now())
   status     OfferStatus @default(PENDING)
@@ -104,7 +103,7 @@ model Offer {
 }
 
 model Fault {
-  id                         String        @id @default(uuid())
+  id                         String        @id @default(cuid())
   customerName               String?
   traceabilityCode           String
   arrivalDate                DateTime?     @default(now())
@@ -123,13 +122,12 @@ model Fault {
   faultControl               FaultControl? @relation(fields: [faultControlId], references: [id])
   customerId                 String?
   Customer                   Customer?     @relation(fields: [customerId], references: [id])
-  faultControlId             String?
-  Process                    Process[]
+  faultControlId             String?       @unique
   Invoice                    Invoice[]
 }
 
 model FaultControl {
-  id                    String             @id @default(uuid())
+  id                    String             @id @default(cuid())
   faultId               String
   customerName          String?
   traceabilityCode      String?
@@ -153,15 +151,22 @@ model FaultControl {
 }
 
 model Machine {
-  id                  String               @id @default(uuid())
-  machine_Name        String
-  technicalParameters TechnicalParameter[]
-  Process             Process[]
+  id            String          @id @default(cuid())
+  machine_Name  String
+  machineParams MachineParams[]
+}
+
+model MachineParams {
+  id           String  @id @default(cuid())
+  param_name   String?
+  display_name String?
+
+  Machine   Machine? @relation(fields: [machineId], references: [id])
+  machineId String?
 }
 
 model TechnicalParameter {
-  id                     String   @id @default(uuid())
-  machineId              String?  @unique
+  id                     String  @id @default(cuid())
   viskozite              String?
   besleme_Tipi           String?
   besleme_Hizi           String?
@@ -180,22 +185,33 @@ model TechnicalParameter {
   testere_secimi         String?
   kesim_Mesafesi         String?
   yuva_Boyutu            String?
-  machine                Machine? @relation(fields: [machineId], references: [id])
+  machineId              String? @unique
+
+  Process   Process? @relation(fields: [processId], references: [id])
+  processId String?
 }
 
 model Process {
-  id          String   @id @default(uuid())
-  faultId     String
-  userId      String
-  processDate DateTime @default(now())
-  machineId   String
-  fault       Fault    @relation(fields: [faultId], references: [id])
-  machine     Machine  @relation(fields: [machineId], references: [id])
-  user        User     @relation(fields: [userId], references: [id])
+  id           String   @id @default(cuid())
+  faultId      String   @unique
+  customerName String?
+  product      String?
+  quantity     Int?
+  productCode  String?
+  application  String?
+  standard     String?
+  color        String?
+  machineName  String?
+  machineId    String?  @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  status          ProcessStatus        @default(PENDING)
+  technicalParams TechnicalParameter[]
 }
 
 model FinalControl {
-  id                    String             @id @default(uuid())
+  id                    String             @id @default(cuid())
   olcu_Kontrol          String?
   gorunum_kontrol       String?
   tork_Kontrol          String?
@@ -207,7 +223,7 @@ model FinalControl {
 }
 
 model Invoice {
-  id          String   @id @default(uuid())
+  id          String   @id @default(cuid())
   faultId     String
   invoiceDate DateTime @default(now())
   totalAmount Float
@@ -215,7 +231,7 @@ model Invoice {
 }
 
 model Notification {
-  id          String        @id @default(uuid())
+  id          String        @id @default(cuid())
   title       String?
   description String?
   image       String?
@@ -254,17 +270,17 @@ enum FaultStatus {
 }
 
 model Applications {
-  id   String @id @default(uuid())
+  id   String @id @default(cuid())
   Name String
 }
 
 model Colors {
-  id   String @id @default(uuid())
+  id   String @id @default(cuid())
   name String
 }
 
 model Standards {
-  id   String @id @default(uuid())
+  id   String @id @default(cuid())
   name String
 }
 
@@ -297,4 +313,10 @@ enum CardType {
   ALICI_SATICI
   ALICI
   SATICI
+}
+
+enum ProcessStatus {
+  PENDING
+  PROCESSING
+  FINISHED
 }
