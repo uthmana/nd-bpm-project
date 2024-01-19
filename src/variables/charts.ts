@@ -322,7 +322,7 @@ export const lineChartOptionsTotalSpent = {
     },
     type: 'text',
     range: undefined,
-    categories: ['SEP', 'OCT', 'NOV', 'DEC', 'JAN', 'FEB'],
+    categories: ['OCA', 'ŞUB', 'MAR', 'NISAN', 'MAYIS', 'HAZIRAN','TEMMUZ','AĞUSTOS', 'EYLÜL'],
   },
 
   yaxis: {

@@ -10,7 +10,9 @@ export async function GET(req: NextRequest) {
     if (!hasrole) {
       return NextResponse.json({ error: 'Access forbidden', status: 403 });
     }
-    const process = await prisma.process.findMany();
+    const process = await prisma.process.findMany({
+      include: { fault: true, machine: true, user: true },
+    });
     if (!process) {
       throw new Error('process not found');
     }

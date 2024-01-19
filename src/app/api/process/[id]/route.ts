@@ -12,11 +12,12 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     }
 
     const id = route.params.id;
-    const process: Partial<Process> = await prisma.process.findUnique({
+    const process = await prisma.process.findUnique({
       where: { id: id },
+      include: { fault: true, machine: true, user: true },
     });
     if (!process.id) return NextResponse.json({ message: 'Process not found' });
-    return NextResponse.json({ ...process });
+    return NextResponse.json(process);
   } catch (error) {
     console.error('Error fetching processs:', error);
     return NextResponse.json({ error: 'Internal Server Error' });
