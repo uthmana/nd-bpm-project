@@ -21,6 +21,7 @@ import {
 } from '@tanstack/react-table';
 import Search from 'components/search/search';
 import Button from 'components/button/button';
+import FileViewer from 'components/fileViewer';
 
 type ProcessObj = {
   id: string;
@@ -32,6 +33,7 @@ type ProcessObj = {
   machineName: string;
   standard: string;
   color: string;
+  technicalDrawingAttachment: string;
   status: string;
 };
 
@@ -127,12 +129,12 @@ function ProcessTable({
       columnHelper.accessor('customerName', {
         id: 'customerName',
         header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
             Müşteri
           </p>
         ),
         cell: (info: any) => (
-          <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
+          <p className=" text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -140,12 +142,12 @@ function ProcessTable({
       columnHelper.accessor('product', {
         id: 'product',
         header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[100px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
             Ürün İsmi
           </p>
         ),
         cell: (info: any) => (
-          <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -216,10 +218,25 @@ function ProcessTable({
           </p>
         ),
       }),
+
+      columnHelper.accessor('technicalDrawingAttachment', {
+        id: 'technicalDrawingAttachment',
+        header: () => (
+          <p className="min-w-[110px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+            İLGİLİ DOKÜMAN
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue() ? <FileViewer file={info.getValue()} /> : null}
+          </p>
+        ),
+      }),
+
       columnHelper.accessor('machineName', {
         id: 'machineName',
         header: () => (
-          <p className="min-w-[200px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[160px] text-sm font-bold uppercase text-gray-600 dark:text-white">
             Makine
           </p>
         ),

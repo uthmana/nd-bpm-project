@@ -7,7 +7,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
 import Card from 'components/card';
 import Button from 'components/button/button';
-// import TechParamsTable from 'components/admin/data-tables/techParamsTable';
+import TechParamsTable from 'components/admin/data-tables/techParamsTable';
 
 export default function EntryControl() {
   const router = useRouter();
@@ -70,16 +70,30 @@ export default function EntryControl() {
 
   const handdleAddTechParams = () => {
     const machineMap = {
-      machine1: ['visikosity', 'tset', 'hast'],
-      machine2: ['visikosity', 'tset', 'hast', 'cast'],
+      // machine1: ['visikosity', 'tset', 'hast'],
+      //machine2: ['visikosity', 'tset', 'hast', 'cast'],
       machine3: ['visikosity', 'tset', 'hast', 'last', 'bast'],
     };
-    const objLen = Object.keys(machineMap).length;
-    console.log('objLen', objLen);
+
+    return (
+      <div
+        className={`grid w-full grid-cols-${machineMap.machine3.length?.toString()} gap-2`}
+      >
+        {Object.entries(machineMap).map(([key, value], idx) => {
+          return value.map((item, index) => {
+            return (
+              <div className="p-4 " key={index}>
+                <p className="font-bold capitalize">{item}</p>
+              </div>
+            );
+          });
+        })}
+      </div>
+    );
   };
 
   return (
-    <div className="mx-auto mt-4 max-w-full rounded-2xl px-8 py-10">
+    <div className="mx-auto mt-4 max-w-full rounded-2xl px-2">
       {isLoading ? (
         <LatestInvoicesSkeleton />
       ) : (
@@ -111,7 +125,9 @@ export default function EntryControl() {
                 />
               </div>
             ) : (
-              <div className="w-full">{/* <TechParamsTable /> */} params</div>
+              <div className="w-full">
+                <TechParamsTable />
+              </div>
             )}
           </Card>
         </div>

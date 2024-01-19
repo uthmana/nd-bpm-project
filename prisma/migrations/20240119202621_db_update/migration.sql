@@ -25,6 +25,9 @@ CREATE TYPE "Currency" AS ENUM ('TL', 'USD', 'EUR');
 -- CreateEnum
 CREATE TYPE "CardType" AS ENUM ('ALICI_SATICI', 'ALICI', 'SATICI');
 
+-- CreateEnum
+CREATE TYPE "ProcessStatus" AS ENUM ('PENDING', 'PROCESSING', 'FINISHED');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
@@ -181,9 +184,18 @@ CREATE TABLE "Machine" (
 );
 
 -- CreateTable
+CREATE TABLE "MachineParams" (
+    "id" TEXT NOT NULL,
+    "param_name" TEXT,
+    "display_name" TEXT,
+    "machineId" TEXT,
+
+    CONSTRAINT "MachineParams_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "TechnicalParameter" (
     "id" TEXT NOT NULL,
-    "machineId" TEXT,
     "viskozite" TEXT,
     "besleme_Tipi" TEXT,
     "besleme_Hizi" TEXT,
@@ -202,6 +214,8 @@ CREATE TABLE "TechnicalParameter" (
     "testere_secimi" TEXT,
     "kesim_Mesafesi" TEXT,
     "yuva_Boyutu" TEXT,
+    "machineId" TEXT,
+    "processId" TEXT,
 
     CONSTRAINT "TechnicalParameter_pkey" PRIMARY KEY ("id")
 );
@@ -210,9 +224,19 @@ CREATE TABLE "TechnicalParameter" (
 CREATE TABLE "Process" (
     "id" TEXT NOT NULL,
     "faultId" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "processDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "machineId" TEXT NOT NULL,
+    "customerName" TEXT,
+    "product" TEXT,
+    "quantity" INTEGER,
+    "productCode" TEXT,
+    "application" TEXT,
+    "standard" TEXT,
+    "color" TEXT,
+    "technicalDrawingAttachment" TEXT,
+    "machineName" TEXT,
+    "machineId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "status" "ProcessStatus" NOT NULL DEFAULT 'PENDING',
 
     CONSTRAINT "Process_pkey" PRIMARY KEY ("id")
 );
@@ -294,7 +318,16 @@ CREATE UNIQUE INDEX "Address_userId_key" ON "Address"("userId");
 CREATE UNIQUE INDEX "ContactInfo_userId_key" ON "ContactInfo"("userId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Fault_faultControlId_key" ON "Fault"("faultControlId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "TechnicalParameter_machineId_key" ON "TechnicalParameter"("machineId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Process_faultId_key" ON "Process"("faultId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Process_machineId_key" ON "Process"("machineId");
 
 -- AddForeignKey
 ALTER TABLE "Address" ADD CONSTRAINT "Address_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -315,16 +348,10 @@ ALTER TABLE "Fault" ADD CONSTRAINT "Fault_faultControlId_fkey" FOREIGN KEY ("fau
 ALTER TABLE "Fault" ADD CONSTRAINT "Fault_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TechnicalParameter" ADD CONSTRAINT "TechnicalParameter_machineId_fkey" FOREIGN KEY ("machineId") REFERENCES "Machine"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "MachineParams" ADD CONSTRAINT "MachineParams_machineId_fkey" FOREIGN KEY ("machineId") REFERENCES "Machine"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Process" ADD CONSTRAINT "Process_faultId_fkey" FOREIGN KEY ("faultId") REFERENCES "Fault"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Process" ADD CONSTRAINT "Process_machineId_fkey" FOREIGN KEY ("machineId") REFERENCES "Machine"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Process" ADD CONSTRAINT "Process_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TechnicalParameter" ADD CONSTRAINT "TechnicalParameter_processId_fkey" FOREIGN KEY ("processId") REFERENCES "Process"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_faultId_fkey" FOREIGN KEY ("faultId") REFERENCES "Fault"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

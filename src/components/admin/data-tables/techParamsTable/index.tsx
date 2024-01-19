@@ -60,33 +60,34 @@ type Student = {
   major: string;
 };
 
-const Table = () => {
-  const defaultData: Student[] = [
-    {
-      studentId: 1111,
-      name: 'Bahar Constantia',
-      dateOfBirth: '1984-01-04',
-      major: 'Computer Science',
-    },
-    {
-      studentId: 2222,
-      name: 'Harold Nona',
-      dateOfBirth: '1961-05-10',
-      major: 'Communications',
-    },
-    {
-      studentId: 3333,
-      name: 'Raginolf Arnulf',
-      dateOfBirth: '1991-10-12',
-      major: 'Business',
-    },
-    {
-      studentId: 4444,
-      name: 'Marvyn Wendi',
-      dateOfBirth: '1978-09-24',
-      major: 'Psychology',
-    },
-  ];
+const defaultData: Student[] = [
+  {
+    studentId: 1111,
+    name: 'Bahar Constantia',
+    dateOfBirth: '1984-01-04',
+    major: 'Computer Science',
+  },
+  {
+    studentId: 2222,
+    name: 'Harold Nona',
+    dateOfBirth: '1961-05-10',
+    major: 'Communications',
+  },
+  {
+    studentId: 3333,
+    name: 'Raginolf Arnulf',
+    dateOfBirth: '1991-10-12',
+    major: 'Business',
+  },
+  {
+    studentId: 4444,
+    name: 'Marvyn Wendi',
+    dateOfBirth: '1978-09-24',
+    major: 'Psychology',
+  },
+];
+
+const TechParamsTable = () => {
   const [data, setData] = useState(() => [...defaultData]);
   const [originalData, setOriginalData] = useState(() => [...defaultData]);
   const [editedRows, setEditedRows] = useState({});
@@ -154,12 +155,15 @@ const Table = () => {
 
   return (
     <article className="table-container">
-      <table>
+      <table className="w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <tr key={headerGroup.id} className="!border-px !border-gray-400">
               {headerGroup.headers.map((header) => (
-                <th key={header.id}>
+                <th
+                  key={header.id}
+                  className="cursor-pointer border-b border-gray-400 px-1 text-start dark:border-white/30"
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -171,11 +175,14 @@ const Table = () => {
             </tr>
           ))}
         </thead>
-        <tbody>
+        <tbody className="dark:text-white [&>*:nth-child(even)]:dark:!bg-navy-800">
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
+            <tr
+              key={row.id}
+              className="border-b border-gray-100 hover:bg-lightPrimary dark:border-gray-900 dark:hover:bg-navy-700"
+            >
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>
+                <td key={cell.id} className="min-w-[70px] p-1">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
@@ -193,3 +200,5 @@ const Table = () => {
     </article>
   );
 };
+
+export default TechParamsTable;

@@ -192,19 +192,20 @@ model TechnicalParameter {
 }
 
 model Process {
-  id           String   @id @default(cuid())
-  faultId      String   @unique
-  customerName String?
-  product      String?
-  quantity     Int?
-  productCode  String?
-  application  String?
-  standard     String?
-  color        String?
-  machineName  String?
-  machineId    String?  @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                         String   @id @default(cuid())
+  faultId                    String   @unique
+  customerName               String?
+  product                    String?
+  quantity                   Int?
+  productCode                String?
+  application                String?
+  standard                   String?
+  color                      String?
+  technicalDrawingAttachment String?
+  machineName                String?
+  machineId                  String?  @unique
+  createdAt                  DateTime @default(now())
+  updatedAt                  DateTime @updatedAt
 
   status          ProcessStatus        @default(PENDING)
   technicalParams TechnicalParameter[]
