@@ -16,6 +16,14 @@ const Upload = (props: {
   const [filePath, setFilePath] = useState(_filePath ? _filePath : '');
   const [fileName, setFileName] = useState(_fileName ? _fileName : '');
 
+  const supportedFiles = [
+    'application/pdf',
+    'image/png',
+    'image/jpeg',
+    'image/jpg',
+    'image/webp',
+  ];
+
   const handleClick = async (e) => {
     e.preventDefault();
     fileElem.current.click();
@@ -26,6 +34,7 @@ const Upload = (props: {
     const fileData = multiple ? e.target.files : e.target.files[0];
     if (!fileData) return;
     try {
+      if (!supportedFiles.includes(fileData.type)) return;
       const data = new FormData();
       data.set('file', fileData);
       const res = await fetch('/api/upload', {
@@ -76,10 +85,10 @@ const Upload = (props: {
         >
           <MdFileUpload className="text-[80px] text-brand-500 dark:text-white" />
           <h4 className="text-xl font-bold text-brand-500 dark:text-white">
-            Upload Files
+            Dosya Ükle
           </h4>
           <p className="mt-2 text-sm font-medium text-gray-600">
-            PNG, JPG and GIF files are allowed
+            PNG, JPG and pdf dosyları destekleniyor
           </p>
         </button>
       </div>

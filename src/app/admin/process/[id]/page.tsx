@@ -6,15 +6,25 @@ import { getProcessById, addProcess } from 'app/lib/apiRequest';
 import { useParams, useRouter } from 'next/navigation';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
 import Card from 'components/card';
-import Button from 'components/button/button';
 import TechParamsTable from 'components/admin/data-tables/techParamsTable';
+import {
+  addTechParams,
+  updateTechParams,
+  deleteTechParams,
+} from 'app/lib/apiRequest';
+import Button from 'components/button/button';
 
 export default function EntryControl() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const queryParams = useParams();
   const [isLoading, setIsloading] = useState(false);
+  const [techParams, setTechParams] = useState([]);
   const [process, setProcess] = useState({} as any);
+  const [isTechParams, setIsTechParams] = useState(false);
+
+  //TODO: Seed machine data
+  const requiredFields = ['saat', 'viskozite', 'besleme_Tipi', 'purge_Ayari'];
 
   const productInfo = [
     'customerName',
@@ -42,6 +52,7 @@ export default function EntryControl() {
       const { status, data } = await getProcessById(queryParams.id);
       if (status === 200) {
         setProcess(data);
+        setTechParams(data?.technicalParams);
         setIsloading(false);
         return;
       }
@@ -68,28 +79,39 @@ export default function EntryControl() {
     setIsSubmitting(false);
   };
 
-  const handdleAddTechParams = () => {
-    const machineMap = {
-      // machine1: ['visikosity', 'tset', 'hast'],
-      //machine2: ['visikosity', 'tset', 'hast', 'cast'],
-      machine3: ['visikosity', 'tset', 'hast', 'last', 'bast'],
-    };
+  const onUpdateData = async (id, val) => {
+    if (!id) return;
+    setIsTechParams(true);
+    const { status, data } = await updateTechParams(val);
+    if (status === 200) {
+      setTechParams(data);
+      setIsTechParams(false);
+      return;
+    }
+  };
 
-    return (
-      <div
-        className={`grid w-full grid-cols-${machineMap.machine3.length?.toString()} gap-2`}
-      >
-        {Object.entries(machineMap).map(([key, value], idx) => {
-          return value.map((item, index) => {
-            return (
-              <div className="p-4 " key={index}>
-                <p className="font-bold capitalize">{item}</p>
-              </div>
-            );
-          });
-        })}
-      </div>
-    );
+  const onAddRow = async (val) => {
+    setIsTechParams(true);
+    const { status, data } = await addTechParams({
+      ...val,
+      processId: queryParams.id,
+      machineId: process.machineId,
+    });
+    if (status === 200) {
+      setTechParams(data);
+      setIsTechParams(false);
+      return;
+    }
+  };
+  const onRemoveRow = async (val) => {
+    const { status, data } = await deleteTechParams(val);
+    if (status === 200) {
+      setTechParams(data);
+      return;
+    }
+  };
+  const handleFinishProcess = async (val) => {
+    alert('Process finished !');
   };
 
   return (
@@ -97,9 +119,10 @@ export default function EntryControl() {
       {isLoading ? (
         <LatestInvoicesSkeleton />
       ) : (
-        <div className="flex flex-col gap-8 lg:flex-row">
-          <Card extra="w-full lg:w-[220px] p-4">
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-1">
+        <div className="flex flex-col gap-8">
+          <Card extra="w-full p-4">
+            <h2 className="my-5 text-2xl font-bold">Ürün Bilgileri</h2>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
               {Object.entries(process).map(([key, value], idx) => {
                 if (productInfo.includes(key)) {
                   return (
@@ -114,21 +137,26 @@ export default function EntryControl() {
               })}
             </div>
           </Card>
-          <Card extra="w-full lg:w-[calc(100%-220px)] p-4">
-            {process?.status === 'PENDING' ? (
-              <div className="mx-auto flex min-h-[200px] max-w-[300px] flex-col items-center justify-center gap-5">
-                <p>Henüz Teknik Parametreleri Eklenmedi</p>
+          <Card extra="w-full p-4">
+            <div className="w-full">
+              <div className="my-5 flex justify-between">
+                <h2 className="text-2xl font-bold">Teknik Parametreleri</h2>
                 <Button
-                  onClick={handdleAddTechParams}
-                  extra="h-[40px] py-1 px-2"
-                  text="Parametre Ekle"
+                  extra="max-w-fit px-4 uppercase h-[40px] bg-green-700 hover:bg-green-800"
+                  text="Proses Tamamla"
+                  onClick={handleFinishProcess}
                 />
               </div>
-            ) : (
-              <div className="w-full">
-                <TechParamsTable />
-              </div>
-            )}
+
+              <TechParamsTable
+                key={isTechParams as any}
+                fields={requiredFields}
+                techParams={techParams}
+                onUpdateData={(id, val) => onUpdateData(id, val)}
+                onAddRow={(val) => onAddRow(val)}
+                onRemoveRow={(val) => onRemoveRow(val)}
+              />
+            </div>
           </Card>
         </div>
       )}

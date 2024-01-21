@@ -6,10 +6,12 @@ import { log } from 'utils';
 import { toast } from 'react-toastify';
 import { getFaultById, updateFault } from 'app/lib/apiRequest';
 import { UserFormSkeleton } from 'components/skeleton';
+import { useSession } from 'next-auth/react';
+import Card from 'components/card';
 
 export default function Edit() {
   const router = useRouter();
-
+  const { data: session } = useSession();
   const queryParams = useParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fault, setFault] = useState([]);
@@ -34,7 +36,11 @@ export default function Edit() {
   const handleSubmit = async (val) => {
     setIsSubmitting(true);
     if (!val) return;
-    const { status, data } = await updateFault({ ...val, id: queryParams?.id });
+    const newVal = { ...val, ...{ updatedBy: session?.user?.name } };
+    const { status, data } = await updateFault({
+      ...newVal,
+      id: queryParams?.id,
+    });
     if (status === 200) {
       toast.success('Ürün güncelleme başarılı.');
       router.push('/admin/entry');
@@ -46,7 +52,7 @@ export default function Edit() {
   };
 
   return (
-    <div className="mt-12">
+    <Card extra="mt-12 mx-auto mt-4 max-w-[700px] rounded-2xl px-8 py-10 bg-white dark:bg-[#111c44] dark:text-white">
       {isLoading ? (
         <div className="mx-auto max-w-[600px]">
           <UserFormSkeleton />
@@ -59,6 +65,6 @@ export default function Edit() {
           loading={isSubmitting}
         />
       )}
-    </div>
+    </Card>
   );
 }

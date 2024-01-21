@@ -76,7 +76,7 @@ const Process = () => {
     if (status === 200) {
       toast.success('Makine ekleme işlemi başarılı.');
       router.push(`/admin/process/${processId}`);
-      setIsShowPopUp(false);
+      //setIsShowPopUp(false);
       return;
     }
     toast.error('Bir hata oluştu, tekrar deneyin !');

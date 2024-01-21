@@ -38,6 +38,8 @@ CREATE TABLE "users" (
     "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
     "token" TEXT,
     "tokenExpiryDate" TIMESTAMP(3),
 
@@ -87,6 +89,10 @@ CREATE TABLE "customers" (
     "province_code" TEXT NOT NULL,
     "district_code" TEXT NOT NULL,
     "definition" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
 
     CONSTRAINT "customers_pkey" PRIMARY KEY ("id")
 );
@@ -108,6 +114,8 @@ CREATE TABLE "Stock" (
     "brand" TEXT,
     "date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
     "image" TEXT,
     "customerId" TEXT,
 
@@ -119,6 +127,9 @@ CREATE TABLE "Offer" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
     "status" "OfferStatus" NOT NULL DEFAULT 'PENDING',
     "customerId" TEXT NOT NULL,
 
@@ -145,6 +156,10 @@ CREATE TABLE "Fault" (
     "controlInfo" TEXT,
     "customerId" TEXT,
     "faultControlId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
 
     CONSTRAINT "Fault_pkey" PRIMARY KEY ("id")
 );
@@ -170,6 +185,10 @@ CREATE TABLE "FaultControl" (
     "dirtyThreads" BOOLEAN DEFAULT false,
     "processFrequency" TEXT,
     "remarks" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
     "result" "FaultControlResult" NOT NULL,
 
     CONSTRAINT "FaultControl_pkey" PRIMARY KEY ("id")
@@ -214,7 +233,12 @@ CREATE TABLE "TechnicalParameter" (
     "testere_secimi" TEXT,
     "kesim_Mesafesi" TEXT,
     "yuva_Boyutu" TEXT,
-    "machineId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "machineId" TEXT NOT NULL,
+    "saat" TEXT,
     "processId" TEXT,
 
     CONSTRAINT "TechnicalParameter_pkey" PRIMARY KEY ("id")
@@ -236,6 +260,8 @@ CREATE TABLE "Process" (
     "machineId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
     "status" "ProcessStatus" NOT NULL DEFAULT 'PENDING',
 
     CONSTRAINT "Process_pkey" PRIMARY KEY ("id")
@@ -251,6 +277,10 @@ CREATE TABLE "FinalControl" (
     "kontrol_edilen_miktar" TEXT,
     "hatali_miktar" TEXT,
     "remarks" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
     "result" "FaultControlResult" NOT NULL,
 
     CONSTRAINT "FinalControl_pkey" PRIMARY KEY ("id")
@@ -319,9 +349,6 @@ CREATE UNIQUE INDEX "ContactInfo_userId_key" ON "ContactInfo"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Fault_faultControlId_key" ON "Fault"("faultControlId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "TechnicalParameter_machineId_key" ON "TechnicalParameter"("machineId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Process_faultId_key" ON "Process"("faultId");

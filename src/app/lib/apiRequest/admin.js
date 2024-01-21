@@ -123,3 +123,22 @@ export async function getProcessById(id) {
 export async function updateProcess(payload) {
   return fetchAPI(`process/${payload.id}`, 'put', payload);
 }
+
+// TechParams
+export async function getTechParams() {
+  return fetchAPI('techParams');
+}
+export async function deleteTechParams(id) {
+  return fetchAPI(`techParams/${id}`, 'delete');
+}
+
+export async function addTechParams(payload) {
+  return fetchAPI('techParams', 'put', payload);
+}
+export async function getTechParamsById(id) {
+  return fetchAPI(`techParams/${id}`);
+}
+
+export async function updateTechParams(payload) {
+  return fetchAPI(`techParams/${payload.id}`, 'put', payload);
+}

@@ -8,6 +8,9 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     const id = route.params.id;
     const process: Process = await prisma.process.findUnique({
       where: { id: id },
+      include: {
+        technicalParams: true,
+      },
     });
     if (!process) {
       throw new Error('Fault not found');

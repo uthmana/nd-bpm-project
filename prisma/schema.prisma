@@ -18,6 +18,8 @@ model User {
   status          UserStatus   @default(ACTIVE)
   createdAt       DateTime     @default(now())
   updatedAt       DateTime?    @updatedAt
+  createdBy       String?
+  updatedBy       String?
   token           String?      @unique
   tokenExpiryDate DateTime?
   address         Address?
@@ -67,6 +69,10 @@ model Customer {
   Offers        Offer[]
   Fault         Fault[]
   Stock         Stock[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt
+  createdBy     String?
+  updatedBy     String?
 
   @@map("customers")
 }
@@ -87,6 +93,8 @@ model Stock {
   brand           String?
   date            DateTime? @default(now())
   updatedAt       DateTime? @updatedAt
+  createdBy       String?
+  updatedBy       String?
   image           String?
   customerId      String?
   customer        Customer? @relation(fields: [customerId], references: [id])
@@ -97,6 +105,9 @@ model Offer {
   id         String      @id @default(cuid())
   name       String
   createdAt  DateTime    @default(now())
+  updatedAt  DateTime?   @updatedAt
+  createdBy  String?
+  updatedBy  String?
   status     OfferStatus @default(PENDING)
   customerId String
   Customer   Customer    @relation(fields: [customerId], references: [id])
@@ -124,10 +135,14 @@ model Fault {
   Customer                   Customer?     @relation(fields: [customerId], references: [id])
   faultControlId             String?       @unique
   Invoice                    Invoice[]
+  createdAt                  DateTime      @default(now())
+  updatedAt                  DateTime?     @updatedAt
+  createdBy                  String?
+  updatedBy                  String?
 }
 
 model FaultControl {
-  id                    String             @id @default(cuid())
+  id                    String    @id @default(cuid())
   faultId               String
   customerName          String?
   traceabilityCode      String?
@@ -137,17 +152,22 @@ model FaultControl {
   quantity              Int?
   productCode           String?
   productBatchNumber    String?
-  plating               String? // red-kap,blue-kap
-  controlDate           DateTime?          @default(now())
+  plating               String?
+  controlDate           DateTime? @default(now())
   image                 String?
   productDimension      String?
   dimensionConfirmation Boolean?
   quantityConfirmation  Boolean?
-  dirtyThreads          Boolean?           @default(false)
+  dirtyThreads          Boolean?  @default(false)
   processFrequency      String? //yazilsin-yazilmasin
   remarks               String?
-  result                FaultControlResult
-  Fault                 Fault[]
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime? @updatedAt
+  createdBy             String?
+  updatedBy             String?
+
+  result FaultControlResult
+  Fault  Fault[]
 }
 
 model Machine {
@@ -166,7 +186,7 @@ model MachineParams {
 }
 
 model TechnicalParameter {
-  id                     String  @id @default(cuid())
+  id                     String    @id @default(cuid())
   viskozite              String?
   besleme_Tipi           String?
   besleme_Hizi           String?
@@ -185,7 +205,12 @@ model TechnicalParameter {
   testere_secimi         String?
   kesim_Mesafesi         String?
   yuva_Boyutu            String?
-  machineId              String? @unique
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime? @updatedAt
+  createdBy              String?
+  updatedBy              String?
+  machineId              String
+  saat                   String?
 
   Process   Process? @relation(fields: [processId], references: [id])
   processId String?
@@ -206,6 +231,8 @@ model Process {
   machineId                  String?  @unique
   createdAt                  DateTime @default(now())
   updatedAt                  DateTime @updatedAt
+  createdBy                  String?
+  updatedBy                  String?
 
   status          ProcessStatus        @default(PENDING)
   technicalParams TechnicalParameter[]
@@ -220,6 +247,10 @@ model FinalControl {
   kontrol_edilen_miktar String?
   hatali_miktar         String?
   remarks               String?
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime?          @updatedAt
+  createdBy             String?
+  updatedBy             String?
   result                FaultControlResult
 }
 
