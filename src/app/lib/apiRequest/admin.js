@@ -142,3 +142,21 @@ export async function getTechParamsById(id) {
 export async function updateTechParams(payload) {
   return fetchAPI(`techParams/${payload.id}`, 'put', payload);
 }
+
+// Machine
+export async function getMachines() {
+  return fetchAPI('machine');
+}
+
+export async function addMachineWithParams(payload) {
+  return fetchAPI('machine', 'put', payload);
+}
+
+export async function deleteMachine(id) {
+  return fetchAPI(`machine/${id}`, 'delete');
+}
+
+// MachineParams
+export async function deleteMachineParams(id) {
+  return fetchAPI(`machineParams/${id}`, 'delete');
+}

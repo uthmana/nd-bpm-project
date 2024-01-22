@@ -52,7 +52,7 @@ export const columns = [
     cell: EditCell,
   }),
   columnHelper.accessor('saat', {
-    header: 'Saat',
+    header: 'Üretim/Saat',
     cell: TableCell,
     meta: {
       type: 'text',

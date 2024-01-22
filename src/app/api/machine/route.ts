@@ -1,0 +1,62 @@
+import { NextRequest, NextResponse } from 'next/server';
+import prisma from '../../lib/db';
+import { hash } from 'bcryptjs';
+import { checkUserRole } from 'utils/auth';
+import { Machine, MachineParams, Process, User } from '@prisma/client';
+
+//All  machine
+export async function GET(req: NextRequest) {
+  try {
+    const machine = await prisma.machine.findMany({
+      include: { machineParams: true },
+    });
+    if (!machine) {
+      throw new Error('User not found');
+    }
+    return NextResponse.json(machine, { status: 200 });
+  } catch (error) {
+    console.error('Error fetching machine:', error);
+    return NextResponse.json({ error: 'Internal Server Error' });
+  }
+}
+
+// Create  machine
+export async function PUT(req: Request) {
+  try {
+    const reqBody: any = await req.json();
+    //TODO: validate reqBody
+    const { machine: machineData, params } = reqBody;
+    if (!machineData.machine_Name) {
+      throw new Error('Missing required field');
+    }
+    const machine = await prisma.machine.create({
+      data: machineData,
+    });
+
+    if (!machine) {
+      throw new Error('machine not found');
+    }
+
+    const machineParamsData = params.map((item) => {
+      return { machineId: machine.id, param_name: item.param_name };
+    });
+
+    const machineParams = await prisma.machineParams.createMany({
+      data: machineParamsData,
+    });
+
+    return NextResponse.json(machineParams, { status: 200 });
+  } catch (error) {
+    if (error?.code === 'P2002') {
+      return NextResponse.json(
+        { error: 'Error ocured while creating machine' },
+        { status: 404 },
+      );
+    }
+
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 },
+    );
+  }
+}
