@@ -3,10 +3,8 @@ import General from 'components/admin/profile/General';
 import Notification from 'components/admin/profile/Notification';
 import Button from 'components/button/button';
 import Card from 'components/card';
-import InputField from 'components/fields/InputField';
-import Popup from 'components/popup';
 import { useEffect, useState } from 'react';
-import { techParameters } from 'utils';
+
 import {
   addMachineWithParams,
   getMachines,
