@@ -15,7 +15,20 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     if (!process) {
       throw new Error('Fault not found');
     }
-    return NextResponse.json(process, { status: 200 });
+
+    let machineParams = [];
+    const { machineId } = process;
+    if (machineId) {
+      const machines: any = await prisma.machine.findUnique({
+        where: { id: machineId },
+        include: { machineParams: true },
+      });
+      if (machines) {
+        machineParams = machines?.machineParams;
+      }
+    }
+
+    return NextResponse.json({ ...process, machineParams }, { status: 200 });
   } catch (error) {
     console.error('Error fetching users:', error);
     return NextResponse.json({ error: 'Internal Server Error' });

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../lib/db';
 import { hash } from 'bcryptjs';
 import { checkUserRole } from 'utils/auth';
-import { Process, User } from '@prisma/client';
+import { Process } from '@prisma/client';
 
 //All TechParams
 export async function GET(req: NextRequest) {
@@ -25,6 +25,12 @@ export async function PUT(req: Request) {
   try {
     const reqBody: Process = await req.json();
     //TODO: validate reqBody
+
+    const { machineId } = reqBody;
+    if (!machineId) {
+      throw new Error('You are missing a required feild');
+    }
+
     const techParams = await prisma.technicalParameter.create({
       data: reqBody,
     });
@@ -32,6 +38,23 @@ export async function PUT(req: Request) {
     if (!techParams) {
       throw new Error('Process not found');
     }
+
+    //Update process when tech Params is added
+    const process: Process = await prisma.process.findUnique({
+      where: { machineId },
+    });
+    if (process && process.status === 'PENDING') {
+      const updatedProcess = await prisma.process.update({
+        where: {
+          id: process.id,
+        },
+        data: {
+          ...process,
+          status: 'PROCESSING',
+        },
+      });
+    }
+
     const techParamsData = await prisma.technicalParameter.findMany({
       where: { machineId: techParams.machineId },
       orderBy: [{ createdAt: 'asc' }],

@@ -22,6 +22,7 @@ export default function EntryControl() {
   const [techParams, setTechParams] = useState([]);
   const [process, setProcess] = useState({} as any);
   const [isTechParams, setIsTechParams] = useState(false);
+  const [machineParams, setMachineParams] = useState([]);
 
   //TODO: Seed machine data
   const requiredFields = ['saat', 'viskozite', 'besleme_Tipi', 'purge_Ayari'];
@@ -51,12 +52,18 @@ export default function EntryControl() {
       setIsloading(true);
       const { status, data } = await getProcessById(queryParams.id);
       if (status === 200) {
+        if (data?.machineParams?.length === 0) {
+          //TODO: show  Popup
+          alert('Makine seçmeniz gerekiyor!');
+          return;
+        }
         setProcess(data);
         setTechParams(data?.technicalParams);
+        setMachineParams(data.machineParams.map((item) => item.param_name));
         setIsloading(false);
         return;
       }
-      setIsloading(true);
+      setIsloading(false);
       //TODO: handle error
     };
     if (queryParams.id) {
@@ -150,7 +157,7 @@ export default function EntryControl() {
 
               <TechParamsTable
                 key={isTechParams as any}
-                fields={requiredFields}
+                fields={machineParams}
                 techParams={techParams}
                 onUpdateData={(id, val) => onUpdateData(id, val)}
                 onAddRow={(val) => onAddRow(val)}
