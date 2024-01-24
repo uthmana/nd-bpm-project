@@ -7,6 +7,11 @@ import { Process, User } from '@prisma/client';
 //All  Process
 export async function GET(req: NextRequest) {
   try {
+    const allowedRoles = ['TECH'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+    }
     const process = await prisma.process.findMany({
       include: { technicalParams: true },
     });
@@ -23,6 +28,11 @@ export async function GET(req: NextRequest) {
 // Create  Process
 export async function PUT(req: Request) {
   try {
+    const allowedRoles = ['TECH'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+    }
     const reqBody: Process = await req.json();
     //TODO: validate reqBody
     const process = await prisma.process.create({
