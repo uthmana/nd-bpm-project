@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/db';
-import { $Enums, Fault, FaultControl, Process } from '@prisma/client';
+import { Fault, FaultControl, Process } from '@prisma/client';
 
 //Get single Fault Control
 export async function GET(req: NextRequest, route: { params: { id: string } }) {

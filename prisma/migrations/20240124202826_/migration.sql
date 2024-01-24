@@ -353,9 +353,6 @@ CREATE UNIQUE INDEX "Fault_faultControlId_key" ON "Fault"("faultControlId");
 -- CreateIndex
 CREATE UNIQUE INDEX "Process_faultId_key" ON "Process"("faultId");
 
--- CreateIndex
-CREATE UNIQUE INDEX "Process_machineId_key" ON "Process"("machineId");
-
 -- AddForeignKey
 ALTER TABLE "Address" ADD CONSTRAINT "Address_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 

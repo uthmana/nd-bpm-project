@@ -94,7 +94,7 @@ function ProcessTable({
 
     const entryStatus = {
       PENDING: 'Beklemede',
-      PROCESSING: "Proses'de",
+      PROCESSING: "Proses'te",
       FINISHED: 'Bitti',
     };
 

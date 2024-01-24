@@ -66,6 +66,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         ...result,
       },
     });
+
     if (!updatedProcess) {
       return NextResponse.json(
         { error: 'Error occuired while updating fault' },
@@ -92,11 +93,35 @@ export async function DELETE(
         id: id,
       },
     });
+
     if (!deletedProcess) {
       return NextResponse.json(
         { error: 'Error occuired while deleting fault' },
         { status: 401 },
       );
+    }
+
+    //Delete all relatated techParams
+    const { machineId } = deletedProcess;
+    const deletedProcessTechParams = await prisma.technicalParameter.findMany({
+      where: {
+        machineId,
+      },
+    });
+    if (deletedProcessTechParams) {
+      const techParamIds = deletedProcessTechParams.map((item) => {
+        return item.id;
+      });
+      if (techParamIds?.length > 0) {
+        const deletedTechParams = await prisma.technicalParameter.deleteMany({
+          where: {
+            id: {
+              in: techParamIds,
+            },
+            machineId,
+          },
+        });
+      }
     }
 
     return NextResponse.json(deletedProcess, { status: 200 });

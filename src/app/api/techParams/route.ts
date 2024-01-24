@@ -40,7 +40,7 @@ export async function PUT(req: Request) {
     }
 
     //Update process when tech Params is added
-    const process: Process = await prisma.process.findUnique({
+    const process: Process = await prisma.process.findFirst({
       where: { machineId },
     });
     if (process && process.status === 'PENDING') {

@@ -28,11 +28,33 @@ const Process = () => {
   const searchParams = useSearchParams();
   const searchVal = searchParams.get('q');
   const [searchText, setSearchText] = useState(searchVal || '');
-  const [processInfo, setProcessInfo] = useState('');
+  const [processInfo, setProcessInfo] = useState({});
   const [currentProcess, setCurrentProcess] = useState({});
   const [values, setValues] = useState({} as any);
   const [machines, setMachines] = useState([]);
   const [isShowProcessPopUp, setIsShowProcessPopUp] = useState(false);
+
+  const productInfo = [
+    'faultId',
+    'customerName',
+    'product',
+    'quantity',
+    'application',
+    'standard',
+    'color',
+    'machineName',
+  ];
+
+  const infoTranslate = {
+    customerName: 'Müşteri',
+    product: 'Ürün adı',
+    quantity: 'Miktar',
+    application: 'Uygulama',
+    standard: 'Standart',
+    color: 'Renk',
+    machineName: 'Makine',
+    faultId: 'Takıp Kodu',
+  };
 
   const getAllProcess = async () => {
     setIsLoading(true);
@@ -66,8 +88,7 @@ const Process = () => {
     setProcessId(id);
     setCurrentProcess(val);
     if (!machineId) {
-      setProcessInfo(`${customerName}, ${product}, 
-      ${application}, ${standard}, ${color}`);
+      setProcessInfo({ customerName, product, application, standard, color });
       const { status, data } = await getMachines();
       if (status === 200) {
         setMachines(data);
@@ -81,9 +102,10 @@ const Process = () => {
   const onAddMachine = async () => {
     if (!values?.machineId) return;
     setIsSubmitting(true);
-    const { status, data } = await updateProcess({
+    const { status } = await updateProcess({
       ...currentProcess,
       ...values,
+      createdBy: session?.user?.name,
     });
     if (status === 200) {
       toast.success('Makine ekleme işlemi başarılı.');
@@ -148,7 +170,20 @@ const Process = () => {
 
       <Popup key={1} show={isShowPopUp} extra="flex flex-col gap-3 py-6 px-8">
         <h1 className="text-3xl">Makine Şeçimi</h1>
-        <p className="mb-2 text-lg">{processInfo}</p>
+        <div className="text-md mb-2 grid grid-cols-2 gap-2">
+          {Object.entries(processInfo).map(([key, value], idx) => {
+            if (productInfo.includes(key)) {
+              return (
+                <div className="" key={idx}>
+                  <h2 className="font-bold capitalize italic">
+                    {infoTranslate[key]}
+                  </h2>
+                  <> {value}</>
+                </div>
+              );
+            }
+          })}
+        </div>
 
         <div className="mb-2 flex flex-col gap-3 sm:flex-row">
           <Select

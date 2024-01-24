@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getProcessById, addProcess } from 'app/lib/apiRequest';
+import { getProcessById, addProcess, updateProcess } from 'app/lib/apiRequest';
 import { useParams, useRouter } from 'next/navigation';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
 import Card from 'components/card';
@@ -13,6 +13,11 @@ import {
   deleteTechParams,
 } from 'app/lib/apiRequest';
 import Button from 'components/button/button';
+import Popup from 'components/popup';
+import { formatDateTime } from 'utils';
+import { useSession } from 'next-auth/react';
+import NextLink from 'next/link';
+import { MdOutlineArrowBack } from 'react-icons/md';
 
 export default function EntryControl() {
   const router = useRouter();
@@ -23,11 +28,11 @@ export default function EntryControl() {
   const [process, setProcess] = useState({} as any);
   const [isTechParams, setIsTechParams] = useState(false);
   const [machineParams, setMachineParams] = useState([]);
-
-  //TODO: Seed machine data
-  const requiredFields = ['saat', 'viskozite', 'besleme_Tipi', 'purge_Ayari'];
+  const [isShowPopUp, setIsShowPopUp] = useState(false);
+  const { data: session } = useSession();
 
   const productInfo = [
+    'faultId',
     'customerName',
     'product',
     'quantity',
@@ -45,27 +50,29 @@ export default function EntryControl() {
     standard: 'Standart',
     color: 'Renk',
     machineName: 'Makine',
+    faultId: 'Takıp Kodu',
+  };
+
+  const getSingleProcess = async () => {
+    setIsloading(true);
+    const { status, data } = await getProcessById(queryParams.id);
+    if (status === 200) {
+      if (data?.machineParams?.length === 0) {
+        //TODO: show  Popup
+        alert('Makine seçmeniz gerekiyor!');
+        return;
+      }
+      setProcess(data);
+      setTechParams(data?.technicalParams);
+      setMachineParams(data.machineParams.map((item) => item.param_name));
+      setIsloading(false);
+      return;
+    }
+    setIsloading(false);
+    //TODO: handle error
   };
 
   useEffect(() => {
-    const getSingleProcess = async () => {
-      setIsloading(true);
-      const { status, data } = await getProcessById(queryParams.id);
-      if (status === 200) {
-        if (data?.machineParams?.length === 0) {
-          //TODO: show  Popup
-          alert('Makine seçmeniz gerekiyor!');
-          return;
-        }
-        setProcess(data);
-        setTechParams(data?.technicalParams);
-        setMachineParams(data.machineParams.map((item) => item.param_name));
-        setIsloading(false);
-        return;
-      }
-      setIsloading(false);
-      //TODO: handle error
-    };
     if (queryParams.id) {
       getSingleProcess();
     }
@@ -117,8 +124,19 @@ export default function EntryControl() {
       return;
     }
   };
-  const handleFinishProcess = async (val) => {
-    alert('Process finished !');
+
+  const onFinish = async () => {
+    const { id, faultId } = process;
+    const { status } = await updateProcess({
+      id,
+      faultId,
+      status: 'FINISHED',
+      updatedBy: session?.user?.name,
+    });
+    if (status === 200) {
+      await getSingleProcess();
+      setIsShowPopUp(false);
+    }
   };
 
   return (
@@ -127,9 +145,19 @@ export default function EntryControl() {
         <LatestInvoicesSkeleton />
       ) : (
         <div className="flex flex-col gap-8">
+          <NextLink
+            href="/admin/process"
+            className="text-md flex items-center gap-2 self-end  dark:text-white"
+          >
+            <span>
+              <MdOutlineArrowBack />
+            </span>
+            Tüm Prosesleri
+          </NextLink>
+
           <Card extra="w-full p-4">
             <h2 className="my-5 text-2xl font-bold">Ürün Bilgileri</h2>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
               {Object.entries(process).map(([key, value], idx) => {
                 if (productInfo.includes(key)) {
                   return (
@@ -148,25 +176,65 @@ export default function EntryControl() {
             <div className="w-full">
               <div className="my-5 flex justify-between">
                 <h2 className="text-2xl font-bold">Teknik Parametreleri</h2>
-                <Button
-                  extra="max-w-fit px-4 uppercase h-[40px] bg-green-700 hover:bg-green-800"
-                  text="Proses Tamamla"
-                  onClick={handleFinishProcess}
-                />
+                {process?.status !== 'FINISHED' ? (
+                  <Button
+                    extra="max-w-fit px-4  h-[40px] bg-green-700 hover:bg-green-800"
+                    text="PROSESİ TAMAMLA"
+                    onClick={() => setIsShowPopUp(true)}
+                  />
+                ) : null}
               </div>
 
               <TechParamsTable
                 key={isTechParams as any}
                 fields={machineParams}
                 techParams={techParams}
+                status={process?.status}
                 onUpdateData={(id, val) => onUpdateData(id, val)}
                 onAddRow={(val) => onAddRow(val)}
                 onRemoveRow={(val) => onRemoveRow(val)}
               />
             </div>
           </Card>
+
+          <div className="mt-8 flex justify-between text-sm font-bold opacity-60">
+            <div>
+              <p>Oluşturan: {process?.createdBy}</p>
+              <p>
+                Oluşturulma Tarihi:{' '}
+                {process?.createdAt ? formatDateTime(process?.createdAt) : ''}
+              </p>
+            </div>
+            <div>
+              <p>Güncelleyen: {process?.updatedBy}</p>
+              <p>
+                Güncelleme Tarihi:{' '}
+                {process?.updatedAt ? formatDateTime(process?.updatedAt) : ''}
+              </p>
+            </div>
+          </div>
         </div>
       )}
+
+      <Popup show={isShowPopUp} extra="flex flex-col gap-3 py-6 px-8">
+        <h1 className="text-3xl">Proses Tamamlama</h1>
+        <p className="mb-2 text-lg">
+          Bu Prosesi tamamlamak istediğini Emin misin ?
+        </p>
+        <div className="flex gap-4">
+          <Button
+            loading={isSubmitting}
+            text="EVET"
+            extra="w-[60px]  h-[40px]"
+            onClick={onFinish}
+          />
+          <Button
+            text="HAYIR"
+            extra="w-[60px] h-[40px] bg-red-700"
+            onClick={() => setIsShowPopUp(false)}
+          />
+        </div>
+      </Popup>
     </div>
   );
 }

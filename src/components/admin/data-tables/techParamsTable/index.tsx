@@ -21,14 +21,21 @@ const TechParamsTable = ({
   onUpdateData,
   onAddRow,
   onRemoveRow,
+  status,
 }) => {
   const [data, setData] = useState(() => [...techParams]);
   const [originalData, setOriginalData] = useState(() => [...techParams]);
   const [editedRows, setEditedRows] = useState({});
 
-  const filteredColumns = columns.filter((item: any) => {
+  let filteredColumns = columns.filter((item: any) => {
     return fields?.includes(item.accessorKey) || item?.id === 'edit';
   });
+
+  if (status === 'FINISHED') {
+    filteredColumns = [...filteredColumns].filter((item: any) => {
+      return item?.id !== 'edit';
+    });
+  }
 
   const table = useReactTable({
     data,
@@ -149,9 +156,11 @@ const TechParamsTable = ({
           </tfoot>
         ) : null}
       </table>
-      <div className="sticky left-0 mt-4 flex w-[120px] justify-center rounded-lg bg-blueSecondary px-3 py-2 text-center text-center text-sm font-bold text-white">
-        <FooterCell table={table} />
-      </div>
+      {status !== 'FINISHED' ? (
+        <div className="sticky left-0 mt-4 flex w-[120px] justify-center rounded-lg bg-blueSecondary px-3 py-2 text-center text-center text-sm font-bold text-white">
+          <FooterCell table={table} />
+        </div>
+      ) : null}
     </article>
   );
 };
