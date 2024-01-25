@@ -10,6 +10,7 @@ import {
   getMachines,
   deleteMachine,
   deleteMachineParams,
+  updateMachineWithParams,
 } from 'app/lib/apiRequest';
 import MachinePopup from 'components/settings/machinePopup';
 import MachineList from 'components/settings/machineList';
@@ -18,6 +19,7 @@ const Setting = () => {
   const [isShowPopUp, setIsShowPopUp] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [machines, setMachines] = useState([]);
+  const [machineEdit, setMachineEdit] = useState({} as any);
 
   const getAllMachines = async () => {
     const { status, data } = await getMachines();
@@ -58,6 +60,27 @@ const Setting = () => {
     }
   };
 
+  const showMachineEdit = async (val) => {
+    setMachineEdit(val);
+    setIsShowPopUp(true);
+  };
+
+  const onEditMachine = async (val) => {
+    const { machine, params } = val;
+    setIsSubmitting(true);
+    const { status } = await updateMachineWithParams({
+      id: machineEdit.id,
+      machine_Name: machine.machine_Name,
+      params,
+    });
+    if (status === 200) {
+      await getAllMachines();
+      setIsShowPopUp(false);
+      setMachineEdit({});
+    }
+    setIsSubmitting(false);
+  };
+
   return (
     <div className="flex w-full flex-col gap-5 lg:gap-5">
       <div className="w-full">
@@ -77,6 +100,7 @@ const Setting = () => {
             machines={machines}
             handleDeleteMachine={(val) => handleDeleteMachine(val)}
             handleDeleteTechParams={(val) => handleDeleteTechParams(val)}
+            handleMachineEdit={(val) => showMachineEdit(val)}
           />
         </Card>
       </div>
@@ -92,9 +116,12 @@ const Setting = () => {
 
       <MachinePopup
         isShowPopUp={isShowPopUp}
+        key={machineEdit?.id}
+        editData={machineEdit}
         setIsShowPopUp={() => setIsShowPopUp(!isShowPopUp)}
         onAddMachine={(val) => onAddMachine(val)}
         isSubmitting={isSubmitting}
+        onEditMachine={(val) => onEditMachine(val)}
       />
     </div>
   );

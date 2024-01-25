@@ -4,6 +4,7 @@ const MachineList = ({
   machines,
   handleDeleteMachine,
   handleDeleteTechParams,
+  handleMachineEdit,
 }) => {
   const onDeleteMachine = async (id: string) => {
     handleDeleteMachine(id);
@@ -25,8 +26,15 @@ const MachineList = ({
             className="relative flex flex-col items-start justify-start rounded-2xl border bg-white bg-clip-border px-3 py-4 shadow-shadow-500 dark:!bg-navy-700 dark:shadow-none"
           >
             <button
+              onClick={() => handleMachineEdit(item)}
+              className="absolute right-10 top-2 flex h-6  w-6 items-center justify-center rounded-full border bg-[#f4f7fe] text-lg hover:bg-green-500 hover:text-white"
+            >
+              ✐
+            </button>
+
+            <button
               onClick={() => onDeleteMachine(item.id)}
-              className="absolute right-2 top-0 text-lg hover:text-red-500"
+              className="text-md absolute right-2 top-2 flex h-6  w-6 items-center justify-center rounded-full border bg-[#f4f7fe] hover:bg-red-500 hover:text-white"
             >
               X
             </button>

@@ -7,24 +7,44 @@ import { useState } from 'react';
 import { techParameters } from 'utils';
 
 const MachinePopup = ({
-  onAddMachine,
   isSubmitting,
   isShowPopUp,
   setIsShowPopUp,
+  onEditMachine,
+  onAddMachine,
+  editData,
 }) => {
-  const [values, setValues] = useState({} as any);
-  const [techParamItems, setTechParamItems] = useState(techParameters);
-  const [techParamSelected, setTechParamSelected] = useState([]);
+  const editTechParams = editData?.id
+    ? editData.machineParams.map((item) => item.param_name)
+    : [];
+  const newTechParam = techParameters.filter((item) => {
+    return !editTechParams.includes(item.param_name);
+  });
+
+  const initialTechParam =
+    newTechParam.length > 0 ? newTechParam : techParameters;
+  const initialValues = editData?.id
+    ? { machine_Name: editData.machine_Name }
+    : ({} as any);
+
+  const initialTechParams = editData?.id
+    ? editData.machineParams.map((item) => item)
+    : [];
+
+  const [techParamItems, setTechParamItems] = useState(initialTechParam);
+  const [values, setValues] = useState(initialValues);
+  const [techParamSelected, setTechParamSelected] = useState(initialTechParams);
 
   const onAdd = async () => {
     if (!values.machine_Name || techParamSelected.length === 0) return;
     const data = techParamSelected.map((item) => {
       return { machineId: '', param_name: item.param_name };
     });
-    onAddMachine({
+    const machineParams = {
       machine: values,
       params: data,
-    });
+    };
+    editData?.id ? onEditMachine(machineParams) : onAddMachine(machineParams);
   };
 
   const handleValues = (event) => {
@@ -73,6 +93,7 @@ const MachinePopup = ({
         name="machine_Name"
         placeholder="Makine İsmi"
         extra="mb-2"
+        value={values.machine_Name}
       />
 
       <div>

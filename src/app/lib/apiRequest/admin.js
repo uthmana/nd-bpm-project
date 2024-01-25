@@ -160,3 +160,7 @@ export async function deleteMachine(id) {
 export async function deleteMachineParams(id) {
   return fetchAPI(`machineParams/${id}`, 'delete');
 }
+
+export async function updateMachineWithParams(payload) {
+  return fetchAPI(`machine/${payload.id}`, 'put', payload);
+}

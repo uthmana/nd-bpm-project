@@ -63,7 +63,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   }
 }
 
-//Delete  Process
+//Delete  machineParams
 export async function DELETE(
   req: NextRequest,
   route: { params: { id: string } },
