@@ -170,7 +170,7 @@ const Process = () => {
 
       <Popup key={1} show={isShowPopUp} extra="flex flex-col gap-3 py-6 px-8">
         <h1 className="text-3xl">Makine Şeçimi</h1>
-        <div className="text-md mb-2 grid grid-cols-2 gap-2">
+        <div className="mb-2 grid grid-cols-2 gap-2 text-sm">
           {Object.entries(processInfo).map(([key, value], idx) => {
             if (productInfo.includes(key)) {
               return (

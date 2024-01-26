@@ -8,6 +8,7 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     const id = route.params.id;
     const fault: Fault = await prisma.fault.findUnique({
       where: { id: id },
+      include: { faultControl: true },
     });
     if (!fault) {
       throw new Error('Fault not found');

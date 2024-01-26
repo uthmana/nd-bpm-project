@@ -10,6 +10,7 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
       where: { id: id },
       include: {
         technicalParams: true,
+        finalControl: true,
       },
     });
     if (!process) {
@@ -73,6 +74,19 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         { status: 401 },
       );
     }
+
+    //Send Process complete Notification
+    if (result.status === 'FINISHED') {
+      const notification = await prisma.notification.create({
+        data: {
+          title: 'Proses Kontrolü',
+          description: `${updatedProcess?.product} ürünün prosesi tamamalandı.`,
+          receiver: 'SUPER',
+          link: `/admin/process/${id}`,
+        },
+      });
+    }
+
     return NextResponse.json(updatedProcess, { status: 200 });
   } catch (error) {
     console.error('Error updating fault', error);

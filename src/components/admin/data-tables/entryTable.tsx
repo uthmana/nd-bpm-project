@@ -329,28 +329,25 @@ function EntryTable({
             </p>
           ),
           cell: (info: any) => (
-            <button
-              className="ml-3 rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
-              onClick={() => onEdit(info.getValue())}
-            >
-              <MdModeEdit className="h-5 w-5 text-white" />
-            </button>
-          ),
-        }),
-        columnHelper.accessor('id', {
-          id: 'id',
-          header: () => (
-            <p className="min-w-[60px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-              DELETE
-            </p>
-          ),
-          cell: (info) => (
-            <button
-              className="rounded-md bg-red-600 px-2 py-1 hover:bg-red-700"
-              onClick={() => onDelete(info.getValue())}
-            >
-              <MdOutlineDelete className="h-5 w-5 text-white" />
-            </button>
+            <div className="flex gap-2">
+              {info.row.original.status === 'ACCEPT' &&
+              variant === 'NORMAL' ? null : (
+                <>
+                  <button
+                    className="ml-3 rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
+                    onClick={() => onEdit(info.getValue())}
+                  >
+                    <MdModeEdit className="h-5 w-5 text-white" />
+                  </button>
+                  <button
+                    className="rounded-md bg-red-600 px-2 py-1 hover:bg-red-700"
+                    onClick={() => onDelete(info.getValue())}
+                  >
+                    <MdOutlineDelete className="h-5 w-5 text-white" />
+                  </button>
+                </>
+              )}
+            </div>
           ),
         }),
       );

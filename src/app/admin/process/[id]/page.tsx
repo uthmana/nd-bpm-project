@@ -17,7 +17,7 @@ import Popup from 'components/popup';
 import { formatDateTime } from 'utils';
 import { useSession } from 'next-auth/react';
 import NextLink from 'next/link';
-import { MdOutlineArrowBack } from 'react-icons/md';
+import { MdAdd, MdOutlineArrowBack } from 'react-icons/md';
 
 export default function EntryControl() {
   const router = useRouter();
@@ -127,6 +127,8 @@ export default function EntryControl() {
 
   const onFinish = async () => {
     const { id, faultId } = process;
+    if (!id || !faultId) return;
+    setIsSubmitting(true);
     const { status } = await updateProcess({
       id,
       faultId,
@@ -137,6 +139,11 @@ export default function EntryControl() {
       await getSingleProcess();
       setIsShowPopUp(false);
     }
+    setIsSubmitting(false);
+  };
+
+  const handleProcessControl = () => {
+    router.push(`/admin/process/control/${process.id}`);
   };
 
   return (
@@ -145,15 +152,28 @@ export default function EntryControl() {
         <LatestInvoicesSkeleton />
       ) : (
         <div className="flex flex-col gap-8">
-          <NextLink
-            href="/admin/process"
-            className="text-md flex items-center gap-2 self-end  dark:text-white"
-          >
-            <span>
-              <MdOutlineArrowBack />
-            </span>
-            Tüm Prosesleri
-          </NextLink>
+          <div className="flex justify-between ">
+            <NextLink
+              href="/admin/process"
+              className="text-md flex items-center gap-2 self-start  dark:text-white"
+            >
+              <span>
+                <MdOutlineArrowBack />
+              </span>
+              Tüm Prosesleri
+            </NextLink>
+
+            {process?.status === 'FINISHED' &&
+            (session.user.role === 'SUPER' ||
+              session?.user?.role === 'ADMIN') ? (
+              <Button
+                icon={<MdAdd className="mr-1 h-5 w-5" />}
+                extra="max-w-fit px-4  h-[40px]"
+                text="PROSES KONTROLÜ"
+                onClick={handleProcessControl}
+              />
+            ) : null}
+          </div>
 
           <Card extra="w-full p-4">
             <h2 className="my-5 text-2xl font-bold">Ürün Bilgileri</h2>

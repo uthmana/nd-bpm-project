@@ -114,10 +114,10 @@ model Offer {
 }
 
 model Fault {
-  id                         String        @id @default(cuid())
+  id                         String         @id @default(cuid())
   customerName               String?
   traceabilityCode           String
-  arrivalDate                DateTime?     @default(now())
+  arrivalDate                DateTime?      @default(now())
   invoiceDate                DateTime?
   product                    String?
   quantity                   Int?
@@ -127,23 +127,23 @@ model Fault {
   standard                   String?
   color                      String?
   faultDescription           String?
-  status                     FaultStatus   @default(PENDING)
+  status                     FaultStatus    @default(PENDING)
   technicalDrawingAttachment String?
   controlInfo                String?
-  faultControl               FaultControl? @relation(fields: [faultControlId], references: [id])
+  faultControl               FaultControl[]
   customerId                 String?
-  Customer                   Customer?     @relation(fields: [customerId], references: [id])
-  faultControlId             String?       @unique
+  Customer                   Customer?      @relation(fields: [customerId], references: [id])
+  faultControlId             String?        @unique
   Invoice                    Invoice[]
-  createdAt                  DateTime      @default(now())
-  updatedAt                  DateTime?     @updatedAt
+  createdAt                  DateTime       @default(now())
+  updatedAt                  DateTime?      @updatedAt
   createdBy                  String?
   updatedBy                  String?
 }
 
 model FaultControl {
   id                    String    @id @default(cuid())
-  faultId               String
+  faultId               String    @unique
   customerName          String?
   traceabilityCode      String?
   arrivalDate           DateTime?
@@ -167,7 +167,8 @@ model FaultControl {
   updatedBy             String?
 
   result FaultControlResult
-  Fault  Fault[]
+
+  Fault Fault @relation(fields: [faultId], references: [id])
 }
 
 model Machine {
@@ -217,8 +218,8 @@ model TechnicalParameter {
 }
 
 model Process {
-  id                         String   @id @default(cuid())
-  faultId                    String   @unique
+  id                         String               @id @default(cuid())
+  faultId                    String?              @unique
   customerName               String?
   product                    String?
   quantity                   Int?
@@ -229,36 +230,45 @@ model Process {
   technicalDrawingAttachment String?
   machineName                String?
   machineId                  String?
-  createdAt                  DateTime @default(now())
-  updatedAt                  DateTime @updatedAt
+  createdAt                  DateTime             @default(now())
+  updatedAt                  DateTime             @updatedAt
   createdBy                  String?
   updatedBy                  String?
-
-  status          ProcessStatus        @default(PENDING)
-  technicalParams TechnicalParameter[]
+  status                     ProcessStatus        @default(PENDING)
+  technicalParams            TechnicalParameter[]
+  finalControl               FinalControl[]
 }
 
 model FinalControl {
   id                    String             @id @default(cuid())
-  olcu_Kontrol          String?
-  gorunum_kontrol       String?
-  tork_Kontrol          String?
+  faultId               String             @unique
+  olcu_Kontrol          FinalItemStatus?
+  gorunum_kontrol       FinalItemStatus?
+  tork_Kontrol          FinalItemStatus?
   paketleme             String?
-  kontrol_edilen_miktar String?
-  hatali_miktar         String?
+  kontrol_edilen_miktar Int?
+  hatali_miktar         Int?
+  makliye_miktar        Int?
   remarks               String?
   createdAt             DateTime           @default(now())
   updatedAt             DateTime?          @updatedAt
   createdBy             String?
   updatedBy             String?
   result                FaultControlResult
+  Process               Process?           @relation(fields: [processId], references: [id])
+  processId             String?
+}
+
+enum FinalItemStatus {
+  OK
+  NOT_OK
 }
 
 model Invoice {
   id          String   @id @default(cuid())
   faultId     String
   invoiceDate DateTime @default(now())
-  totalAmount Float
+  totalAmount Float?
   fault       Fault    @relation(fields: [faultId], references: [id])
 }
 

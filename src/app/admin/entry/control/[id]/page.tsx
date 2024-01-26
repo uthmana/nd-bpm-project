@@ -27,11 +27,11 @@ export default function EntryControl() {
     const getSingleFault = async () => {
       setIsloading(true);
       const { status, data } = await getFaultById(queryParams.id);
-      const { status: controlStatus, data: controlData } =
-        await getEntryControlByfaultId(queryParams.id);
+      // const { status: controlStatus, data: controlData } =
+      //   await getEntryControlByfaultId(queryParams.id);
       if (status === 200) {
         setFault(data);
-        setFaultcontrol(controlData);
+        setFaultcontrol(data?.faultControl[0]);
         setIsloading(false);
         return;
       }
