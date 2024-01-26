@@ -17,6 +17,7 @@ import Button from 'components/button/button';
 import { IoMdArrowDown, IoMdArrowUp } from 'react-icons/io';
 import { formatDateTime } from 'utils';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import FileViewer from 'components/fileViewer';
 
 type UserObj = {
   id: string;
@@ -405,19 +406,6 @@ function MainTable({
               </p>
             ),
           }),
-          columnHelper.accessor('image', {
-            id: 'image',
-            header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                Ürün Resmi
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
-                <img className="w-[40px]" src={`/uploads/${info.getValue()}`} />
-              </p>
-            ),
-          }),
 
           columnHelper.accessor('product_code', {
             id: 'product_code',
@@ -445,6 +433,20 @@ function MainTable({
               </p>
             ),
           }),
+          columnHelper.accessor('image', {
+            id: 'image',
+            header: () => (
+              <p className="min-w-[80px] text-sm font-bold text-gray-600 dark:text-white">
+                Ürün Resmi
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue() ? <FileViewer file={info.getValue()} /> : null}
+              </p>
+            ),
+          }),
+
           columnHelper.accessor('brand', {
             id: 'brand',
             header: () => (

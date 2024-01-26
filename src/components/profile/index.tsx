@@ -17,7 +17,7 @@ export default function Profile({ user }) {
         <Image
           width="2"
           height="20"
-          className="h-10 w-10 rounded-full"
+          className="h-10 w-10 cursor-pointer rounded-full"
           src={avatar}
           alt="Elon Musk"
         />
@@ -29,27 +29,14 @@ export default function Profile({ user }) {
           <div className="flex items-center gap-2">
             <p className="text-sm font-bold text-navy-700 dark:text-white">
               👋 Merhaba, {user?.name}
-            </p>{' '}
+            </p>
           </div>
         </div>
         <div className="mt-3 h-px w-full bg-gray-200 dark:bg-white/20 " />
-
         <div className="ml-4 mt-3 flex flex-col">
-          <a
-            href="/admin/profile"
-            className="text-sm text-gray-800 dark:text-white hover:dark:text-white"
-          >
-            Profil Ayarları
-          </a>
-          {/* <a
-                  href=" "
-                  className="mt-3 text-sm text-gray-800 dark:text-white hover:dark:text-white"
-                >
-                  Newsletter Settings
-                </a> */}
           <button
             onClick={handleSignOut}
-            className="mt-3 block text-left text-sm font-medium text-red-500 hover:text-red-500"
+            className="block text-left text-sm font-medium text-red-500 hover:text-red-500"
           >
             Çıkış Yap
           </button>

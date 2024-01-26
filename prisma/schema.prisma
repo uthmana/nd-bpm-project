@@ -18,6 +18,8 @@ model User {
   status          UserStatus   @default(ACTIVE)
   createdAt       DateTime     @default(now())
   updatedAt       DateTime?    @updatedAt
+  createdBy       String?
+  updatedBy       String?
   token           String?      @unique
   tokenExpiryDate DateTime?
   address         Address?
@@ -67,6 +69,10 @@ model Customer {
   Offers        Offer[]
   Fault         Fault[]
   Stock         Stock[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt
+  createdBy     String?
+  updatedBy     String?
 
   @@map("customers")
 }
@@ -87,6 +93,8 @@ model Stock {
   brand           String?
   date            DateTime? @default(now())
   updatedAt       DateTime? @updatedAt
+  createdBy       String?
+  updatedBy       String?
   image           String?
   customerId      String?
   customer        Customer? @relation(fields: [customerId], references: [id])
@@ -97,16 +105,19 @@ model Offer {
   id         String      @id @default(cuid())
   name       String
   createdAt  DateTime    @default(now())
+  updatedAt  DateTime?   @updatedAt
+  createdBy  String?
+  updatedBy  String?
   status     OfferStatus @default(PENDING)
   customerId String
   Customer   Customer    @relation(fields: [customerId], references: [id])
 }
 
 model Fault {
-  id                         String        @id @default(cuid())
+  id                         String         @id @default(cuid())
   customerName               String?
   traceabilityCode           String
-  arrivalDate                DateTime?     @default(now())
+  arrivalDate                DateTime?      @default(now())
   invoiceDate                DateTime?
   product                    String?
   quantity                   Int?
@@ -116,19 +127,23 @@ model Fault {
   standard                   String?
   color                      String?
   faultDescription           String?
-  status                     FaultStatus   @default(PENDING)
+  status                     FaultStatus    @default(PENDING)
   technicalDrawingAttachment String?
   controlInfo                String?
-  faultControl               FaultControl? @relation(fields: [faultControlId], references: [id])
+  faultControl               FaultControl[]
   customerId                 String?
-  Customer                   Customer?     @relation(fields: [customerId], references: [id])
-  faultControlId             String?       @unique
+  Customer                   Customer?      @relation(fields: [customerId], references: [id])
+  faultControlId             String?        @unique
   Invoice                    Invoice[]
+  createdAt                  DateTime       @default(now())
+  updatedAt                  DateTime?      @updatedAt
+  createdBy                  String?
+  updatedBy                  String?
 }
 
 model FaultControl {
-  id                    String             @id @default(cuid())
-  faultId               String
+  id                    String    @id @default(cuid())
+  faultId               String    @unique
   customerName          String?
   traceabilityCode      String?
   arrivalDate           DateTime?
@@ -137,17 +152,23 @@ model FaultControl {
   quantity              Int?
   productCode           String?
   productBatchNumber    String?
-  plating               String? // red-kap,blue-kap
-  controlDate           DateTime?          @default(now())
+  plating               String?
+  controlDate           DateTime? @default(now())
   image                 String?
   productDimension      String?
   dimensionConfirmation Boolean?
   quantityConfirmation  Boolean?
-  dirtyThreads          Boolean?           @default(false)
+  dirtyThreads          Boolean?  @default(false)
   processFrequency      String? //yazilsin-yazilmasin
   remarks               String?
-  result                FaultControlResult
-  Fault                 Fault[]
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime? @updatedAt
+  createdBy             String?
+  updatedBy             String?
+
+  result FaultControlResult
+
+  Fault Fault @relation(fields: [faultId], references: [id])
 }
 
 model Machine {
@@ -166,7 +187,7 @@ model MachineParams {
 }
 
 model TechnicalParameter {
-  id                     String  @id @default(cuid())
+  id                     String    @id @default(cuid())
   viskozite              String?
   besleme_Tipi           String?
   besleme_Hizi           String?
@@ -185,48 +206,69 @@ model TechnicalParameter {
   testere_secimi         String?
   kesim_Mesafesi         String?
   yuva_Boyutu            String?
-  machineId              String? @unique
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime? @updatedAt
+  createdBy              String?
+  updatedBy              String?
+  machineId              String
+  saat                   String?
 
   Process   Process? @relation(fields: [processId], references: [id])
   processId String?
 }
 
 model Process {
-  id           String   @id @default(cuid())
-  faultId      String   @unique
-  customerName String?
-  product      String?
-  quantity     Int?
-  productCode  String?
-  application  String?
-  standard     String?
-  color        String?
-  machineName  String?
-  machineId    String?  @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  status          ProcessStatus        @default(PENDING)
-  technicalParams TechnicalParameter[]
+  id                         String               @id @default(cuid())
+  faultId                    String?              @unique
+  customerName               String?
+  product                    String?
+  quantity                   Int?
+  productCode                String?
+  application                String?
+  standard                   String?
+  color                      String?
+  technicalDrawingAttachment String?
+  machineName                String?
+  machineId                  String?
+  createdAt                  DateTime             @default(now())
+  updatedAt                  DateTime             @updatedAt
+  createdBy                  String?
+  updatedBy                  String?
+  status                     ProcessStatus        @default(PENDING)
+  technicalParams            TechnicalParameter[]
+  finalControl               FinalControl[]
 }
 
 model FinalControl {
   id                    String             @id @default(cuid())
-  olcu_Kontrol          String?
-  gorunum_kontrol       String?
-  tork_Kontrol          String?
+  faultId               String             @unique
+  olcu_Kontrol          FinalItemStatus?
+  gorunum_kontrol       FinalItemStatus?
+  tork_Kontrol          FinalItemStatus?
   paketleme             String?
-  kontrol_edilen_miktar String?
-  hatali_miktar         String?
+  kontrol_edilen_miktar Int?
+  hatali_miktar         Int?
+  makliye_miktar        Int?
   remarks               String?
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime?          @updatedAt
+  createdBy             String?
+  updatedBy             String?
   result                FaultControlResult
+  Process               Process?           @relation(fields: [processId], references: [id])
+  processId             String?
+}
+
+enum FinalItemStatus {
+  OK
+  NOT_OK
 }
 
 model Invoice {
   id          String   @id @default(cuid())
   faultId     String
   invoiceDate DateTime @default(now())
-  totalAmount Float
+  totalAmount Float?
   fault       Fault    @relation(fields: [faultId], references: [id])
 }
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/db';
-import { $Enums, Fault, FaultControl, Process } from '@prisma/client';
+import { Fault, FaultControl, Process } from '@prisma/client';
 
 //Get single Fault Control
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
@@ -89,6 +89,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
           application,
           standard,
           color,
+          technicalDrawingAttachment,
         } = updateFault;
         const processCreate = await prisma.process.create({
           data: {
@@ -100,6 +101,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
             application,
             standard,
             color,
+            technicalDrawingAttachment,
           },
         });
       } else {
@@ -113,6 +115,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
             application,
             standard,
             color,
+            technicalDrawingAttachment,
           } = updateFault;
 
           const processUpdate = await prisma.process.update({
@@ -126,6 +129,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
               application,
               standard,
               color,
+              technicalDrawingAttachment,
             },
           });
         }
