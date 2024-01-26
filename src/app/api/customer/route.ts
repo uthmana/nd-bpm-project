@@ -2,10 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
 import { Prisma } from '@prisma/client';
 import { validateCustomerSchema } from 'utils/validate';
+import { checkUserRole } from 'utils/auth';
 
 //All customers
 export async function GET(req: NextRequest) {
   try {
+    const allowedRoles = ['SUPER', 'ADMIN'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+    }
     const customers = await prisma.customer.findMany();
     if (!customers) {
       throw new Error('Customers not found');
@@ -20,6 +26,11 @@ export async function GET(req: NextRequest) {
 // Create Customer
 export async function PUT(req: Request) {
   try {
+    const allowedRoles = ['SUPER', 'ADMIN'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+    }
     const result: Prisma.CustomerCreateInput = await req.json();
     // Validate the fields against the customer schema
     const validationErrors = await validateCustomerSchema(result);

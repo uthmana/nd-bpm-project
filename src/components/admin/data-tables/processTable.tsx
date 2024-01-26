@@ -314,9 +314,9 @@ function ProcessTable({
       }),
     ];
     return col;
-  }, []);
+  }, [onAdd]);
 
-  const [data, setData] = useState(() => [...defaultData]);
+  const [data, setData] = useState(() => [defaultData]);
   const table = useReactTable({
     data,
     columns,

@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
 import { Fault } from '@prisma/client';
+import { checkUserRole } from 'utils/auth';
 
 //All Faults
 export async function GET(req: NextRequest) {
   try {
+    const allowedRoles = ['NORMAL', 'ADMIN'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+    }
     const fault = await prisma.fault.findMany();
     if (!fault) {
       throw new Error('No fault found');
@@ -22,6 +28,11 @@ export async function GET(req: NextRequest) {
 export async function PUT(req: Request) {
   try {
     //TODO: restrict unathorized user : only normal and admin allowed
+    const allowedRoles = ['NORMAL', 'ADMIN'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+    }
     const result: Fault = await req.json();
     const { traceabilityCode } = result;
 
