@@ -18,6 +18,7 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     const Colors: Colors = await prisma.colors.findUnique({
       where: { id: id },
     });
+    
     if (!Colors) {
       throw new Error('Fault not found');
     }
