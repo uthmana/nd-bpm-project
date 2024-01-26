@@ -11,6 +11,8 @@ import {
 import { useParams, useRouter } from 'next/navigation';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
 import EntryControlForm from 'components/forms/faultControl';
+import { useSession } from 'next-auth/react';
+import Card from 'components/card';
 
 export default function EntryControl() {
   const router = useRouter();
@@ -19,16 +21,17 @@ export default function EntryControl() {
   const [isLoading, setIsloading] = useState(false);
   const [fault, setFault] = useState({} as any);
   const [faultcontrol, setFaultcontrol] = useState({} as any);
+  const { data: session } = useSession();
 
   useEffect(() => {
     const getSingleFault = async () => {
       setIsloading(true);
       const { status, data } = await getFaultById(queryParams.id);
-      const { status: controlStatus, data: controlData } =
-        await getEntryControlByfaultId(queryParams.id);
+      // const { status: controlStatus, data: controlData } =
+      //   await getEntryControlByfaultId(queryParams.id);
       if (status === 200) {
         setFault(data);
-        setFaultcontrol(controlData);
+        setFaultcontrol(data?.faultControl[0]);
         setIsloading(false);
         return;
       }
@@ -46,7 +49,10 @@ export default function EntryControl() {
 
     setIsSubmitting(true);
     if (isUpdate) {
-      const { status, data, response } = await updateFaultControl(values);
+      const { status, data, response } = await updateFaultControl({
+        ...values,
+        ...{ updatedBy: session?.user?.name },
+      });
       if (status === 200) {
         toast.success('Ürün kontrol güncelleme işlemi başarılı.');
         router.push('/admin/entry');
@@ -59,7 +65,10 @@ export default function EntryControl() {
     }
 
     // add new entry control
-    const { status, data, response } = await addControl(values);
+    const { status, data, response } = await addControl({
+      ...values,
+      ...{ createdBy: session?.user?.name },
+    });
     if (status === 200) {
       toast.success('Ürün girişi kontrol işlemi başarılı.');
       router.push('/admin/entry');
@@ -71,7 +80,7 @@ export default function EntryControl() {
   };
 
   return (
-    <div className="mx-auto mt-4 max-w-[700px] rounded-2xl bg-white px-8 py-10">
+    <Card className="mx-auto mt-4 max-w-[700px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
       {isLoading ? (
         <LatestInvoicesSkeleton />
       ) : (
@@ -83,6 +92,6 @@ export default function EntryControl() {
           onSubmit={(...val) => handleSubmit(val)}
         />
       )}
-    </div>
+    </Card>
   );
 }

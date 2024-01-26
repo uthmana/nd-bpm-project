@@ -1,5 +1,5 @@
 import React from 'react';
 
-export default function ControlForm() {
-  return <div>ControlForm</div>;
+export default function page() {
+  return <div>All Entry controls</div>;
 }

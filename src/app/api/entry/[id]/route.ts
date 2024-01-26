@@ -8,6 +8,7 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     const id = route.params.id;
     const fault: Fault = await prisma.fault.findUnique({
       where: { id: id },
+      include: { faultControl: true },
     });
     if (!fault) {
       throw new Error('Fault not found');
@@ -75,11 +76,25 @@ export async function DELETE(
         id: id,
       },
     });
+
     if (!deletedFault) {
       return NextResponse.json(
         { error: 'Error occuired while deleting fault' },
         { status: 401 },
       );
+    }
+    //Delete related faultcontrol
+    const deletedFaultControl = await prisma.faultControl.findFirst({
+      where: {
+        faultId: deletedFault.id,
+      },
+    });
+    if (deletedFaultControl) {
+      const _deletedFaultControl = await prisma.faultControl.delete({
+        where: {
+          id: deletedFaultControl.id,
+        },
+      });
     }
 
     return NextResponse.json([deletedFault], { status: 200 });

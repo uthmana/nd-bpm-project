@@ -123,3 +123,44 @@ export async function getProcessById(id) {
 export async function updateProcess(payload) {
   return fetchAPI(`process/${payload.id}`, 'put', payload);
 }
+
+// TechParams
+export async function getTechParams() {
+  return fetchAPI('techParams');
+}
+export async function deleteTechParams(id) {
+  return fetchAPI(`techParams/${id}`, 'delete');
+}
+
+export async function addTechParams(payload) {
+  return fetchAPI('techParams', 'put', payload);
+}
+export async function getTechParamsById(id) {
+  return fetchAPI(`techParams/${id}`);
+}
+
+export async function updateTechParams(payload) {
+  return fetchAPI(`techParams/${payload.id}`, 'put', payload);
+}
+
+// Machine
+export async function getMachines() {
+  return fetchAPI('machine');
+}
+
+export async function addMachineWithParams(payload) {
+  return fetchAPI('machine', 'put', payload);
+}
+
+export async function deleteMachine(id) {
+  return fetchAPI(`machine/${id}`, 'delete');
+}
+
+// MachineParams
+export async function deleteMachineParams(id) {
+  return fetchAPI(`machineParams/${id}`, 'delete');
+}
+
+export async function updateMachineWithParams(payload) {
+  return fetchAPI(`machine/${payload.id}`, 'put', payload);
+}

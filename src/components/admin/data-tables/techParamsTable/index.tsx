@@ -6,52 +6,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { FooterCell } from './footerCell';
-import { TableCell } from './tableCell';
-import { EditCell } from './editCell';
-import { createColumnHelper } from '@tanstack/react-table';
-
-const columnHelper = createColumnHelper<Student>();
-
-const columns = [
-  columnHelper.accessor('studentId', {
-    header: 'Student ID',
-    cell: TableCell,
-    meta: {
-      type: 'number',
-    },
-  }),
-  columnHelper.accessor('name', {
-    header: 'Full Name',
-    cell: TableCell,
-    meta: {
-      type: 'text',
-    },
-  }),
-  columnHelper.accessor('dateOfBirth', {
-    header: 'Date Of Birth',
-    cell: TableCell,
-    meta: {
-      type: 'date',
-    },
-  }),
-  columnHelper.accessor('major', {
-    header: 'Major',
-    cell: TableCell,
-    meta: {
-      type: 'select',
-      options: [
-        { value: 'Computer Science', label: 'Computer Science' },
-        { value: 'Communications', label: 'Communications' },
-        { value: 'Business', label: 'Business' },
-        { value: 'Psychology', label: 'Psychology' },
-      ],
-    },
-  }),
-  columnHelper.display({
-    id: 'edit',
-    cell: EditCell,
-  }),
-];
+import { columns } from './column';
 
 type Student = {
   studentId: number;
@@ -60,40 +15,31 @@ type Student = {
   major: string;
 };
 
-const Table = () => {
-  const defaultData: Student[] = [
-    {
-      studentId: 1111,
-      name: 'Bahar Constantia',
-      dateOfBirth: '1984-01-04',
-      major: 'Computer Science',
-    },
-    {
-      studentId: 2222,
-      name: 'Harold Nona',
-      dateOfBirth: '1961-05-10',
-      major: 'Communications',
-    },
-    {
-      studentId: 3333,
-      name: 'Raginolf Arnulf',
-      dateOfBirth: '1991-10-12',
-      major: 'Business',
-    },
-    {
-      studentId: 4444,
-      name: 'Marvyn Wendi',
-      dateOfBirth: '1978-09-24',
-      major: 'Psychology',
-    },
-  ];
-  const [data, setData] = useState(() => [...defaultData]);
-  const [originalData, setOriginalData] = useState(() => [...defaultData]);
+const TechParamsTable = ({
+  techParams = [],
+  fields,
+  onUpdateData,
+  onAddRow,
+  onRemoveRow,
+  status,
+}) => {
+  const [data, setData] = useState(() => [...techParams]);
+  const [originalData, setOriginalData] = useState(() => [...techParams]);
   const [editedRows, setEditedRows] = useState({});
+
+  let filteredColumns = columns.filter((item: any) => {
+    return fields?.includes(item.accessorKey) || item?.id === 'edit';
+  });
+
+  if (status === 'FINISHED') {
+    filteredColumns = [...filteredColumns].filter((item: any) => {
+      return item?.id !== 'edit';
+    });
+  }
 
   const table = useReactTable({
     data,
-    columns,
+    columns: filteredColumns || [],
     getCoreRowModel: getCoreRowModel(),
     meta: {
       editedRows,
@@ -113,8 +59,11 @@ const Table = () => {
           );
         }
       },
+      updateRow: (rowIndex: number) => {
+        onUpdateData(data[rowIndex].id, data[rowIndex]);
+      },
       updateData: (rowIndex: number, columnId: string, value: string) => {
-        setData((old) =>
+        const updateFunc = (old) =>
           old.map((row, index) => {
             if (index === rowIndex) {
               return {
@@ -122,28 +71,32 @@ const Table = () => {
                 [columnId]: value,
               };
             }
+
             return row;
-          }),
-        );
+          });
+
+        setData(updateFunc);
       },
       addRow: () => {
-        const newRow: Student = {
-          studentId: Math.floor(Math.random() * 10000),
-          name: '',
-          dateOfBirth: '',
-          major: '',
-        };
-        const setFunc = (old: Student[]) => [...old, newRow];
-        setData(setFunc);
-        setOriginalData(setFunc);
+        let val = {};
+        const rowKeys = filteredColumns.map((item: any) => {
+          if (item.accessorKey !== undefined) {
+            return (val[item.accessorKey] = '');
+          }
+        });
+        onAddRow(val);
       },
       removeRow: (rowIndex: number) => {
+        onRemoveRow(data[rowIndex].id);
         const setFilterFunc = (old: Student[]) =>
           old.filter((_row: Student, index: number) => index !== rowIndex);
-        setData(setFilterFunc);
         setOriginalData(setFilterFunc);
+        setData(setFilterFunc);
       },
       removeSelectedRows: (selectedRows: number[]) => {
+        selectedRows.forEach((rowIndex) => {
+          onRemoveRow(data[rowIndex].id);
+        });
         const setFilterFunc = (old: Student[]) =>
           old.filter((_row, index) => !selectedRows.includes(index));
         setData(setFilterFunc);
@@ -153,13 +106,16 @@ const Table = () => {
   });
 
   return (
-    <article className="table-container">
-      <table>
+    <article className="h-full w-full overflow-auto">
+      <table className="tech-table w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <tr key={headerGroup.id} className="!border-px !border-gray-400">
               {headerGroup.headers.map((header) => (
-                <th key={header.id}>
+                <th
+                  key={header.id}
+                  className="min-w-[140px] cursor-pointer  border-b border-gray-400 px-1 text-start dark:border-white/30"
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -171,25 +127,42 @@ const Table = () => {
             </tr>
           ))}
         </thead>
-        <tbody>
+        <tbody className="dark:text-white [&>*:nth-child(even)]:dark:!bg-navy-800">
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
+            <tr
+              key={row.id}
+              className="border-b border-gray-100 hover:bg-lightPrimary dark:border-gray-900 dark:hover:bg-navy-700"
+            >
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>
+                <td key={cell.id} className="min-w-[70px] p-1">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
             </tr>
           ))}
         </tbody>
-        <tfoot>
-          <tr>
-            <th colSpan={table.getCenterLeafColumns().length} align="right">
-              <FooterCell table={table} />
-            </th>
-          </tr>
-        </tfoot>
+
+        {data.length === 0 ? (
+          <tfoot>
+            <tr>
+              <th
+                className="py-8 font-normal opacity-40"
+                colSpan={table.getCenterLeafColumns().length}
+                align="center"
+              >
+                Henüz Teknik parametreleri eklenmedi
+              </th>
+            </tr>
+          </tfoot>
+        ) : null}
       </table>
+      {status !== 'FINISHED' ? (
+        <div className="sticky left-0 mt-4 flex w-[120px] justify-center rounded-lg bg-blueSecondary px-3 py-2 text-center text-center text-sm font-bold text-white">
+          <FooterCell table={table} />
+        </div>
+      ) : null}
     </article>
   );
 };
+
+export default TechParamsTable;

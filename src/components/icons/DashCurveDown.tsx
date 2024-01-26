@@ -6,7 +6,7 @@ function DashCurveDown() {
       <path
         d="M1 1v0c40.269 25.626 91.731 25.626 132 0v0"
         stroke="currentColor"
-        stroke-width="2"
+        strokeWidth="2"
         stroke-linecap="round"
         stroke-linejoin="round"
         stroke-dasharray="6 6"

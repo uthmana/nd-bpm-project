@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
 import { $Enums, FaultControl } from '@prisma/client';
 import { checkUserRole } from 'utils/auth';
+import { FaultControl } from '@prisma/client';
+
 
 //All Faults
 export async function GET(req: NextRequest) {
@@ -69,6 +71,7 @@ export async function PUT(req: Request) {
           application,
           standard,
           color,
+          technicalDrawingAttachment,
         } = updateFault;
         const process = await prisma.process.create({
           data: {
@@ -80,6 +83,7 @@ export async function PUT(req: Request) {
             application,
             standard,
             color,
+            technicalDrawingAttachment,
           },
         });
       }

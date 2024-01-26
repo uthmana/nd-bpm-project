@@ -10,7 +10,9 @@ export const EditCell = ({ row, table }) => {
       [row.id]: !old[row.id],
     }));
     if (elName !== 'edit') {
-      meta?.revertData(row.index, e.currentTarget.name === 'cancel');
+      e.currentTarget.name === 'cancel'
+        ? meta?.revertData(row.index)
+        : meta?.updateRow(row.index);
     }
   };
 
@@ -20,30 +22,31 @@ export const EditCell = ({ row, table }) => {
 
   return (
     <div className="edit-cell-container">
+      <input
+        type="checkbox"
+        checked={row.getIsSelected()}
+        onChange={row.getToggleSelectedHandler()}
+      />
+
       {meta?.editedRows[row.id] ? (
         <div className="edit-cell-action">
           <button onClick={setEditedRows} name="cancel">
             ⚊
-          </button>{' '}
+          </button>
           <button onClick={setEditedRows} name="done">
             ✔
           </button>
         </div>
       ) : (
         <div className="edit-cell-action">
-          <button onClick={setEditedRows} name="edit">
-            ✐
-          </button>
           <button onClick={removeRow} name="remove">
             X
           </button>
+          <button onClick={setEditedRows} name="edit">
+            ✐
+          </button>
         </div>
       )}
-      <input
-        type="checkbox"
-        checked={row.getIsSelected()}
-        onChange={row.getToggleSelectedHandler()}
-      />
     </div>
   );
 };

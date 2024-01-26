@@ -4,7 +4,12 @@ import ProcessTable from 'components/admin/data-tables/processTable';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { log } from 'utils';
 import { useEffect, useState } from 'react';
-import { deleteProcess, getProcess, updateProcess } from 'app/lib/apiRequest';
+import {
+  deleteProcess,
+  getProcess,
+  updateProcess,
+  getMachines,
+} from 'app/lib/apiRequest';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
 import { toast } from 'react-toastify';
 import Popup from 'components/popup';
@@ -23,9 +28,33 @@ const Process = () => {
   const searchParams = useSearchParams();
   const searchVal = searchParams.get('q');
   const [searchText, setSearchText] = useState(searchVal || '');
-  const [processInfo, setProcessInfo] = useState('');
+  const [processInfo, setProcessInfo] = useState({});
   const [currentProcess, setCurrentProcess] = useState({});
   const [values, setValues] = useState({} as any);
+  const [machines, setMachines] = useState([]);
+  const [isShowProcessPopUp, setIsShowProcessPopUp] = useState(false);
+
+  const productInfo = [
+    'faultId',
+    'customerName',
+    'product',
+    'quantity',
+    'application',
+    'standard',
+    'color',
+    'machineName',
+  ];
+
+  const infoTranslate = {
+    customerName: 'Müşteri',
+    product: 'Ürün adı',
+    quantity: 'Miktar',
+    application: 'Uygulama',
+    standard: 'Standart',
+    color: 'Renk',
+    machineName: 'Makine',
+    faultId: 'Takıp Kodu',
+  };
 
   const getAllProcess = async () => {
     setIsLoading(true);
@@ -44,7 +73,7 @@ const Process = () => {
     setSearchText(searchVal || '');
   }, [searchVal]);
 
-  const onAdd = (val: any) => {
+  const onAdd = async (val: any) => {
     if (!val) return;
     delete val.technicalParams;
     const {
@@ -59,9 +88,13 @@ const Process = () => {
     setProcessId(id);
     setCurrentProcess(val);
     if (!machineId) {
-      setProcessInfo(`${customerName}, ${product}, 
-      ${application}, ${standard}, ${color}`);
-      setIsShowPopUp(true);
+      setProcessInfo({ customerName, product, application, standard, color });
+      const { status, data } = await getMachines();
+      if (status === 200) {
+        setMachines(data);
+        setIsShowPopUp(true);
+        return;
+      }
       return;
     }
     router.push(`/admin/process/${id}`);
@@ -69,37 +102,20 @@ const Process = () => {
   const onAddMachine = async () => {
     if (!values?.machineId) return;
     setIsSubmitting(true);
-    const { status, data } = await updateProcess({
+    const { status } = await updateProcess({
       ...currentProcess,
       ...values,
+      createdBy: session?.user?.name,
     });
     if (status === 200) {
       toast.success('Makine ekleme işlemi başarılı.');
       router.push(`/admin/process/${processId}`);
-      setIsShowPopUp(false);
+      //setIsShowPopUp(false);
       return;
     }
     toast.error('Bir hata oluştu, tekrar deneyin !');
     return;
   };
-
-  //TODO: get Michine data from BE
-  const machines = [
-    { machineId: '1', machineName: 'Mikrokapsül 1' },
-    { machineId: '2', machineName: 'Mikrokapsül 2' },
-    { machineId: '3', machineName: 'Mikrokapsül-3' },
-    { machineId: '4', machineName: 'Patch-1' },
-    { machineId: '5', machineName: 'Patch-2' },
-    { machineId: '6', machineName: 'Patch-3' },
-    { machineId: '7', machineName: 'Yarı Otomatik -1' },
-    { machineId: '8', machineName: 'Manuel' },
-    { machineId: '9', machineName: 'Yatay-1' },
-    { machineId: '10', machineName: 'Yatay-2' },
-    { machineId: '11', machineName: 'Strip' },
-    { machineId: '12', machineName: 'Dispenser ' },
-    { machineId: '13', machineName: 'Somun' },
-    { machineId: '14', machineName: 'Yarı Otomatik-2' },
-  ];
 
   const handleValues = (event) => {
     setValues(JSON.parse(event.target?.value));
@@ -107,6 +123,33 @@ const Process = () => {
 
   const handleClose = (val: string) => {
     setIsShowPopUp(false);
+  };
+
+  const onComfirm = async (val) => {
+    setProcessId(val);
+    setIsShowProcessPopUp(true);
+  };
+
+  const onDelete = async () => {
+    setIsSubmitting(true);
+    const { status } = await deleteProcess(processId);
+    if (status === 200) {
+      toast.success('Proses silme işlemi başarılı.');
+      await getAllProcess();
+      setIsSubmitting(false);
+      setIsShowProcessPopUp(false);
+      return;
+    } else {
+      toast.error('Bir hata oluştu, tekrar deneyin !');
+    }
+  };
+
+  const onEdit = (val) => {
+    // router.push(`/admin/entry/${val}`);
+  };
+
+  const handleProcessClose = (val: string) => {
+    setIsShowProcessPopUp(false);
   };
 
   return (
@@ -120,12 +163,27 @@ const Process = () => {
           variant={session?.user?.role}
           searchValue={searchText}
           key={searchVal}
+          onEdit={(val) => onEdit(val)}
+          onDelete={onComfirm}
         />
       )}
 
-      <Popup show={isShowPopUp} extra="flex flex-col gap-3 py-6 px-8">
+      <Popup key={1} show={isShowPopUp} extra="flex flex-col gap-3 py-6 px-8">
         <h1 className="text-3xl">Makine Şeçimi</h1>
-        <p className="mb-2 text-lg">{processInfo}</p>
+        <div className="mb-2 grid grid-cols-2 gap-2 text-sm">
+          {Object.entries(processInfo).map(([key, value], idx) => {
+            if (productInfo.includes(key)) {
+              return (
+                <div className="" key={idx}>
+                  <h2 className="font-bold capitalize italic">
+                    {infoTranslate[key]}
+                  </h2>
+                  <> {value}</>
+                </div>
+              );
+            }
+          })}
+        </div>
 
         <div className="mb-2 flex flex-col gap-3 sm:flex-row">
           <Select
@@ -139,8 +197,14 @@ const Process = () => {
             </option>
             {machines.map((item, idx) => {
               return (
-                <option value={JSON.stringify(item)} key={idx}>
-                  {item.machineName}
+                <option
+                  value={JSON.stringify({
+                    machineId: item.id,
+                    machineName: item.machine_Name,
+                  })}
+                  key={idx}
+                >
+                  {item.machine_Name}
                 </option>
               );
             })}
@@ -158,6 +222,28 @@ const Process = () => {
             text="DEVAM"
             extra="w-[60px] h-[40px]"
             onClick={onAddMachine}
+          />
+        </div>
+      </Popup>
+
+      <Popup
+        key={2}
+        show={isShowProcessPopUp}
+        extra="flex flex-col gap-3 py-6 px-8"
+      >
+        <h1 className="text-3xl">Proces Silme</h1>
+        <p className="mb-2 text-lg">Bu Proses Silmek istediğini Emin misin ?</p>
+        <div className="flex gap-4">
+          <Button
+            loading={isSubmitting}
+            text="SİL"
+            extra="w-[60px] bg-red-700 h-[40px]"
+            onClick={onDelete}
+          />
+          <Button
+            text="GERİ"
+            extra="w-[60px] h-[40px]"
+            onClick={handleProcessClose}
           />
         </div>
       </Popup>
