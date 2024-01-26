@@ -1,4 +1,7 @@
 -- CreateEnum
+CREATE TYPE "FinalItemStatus" AS ENUM ('OK', 'NOT_OK');
+
+-- CreateEnum
 CREATE TYPE "NotifStatus" AS ENUM ('READ', 'NOT_READ');
 
 -- CreateEnum
@@ -271,12 +274,13 @@ CREATE TABLE "Process" (
 CREATE TABLE "FinalControl" (
     "id" TEXT NOT NULL,
     "faultId" TEXT NOT NULL,
-    "olcu_Kontrol" TEXT,
-    "gorunum_kontrol" TEXT,
-    "tork_Kontrol" TEXT,
+    "olcu_Kontrol" "FinalItemStatus",
+    "gorunum_kontrol" "FinalItemStatus",
+    "tork_Kontrol" "FinalItemStatus",
     "paketleme" TEXT,
-    "kontrol_edilen_miktar" TEXT,
-    "hatali_miktar" TEXT,
+    "kontrol_edilen_miktar" INTEGER,
+    "hatali_miktar" INTEGER,
+    "makliye_miktar" INTEGER,
     "remarks" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
@@ -293,7 +297,7 @@ CREATE TABLE "Invoice" (
     "id" TEXT NOT NULL,
     "faultId" TEXT NOT NULL,
     "invoiceDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "totalAmount" DOUBLE PRECISION NOT NULL,
+    "totalAmount" DOUBLE PRECISION,
 
     CONSTRAINT "Invoice_pkey" PRIMARY KEY ("id")
 );
