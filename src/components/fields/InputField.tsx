@@ -32,7 +32,7 @@ function InputField(props: {
     required,
     value,
     length,
-    min = 1,
+    min = 0,
   } = props;
 
   const inputElem = useRef(null);
@@ -53,7 +53,7 @@ function InputField(props: {
           variant === 'auth' ? 'ml-1.5 font-medium' : 'ml-3 font-bold'
         }`}
       >
-        {label}
+        {label} {required ? <span className="text-red-400">*</span> : null}
       </label>
       <input
         ref={inputElem}

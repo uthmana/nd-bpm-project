@@ -7,26 +7,9 @@ import Button from 'components/button/button';
 import Select from 'components/select/page';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import TextArea from 'components/fields/textArea';
-import { log } from 'utils';
 import Upload from 'components/upload';
-
-type FaultObj = {
-  customerName: string;
-  traceabilityCode: string;
-  arrivalDate: string;
-  invoiceDate: string;
-  product: string;
-  quantity: number;
-  productCode: string;
-  productBatchNumber: string;
-  application: string;
-  standard: string;
-  color: string;
-  faultDescription: string;
-  status: string;
-  technicalDrawingAttachment: string;
-  controlInfo: string;
-};
+import { log, applications, standards, colors } from 'utils';
+import { FaultObj } from '../../app/localTypes/table-types';
 
 export default function Fault(props: {
   onSubmit: (e: any) => void;
@@ -35,64 +18,22 @@ export default function Fault(props: {
   loading: boolean;
 }) {
   const { onSubmit, data, title, loading } = props;
-  const applications = [
-    'ND Patch',
-    'ND Strip',
-    'ST-3 Thread Sealant',
-    'LM-1293 Maskeleme',
-    'Vibra-Tite VC-3',
-    'ND Microspheres 593 S',
-    'ND Microspheres TA 850',
-    'ND Microspheres TA 800',
-    'ND Microspheres TA 300',
-    'ND Microspheres 1193 S',
-    'EZ-Drive 300 Lubricating',
-    'EZ-Drive 200 Lubricating',
-  ];
-  const standards = [
-    'DIN 267-27',
-    'DIN 267-28',
-    'Müşteri isteği',
-    'WA 970',
-    'WSS-M21P27-A4',
-    'IFI-124',
-    'IFI-125',
-    'IFI-524',
-    'IFI-525',
-    'MS-CC76',
-    'PF-6616',
-    'WX 200',
-    'Diğer',
-  ];
-  const colors = [
-    'Mavi',
-    'Turuncu',
-    'Turkuaz',
-    'Pembe',
-    'Kırmızı',
-    'Yeşil',
-    'Sarı',
-    'Beyaz',
-    'Siyah',
-  ];
 
   const initialValues = data
     ? data
     : {
         customerName: '',
-        traceabilityCode: '',
         arrivalDate: '',
         invoiceDate: '',
         product: '',
         quantity: 1,
         productCode: '',
         productBatchNumber: '',
-        application: 'ND Patch',
-        standard: 'DIN 267-27',
-        color: 'Mavi',
+        application: '',
+        standard: '',
+        color: '',
         technicalDrawingAttachment: '',
         faultDescription: '',
-        controlInfo: '',
       };
 
   const [values, setValues] = useState(initialValues);
@@ -111,10 +52,13 @@ export default function Fault(props: {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { traceabilityCode } = values;
-    if (!traceabilityCode) {
+    const { customerName, productCode, quantity, application } = values;
+    if (!productCode || !quantity || !application) {
+      window.scroll(0, 0);
       setError(true);
+      return;
     }
+
     onSubmit({
       ...values,
       quantity: parseInt(values.quantity.toString()),
@@ -149,7 +93,7 @@ export default function Fault(props: {
         </p>
       ) : null}
 
-      <div className="mb-2 flex flex-col gap-3 sm:flex-row">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row">
         <InputField
           label="Müşteri Adı"
           onChange={handleValues}
@@ -159,31 +103,9 @@ export default function Fault(props: {
           placeholder="Müşteri Adı"
           extra="mb-2"
           value={values.customerName}
-        />
-        <InputField
-          label="Takıp kodu"
-          onChange={handleValues}
-          type="text"
-          id="traceabilityCode"
-          name="traceabilityCode"
-          placeholder="Takıp kodu"
-          extra="mb-2"
-          value={values.traceabilityCode}
+          required={true}
         />
 
-        <InputField
-          label="Varış tarihi"
-          onChange={handleValues}
-          type="datetime-local"
-          id="arrivalDate"
-          name="arrivalDate"
-          placeholder="varış tarihi"
-          extra="mb-2"
-          value={values.arrivalDate}
-        />
-      </div>
-
-      <div className="mb-2 flex flex-col gap-3 sm:flex-row">
         <InputField
           label="Ürün İsmi"
           onChange={handleValues}
@@ -193,6 +115,21 @@ export default function Fault(props: {
           placeholder="Ürün İsmi"
           extra="mb-2"
           value={values.product}
+          required={true}
+        />
+      </div>
+
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+        <InputField
+          label="Ürün kodu"
+          onChange={handleValues}
+          type="text"
+          id="productCode"
+          name="productCode"
+          placeholder="Ürün kodu"
+          extra="mb-2"
+          value={values.productCode}
+          required={true}
         />
         <InputField
           label="Miktar"
@@ -203,6 +140,30 @@ export default function Fault(props: {
           placeholder="Miktar"
           extra="mb-2"
           value={values.quantity}
+        />
+      </div>
+
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+        <InputField
+          label="Baç No."
+          onChange={handleValues}
+          type="text"
+          id="productBatchNumber"
+          name="productBatchNumber"
+          placeholder="Baç No."
+          extra="mb-2"
+          min={1}
+          value={values.productBatchNumber}
+        />
+        <InputField
+          label="Varış tarihi"
+          onChange={handleValues}
+          type="datetime-local"
+          id="arrivalDate"
+          name="arrivalDate"
+          placeholder="varış tarihi"
+          extra="mb-2"
+          value={values.arrivalDate}
         />
 
         <InputField
@@ -217,44 +178,7 @@ export default function Fault(props: {
         />
       </div>
 
-      <div className="mb-2 flex flex-col gap-3 sm:flex-row">
-        <InputField
-          label="Ürün kodu"
-          onChange={handleValues}
-          type="text"
-          id="productCode"
-          name="productCode"
-          placeholder="Ürün kodu"
-          extra="mb-2"
-          value={values.productCode}
-        />
-
-        <InputField
-          label="Baç No."
-          onChange={handleValues}
-          type="text"
-          id="productBatchNumber"
-          name="productBatchNumber"
-          placeholder="Baç No."
-          extra="mb-2"
-          min={1}
-          value={values.productBatchNumber}
-        />
-
-        <InputField
-          label="Baç No."
-          onChange={handleValues}
-          type="text"
-          id="controlInfo"
-          name="controlInfo"
-          placeholder="Kontrol Info."
-          extra="mb-2"
-          min={1}
-          value={values.controlInfo}
-        />
-      </div>
-
-      <div className="mb-3 flex flex-col gap-3 sm:flex-row">
+      <div className="mb-8 flex flex-col gap-3 sm:flex-row">
         <Select
           extra="pt-1"
           label="Uygulama"
@@ -292,9 +216,7 @@ export default function Fault(props: {
             );
           })}
         </Select>
-      </div>
 
-      <div className="mb-2 flex flex-col gap-3 sm:flex-row">
         <Select
           extra="pt-1"
           label="Renk Seçimi"
@@ -315,7 +237,10 @@ export default function Fault(props: {
         </Select>
       </div>
 
-      <div className="my-3">
+      <div className="my-8">
+        <label className="ml-3 text-sm font-bold text-navy-700 dark:text-white">
+          İlgili Doküman
+        </label>
         <Upload
           onChange={(val) => setFile(val)}
           fileType="all"

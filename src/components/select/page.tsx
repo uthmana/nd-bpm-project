@@ -19,7 +19,7 @@ const Select = ({ name, onChange, children, label, extra }) => {
           name={name}
           onChange={onChange}
         >
-          <option disabled value="">
+          <option selected disabled defaultValue="">
             {label}
           </option>
           {children}

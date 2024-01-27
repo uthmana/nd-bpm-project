@@ -4,8 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import {
   getProcessById,
-  addControl,
-  updateFaultControl,
+  addProcessControl,
+  updateProcessControl,
 } from 'app/lib/apiRequest';
 import { useParams, useRouter } from 'next/navigation';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
@@ -42,17 +42,17 @@ export default function EntryControl() {
 
   const handleSubmit = async (val) => {
     const [values, isUpdate] = val;
-    // console.log(values, isUpdate);
-
-    setIsSubmitting(true);
+    // setIsSubmitting(true);
     if (isUpdate) {
-      const { status, data, response } = await updateFaultControl({
+      const { status, data, response } = await updateProcessControl({
         ...values,
-        ...{ updatedBy: session?.user?.name },
+        processId: process.id,
+        faultId: process.faultId,
+        updatedBy: session?.user?.name,
       });
       if (status === 200) {
-        toast.success('Ürün kontrol güncelleme işlemi başarılı.');
-        router.push('/admin/entry');
+        toast.success('Ürün final kontrol güncelleme işlemi başarılı.');
+        router.push('/admin/process');
         setIsSubmitting(false);
         return;
       }
@@ -62,18 +62,20 @@ export default function EntryControl() {
     }
 
     // add new entry control
-    const { status, data, response } = await addControl({
+    const { status, data, response } = await addProcessControl({
       ...values,
-      ...{ createdBy: session?.user?.name },
+      processId: process.id,
+      faultId: process.faultId,
+      createdBy: session?.user?.name,
     });
-    if (status === 200) {
-      toast.success('Ürün girişi kontrol işlemi başarılı.');
-      router.push('/admin/entry');
-      setIsSubmitting(false);
-      return;
-    }
-    toast.error('Hata oluştu!.' + { response });
-    setIsSubmitting(false);
+    // if (status === 200) {
+    //   toast.success('Ürün final kontrol işlemi başarılı.');
+    //   router.push('/admin/process');
+    //   setIsSubmitting(false);
+    //   return;
+    // }
+    // toast.error('Hata oluştu!.' + { response });
+    // setIsSubmitting(false);
   };
 
   return (

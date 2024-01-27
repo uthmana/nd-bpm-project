@@ -164,3 +164,12 @@ export async function deleteMachineParams(id) {
 export async function updateMachineWithParams(payload) {
   return fetchAPI(`machine/${payload.id}`, 'put', payload);
 }
+
+// Final Control
+export async function addProcessControl(payload) {
+  return fetchAPI('finalControl', 'put', payload);
+}
+
+export async function updateProcessControl(payload) {
+  return fetchAPI(`finalControl/${payload.id}`, 'put', payload);
+}

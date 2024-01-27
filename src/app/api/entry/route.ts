@@ -34,9 +34,9 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: 'Access forbidden', status: 403 });
     }
     const result: Fault = await req.json();
-    const { traceabilityCode } = result;
+    const { customerName, productCode, quantity, application } = result;
 
-    if (!traceabilityCode) {
+    if (!customerName || !productCode || !quantity || !application) {
       return NextResponse.json(
         { message: 'You are missing a required data' },
         { status: 401 },

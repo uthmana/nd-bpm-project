@@ -10,6 +10,7 @@ import Select from 'components/select/page';
 import Radio from 'components/radio';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import NextLink from 'next/link';
+import InputField from 'components/fields/InputField';
 
 export default function ProcessControlForm({
   info,
@@ -21,11 +22,7 @@ export default function ProcessControlForm({
   const isUpdate = data && data?.id ? true : false;
   const [process, setProcess] = useState(info || {});
   const [error, setError] = useState(false);
-  const [file, setFile] = useState('');
   const [formTouch, setFormTouch] = useState(isUpdate);
-  const [platingsOpt, setPlatingsOpt] = useState(
-    isUpdate && data.plating?.length > 0 ? data.plating.split(',') : [],
-  );
 
   const processInfo = [
     'customerName',
@@ -57,54 +54,25 @@ export default function ProcessControlForm({
     isUpdate
       ? data
       : {
-          image: '',
-          result: '',
-          plating: '',
-          product: '',
-          quantity: 0,
-          productCode: '',
-          productDimension: '',
-          traceabilityCode: info.traceabilityCode,
-          productBatchNumber: '',
-          processFrequency: '',
-          dimensionConfirmation: '',
-          dirtyThreads: '',
-          quantityConfirmation: '',
+          faultId: '',
+          olcu_Kontrol: '',
+          gorunum_kontrol: '',
+          tork_Kontrol: '',
+          paketleme: '',
+          kontrol_edilen_miktar: 0,
+          hatali_miktar: 0,
+          makliye_miktar: 0,
           remarks: '',
-          faultId: info?.id,
+          createdBy: '',
+          result: '',
+          processId: '',
         },
   );
 
-  const platings = [
-    'Beyaz Çinko',
-    'Siyah Çinko',
-    'Sarı Çinko',
-    'Çinko',
-    'Nikel',
-    'Pırtınç',
-    'Karartma',
-    'Paslanmaz',
-    'Çinko Nikel',
-    'Siyah Fosfat',
-    'Zn',
-    'Kayganlaştırıcı',
-    'Galvanizli',
-    'Diğer',
+  const sizeConfirmation = [
+    { name: 'İYİ', value: 'OK' },
+    { name: 'İYİ DEĞİL', value: 'NOT_OK' },
   ];
-
-  const confirmation = [
-    { name: 'Uygun', value: true },
-    { name: 'Uygunsuz', value: false },
-  ];
-
-  const dirtyConfirmation = [
-    { name: 'Var', value: true },
-    { name: 'Yok', value: false },
-  ];
-
-  const materials = ['Karışık', 'Düzenli'];
-
-  const processConfirmation = ['Yazılsın', 'Yazılmasın'];
 
   const results = [
     { value: 'ACCEPT', name: 'Kabul' },
@@ -120,22 +88,6 @@ export default function ProcessControlForm({
     setValues({ ...values, ...newVal });
   };
 
-  const handlePlating = (e) => {
-    setError(false);
-    setFormTouch(false);
-    const value = e.target.value;
-    if (e.target.checked) {
-      if (![...platingsOpt].includes(value)) {
-        setPlatingsOpt([...platingsOpt, value]);
-      }
-      return;
-    }
-    const _plating = [...platingsOpt].filter((item) => {
-      return item !== value;
-    });
-    setPlatingsOpt(_plating);
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     const { result } = values;
@@ -143,17 +95,12 @@ export default function ProcessControlForm({
       setError(true);
       return;
     }
-
     onSubmit(
       {
         ...values,
-        image: file,
-        plating: platingsOpt.join(','),
-        dimensionConfirmation:
-          values.dimensionConfirmation?.toString() === 'true',
-        dirtyThreads: values.dirtyThreads?.toString() === 'true',
-        quantityConfirmation:
-          values.quantityConfirmation?.toString() === 'true',
+        kontrol_edilen_miktar: parseInt(values.kontrol_edilen_miktar),
+        hatali_miktar: parseInt(values.hatali_miktar),
+        makliye_miktar: parseInt(values.makliye_miktar),
       },
       isUpdate,
     );
@@ -200,68 +147,20 @@ export default function ProcessControlForm({
         ) : null}
 
         <form onSubmit={handleSubmit} className="w-full">
-          <h2 className="mb-4 text-sm font-bold">kaplama</h2>
-          <div className="mb-6 grid w-full grid-cols-2 gap-3 sm:grid-cols-3">
-            {platings.map((item, idx) => {
-              return (
-                <label className="flex cursor-pointer items-center" key={idx}>
-                  <Checkbox
-                    name="plating"
-                    colorscheme="brandScheme"
-                    me="10px"
-                    checked={isUpdate ? values.plating.includes(item) : false}
-                    onChange={handlePlating}
-                    value={item}
-                  />
-                  <p className="ml-3 text-sm font-bold text-navy-700 dark:text-white">
-                    {item}
-                  </p>
-                </label>
-              );
-            })}
-          </div>
-
           <div className="mb-8 flex flex-col gap-3 sm:flex-row">
             <Select
               extra="pt-1"
-              label="Malzeme Türü"
+              label="Ölçü Kontrolü"
               onChange={handleValues}
-              name="productDimension"
+              name="olcu_Kontrol"
             >
-              <option defaultValue="">Malzeme seç</option>
-              {materials.map((item, idx) => {
+              {sizeConfirmation.map((item, idx) => {
                 return (
                   <option
-                    value={item}
+                    value={item.value}
                     key={idx}
                     selected={
-                      isUpdate ? values.productDimension === item : null
-                    }
-                  >
-                    {item}
-                  </option>
-                );
-              })}
-            </Select>
-          </div>
-
-          <div className="mb-2 flex flex-col gap-3 sm:flex-row">
-            <Select
-              extra="pt-1"
-              label="Ürün Boyutlari"
-              onChange={handleValues}
-              name="dimensionConfirmation"
-            >
-              <option defaultValue="">Uygunluğu seç</option>
-              {confirmation.map((item, idx) => {
-                return (
-                  <option
-                    value={item.value.toString()}
-                    key={idx}
-                    selected={
-                      isUpdate
-                        ? values.dimensionConfirmation === item.value
-                        : null
+                      isUpdate ? values.olcu_Kontrol === item.value : null
                     }
                   >
                     {item.name}
@@ -272,20 +171,38 @@ export default function ProcessControlForm({
 
             <Select
               extra="pt-1"
-              label="Miktar"
+              label="Görünüm Kontrolü"
               onChange={handleValues}
-              name="quantityConfirmation"
+              name="gorunum_kontrol"
             >
-              <option defaultValue="">Uygunluğu seç</option>
-              {confirmation.map((item, idx) => {
+              {sizeConfirmation.map((item, idx) => {
                 return (
                   <option
-                    value={item.value.toString()}
+                    value={item.value}
                     key={idx}
                     selected={
-                      isUpdate
-                        ? values.quantityConfirmation === item.value
-                        : null
+                      isUpdate ? values.gorunum_kontrol === item.value : null
+                    }
+                  >
+                    {item.name}
+                  </option>
+                );
+              })}
+            </Select>
+
+            <Select
+              extra="pt-1"
+              label="Tork Kontrolü"
+              onChange={handleValues}
+              name="tork_Kontrol"
+            >
+              {sizeConfirmation.map((item, idx) => {
+                return (
+                  <option
+                    value={item.value}
+                    key={idx}
+                    selected={
+                      isUpdate ? values.tork_Kontrol === item.value : null
                     }
                   >
                     {item.name}
@@ -294,62 +211,55 @@ export default function ProcessControlForm({
               })}
             </Select>
           </div>
+
           <div className="mb-8 flex flex-col gap-3 sm:flex-row">
-            <Select
-              extra="pt-1"
-              label="Temizleme"
+            <InputField
+              label="Kontrol Miktarı"
               onChange={handleValues}
-              name="dirtyThreads"
-            >
-              <option defaultValue="">Temizleme seç</option>
-              {dirtyConfirmation.map((item, idx) => {
-                return (
-                  <option
-                    value={item.value.toString()}
-                    key={idx}
-                    selected={
-                      isUpdate ? values.dirtyThreads === item.value : null
-                    }
-                  >
-                    {item.name}
-                  </option>
-                );
-              })}
-            </Select>
+              type="number"
+              id="kontrol_edilen_miktar"
+              name="kontrol_edilen_miktar"
+              placeholder="Kontrol Miktarı"
+              extra="mb-2"
+              min={0}
+              value={values.kontrol_edilen_miktar}
+            />
 
-            <Select
-              extra="pt-1"
-              label="Proses Frekansi"
+            <InputField
+              label="Hatalı Miktarı"
               onChange={handleValues}
-              name="processFrequency"
-            >
-              <option value="">Frekansi seç</option>
-              {processConfirmation.map((item, idx) => {
-                return (
-                  <option
-                    value={item}
-                    key={idx}
-                    selected={
-                      isUpdate ? values.processFrequency === item : null
-                    }
-                  >
-                    {item}
-                  </option>
-                );
-              })}
-            </Select>
+              type="number"
+              id="hatali_miktar"
+              name="hatali_miktar"
+              placeholder="Hatalı Miktarı"
+              extra="mb-2"
+              min={0}
+              value={values.hatali_miktar}
+            />
+
+            <InputField
+              label="Nakliye Miktarı"
+              onChange={handleValues}
+              type="number"
+              id="makliye_miktar"
+              name="makliye_miktar"
+              placeholder="Nakliye Miktarı"
+              extra="mb-2"
+              min={0}
+              value={values.makliye_miktar}
+            />
           </div>
 
-          <div className="mb-6">
-            <h2 className="mb-3 ml-3  block w-full text-sm font-bold">
-              İlgili Doküman
-            </h2>
-            <Upload
-              onChange={(val) => setFile(val)}
-              fileType="all"
-              multiple={false}
-              _fileName={values.image}
-              _filePath={isUpdate ? '/uploads/' + values.image : ''}
+          <div className="mb-8 flex flex-col gap-3 sm:flex-row">
+            <InputField
+              label="Paketleme"
+              onChange={handleValues}
+              type="text"
+              id="paketleme"
+              name="paketleme"
+              placeholder="Paketleme"
+              extra="mb-2"
+              value={values.paketleme}
             />
           </div>
 

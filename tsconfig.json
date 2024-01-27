@@ -40,6 +40,7 @@
     "next.config.js",
     ".next/types/**/*.ts",
     "seeds/users.ts",
-    "seeds/seed.ts"
+    "seeds/seed.ts",
+    "src/app/localTypes"
   ]
 }

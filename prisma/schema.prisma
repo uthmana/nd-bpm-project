@@ -116,7 +116,6 @@ model Offer {
 model Fault {
   id                         String         @id @default(cuid())
   customerName               String?
-  traceabilityCode           String
   arrivalDate                DateTime?      @default(now())
   invoiceDate                DateTime?
   product                    String?
