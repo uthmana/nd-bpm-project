@@ -21,37 +21,10 @@ import {
 } from '@tanstack/react-table';
 import Search from 'components/search/search';
 import Button from 'components/button/button';
-import { formatDateTime } from 'utils';
+import { formatDateTime, useDrage } from 'utils';
 import FileViewer from 'components/fileViewer';
-
-type FaultObj = {
-  id: string;
-  customerName: string;
-  traceabilityCode: string;
-  arrivalDate: string;
-  invoiceDate: string;
-  product: string;
-  quantity: number;
-  productCode: string;
-  productBatchNumber: string;
-  application: string;
-  standard: string;
-  color: string;
-  faultDescription: string;
-  status: string;
-  technicalDrawingAttachment: string;
-  controlInfo: string;
-};
-
-type MainTable = {
-  tableData: FaultObj[];
-  variant: string;
-  onEdit: (e: any) => void;
-  onDelete: (e: any) => void;
-  onAdd: (e: any) => void;
-  onControl: (e: any) => void;
-  searchValue: string;
-};
+import { FaultObj, MainTable } from '../../../app/localTypes/table-types';
+import TablePagination from './tablePagination';
 
 function EntryTable({
   tableData,
@@ -66,34 +39,8 @@ function EntryTable({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const [search, setSearch] = useState(searchValue || '');
-  const [isDown, setIsDown] = useState(false);
-  const [startX, setStartX] = useState(null);
-  const [scrollLeft, setScrollLeft] = useState(0);
-
-  const handleMouseDown = (e) => {
-    setIsDown(true);
-    setStartX(e.pageX - e.currentTarget.offsetLeft);
-    setScrollLeft(e.currentTarget.scrollLeft);
-    e.currentTarget.classList.add('dragging-active');
-  };
-
-  const handleMouseLeave = (e) => {
-    setIsDown(false);
-    e.currentTarget.classList.remove('dragging-active');
-  };
-
-  const handleMouseUp = (e) => {
-    setIsDown(false);
-    e.currentTarget.classList.remove('dragging-active');
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const x = e.pageX - e.currentTarget.offsetLeft;
-    const walk = (x - startX) * 3; // scroll-fast
-    e.currentTarget.scrollLeft = scrollLeft - walk;
-  };
+  const { handleMouseDown, handleMouseLeave, handleMouseUp, handleMouseMove } =
+    useDrage();
 
   const columns = useMemo(() => {
     let col: any;
@@ -145,15 +92,28 @@ function EntryTable({
           </p>
         ),
       }),
-      columnHelper.accessor('traceabilityCode', {
-        id: 'traceabilityCode',
+      columnHelper.accessor('id', {
+        id: 'id',
         header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
             Takip Kodu
           </p>
         ),
         cell: (info: any) => (
-          <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
+          </p>
+        ),
+      }),
+      columnHelper.accessor('customerName', {
+        id: 'customerName',
+        header: () => (
+          <p className="min-w-[200px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Müşteri
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -161,12 +121,12 @@ function EntryTable({
       columnHelper.accessor('product', {
         id: 'product',
         header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
             Ürün İsmi
           </p>
         ),
         cell: (info: any) => (
-          <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -200,12 +160,12 @@ function EntryTable({
       columnHelper.accessor('productBatchNumber', {
         id: 'productBatchNumber',
         header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
             Batch No.
           </p>
         ),
         cell: (info: any) => (
-          <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -213,12 +173,12 @@ function EntryTable({
       columnHelper.accessor('arrivalDate', {
         id: 'arrivalDate',
         header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[120px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
             Variş Tarihi
           </p>
         ),
         cell: (info: any) => (
-          <p className="min-w-[120px] text-sm font-bold text-navy-700 dark:text-white">
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
             {formatDateTime(info.getValue())}
           </p>
         ),
@@ -291,12 +251,12 @@ function EntryTable({
       columnHelper.accessor('technicalDrawingAttachment', {
         id: 'technicalDrawingAttachment',
         header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[110px] text-sm font-bold uppercase text-gray-600 dark:text-white">
             İlgi Doküman
           </p>
         ),
         cell: (info: any) => (
-          <p className="min-w-[110px] text-sm font-bold text-navy-700 dark:text-white">
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue() ? <FileViewer file={info.getValue()} /> : null}
           </p>
         ),
@@ -304,12 +264,12 @@ function EntryTable({
       columnHelper.accessor('status', {
         id: 'status',
         header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
             DURUM
           </p>
         ),
         cell: (info: any) => (
-          <div className="flex min-w-[100px] items-center">
+          <div className="flex items-center">
             {statusbgColor(info.getValue())}
             <p className="text-sm font-bold text-navy-700 dark:text-white">
               {entryStatus[info.getValue()]}
@@ -334,7 +294,7 @@ function EntryTable({
               variant === 'NORMAL' ? null : (
                 <>
                   <button
-                    className="ml-3 rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
+                    className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
                     onClick={() => onEdit(info.getValue())}
                   >
                     <MdModeEdit className="h-5 w-5 text-white" />
@@ -498,68 +458,7 @@ function EntryTable({
               })}
           </tbody>
         </table>
-        <div className="sticky left-0 mb-4 mt-5 flex w-full items-center gap-2">
-          <button
-            className="w-7 rounded border p-1 dark:border-gray-800"
-            onClick={() => table.setPageIndex(0)}
-            disabled={!table.getCanPreviousPage()}
-          >
-            {'<<'}
-          </button>
-          <button
-            className="w-7 rounded border p-1 dark:border-gray-800"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            {'<'}
-          </button>
-          <button
-            className="w-7 rounded border p-1 dark:border-gray-800"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            {'>'}
-          </button>
-          <button
-            className="w-7 rounded border p-1 dark:border-gray-800"
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            disabled={!table.getCanNextPage()}
-          >
-            {'>>'}
-          </button>
-          <span className="flex items-center gap-1 text-[12px] dark:border-gray-800">
-            <div>Sayfa</div>
-            <strong>
-              {table.getState().pagination.pageIndex + 1} of{' '}
-              {table.getPageCount()}
-            </strong>
-          </span>
-          <span className="ml-4 flex items-center gap-1 text-[12px] dark:border-gray-800">
-            Sayfaya git:
-            <input
-              type="number"
-              defaultValue={table.getState().pagination.pageIndex + 1}
-              onChange={(e) => {
-                const page = e.target.value ? Number(e.target.value) - 1 : 0;
-                table.setPageIndex(page);
-              }}
-              className="w-16 rounded border p-1 dark:border-gray-800 dark:bg-blueSecondary"
-            />
-          </span>
-          <select
-            className="h-7 rounded text-[12px] dark:bg-blueSecondary"
-            value={table.getState().pagination.pageSize}
-            onChange={(e) => {
-              table.setPageSize(Number(e.target.value));
-            }}
-          >
-            {[10, 20, 30, 40, 50].map((pageSize) => (
-              <option key={pageSize} value={pageSize}>
-                Göster {pageSize}
-              </option>
-            ))}
-          </select>
-        </div>
+        <TablePagination table={table} />
       </div>
     </Card>
   );

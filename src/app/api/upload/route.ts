@@ -28,13 +28,11 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   const { name } = await req.json();
-
   const path = `./public/uploads/${name}`;
   try {
     await unlink(path);
+    return NextResponse.json({ message: 'File deleted.' }, { status: 200 });
   } catch (err) {
     return NextResponse.json({ message: err?.message }, { status: 500 });
   }
-
-  return NextResponse.json({ message: 'File deleted.' }, { status: 200 });
 }

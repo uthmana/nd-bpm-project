@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { hash } from 'bcryptjs';
+import { Prisma } from '@prisma/client';
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -31,10 +32,15 @@ export async function POST(req: Request) {
       { message: 'Password Changed :)' },
       { status: 200 },
     );
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Internal server error !' },
-      { status: 500 },
-    );
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }

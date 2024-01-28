@@ -30,21 +30,39 @@ export async function fetchAPI(endpoint, method, data, header, accessToken) {
     method: method || 'get',
     headers: headers,
     data,
-  }).catch(({ response }) => {
+  }).catch((error) => {
+    const { response } = error;
+    // if (typeof window === 'undefined') {
+    //   // SERVER SIDE LOGS
+    //   log('\nRESPONSE ERROR =>', response?.status, response?.data, '\n');
+    // }
+    // if (response?.status === 401) {
+    //   log('API return 401', response);
+    // } else if (response?.status === 400) {
+    //   log('API return 400', response);
+    // }
+    // return {
+    //   error: response,
+    //   data: [],
+    //   status: response?.status,
+    //   response: response?.data,
+    // };
+
     if (typeof window === 'undefined') {
       // SERVER SIDE LOGS
       log('\nRESPONSE ERROR =>', response?.status, response?.data, '\n');
     }
-    if (response?.status === 401) {
-      log('API return 401', response);
-    } else if (response?.status === 400) {
-      log('API return 400', response);
+    if (response?.status) {
+      log(`API return ${response?.status}`, response);
     }
     return {
-      error: response,
-      data: [],
       status: response?.status,
+      data: [],
       response: response?.data,
+      error: {
+        message: response?.data?.name || response?.data?.message,
+        detail: response?.config?.data,
+      },
     };
   });
 

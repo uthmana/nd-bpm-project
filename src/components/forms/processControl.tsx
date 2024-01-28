@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { formatDateTime } from 'utils';
-import Checkbox from 'components/checkbox';
 import Upload from 'components/upload';
 import TextArea from 'components/fields/textArea';
 import Button from 'components/button/button';
@@ -76,8 +75,6 @@ export default function ProcessControlForm({
 
   const results = [
     { value: 'ACCEPT', name: 'Kabul' },
-    { value: 'ACCEPTANCE_WITH_CONDITION', name: 'Şartlı Kabul' },
-    { value: 'PRE_PROCESS', name: 'Ön İşlem gerekli' },
     { value: 'REJECT', name: 'Ret' },
   ];
 
@@ -277,7 +274,7 @@ export default function ProcessControlForm({
 
           <div className="mb-10 w-full">
             <label className="mb-3 ml-3  block w-full font-bold">Sonuç</label>
-            <div className="grid w-full grid-cols-2 justify-center gap-2 sm:grid-cols-4">
+            <div className="grid w-full grid-cols-2 justify-center gap-2">
               {results.map((item) => {
                 return (
                   <label

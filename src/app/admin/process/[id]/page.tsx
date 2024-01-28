@@ -62,6 +62,9 @@ export default function EntryControl() {
         alert('Makine seçmeniz gerekiyor!');
         return;
       }
+      console.log(
+        data?.finalControl.length > 0 && data?.finalControl[0].result,
+      );
       setProcess(data);
       setTechParams(data?.technicalParams);
       setMachineParams(data.machineParams.map((item) => item.param_name));

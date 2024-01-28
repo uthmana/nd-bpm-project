@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/db';
-import { Fault, Process } from '@prisma/client';
+import { Fault, Prisma, Process } from '@prisma/client';
 
 //Get single Fault
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
@@ -14,9 +14,16 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
       throw new Error('Fault not found');
     }
     return NextResponse.json(fault, { status: 200 });
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }
 
@@ -25,10 +32,13 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
     const id = route.params.id;
     const result: Fault = await req.json();
-    const { traceabilityCode } = result;
+    const { customerName, productCode, quantity, application } = result;
 
-    if (!traceabilityCode) {
-      throw new Error('You are missing a required data');
+    if (!customerName || !productCode || !quantity || !application) {
+      return NextResponse.json(
+        { message: 'You are missing a required data' },
+        { status: 401 },
+      );
     }
 
     const fault: Fault = await prisma.fault.findUnique({
@@ -57,9 +67,16 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       );
     }
     return NextResponse.json(updateFault, { status: 200 });
-  } catch (error) {
-    console.error('Error updating fault', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }
 
@@ -98,8 +115,15 @@ export async function DELETE(
     }
 
     return NextResponse.json([deletedFault], { status: 200 });
-  } catch (error) {
-    console.error('Internal Server Error', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }

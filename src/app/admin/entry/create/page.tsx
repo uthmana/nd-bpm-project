@@ -15,18 +15,25 @@ export default function Edit() {
 
   const handleSubmit = async (val) => {
     setIsSubmitting(true);
-    const { status, data, response } = await addFault({
+    const resData: any = await addFault({
       ...val,
       ...{ createdBy: session?.user?.name },
     });
+    const { status, response } = resData;
+    if (response?.error) {
+      const { message, detail } = response?.error;
+      toast.error('Hata oluştu!.' + message);
+      log(detail);
+      setIsSubmitting(false);
+      return;
+    }
+
     if (status === 200) {
       toast.success('Ürün girişi ekleme işlemi başarılı.');
       router.push('/admin/entry');
       setIsSubmitting(false);
       return;
     }
-    toast.error('Hata oluştu!.' + { response });
-    setIsSubmitting(false);
   };
 
   return (

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
-import { FinalControl } from '@prisma/client';
+import { FinalControl, Prisma } from '@prisma/client';
 import { checkUserRole } from 'utils/auth';
 
 //All Final Controls
@@ -16,11 +16,16 @@ export async function GET(req: NextRequest) {
       throw new Error('No finalControl found');
     }
     return NextResponse.json(finalControl, { status: 200 });
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 },
-    );
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }
 
@@ -62,15 +67,15 @@ export async function PUT(req: Request) {
     });
 
     return NextResponse.json(finalControl, { status: 200 });
-  } catch (error) {
-    if (error?.code === 'P2002') {
-      return NextResponse.json(
-        { error: 'Error ocured while creating final control' },
-        { status: 404 },
-      );
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
     }
-    return NextResponse.json({
-      error: 'Error ocured while creating final control',
-    });
+    return NextResponse.json(e, { status: 500 });
   }
 }

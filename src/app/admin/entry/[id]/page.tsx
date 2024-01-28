@@ -22,6 +22,7 @@ export default function Edit() {
       setIsLoading(true);
       const { status, data } = await getFaultById(queryParams.id);
       if (status === 200) {
+        delete data.faultControl;
         setFault(data);
         setIsLoading(false);
         return;
@@ -54,14 +55,12 @@ export default function Edit() {
   return (
     <Card extra="mt-12 mx-auto mt-4 max-w-[700px] rounded-2xl px-8 py-10 bg-white dark:bg-[#111c44] dark:text-white">
       {isLoading ? (
-        <div className="mx-auto max-w-[600px]">
-          <UserFormSkeleton />
-        </div>
+        <UserFormSkeleton />
       ) : (
         <FaultForm
           title="Ürün Düzenle"
           onSubmit={(val) => handleSubmit(val)}
-          data={fault as any}
+          editData={fault as any}
           loading={isSubmitting}
         />
       )}

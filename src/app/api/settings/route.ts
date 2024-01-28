@@ -12,7 +12,6 @@ export async function GET(request: Request) {
       { status: 401 },
     );
   }
-
   return NextResponse.json({
     authenticated: !!session,
     session,

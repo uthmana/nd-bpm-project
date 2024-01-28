@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/db';
 import { checkUserRole } from 'utils/auth';
 import { validateCustomerSchema } from 'utils/validate';
-import { CardType, Currency, Customer } from '@prisma/client';
+import { CardType, Currency, Customer, Prisma } from '@prisma/client';
 
 //Get single customer
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
@@ -24,9 +24,16 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     if (!customer.id)
       return NextResponse.json({ message: 'Customer not found' });
     return NextResponse.json({ ...customer });
-  } catch (error) {
-    console.error('Error fetching customers:', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }
 
@@ -69,9 +76,16 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     if (updateCustomer) {
       return NextResponse.json(updateCustomer, { status: 200 });
     }
-  } catch (error) {
-    console.error('Error updating customer', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }
 
@@ -96,8 +110,15 @@ export async function DELETE(
     if (deletedCustomer) {
       return NextResponse.json({ deletedCustomer }, { status: 200 });
     }
-  } catch (error) {
-    console.error('Error updating customer', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }

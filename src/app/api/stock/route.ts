@@ -5,7 +5,9 @@ import { Stock } from '@prisma/client';
 //All Stocks
 export async function GET(req: NextRequest) {
   try {
-    const stock = await prisma.stock.findMany();
+    const stock = await prisma.stock.findMany({
+      include: { customer: true },
+    });
     if (!stock) {
       throw new Error('No stock found');
     }

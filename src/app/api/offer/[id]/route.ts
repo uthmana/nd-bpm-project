@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkUserRole } from 'utils/auth';
-import { Offer } from '@prisma/client';
+import { Offer, Prisma } from '@prisma/client';
 
 //Get single offer
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
@@ -17,9 +17,16 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     });
     if (!offer.id) return NextResponse.json({ message: 'User not found' });
     return NextResponse.json({ ...offer });
-  } catch (error) {
-    console.error('Error fetching offers:', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }
 
@@ -58,9 +65,16 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     if (updateOffer) {
       return NextResponse.json({ updateOffer }, { status: 200 });
     }
-  } catch (error) {
-    console.error('Error updating user', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }
 
@@ -85,8 +99,15 @@ export async function DELETE(
     if (deletedOffer) {
       return NextResponse.json({ deletedOffer }, { status: 200 });
     }
-  } catch (error) {
-    console.error('Error updating offer', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/db';
-import { Machine, MachineParams } from '@prisma/client';
+import { Machine, MachineParams, Prisma } from '@prisma/client';
 
 //Get single  machine
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
@@ -16,9 +16,16 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
       throw new Error('machine not found');
     }
     return NextResponse.json(machine, { status: 200 });
-  } catch (error) {
-    console.error('Error fetching machine:', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }
 
@@ -84,9 +91,16 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     }
 
     return NextResponse.json(updatedMachine, { status: 200 });
-  } catch (error) {
-    console.error('Error updating Machine', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }
 
@@ -111,8 +125,15 @@ export async function DELETE(
     }
 
     return NextResponse.json(deletedmachine, { status: 200 });
-  } catch (error) {
-    console.error('Internal Server Error', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }

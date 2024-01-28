@@ -128,7 +128,6 @@ model Fault {
   faultDescription           String?
   status                     FaultStatus    @default(PENDING)
   technicalDrawingAttachment String?
-  controlInfo                String?
   faultControl               FaultControl[]
   customerId                 String?
   Customer                   Customer?      @relation(fields: [customerId], references: [id])

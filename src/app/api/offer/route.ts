@@ -14,17 +14,15 @@ export async function PUT(req: NextRequest) {
     const offerdata: Prisma.OfferCreateInput = await req.json();
     const offers = await prisma.offer.create({ data: { ...offerdata } });
     return NextResponse.json(offers, { status: 200 });
-  } catch (error) {
-    if (error?.code === 'P2002') {
-      return NextResponse.json(
-        { error: 'Email already exists' },
-        { status: 404 },
-      );
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
     }
-    const offers = await prisma.offer.findMany();
-    if (!offers) {
-      throw new Error('User not found');
-    }
-    return NextResponse.json(offers, { status: 200 });
+    return NextResponse.json(e, { status: 500 });
   }
 }

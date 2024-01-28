@@ -14,69 +14,15 @@ import {
 } from '@tanstack/react-table';
 import Search from 'components/search/search';
 import Button from 'components/button/button';
-import { IoMdArrowDown, IoMdArrowUp } from 'react-icons/io';
-import { formatDateTime } from 'utils';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { formatDateTime, useDrage } from 'utils';
 import FileViewer from 'components/fileViewer';
-
-type UserObj = {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  status: string;
-  createdAt: string;
-  edit: string;
-  delete: string;
-};
-
-type CustomerObj = {
-  id: string;
-  rep_name: string;
-  email: string;
-  email_2: string;
-  address: string;
-  postalCode: string;
-  company_name: string;
-  phoneNumber: string;
-  phoneNumber2: string;
-  code: string;
-  definition: string;
-  taxNo: string;
-  tax_Office: string;
-  taxOfficeCode: string;
-  cardType: string;
-  country_code: string;
-  province_code: string;
-  district_code: string;
-  currency: string;
-};
-
-type StockObj = {
-  product_code: string;
-  product_name: string;
-  product_barcode: string;
-  inventory: number;
-  current_price: string;
-  description: string;
-  main_group: string;
-  group1: string;
-  group2: string;
-  brand: string;
-  unit: string;
-  curency: string;
-  date: string;
-  image: string;
-};
-
-type MainTable = {
-  tableData: UserObj | CustomerObj | StockObj | any;
-  variant: string;
-  onEdit: (e: any) => void;
-  onDelete: (e: any) => void;
-  onAdd: (e: any) => void;
-  onSearch?: (e: any) => void;
-};
+import TablePagination from './tablePagination';
+import {
+  PrimaryTable,
+  StockObj,
+  CustomerObj,
+  UserObj,
+} from '../../../app/localTypes/table-types';
 
 function MainTable({
   tableData,
@@ -85,40 +31,12 @@ function MainTable({
   onAdd,
   onSearch,
   variant = 'user',
-}: MainTable) {
+}: PrimaryTable) {
+  let defaultData = tableData;
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState('');
-
-  let defaultData = tableData;
-
-  const [isDown, setIsDown] = useState(false);
-  const [startX, setStartX] = useState(null);
-  const [scrollLeft, setScrollLeft] = useState(0);
-
-  const handleMouseDown = (e) => {
-    setIsDown(true);
-    setStartX(e.pageX - e.currentTarget.offsetLeft);
-    setScrollLeft(e.currentTarget.scrollLeft);
-    e.currentTarget.classList.add('dragging-active');
-  };
-
-  const handleMouseLeave = (e) => {
-    setIsDown(false);
-    e.currentTarget.classList.remove('dragging-active');
-  };
-
-  const handleMouseUp = (e) => {
-    setIsDown(false);
-    e.currentTarget.classList.remove('dragging-active');
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const x = e.pageX - e.currentTarget.offsetLeft;
-    const walk = (x - startX) * 3; // scroll-fast
-    e.currentTarget.scrollLeft = scrollLeft - walk;
-  };
+  const { handleMouseDown, handleMouseLeave, handleMouseUp, handleMouseMove } =
+    useDrage();
 
   const columns = useMemo(() => {
     let col: any;
@@ -365,28 +283,20 @@ function MainTable({
               </p>
             ),
             cell: (info) => (
-              <button
-                className="ml-3 rounded-md bg-green-600  px-2 py-1 hover:bg-green-700"
-                onClick={() => onEdit(info.getValue())}
-              >
-                <MdModeEdit className="h-5 w-5 text-white" />
-              </button>
-            ),
-          }),
-          columnHelper.accessor('id', {
-            id: 'id',
-            header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                SİL
-              </p>
-            ),
-            cell: (info) => (
-              <button
-                className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
-                onClick={() => onDelete(info.getValue())}
-              >
-                <MdOutlineDelete className="h-5 w-5 text-white" />
-              </button>
+              <div className="flex gap-2">
+                <button
+                  className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
+                  onClick={() => onEdit(info.getValue())}
+                >
+                  <MdModeEdit className="h-5 w-5 text-white" />
+                </button>
+                <button
+                  className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
+                  onClick={() => onDelete(info.getValue())}
+                >
+                  <MdOutlineDelete className="h-5 w-5 text-white" />
+                </button>
+              </div>
             ),
           }),
         ];
@@ -598,28 +508,20 @@ function MainTable({
               </p>
             ),
             cell: (info) => (
-              <button
-                className="ml-3 rounded-md bg-green-600  px-2 py-1 hover:bg-green-700"
-                onClick={() => onEdit(info.getValue())}
-              >
-                <MdModeEdit className="h-5 w-5 text-white" />
-              </button>
-            ),
-          }),
-          columnHelper.accessor('id', {
-            id: 'id',
-            header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                DELETE
-              </p>
-            ),
-            cell: (info) => (
-              <button
-                className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
-                onClick={() => onDelete(info.getValue())}
-              >
-                <MdOutlineDelete className="h-5 w-5 text-white" />
-              </button>
+              <div className="flex gap-2">
+                <button
+                  className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
+                  onClick={() => onEdit(info.getValue())}
+                >
+                  <MdModeEdit className="h-5 w-5 text-white" />
+                </button>
+                <button
+                  className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
+                  onClick={() => onDelete(info.getValue())}
+                >
+                  <MdOutlineDelete className="h-5 w-5 text-white" />
+                </button>
+              </div>
             ),
           }),
         ];
@@ -712,28 +614,20 @@ function MainTable({
               </p>
             ),
             cell: (info) => (
-              <button
-                className="ml-3 rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
-                onClick={() => onEdit(info.getValue())}
-              >
-                <MdModeEdit className="h-5 w-5 text-white" />
-              </button>
-            ),
-          }),
-          columnHelper.accessor('id', {
-            id: 'id',
-            header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                SİL
-              </p>
-            ),
-            cell: (info) => (
-              <button
-                className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
-                onClick={() => onDelete(info.getValue())}
-              >
-                <MdOutlineDelete className="h-5 w-5 text-white" />
-              </button>
+              <div className="flex gap-2">
+                <button
+                  className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
+                  onClick={() => onEdit(info.getValue())}
+                >
+                  <MdModeEdit className="h-5 w-5 text-white" />
+                </button>
+                <button
+                  className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
+                  onClick={() => onDelete(info.getValue())}
+                >
+                  <MdOutlineDelete className="h-5 w-5 text-white" />
+                </button>
+              </div>
             ),
           }),
         ];
@@ -842,68 +736,7 @@ function MainTable({
               })}
           </tbody>
         </table>
-        <div className="sticky left-0 mb-4 mt-5 flex w-full items-center gap-2">
-          <button
-            className="w-7 rounded border p-1 dark:border-gray-800"
-            onClick={() => table.setPageIndex(0)}
-            disabled={!table.getCanPreviousPage()}
-          >
-            {'<<'}
-          </button>
-          <button
-            className="w-7 rounded border p-1 dark:border-gray-800"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            {'<'}
-          </button>
-          <button
-            className="w-7 rounded border p-1 dark:border-gray-800"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            {'>'}
-          </button>
-          <button
-            className="w-7 rounded border p-1 dark:border-gray-800"
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            disabled={!table.getCanNextPage()}
-          >
-            {'>>'}
-          </button>
-          <span className="flex items-center gap-1 text-[12px] dark:border-gray-800">
-            <div>Sayfa</div>
-            <strong>
-              {table.getState().pagination.pageIndex + 1} of{' '}
-              {table.getPageCount()}
-            </strong>
-          </span>
-          <span className="ml-4 flex items-center gap-1 text-[12px] dark:border-gray-800">
-            Sayfaya git:
-            <input
-              type="number"
-              defaultValue={table.getState().pagination.pageIndex + 1}
-              onChange={(e) => {
-                const page = e.target.value ? Number(e.target.value) - 1 : 0;
-                table.setPageIndex(page);
-              }}
-              className="w-16 rounded border p-1 dark:border-gray-800 dark:bg-blueSecondary"
-            />
-          </span>
-          <select
-            className="h-7 rounded text-[12px] dark:bg-blueSecondary"
-            value={table.getState().pagination.pageSize}
-            onChange={(e) => {
-              table.setPageSize(Number(e.target.value));
-            }}
-          >
-            {[10, 20, 30, 40, 50].map((pageSize) => (
-              <option key={pageSize} value={pageSize}>
-                Göster {pageSize}
-              </option>
-            ))}
-          </select>
-        </div>
+        <TablePagination table={table} />
       </div>
     </Card>
   );

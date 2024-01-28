@@ -8,28 +8,7 @@ import Select from 'components/select/page';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import TextArea from 'components/fields/textArea';
 import { log } from 'utils';
-
-type CustomerObj = {
-  id: string;
-  rep_name: string;
-  email: string;
-  email_2: string;
-  address: string;
-  postalCode: string;
-  company_name: string;
-  phoneNumber: string;
-  phoneNumber2: string;
-  code: string;
-  definition: string;
-  taxNo: string;
-  tax_Office: string;
-  taxOfficeCode: string;
-  cardType: string; //ALICI_SATICI-ALICI-SATICI
-  country_code: string;
-  province_code: string;
-  district_code: string;
-  currency: string;
-};
+import { CustomerObj } from '../../app/localTypes/table-types';
 
 type userForm = {
   onSubmit: (e: any) => void;

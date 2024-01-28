@@ -42,7 +42,7 @@ export default function EntryControl() {
 
   const handleSubmit = async (val) => {
     const [values, isUpdate] = val;
-    // setIsSubmitting(true);
+    setIsSubmitting(true);
     if (isUpdate) {
       const { status, data, response } = await updateProcessControl({
         ...values,
@@ -61,21 +61,21 @@ export default function EntryControl() {
       return;
     }
 
-    // add new entry control
+    // add new final control
     const { status, data, response } = await addProcessControl({
       ...values,
       processId: process.id,
       faultId: process.faultId,
       createdBy: session?.user?.name,
     });
-    // if (status === 200) {
-    //   toast.success('Ürün final kontrol işlemi başarılı.');
-    //   router.push('/admin/process');
-    //   setIsSubmitting(false);
-    //   return;
-    // }
-    // toast.error('Hata oluştu!.' + { response });
-    // setIsSubmitting(false);
+    if (status === 200) {
+      toast.success('Ürün final kontrol işlemi başarılı.');
+      router.push('/admin/process');
+      setIsSubmitting(false);
+      return;
+    }
+    toast.error('Hata oluştu!.' + { response });
+    setIsSubmitting(false);
   };
 
   return (

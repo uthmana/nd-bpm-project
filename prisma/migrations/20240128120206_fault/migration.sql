@@ -143,7 +143,6 @@ CREATE TABLE "Offer" (
 CREATE TABLE "Fault" (
     "id" TEXT NOT NULL,
     "customerName" TEXT,
-    "traceabilityCode" TEXT NOT NULL,
     "arrivalDate" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "invoiceDate" TIMESTAMP(3),
     "product" TEXT,
@@ -156,7 +155,6 @@ CREATE TABLE "Fault" (
     "faultDescription" TEXT,
     "status" "FaultStatus" NOT NULL DEFAULT 'PENDING',
     "technicalDrawingAttachment" TEXT,
-    "controlInfo" TEXT,
     "customerId" TEXT,
     "faultControlId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

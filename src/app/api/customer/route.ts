@@ -7,7 +7,7 @@ import { checkUserRole } from 'utils/auth';
 //All customers
 export async function GET(req: NextRequest) {
   try {
-    const allowedRoles = ['SUPER', 'ADMIN'];
+    const allowedRoles = ['SUPER', 'ADMIN', 'NORMAL', 'TECH'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
       return NextResponse.json({ error: 'Access forbidden', status: 403 });
@@ -17,9 +17,16 @@ export async function GET(req: NextRequest) {
       throw new Error('Customers not found');
     }
     return NextResponse.json(customers, { status: 200 });
-  } catch (error) {
-    console.error('Error fetching customers:', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }
 
@@ -54,15 +61,15 @@ export async function PUT(req: Request) {
       throw new Error('Error occurred while creating customer');
     }
     return NextResponse.json(customer, { status: 200 });
-  } catch (error) {
-    if (error?.code === 'P2002') {
-      return NextResponse.json(
-        { error: 'Email already exists' },
-        { status: 404 },
-      );
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
     }
-    return NextResponse.json({
-      error: 'Error occurred while creating customer',
-    });
+    return NextResponse.json(e, { status: 500 });
   }
 }

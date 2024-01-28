@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../../lib/db';
-import { Colors } from '@prisma/client';
+import { Colors, Prisma } from '@prisma/client';
 import next from 'next';
 import { check } from 'prettier';
 import { checkUserRole } from 'utils/auth';
@@ -22,9 +22,16 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
       throw new Error('Fault not found');
     }
     return NextResponse.json(Colors, { status: 200 });
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }
 
@@ -62,14 +69,16 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       return NextResponse.json({ error: 'Error in updating Color' });
     }
     return NextResponse.json(UpdatedColor, { status: 200 });
-  }  catch (error) {
-    if (error?.code === 'P2002') {
-      return NextResponse.json(
-        { error: 'Error ocured while creating Application' },
-        { status: 404 },
-      );
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
     }
-    return NextResponse.json({ error: 'Error ocured while creating Application' });
+    return NextResponse.json(e, { status: 500 });
   }
 }
 
@@ -102,13 +111,15 @@ export async function DELETE(
       });
     }
     return NextResponse.json(DeletedColor, { status: 200 });
-  }  catch (error) {
-    if (error?.code === 'P2002') {
-      return NextResponse.json(
-        { error: 'Error ocured while creating Application' },
-        { status: 404 },
-      );
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
     }
-    return NextResponse.json({ error: 'Error ocured while creating Application' });
+    return NextResponse.json(e, { status: 500 });
   }
 }

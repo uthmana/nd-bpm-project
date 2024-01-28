@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
 import { checkUserRole } from 'utils/auth';
-import { MachineParams } from '@prisma/client';
+import { MachineParams, Prisma } from '@prisma/client';
 
 //All  MachineParams
 export async function GET(req: NextRequest) {
@@ -11,9 +11,16 @@ export async function GET(req: NextRequest) {
       throw new Error('machineParams not found');
     }
     return NextResponse.json(machineParams, { status: 200 });
-  } catch (error) {
-    console.error('Error fetching machineParams:', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }
 
@@ -34,17 +41,15 @@ export async function PUT(req: Request) {
       throw new Error(' machineParams not found');
     }
     return NextResponse.json(machineParams, { status: 200 });
-  } catch (error) {
-    if (error?.code === 'P2002') {
-      return NextResponse.json(
-        { error: 'Error ocured while creating machineParams' },
-        { status: 404 },
-      );
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
     }
-
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 },
-    );
+    return NextResponse.json(e, { status: 500 });
   }
 }

@@ -3,7 +3,7 @@ import prisma from '../../../../lib/db';
 import next from 'next';
 import { check } from 'prettier';
 import { checkUserRole } from 'utils/auth';
-import { Machine } from '@prisma/client';
+import { Machine, Prisma } from '@prisma/client';
 
 //Get single  Machine
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
@@ -22,9 +22,16 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
       throw new Error('Fault not found');
     }
     return NextResponse.json(Machine, { status: 200 });
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }
 
@@ -62,14 +69,16 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       return NextResponse.json({ error: 'Error in updating Machine' });
     }
     return NextResponse.json(UpdatedMachine, { status: 200 });
-  } catch (error) {
-    if (error?.code === 'P2002') {
-      return NextResponse.json(
-        { error: 'Error ocured while creating Machine' },
-        { status: 404 },
-      );
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
     }
-    return NextResponse.json({ error: 'Error ocured while creating Machine' });
+    return NextResponse.json(e, { status: 500 });
   }
 }
 
@@ -104,13 +113,15 @@ export async function DELETE(
       });
     }
     return NextResponse.json(DeletedMachine, { status: 200 });
-  } catch (error) {
-    if (error?.code === 'P2002') {
-      return NextResponse.json(
-        { error: 'Error ocured while creating Machine' },
-        { status: 404 },
-      );
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
     }
-    return NextResponse.json({ error: 'Error ocured while creating Machine' });
+    return NextResponse.json(e, { status: 500 });
   }
 }

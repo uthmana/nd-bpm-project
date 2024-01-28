@@ -42,3 +42,16 @@ export function datesPasted(dateToCompare) {
     return `${years} yıl`;
   }
 }
+
+export const convertToISO8601 = (dateString) => {
+  if (!dateString) return null;
+  const parsedDate = new Date(dateString);
+  const iso8601Date = parsedDate.toISOString();
+  return iso8601Date;
+};
+
+export const removeMillisecondsAndUTC = (iso8601Date) => {
+  if (!iso8601Date) return null;
+  const trimmedDate = iso8601Date.slice(0, -5); // Remove milliseconds and 'Z'
+  return trimmedDate;
+};

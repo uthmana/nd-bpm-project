@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import NextLink from 'next/link';
 import InputField from 'components/fields/InputField';
 import Button from 'components/button/button';
@@ -8,19 +8,26 @@ import Select from 'components/select/page';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import TextArea from 'components/fields/textArea';
 import Upload from 'components/upload';
-import { log, applications, standards, colors } from 'utils';
+import {
+  log,
+  applications,
+  standards,
+  colors,
+  convertToISO8601,
+  removeMillisecondsAndUTC,
+} from 'utils';
 import { FaultObj } from '../../app/localTypes/table-types';
+import { getStocks } from '../../app/lib/apiRequest';
 
 export default function Fault(props: {
   onSubmit: (e: any) => void;
-  data?: FaultObj;
+  editData?: FaultObj;
   title: string;
   loading: boolean;
 }) {
-  const { onSubmit, data, title, loading } = props;
-
-  const initialValues = data
-    ? data
+  const { onSubmit, editData, title, loading } = props;
+  const initialValues = editData
+    ? editData
     : {
         customerName: '',
         arrivalDate: '',
@@ -29,9 +36,9 @@ export default function Fault(props: {
         quantity: 1,
         productCode: '',
         productBatchNumber: '',
-        application: '',
-        standard: '',
-        color: '',
+        application: 'ND Strip',
+        standard: 'DIN 267-27',
+        color: 'Mavi',
         technicalDrawingAttachment: '',
         faultDescription: '',
       };
@@ -44,32 +51,58 @@ export default function Fault(props: {
       : '',
   );
 
+  const [customers, setCustomers] = useState([]);
+  const [isLoading, setIsloading] = useState(false);
+
   const handleValues = (event) => {
     setError(false);
     const newVal = { [event.target?.name]: event.target?.value };
     setValues({ ...values, ...newVal });
   };
 
+  useEffect(() => {
+    const getStock = async () => {
+      const { status, data } = await getStocks();
+      if (status === 200) {
+        setCustomers(data);
+      }
+    };
+    getStock();
+  }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const { customerName, productCode, quantity, application } = values;
-    if (!productCode || !quantity || !application) {
+    if (!customerName || !productCode || !quantity || !application) {
       window.scroll(0, 0);
       setError(true);
       return;
     }
-
     onSubmit({
       ...values,
       quantity: parseInt(values.quantity.toString()),
       technicalDrawingAttachment: file,
-      arrivalDate: values.arrivalDate + (!data ? ':00.123Z' : ''),
-      invoiceDate: values.invoiceDate + (!data ? ':00.123Z' : ''),
+      arrivalDate: convertToISO8601(values.arrivalDate),
+      invoiceDate: convertToISO8601(values.invoiceDate),
+    });
+  };
+
+  const onCustomerSelect = (event) => {
+    if (!event.target?.value) return;
+    const stock = JSON.parse(event.target?.value);
+    const { product_code, product_name, inventory, date, customer } = stock;
+    setValues({
+      ...values,
+      customerName: customer?.company_name,
+      product: product_name,
+      productCode: product_code,
+      quantity: inventory,
+      arrivalDate: removeMillisecondsAndUTC(date),
     });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-[20px]p-5  w-full">
+    <form onSubmit={handleSubmit} className="w-full rounded-[20px]  p-5">
       <NextLink
         href="/admin/entry"
         className="flex items-center gap-2 text-sm dark:text-white"
@@ -94,7 +127,21 @@ export default function Fault(props: {
       ) : null}
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">
-        <InputField
+        <Select extra="pt-1" label="Müşteri Adı" onChange={onCustomerSelect}>
+          {customers.map((item, idx) => {
+            return (
+              <option
+                key={idx}
+                value={JSON.stringify(item)}
+                selected={values.customerName === item.customer?.company_name}
+              >
+                {item.customer?.company_name || item.customer?.rep_name}
+              </option>
+            );
+          })}
+        </Select>
+
+        {/* <InputField
           label="Müşteri Adı"
           onChange={handleValues}
           type="text"
@@ -104,7 +151,7 @@ export default function Fault(props: {
           extra="mb-2"
           value={values.customerName}
           required={true}
-        />
+        /> */}
 
         <InputField
           label="Ürün İsmi"
@@ -144,7 +191,7 @@ export default function Fault(props: {
       </div>
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">
-        <InputField
+        {/* <InputField
           label="Baç No."
           onChange={handleValues}
           type="text"
@@ -154,7 +201,7 @@ export default function Fault(props: {
           extra="mb-2"
           min={1}
           value={values.productBatchNumber}
-        />
+        /> */}
         <InputField
           label="Varış tarihi"
           onChange={handleValues}
@@ -190,7 +237,7 @@ export default function Fault(props: {
               <option
                 value={item}
                 key={idx}
-                selected={data ? data?.application === item : idx === 0}
+                selected={editData ? editData?.application === item : idx === 0}
               >
                 {item}
               </option>
@@ -209,7 +256,7 @@ export default function Fault(props: {
               <option
                 value={item}
                 key={idx}
-                selected={data ? data?.standard === item : idx === 0}
+                selected={editData ? editData?.standard === item : idx === 0}
               >
                 {item}
               </option>
@@ -228,7 +275,7 @@ export default function Fault(props: {
               <option
                 value={item}
                 key={idx}
-                selected={data ? data?.color === item : idx === 0}
+                selected={editData ? editData?.color === item : idx === 0}
               >
                 {item}
               </option>

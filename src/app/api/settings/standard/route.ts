@@ -2,6 +2,7 @@ import { authOptions } from '../../../lib/authOptions';
 import { getServerSession } from 'next-auth';
 import { NextResponse, NextRequest } from 'next/server';
 import { checkUserRole } from 'utils/auth';
+import { Prisma } from '@prisma/client';
 
 //All standards
 export async function GET(req: NextRequest) {
@@ -17,11 +18,16 @@ export async function GET(req: NextRequest) {
       throw new Error('No standards found');
     }
     return NextResponse.json(standardss, { status: 200 });
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 },
-    );
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }
 
@@ -44,15 +50,15 @@ export async function PUT(req: Request) {
     }
 
     return NextResponse.json({ createdstandards }, { status: 200 });
-  } catch (error) {
-    if (error?.code === 'P2002') {
-      return NextResponse.json(
-        { error: 'Error ocured while creating standards' },
-        { status: 404 },
-      );
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
     }
-    return NextResponse.json({
-      error: 'Error ocured while creating standards',
-    });
+    return NextResponse.json(e, { status: 500 });
   }
 }
