@@ -8,14 +8,17 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     const allowedRoles = ['ADMIN'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
     }
 
     const id = route.params.id;
     const offer: Partial<Offer> = await prisma.offer.findUnique({
       where: { id: id },
     });
-    if (!offer.id) return NextResponse.json({ message: 'User not found' });
+
     return NextResponse.json({ ...offer });
   } catch (e) {
     if (
@@ -36,7 +39,10 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     const allowedRoles = ['ADMIN'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
     }
 
     const id = route.params.id;
@@ -46,13 +52,6 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     const offer: Partial<Offer> = await prisma.offer.findUnique({
       where: { id },
     });
-
-    if (!offer) {
-      return NextResponse.json(
-        { message: 'Offer not found.' },
-        { status: 404 },
-      );
-    }
 
     const updateOffer = await prisma.offer.update({
       where: {
@@ -87,7 +86,10 @@ export async function DELETE(
     const allowedRoles = ['ADMIN'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
     }
 
     const id = route.params.id;

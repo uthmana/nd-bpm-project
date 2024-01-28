@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
-import { Stock } from '@prisma/client';
+import { Prisma, Stock } from '@prisma/client';
 
 //All Stocks
 export async function GET(req: NextRequest) {
@@ -8,15 +8,18 @@ export async function GET(req: NextRequest) {
     const stock = await prisma.stock.findMany({
       include: { customer: true },
     });
-    if (!stock) {
-      throw new Error('No stock found');
-    }
+
     return NextResponse.json(stock, { status: 200 });
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 },
-    );
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }
 
@@ -42,13 +45,15 @@ export async function PUT(req: Request) {
     }
 
     return NextResponse.json({ stock }, { status: 200 });
-  } catch (error) {
-    if (error?.code === 'P2002') {
-      return NextResponse.json(
-        { error: 'Error ocured while creating stock' },
-        { status: 404 },
-      );
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
     }
-    return NextResponse.json({ error: 'Error ocured while creating stock' });
+    return NextResponse.json(e, { status: 500 });
   }
 }

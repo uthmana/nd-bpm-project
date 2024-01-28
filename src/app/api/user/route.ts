@@ -10,12 +10,12 @@ export async function GET(req: NextRequest) {
     const allowedRoles = ['ADMIN'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
     }
     const users = await prisma.user.findMany();
-    if (!users) {
-      throw new Error('User not found');
-    }
     return NextResponse.json(users, { status: 200 });
   } catch (e) {
     if (
@@ -36,12 +36,18 @@ export async function PUT(req: Request) {
     const allowedRoles = ['ADMIN'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
     }
 
     const result: User = await req.json();
     if (!result.name || !result.email || !result.password) {
-      return NextResponse.json({ message: 'You are missing a required data' });
+      return NextResponse.json(
+        { message: 'You are missing a required data' },
+        { status: 401 },
+      );
     }
     const { name, role, status, email, password } = result;
     const hashed_password = await hash(password, 12);

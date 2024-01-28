@@ -12,9 +12,6 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
         machineParams: true,
       },
     });
-    if (!machine) {
-      throw new Error('machine not found');
-    }
     return NextResponse.json(machine, { status: 200 });
   } catch (e) {
     if (
@@ -37,20 +34,9 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     //TODO: validate reqBody
     const { machine_Name, params } = result;
 
-    if (!machine_Name) {
-      throw new Error('You are missing a required data');
-    }
-
     const machine: Machine = await prisma.machine.findUnique({
       where: { id },
     });
-
-    if (!machine) {
-      return NextResponse.json(
-        { message: 'machine not found.' },
-        { status: 404 },
-      );
-    }
 
     const updatedMachine = await prisma.machine.update({
       where: {
@@ -58,12 +44,6 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       },
       data: { machine_Name },
     });
-    if (!updatedMachine) {
-      return NextResponse.json(
-        { error: 'Error occuired while updating Machine' },
-        { status: 401 },
-      );
-    }
 
     //delete and create machine params
     const machineParams: any = await prisma.machineParams.findMany({
@@ -117,13 +97,6 @@ export async function DELETE(
         id: id,
       },
     });
-    if (!deletedmachine) {
-      return NextResponse.json(
-        { error: 'Error occuired while deleting machine' },
-        { status: 401 },
-      );
-    }
-
     return NextResponse.json(deletedmachine, { status: 200 });
   } catch (e) {
     if (

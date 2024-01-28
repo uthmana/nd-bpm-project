@@ -71,9 +71,7 @@ export async function POST(req: NextRequest) {
       where: { id },
       data: { status: 'READ' },
     });
-    if (!notification) {
-      throw new Error('Notification not found');
-    }
+
     return NextResponse.json(notification, { status: 200 });
   } catch (e) {
     if (

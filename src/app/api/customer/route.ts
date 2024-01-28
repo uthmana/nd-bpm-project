@@ -10,12 +10,12 @@ export async function GET(req: NextRequest) {
     const allowedRoles = ['SUPER', 'ADMIN', 'NORMAL', 'TECH'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
     }
     const customers = await prisma.customer.findMany();
-    if (!customers) {
-      throw new Error('Customers not found');
-    }
     return NextResponse.json(customers, { status: 200 });
   } catch (e) {
     if (
@@ -36,7 +36,10 @@ export async function PUT(req: Request) {
     const allowedRoles = ['SUPER', 'ADMIN'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
     }
     const result: Prisma.CustomerCreateInput = await req.json();
     // Validate the fields against the customer schema
@@ -57,9 +60,7 @@ export async function PUT(req: Request) {
         email: email?.toLocaleLowerCase() ?? '',
       },
     });
-    if (!customer) {
-      throw new Error('Error occurred while creating customer');
-    }
+
     return NextResponse.json(customer, { status: 200 });
   } catch (e) {
     if (

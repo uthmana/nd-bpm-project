@@ -7,9 +7,6 @@ import { MachineParams, Prisma } from '@prisma/client';
 export async function GET(req: NextRequest) {
   try {
     const machineParams = await prisma.machineParams.findMany();
-    if (!machineParams) {
-      throw new Error('machineParams not found');
-    }
     return NextResponse.json(machineParams, { status: 200 });
   } catch (e) {
     if (
@@ -31,15 +28,15 @@ export async function PUT(req: Request) {
     //TODO: validate reqBody
     const { param_name } = reqBody;
     if (!param_name) {
-      throw new Error('Missing required field');
+      return NextResponse.json(
+        { message: 'You are missing a required data' },
+        { status: 401 },
+      );
     }
     const machineParams = await prisma.machineParams.create({
       data: reqBody,
     });
 
-    if (!machineParams) {
-      throw new Error(' machineParams not found');
-    }
     return NextResponse.json(machineParams, { status: 200 });
   } catch (e) {
     if (

@@ -13,9 +13,6 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
         finalControl: true,
       },
     });
-    if (!process) {
-      throw new Error('Fault not found');
-    }
 
     let machineParams = [];
     const { machineId } = process;
@@ -52,19 +49,15 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     const { faultId } = result;
 
     if (!faultId) {
-      throw new Error('You are missing a required data');
+      return NextResponse.json(
+        { message: 'You are missing a required data' },
+        { status: 401 },
+      );
     }
 
     const process: Process = await prisma.process.findUnique({
       where: { id },
     });
-
-    if (!process) {
-      return NextResponse.json(
-        { message: 'Fault not found.' },
-        { status: 404 },
-      );
-    }
 
     const updatedProcess = await prisma.process.update({
       where: {
@@ -74,13 +67,6 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         ...result,
       },
     });
-
-    if (!updatedProcess) {
-      return NextResponse.json(
-        { error: 'Error occuired while updating fault' },
-        { status: 401 },
-      );
-    }
 
     //Send Process complete Notification
     if (result.status === 'FINISHED') {
@@ -121,13 +107,6 @@ export async function DELETE(
         id: id,
       },
     });
-
-    if (!deletedProcess) {
-      return NextResponse.json(
-        { error: 'Error occuired while deleting fault' },
-        { status: 401 },
-      );
-    }
 
     //Delete all relatated techParams
     const { machineId } = deletedProcess;

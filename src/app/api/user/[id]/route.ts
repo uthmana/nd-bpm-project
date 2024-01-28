@@ -10,14 +10,16 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     const allowedRoles = ['ADMIN'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
     }
 
     const id = route.params.id;
     const user: Partial<User> = await prisma.user.findUnique({
       where: { id: id },
     });
-    if (!user.id) return NextResponse.json({ message: 'User not found' });
     return NextResponse.json({ ...user, password: '' });
   } catch (e) {
     if (
@@ -38,7 +40,10 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     const allowedRoles = ['ADMIN'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
     }
 
     const id = route.params.id;
@@ -46,15 +51,14 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     const { name, email, password, role, status } = result;
 
     if (!name || !email) {
-      return NextResponse.json({ message: 'You are missing a required data' });
+      return NextResponse.json(
+        { message: 'You are missing a required data' },
+        { status: 401 },
+      );
     }
     const user: Partial<User> = await prisma.user.findUnique({
       where: { email },
     });
-
-    if (!user) {
-      return NextResponse.json({ message: 'User not found.' }, { status: 404 });
-    }
 
     let pwd = user.password;
     if (password) {
@@ -74,9 +78,8 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         updatedAt: new Date(),
       },
     });
-    if (updateUser) {
-      return NextResponse.json({ updateUser }, { status: 200 });
-    }
+
+    return NextResponse.json({ updateUser }, { status: 200 });
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
@@ -99,7 +102,10 @@ export async function DELETE(
     const allowedRoles = ['ADMIN'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
     }
 
     const id = route.params.id;
@@ -108,9 +114,8 @@ export async function DELETE(
         id: id,
       },
     });
-    if (deletedUser) {
-      return NextResponse.json({ deletedUser }, { status: 200 });
-    }
+
+    return NextResponse.json({ deletedUser }, { status: 200 });
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||

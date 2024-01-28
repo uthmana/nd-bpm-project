@@ -34,19 +34,15 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     const { faultId, result, processId } = data;
 
     if (!faultId || !result || !processId) {
-      throw new Error('You are missing a required data');
+      return NextResponse.json(
+        { message: 'You are missing a required data' },
+        { status: 401 },
+      );
     }
 
     const finalControl: FinalControl = await prisma.finalControl.findUnique({
       where: { id },
     });
-
-    if (!finalControl) {
-      return NextResponse.json(
-        { message: 'Fault Control not found.' },
-        { status: 404 },
-      );
-    }
 
     const updateFinalControl = await prisma.finalControl.update({
       where: {
@@ -56,12 +52,6 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         ...data,
       },
     });
-    if (!updateFinalControl) {
-      return NextResponse.json(
-        { error: 'Error occuired while updating fault' },
-        { status: 401 },
-      );
-    }
 
     return NextResponse.json(updateFinalControl, { status: 200 });
   } catch (e) {
@@ -90,12 +80,7 @@ export async function DELETE(
         id: id,
       },
     });
-    if (!deletedFinalControl) {
-      return NextResponse.json(
-        { error: 'Error occuired while deleting fault' },
-        { status: 401 },
-      );
-    }
+
     return NextResponse.json(deletedFinalControl, { status: 200 });
   } catch (e) {
     if (

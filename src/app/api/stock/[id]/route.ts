@@ -9,9 +9,6 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     const stock: Stock = await prisma.stock.findUnique({
       where: { id: id },
     });
-    if (!stock) {
-      throw new Error('Stock not found');
-    }
     return NextResponse.json(stock, { status: 200 });
   } catch (e) {
     if (
@@ -34,19 +31,15 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     const { product_name, product_code, current_price, curency } = result;
 
     if (!product_name || !product_code || !current_price || !curency) {
-      throw new Error('You are missing a required data');
+      return NextResponse.json(
+        { message: 'You are missing a required data' },
+        { status: 401 },
+      );
     }
 
     const stock: Stock = await prisma.stock.findUnique({
       where: { id },
     });
-
-    if (!stock) {
-      return NextResponse.json(
-        { message: 'Stock not found.' },
-        { status: 404 },
-      );
-    }
 
     const updateStock = await prisma.stock.update({
       where: {
@@ -56,12 +49,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         ...result,
       },
     });
-    if (!updateStock) {
-      return NextResponse.json(
-        { error: 'Error occuired while updating stock' },
-        { status: 401 },
-      );
-    }
+
     return NextResponse.json(updateStock, { status: 200 });
   } catch (e) {
     if (
@@ -88,12 +76,6 @@ export async function DELETE(
         id: id,
       },
     });
-    if (!deletedStock) {
-      return NextResponse.json(
-        { error: 'Error occuired while deleting stock' },
-        { status: 401 },
-      );
-    }
     return NextResponse.json(deletedStock, { status: 200 });
   } catch (e) {
     if (

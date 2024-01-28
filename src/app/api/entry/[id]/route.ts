@@ -10,9 +10,6 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
       where: { id: id },
       include: { faultControl: true },
     });
-    if (!fault) {
-      throw new Error('Fault not found');
-    }
     return NextResponse.json(fault, { status: 200 });
   } catch (e) {
     if (
@@ -45,13 +42,6 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       where: { id },
     });
 
-    if (!fault) {
-      return NextResponse.json(
-        { message: 'Fault not found.' },
-        { status: 404 },
-      );
-    }
-
     const updateFault = await prisma.fault.update({
       where: {
         id: id,
@@ -60,12 +50,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         ...result,
       },
     });
-    if (!updateFault) {
-      return NextResponse.json(
-        { error: 'Error occuired while updating fault' },
-        { status: 401 },
-      );
-    }
+
     return NextResponse.json(updateFault, { status: 200 });
   } catch (e) {
     if (
@@ -94,12 +79,6 @@ export async function DELETE(
       },
     });
 
-    if (!deletedFault) {
-      return NextResponse.json(
-        { error: 'Error occuired while deleting fault' },
-        { status: 401 },
-      );
-    }
     //Delete related faultcontrol
     const deletedFaultControl = await prisma.faultControl.findFirst({
       where: {

@@ -9,14 +9,15 @@ export async function GET(req: NextRequest) {
     const allowedRoles = ['TECH', 'ADMIN', 'SUPER'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
     }
     const process = await prisma.process.findMany({
       include: { technicalParams: true },
     });
-    if (!process) {
-      throw new Error('User not found');
-    }
+
     return NextResponse.json(process, { status: 200 });
   } catch (e) {
     if (
@@ -37,7 +38,10 @@ export async function PUT(req: Request) {
     const allowedRoles = ['TECH'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
     }
     const reqBody: Process = await req.json();
     //TODO: validate reqBody
@@ -45,9 +49,6 @@ export async function PUT(req: Request) {
       data: reqBody,
     });
 
-    if (!process) {
-      throw new Error('Process not found');
-    }
     return NextResponse.json(process, { status: 200 });
   } catch (e) {
     if (

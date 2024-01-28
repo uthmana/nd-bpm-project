@@ -10,9 +10,6 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
       await prisma.technicalParameter.findUnique({
         where: { id: id },
       });
-    if (!techParams) {
-      throw new Error('TechParams not found');
-    }
     return NextResponse.json(techParams, { status: 200 });
   } catch (e) {
     if (
@@ -36,20 +33,16 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     const { processId } = result;
 
     if (!processId) {
-      throw new Error('You are missing a required data');
+      return NextResponse.json(
+        { message: 'You are missing a required data' },
+        { status: 401 },
+      );
     }
 
     const techParams: TechnicalParameter =
       await prisma.technicalParameter.findUnique({
         where: { id },
       });
-
-    if (!techParams) {
-      return NextResponse.json(
-        { message: 'TechParams not found.' },
-        { status: 404 },
-      );
-    }
 
     const updatedtechParams = await prisma.technicalParameter.update({
       where: {
@@ -59,12 +52,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         ...result,
       },
     });
-    if (!updatedtechParams) {
-      return NextResponse.json(
-        { error: 'Error occuired while updating TechParams' },
-        { status: 401 },
-      );
-    }
+
     const techParamsData = await prisma.technicalParameter.findMany({
       where: { machineId: updatedtechParams.machineId },
       orderBy: [{ createdAt: 'asc' }],
@@ -97,12 +85,6 @@ export async function DELETE(
         id: id,
       },
     });
-    if (!deletedTechParams) {
-      return NextResponse.json(
-        { error: 'Error occuired while deleting TechParams' },
-        { status: 401 },
-      );
-    }
     const techParamsData = await prisma.technicalParameter.findMany({
       where: { machineId: deletedTechParams.machineId },
     });

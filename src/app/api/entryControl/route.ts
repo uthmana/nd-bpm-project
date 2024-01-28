@@ -51,9 +51,6 @@ export async function PUT(req: Request) {
     const faultControl = await prisma.faultControl.create({
       data: result,
     });
-    if (!faultControl) {
-      throw new Error('Error occuried while creating form control');
-    }
 
     const updateFault = await prisma.fault.update({
       where: {

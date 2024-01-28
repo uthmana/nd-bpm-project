@@ -12,9 +12,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Access forbidden', status: 403 });
     }
     const fault = await prisma.fault.findMany();
-    if (!fault) {
-      throw new Error('No fault found');
-    }
+
     return NextResponse.json(fault, { status: 200 });
   } catch (error) {
     return NextResponse.json(

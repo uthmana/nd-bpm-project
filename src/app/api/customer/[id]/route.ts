@@ -12,17 +12,10 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     // if (!hasrole) {
     //   return NextResponse.json({ error: 'Access forbidden', status: 403 });
     // }
-
     const id = route.params.id;
     const customer = await prisma.customer.findUnique({
       where: { id },
     });
-
-    if (!customer) {
-      return NextResponse.json({ message: 'Customer not found' });
-    }
-    if (!customer.id)
-      return NextResponse.json({ message: 'Customer not found' });
     return NextResponse.json({ ...customer });
   } catch (e) {
     if (
@@ -47,22 +40,15 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     const validationErrors = await validateCustomerSchema(newCustomerData);
 
     if (validationErrors.length > 0) {
-      return NextResponse.json({
-        error: 'Invalid data format',
-        details: validationErrors,
-      });
+      return NextResponse.json(
+        { message: 'You are missing a required data' },
+        { status: 401 },
+      );
     }
 
     const customer: Customer = await prisma.customer.findUnique({
       where: { id },
     });
-
-    if (!customer) {
-      return NextResponse.json(
-        { message: 'Customer not found.' },
-        { status: 404 },
-      );
-    }
 
     const updateCustomer = await prisma.customer.update({
       where: {
@@ -72,10 +58,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         ...newCustomerData,
       },
     });
-
-    if (updateCustomer) {
-      return NextResponse.json(updateCustomer, { status: 200 });
-    }
+    return NextResponse.json(updateCustomer, { status: 200 });
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
@@ -98,7 +81,10 @@ export async function DELETE(
     const allowedRoles = ['ADMIN'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
     }
 
     const id = route.params.id;
@@ -107,9 +93,7 @@ export async function DELETE(
         id: id,
       },
     });
-    if (deletedCustomer) {
-      return NextResponse.json({ deletedCustomer }, { status: 200 });
-    }
+    return NextResponse.json(deletedCustomer, { status: 200 });
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
