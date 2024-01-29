@@ -64,7 +64,7 @@ async function Standards() {
 async function Colors() {
   for (const colorData of colors) {
     try {
-      await prisma.standards.create({
+      await prisma.colors.create({
         data: colorData,
       });
       // console.log(`Colors "${colorData.name}" seeded successfully.`);
@@ -81,7 +81,7 @@ async function Colors() {
 async function Applicaitons() {
   for (const applicationData of applications) {
     try {
-      await prisma.standards.create({
+      await prisma.applications.create({
         data: applicationData,
       });
       // console.log(`Applicaitons "${applicationData.name}" seeded successfully.`);
