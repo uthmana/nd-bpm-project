@@ -118,8 +118,6 @@ export async function PUT(req: NextRequest) {
       data: { status: 'READ' },
     });
 
-    console.log({ notification });
-
     return NextResponse.json(notification, { status: 200 });
   } catch (e) {
     if (

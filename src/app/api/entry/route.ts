@@ -61,7 +61,7 @@ export async function PUT(req: Request) {
         title: 'Ürün Girişi',
         description: `Yeni ürün girişi yapıldı.`,
         receiver: 'SUPER',
-        link: `/admin/entry${fault.id}`,
+        link: `/admin/entry/${fault.id}`,
       },
     });
 
