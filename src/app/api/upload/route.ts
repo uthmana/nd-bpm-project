@@ -1,5 +1,6 @@
 import { writeFile, unlink } from 'fs/promises';
 import { NextRequest, NextResponse } from 'next/server';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(req: NextRequest) {
   const data = await req.formData();
@@ -12,15 +13,22 @@ export async function POST(req: NextRequest) {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
-  const fileName = file.name.replaceAll(' ', '-');
-  const path = `./public/uploads/${fileName}`;
-  await writeFile(path, buffer);
+  // Generate a unique file name using timestamp and uuid
+  const timestamp = new Date().toISOString().replace(/[-:.]/g, '');
+  const randomString = uuidv4().replace(/-/g, '');
+  const uniqueFileName = `${timestamp}_${randomString}_${file.name.replaceAll(
+    ' ',
+    '-',
+  )}`;
+
+  const filePath = `./public/uploads/${uniqueFileName}`;
+  await writeFile(filePath, buffer);
 
   return NextResponse.json(
     {
-      message: 'File uploaded successfuly.',
-      path: `/uploads/${fileName}`,
-      name: fileName,
+      message: 'File uploaded successfully.',
+      path: `/uploads/${uniqueFileName}`,
+      name: uniqueFileName,
     },
     { status: 200 },
   );

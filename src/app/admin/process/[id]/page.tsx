@@ -307,8 +307,9 @@ export default function EntryControl() {
               <div className="my-5 flex justify-between">
                 <h2 className="text-2xl font-bold">Final Kontrol Bilgileri</h2>
 
-                {session?.user?.role === 'SUPER' ||
-                session?.user?.role === 'ADMIN' ? (
+                {process.status === 'FINISHED' &&
+                (session?.user?.role === 'SUPER' ||
+                  session?.user?.role === 'ADMIN') ? (
                   <Button
                     icon={<MdAdd className="mr-1 h-5 w-5" />}
                     extra="max-w-fit px-4  h-[40px]"

@@ -32,21 +32,6 @@ export async function fetchAPI(endpoint, method, data, header, accessToken) {
     data,
   }).catch((error) => {
     const { response } = error;
-    // if (typeof window === 'undefined') {
-    //   // SERVER SIDE LOGS
-    //   log('\nRESPONSE ERROR =>', response?.status, response?.data, '\n');
-    // }
-    // if (response?.status === 401) {
-    //   log('API return 401', response);
-    // } else if (response?.status === 400) {
-    //   log('API return 400', response);
-    // }
-    // return {
-    //   error: response,
-    //   data: [],
-    //   status: response?.status,
-    //   response: response?.data,
-    // };
 
     if (typeof window === 'undefined') {
       // SERVER SIDE LOGS
