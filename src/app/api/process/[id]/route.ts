@@ -109,27 +109,27 @@ export async function DELETE(
     });
 
     //Delete all relatated techParams
-    const { machineId } = deletedProcess;
-    const deletedProcessTechParams = await prisma.technicalParameter.findMany({
-      where: {
-        machineId,
-      },
-    });
-    if (deletedProcessTechParams) {
-      const techParamIds = deletedProcessTechParams.map((item) => {
-        return item.id;
-      });
-      if (techParamIds?.length > 0) {
-        const deletedTechParams = await prisma.technicalParameter.deleteMany({
-          where: {
-            id: {
-              in: techParamIds,
-            },
-            machineId,
-          },
-        });
-      }
-    }
+    // const { machineId } = deletedProcess;
+    // const deletedProcessTechParams = await prisma.technicalParameter.findMany({
+    //   where: {
+    //     machineId,
+    //   },
+    // });
+    // if (deletedProcessTechParams) {
+    //   const techParamIds = deletedProcessTechParams.map((item) => {
+    //     return item.id;
+    //   });
+    //   if (techParamIds?.length > 0) {
+    //     const deletedTechParams = await prisma.technicalParameter.deleteMany({
+    //       where: {
+    //         id: {
+    //           in: techParamIds,
+    //         },
+    //         machineId,
+    //       },
+    //     });
+    //   }
+    // }
 
     return NextResponse.json(deletedProcess, { status: 200 });
   } catch (e) {

@@ -35,21 +35,27 @@ export default function Edit() {
   const handleSubmit = async (val) => {
     setIsSubmitting(true);
     if (!val) return;
-    const { status, data } = await updateUser({ ...val, id: queryParams?.id });
+    const resData: any = await updateUser({ ...val, id: queryParams?.id });
+    const { status, response } = resData;
+    if (response?.error) {
+      const { message, detail } = response?.error;
+      toast.error('Kullanıcı güncelleme başarısız.' + message);
+      log(detail);
+      setIsSubmitting(false);
+      return;
+    }
     if (status === 200) {
       toast.success('Kullanıcı güncelleme başarılı.');
       router.push('/admin/users');
       setIsSubmitting(false);
       return;
     }
-    setIsSubmitting(false);
-    toast.error('Kullanıcı güncelleme başarısız.');
   };
 
   return (
     <div className="mt-12">
       {isLoading ? (
-        <div className="mx-auto max-w-[400px]">
+        <div className="mx-auto max-w-[700px]">
           <UserFormSkeleton />
         </div>
       ) : (

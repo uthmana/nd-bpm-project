@@ -61,7 +61,7 @@ export async function fetchAPI(endpoint, method, data, header, accessToken) {
       response: response?.data,
       error: {
         message: response?.data?.name || response?.data?.message,
-        detail: response?.config?.data,
+        detail: response?.config?.data || response?.data?.meta?.field_name,
       },
     };
   });

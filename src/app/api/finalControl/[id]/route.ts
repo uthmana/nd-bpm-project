@@ -52,7 +52,6 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         ...data,
       },
     });
-
     return NextResponse.json(updateFinalControl, { status: 200 });
   } catch (e) {
     if (

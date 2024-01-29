@@ -11,15 +11,21 @@ export default function Create() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const handleSubmit = async (val) => {
     setIsSubmitting(true);
-    const { status } = await register(val);
-    if (status === 200) {
-      router.push('/admin/users');
-      toast.success('Yeni kullanıncı başarılı ile oluşturuldu.');
+    const resData: any = await register(val);
+    const { status, response } = resData;
+    if (response?.error) {
+      const { message, detail } = response?.error;
+      toast.error('Yeni kullanıncı ekleme işlemi başarısız.' + message);
+      log(detail);
       setIsSubmitting(false);
       return;
     }
-    toast.error('E-post zatan var, başka bir e-posta ile deneyin!.');
-    setIsSubmitting(false);
+    if (status === 200) {
+      router.push('/admin/users');
+      toast.success('Yeni kullanıncı ekleme işlemi başarılı.');
+      setIsSubmitting(false);
+      return;
+    }
   };
 
   return (

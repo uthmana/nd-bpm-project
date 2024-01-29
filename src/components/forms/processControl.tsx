@@ -22,6 +22,7 @@ export default function ProcessControlForm({
   const [process, setProcess] = useState(info || {});
   const [error, setError] = useState(false);
   const [formTouch, setFormTouch] = useState(isUpdate);
+  const [file, setFile] = useState('');
 
   const processInfo = [
     'customerName',
@@ -62,6 +63,7 @@ export default function ProcessControlForm({
           hatali_miktar: 0,
           makliye_miktar: 0,
           remarks: '',
+          image: '',
           createdBy: '',
           result: '',
           processId: '',
@@ -92,9 +94,18 @@ export default function ProcessControlForm({
       setError(true);
       return;
     }
+    console.log({
+      ...values,
+      image: file,
+      kontrol_edilen_miktar: parseInt(values.kontrol_edilen_miktar),
+      hatali_miktar: parseInt(values.hatali_miktar),
+      makliye_miktar: parseInt(values.makliye_miktar),
+    });
+
     onSubmit(
       {
         ...values,
+        image: file,
         kontrol_edilen_miktar: parseInt(values.kontrol_edilen_miktar),
         hatali_miktar: parseInt(values.hatali_miktar),
         makliye_miktar: parseInt(values.makliye_miktar),
@@ -122,10 +133,7 @@ export default function ProcessControlForm({
           {Object.entries(process).map(([key, val]: any, index) => {
             if (processInfo.includes(key)) {
               return (
-                <div
-                  key={index}
-                  className="flex flex-col flex-nowrap justify-between"
-                >
+                <div key={index} className="flex flex-col flex-nowrap">
                   <h4 className="mb-0 italic">{infoTranslate[key]}</h4>
                   {key === 'arrivalDate' ? (
                     <p className="font-bold"> {formatDateTime(val)} </p>
@@ -257,6 +265,19 @@ export default function ProcessControlForm({
               placeholder="Paketleme"
               extra="mb-2"
               value={values.paketleme}
+            />
+          </div>
+
+          <div className="mb-6">
+            <h2 className="mb-3 ml-3  block w-full text-sm font-bold">
+              İlgili Doküman
+            </h2>
+            <Upload
+              onChange={(val) => setFile(val)}
+              fileType="all"
+              multiple={false}
+              _fileName={values.image}
+              _filePath={isUpdate ? '/uploads/' + values.image : ''}
             />
           </div>
 

@@ -166,7 +166,7 @@ model FaultControl {
 
   result FaultControlResult
 
-  Fault Fault @relation(fields: [faultId], references: [id])
+  Fault Fault @relation(fields: [faultId], references: [id], onDelete: Cascade)
 }
 
 model Machine {
@@ -211,7 +211,7 @@ model TechnicalParameter {
   machineId              String
   saat                   String?
 
-  Process   Process? @relation(fields: [processId], references: [id])
+  Process   Process? @relation(fields: [processId], references: [id], onDelete: Cascade)
   processId String?
 }
 
@@ -247,13 +247,14 @@ model FinalControl {
   kontrol_edilen_miktar Int?
   hatali_miktar         Int?
   makliye_miktar        Int?
+  image                 String?
   remarks               String?
   createdAt             DateTime           @default(now())
   updatedAt             DateTime?          @updatedAt
   createdBy             String?
   updatedBy             String?
   result                FaultControlResult
-  Process               Process?           @relation(fields: [processId], references: [id])
+  Process               Process?           @relation(fields: [processId], references: [id], onDelete: Cascade)
   processId             String?
 }
 

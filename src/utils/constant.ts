@@ -68,3 +68,103 @@ export const colors = [
   'Beyaz',
   'Siyah',
 ];
+
+export const platings = [
+  'Beyaz Çinko',
+  'Siyah Çinko',
+  'Sarı Çinko',
+  'Çinko',
+  'Nikel',
+  'Pırtınç',
+  'Karartma',
+  'Paslanmaz',
+  'Çinko Nikel',
+  'Siyah Fosfat',
+  'Zn',
+  'Kayganlaştırıcı',
+  'Galvanizli',
+  'Diğer',
+];
+
+export const confirmation = [
+  { name: 'Uygun', value: true },
+  { name: 'Uygunsuz', value: false },
+];
+
+export const dirtyConfirmation = [
+  { name: 'Var', value: true },
+  { name: 'Yok', value: false },
+];
+
+export const materials = ['Karışık', 'Düzenli'];
+
+export const processConfirmation = ['Yazılsın', 'Yazılmasın'];
+
+export const results = [
+  { value: 'ACCEPT', name: 'Kabul' },
+  { value: 'ACCEPTANCE_WITH_CONDITION', name: 'Şartlı Kabul' },
+  { value: 'PRE_PROCESS', name: 'Ön İşlem gerekli' },
+  { value: 'REJECT', name: 'Ret' },
+];
+
+export const faultInfo = [
+  'id',
+  'customerName',
+  'product',
+  'quantity',
+  'application',
+  'standard',
+  'color',
+  'productCode',
+  'createdBy',
+  'arrivalDate',
+  'technicalDrawingAttachment',
+  'faultDescription',
+];
+
+export const infoTranslate = {
+  id: 'Takıp Kodu',
+  customerName: 'Müşteri',
+  product: 'Ürün Tanımı',
+  quantity: 'Miktar',
+  application: 'Uygulama',
+  standard: 'Standart',
+  color: 'Renk',
+  productCode: 'Ürün Kodu',
+  createdBy: 'Personel',
+  arrivalDate: 'Giriş Tarihi',
+  technicalDrawingAttachment: 'İlgili Doküman',
+  faultDescription: 'Açıklama',
+};
+
+export const faultControlInfo = [
+  'plating',
+  'productDimension',
+  'dimensionConfirmation',
+  'quantityConfirmation',
+  'dirtyThreads',
+  'processFrequency',
+  'remarks',
+  'result',
+  'createdBy',
+  'createdAt',
+  'updatedBy',
+  'updatedAt',
+  'image',
+];
+
+export const faultControlTranslate = {
+  plating: 'Kaplama',
+  productDimension: 'Malzeme Türü',
+  dimensionConfirmation: 'Ürün Boyutlari',
+  quantityConfirmation: 'Miktar',
+  dirtyThreads: 'Temizleme',
+  processFrequency: 'Proses Frekansi',
+  remarks: 'Açıklama',
+  result: 'Sonuç',
+  createdBy: 'Oluşturan',
+  createdAt: 'Oluşturma Tarihi',
+  updatedBy: 'Güncelleyen',
+  updatedAt: 'Güncelleme Tarihi',
+  image: 'İlgili Doküman',
+};

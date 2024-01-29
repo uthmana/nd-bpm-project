@@ -1,44 +1,48 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import StockForm from 'components/forms/stock';
+import FaultForm from 'components/forms/fault';
 import { useParams, useRouter } from 'next/navigation';
 import { log } from 'utils';
 import { toast } from 'react-toastify';
-import { getCustomers, getStockById, updateStock } from 'app/lib/apiRequest';
+import { getFaultById, updateFault } from 'app/lib/apiRequest';
 import { UserFormSkeleton } from 'components/skeleton';
+import { useSession } from 'next-auth/react';
+import Card from 'components/card';
 
 export default function Edit() {
   const router = useRouter();
-
+  const { data: session } = useSession();
   const queryParams = useParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [stock, setStock] = useState([]);
+  const [fault, setFault] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [customers, setCustomers] = useState([]);
 
   useEffect(() => {
-    const getSingleStock = async () => {
+    const getSingleFault = async () => {
       setIsLoading(true);
-      const { status: stockStatus, data } = await getStockById(queryParams.id);
-      const { status, data: customerData } = await getCustomers();
-      if (stockStatus === 200 && status === 200) {
-        setStock(data);
-        setCustomers(customerData);
+      const { status, data } = await getFaultById(queryParams.id);
+      if (status === 200) {
+        delete data.faultControl;
+        setFault(data);
         setIsLoading(false);
         return;
       }
       setIsSubmitting(false);
     };
     if (queryParams.id) {
-      getSingleStock();
+      getSingleFault();
     }
   }, [queryParams?.id]);
 
   const handleSubmit = async (val) => {
     setIsSubmitting(true);
     if (!val) return;
-    delete val.customer;
-    const resData: any = await updateStock({ ...val, id: queryParams?.id });
+    const newVal = { ...val, ...{ updatedBy: session?.user?.name } };
+
+    const resData: any = await updateFault({
+      ...newVal,
+      id: queryParams?.id,
+    });
     const { status, response } = resData;
     if (response?.error) {
       const { message, detail } = response?.error;
@@ -47,29 +51,27 @@ export default function Edit() {
       setIsSubmitting(false);
       return;
     }
+
     if (status === 200) {
       toast.success('Ürün güncelleme başarılı.');
-      router.push('/admin/stock');
+      router.push('/admin/entry');
       setIsSubmitting(false);
       return;
     }
   };
 
   return (
-    <div className="mt-12">
+    <Card extra="mt-12 mx-auto mt-4 max-w-[700px] rounded-2xl px-8 py-10 bg-white dark:bg-[#111c44] dark:text-white">
       {isLoading ? (
-        <div className="mx-auto max-w-[600px]">
-          <UserFormSkeleton />
-        </div>
+        <UserFormSkeleton />
       ) : (
-        <StockForm
-          title="Stok Düzenle"
+        <FaultForm
+          title="Ürün Düzenle"
           onSubmit={(val) => handleSubmit(val)}
-          customerData={customers}
-          data={stock as any}
+          editData={fault as any}
           loading={isSubmitting}
         />
       )}
-    </div>
+    </Card>
   );
 }

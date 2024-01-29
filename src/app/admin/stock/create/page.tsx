@@ -27,18 +27,24 @@ export default function Edit() {
 
   const handleSubmit = async (val) => {
     setIsSubmitting(true);
-    const { status, data, response } = await addStock({
+    const resData: any = await addStock({
       ...val,
       inventory: parseInt(val.inventory),
     });
+    const { status, response } = resData;
+    if (response?.error) {
+      const { message, detail } = response?.error;
+      toast.error('Ürün ekleme işlemi başarısız.' + message);
+      log(detail);
+      setIsSubmitting(false);
+      return;
+    }
     if (status === 200) {
       toast.success('Stok ekleme işlemi başarılı.');
       router.push('/admin/stock');
       setIsSubmitting(false);
       return;
     }
-    toast.error('Hata oluştu!.' + { response });
-    setIsSubmitting(false);
   };
 
   return (

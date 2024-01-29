@@ -8,6 +8,7 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     const id = route.params.id;
     const stock: Stock = await prisma.stock.findUnique({
       where: { id: id },
+      include: { customer: true },
     });
     return NextResponse.json(stock, { status: 200 });
   } catch (e) {
@@ -17,6 +18,7 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
       e instanceof Prisma.PrismaClientValidationError ||
       e instanceof Prisma.PrismaClientRustPanicError
     ) {
+      console.log(e);
       return NextResponse.json(e, { status: 403 });
     }
     return NextResponse.json(e, { status: 500 });
@@ -28,9 +30,9 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
     const id = route.params.id;
     const result: Stock = await req.json();
-    const { product_name, product_code, current_price, curency } = result;
+    const { product_name, product_code, curency } = result;
 
-    if (!product_name || !product_code || !current_price || !curency) {
+    if (!product_name || !product_code || !curency) {
       return NextResponse.json(
         { message: 'You are missing a required data' },
         { status: 401 },
@@ -58,6 +60,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       e instanceof Prisma.PrismaClientValidationError ||
       e instanceof Prisma.PrismaClientRustPanicError
     ) {
+      console.log(e);
       return NextResponse.json(e, { status: 403 });
     }
     return NextResponse.json(e, { status: 500 });

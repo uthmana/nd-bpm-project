@@ -48,7 +48,17 @@ const Stock = () => {
 
   const onDelete = async () => {
     setIsSubmitting(true);
-    const { status, data } = await deleteStock(stockId);
+    const resData: any = await deleteStock(stockId);
+
+    const { status, response } = resData;
+    if (response?.error) {
+      const { message, detail } = response?.error;
+      toast.error('Ürün silme işlemi başarısız.' + message);
+      log(detail);
+      setIsSubmitting(false);
+      return;
+    }
+
     if (status === 200) {
       toast.success('Ürün silme işlemi başarılı.');
       setIsSubmitting(false);
@@ -56,8 +66,6 @@ const Stock = () => {
       setStocks([]);
       getAllStocks();
       return;
-    } else {
-      toast.error('Bir hata oluştu, tekrar deneyin !');
     }
   };
 

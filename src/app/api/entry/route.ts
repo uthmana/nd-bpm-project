@@ -11,14 +11,21 @@ export async function GET(req: NextRequest) {
     if (!hasrole) {
       return NextResponse.json({ error: 'Access forbidden', status: 403 });
     }
-    const fault = await prisma.fault.findMany();
+    const fault = await prisma.fault.findMany({
+      include: { faultControl: true },
+    });
 
     return NextResponse.json(fault, { status: 200 });
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 },
-    );
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }
 
@@ -52,11 +59,9 @@ export async function PUT(req: Request) {
     const notification = await prisma.notification.create({
       data: {
         title: 'Ürün Girişi',
-        description: `${fault.product},${fault.application},${fault.standard},${fault.color}`,
+        description: `Yeni ürün girişi yapıldı.`,
         receiver: 'SUPER',
-        link: `/admin/entry?q=${fault?.productCode
-          ?.toLocaleLowerCase()
-          .replaceAll(' ', '%20')}`,
+        link: `/admin/entry${fault.id}`,
       },
     });
 

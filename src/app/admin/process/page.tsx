@@ -97,7 +97,7 @@ const Process = () => {
       }
       return;
     }
-    router.push(`/admin/process/${id}`);
+    router.push(`/admin/process/create/${id}`);
   };
   const onAddMachine = async () => {
     if (!values?.machineId) return;
@@ -109,7 +109,7 @@ const Process = () => {
     });
     if (status === 200) {
       toast.success('Makine ekleme işlemi başarılı.');
-      router.push(`/admin/process/${processId}`);
+      router.push(`/admin/process/create/${processId}`);
       //setIsShowPopUp(false);
       return;
     }
@@ -130,6 +130,10 @@ const Process = () => {
     setIsShowProcessPopUp(true);
   };
 
+  const onControl = (val) => {
+    router.push(`/admin/process/${val}`);
+  };
+
   const onDelete = async () => {
     setIsSubmitting(true);
     const { status } = await deleteProcess(processId);
@@ -142,10 +146,6 @@ const Process = () => {
     } else {
       toast.error('Bir hata oluştu, tekrar deneyin !');
     }
-  };
-
-  const onEdit = (val) => {
-    // router.push(`/admin/entry/${val}`);
   };
 
   const handleProcessClose = (val: string) => {
@@ -163,8 +163,8 @@ const Process = () => {
           variant={session?.user?.role}
           searchValue={searchText}
           key={searchVal}
-          onEdit={(val) => onEdit(val)}
           onDelete={onComfirm}
+          onControl={(val) => onControl(val)}
         />
       )}
 

@@ -12,9 +12,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Access forbidden', status: 403 });
     }
     const fault = await prisma.fault.findMany({ where: { status: 'PENDING' } });
-    if (!fault) {
-      throw new Error('No fault found');
-    }
     return NextResponse.json(fault, { status: 200 });
   } catch (e) {
     if (
@@ -39,9 +36,9 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: 'Access forbidden', status: 403 });
     }
     const result: FaultControl = await req.json();
-    const { faultId, result: controlReult, traceabilityCode } = result;
+    const { faultId, result: controlReult } = result;
 
-    if (!faultId) {
+    if (!faultId || !controlReult) {
       return NextResponse.json(
         { message: 'You are missing a required data' },
         { status: 401 },
@@ -59,7 +56,11 @@ export async function PUT(req: Request) {
       data: { status: controlReult },
     });
 
-    if (controlReult === 'ACCEPT') {
+    //Create Process when faultControl is accepted
+    if (
+      controlReult === 'ACCEPT' ||
+      controlReult === 'ACCEPTANCE_WITH_CONDITION'
+    ) {
       if (updateFault) {
         const {
           id,
@@ -92,11 +93,9 @@ export async function PUT(req: Request) {
     const notification = await prisma.notification.create({
       data: {
         title: 'Ürün Giriş Kontrolü',
-        description: `${faultControl.product},${faultControl.plating},${faultControl.result},${faultControl.remarks}`,
+        description: `Yeni bir ürün Giriş Kontrolü yapıldı.`,
         receiver: 'TECH',
-        link: `/admin/entry?q=${faultControl?.productCode
-          ?.toLocaleLowerCase()
-          .replaceAll(' ', '%20')}`,
+        link: `/admin/entry/${faultControl?.faultId}`,
       },
     });
 

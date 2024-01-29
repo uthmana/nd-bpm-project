@@ -1,7 +1,17 @@
 'use client';
 
 import React, { useState } from 'react';
-import { formatDateTime } from 'utils';
+import {
+  formatDateTime,
+  platings,
+  processConfirmation,
+  materials,
+  dirtyConfirmation,
+  confirmation,
+  results,
+  faultInfo,
+  infoTranslate,
+} from 'utils';
 import Checkbox from 'components/checkbox';
 import Upload from 'components/upload';
 import TextArea from 'components/fields/textArea';
@@ -10,6 +20,7 @@ import Select from 'components/select/page';
 import Radio from 'components/radio';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import NextLink from 'next/link';
+import FileViewer from 'components/fileViewer';
 
 export default function EntryControlForm({
   info,
@@ -27,30 +38,6 @@ export default function EntryControlForm({
     isUpdate && data.plating?.length > 0 ? data.plating.split(',') : [],
   );
 
-  const faultInfo = [
-    'customerName',
-    'product',
-    'quantity',
-    'application',
-    'standard',
-    'color',
-    'productCode',
-    'createdBy',
-    'arrivalDate',
-  ];
-
-  const infoTranslate = {
-    customerName: 'Müşteri',
-    product: 'Ürün Tanımı',
-    quantity: 'Miktar',
-    application: 'Uygulama',
-    standard: 'Standart',
-    color: 'Renk',
-    productCode: 'Ürün Kodu',
-    createdBy: 'Personel',
-    arrivalDate: 'Giriş Tarihi',
-  };
-
   const [values, setValues] = useState(
     isUpdate
       ? data
@@ -62,7 +49,6 @@ export default function EntryControlForm({
           quantity: 0,
           productCode: '',
           productDimension: '',
-          traceabilityCode: info.traceabilityCode,
           productBatchNumber: '',
           processFrequency: '',
           dimensionConfirmation: '',
@@ -72,44 +58,6 @@ export default function EntryControlForm({
           faultId: info?.id,
         },
   );
-
-  const platings = [
-    'Beyaz Çinko',
-    'Siyah Çinko',
-    'Sarı Çinko',
-    'Çinko',
-    'Nikel',
-    'Pırtınç',
-    'Karartma',
-    'Paslanmaz',
-    'Çinko Nikel',
-    'Siyah Fosfat',
-    'Zn',
-    'Kayganlaştırıcı',
-    'Galvanizli',
-    'Diğer',
-  ];
-
-  const confirmation = [
-    { name: 'Uygun', value: true },
-    { name: 'Uygunsuz', value: false },
-  ];
-
-  const dirtyConfirmation = [
-    { name: 'Var', value: true },
-    { name: 'Yok', value: false },
-  ];
-
-  const materials = ['Karışık', 'Düzenli'];
-
-  const processConfirmation = ['Yazılsın', 'Yazılmasın'];
-
-  const results = [
-    { value: 'ACCEPT', name: 'Kabul' },
-    { value: 'ACCEPTANCE_WITH_CONDITION', name: 'Şartlı Kabul' },
-    { value: 'PRE_PROCESS', name: 'Ön İşlem gerekli' },
-    { value: 'REJECT', name: 'Ret' },
-  ];
 
   const handleValues = (event) => {
     setError(false);
@@ -139,6 +87,7 @@ export default function EntryControlForm({
     const { result } = values;
     if (!result) {
       setError(true);
+      window.scroll(100, 0);
       return;
     }
 
@@ -169,20 +118,19 @@ export default function EntryControlForm({
           </span>
           Ürün Girişe
         </NextLink>
-        <h1 className="mb-4 text-center text-2xl font-bold md:text-4xl">
+        <h1 className="mb-8 text-center text-2xl font-bold md:text-4xl">
           {title}
         </h1>
-        <div className="mb-10 grid w-full grid-cols-2 gap-2  sm:grid-cols-3">
+        <div className="mb-10 grid w-full grid-cols-1 gap-2  sm:grid-cols-2 md:grid-cols-3">
           {Object.entries(fault).map(([key, val]: any, index) => {
             if (faultInfo.includes(key)) {
               return (
-                <div
-                  key={index}
-                  className="flex flex-col flex-nowrap justify-between"
-                >
+                <div key={index} className="mx-2  flex flex-col flex-nowrap">
                   <h4 className="mb-0 italic">{infoTranslate[key]}</h4>
                   {key === 'arrivalDate' ? (
                     <p className="font-bold"> {formatDateTime(val)} </p>
+                  ) : key === 'technicalDrawingAttachment' ? (
+                    <FileViewer file={val} />
                   ) : (
                     <p className="font-bold"> {val} </p>
                   )}
@@ -226,7 +174,6 @@ export default function EntryControlForm({
               onChange={handleValues}
               name="productDimension"
             >
-              <option defaultValue="">Malzeme seç</option>
               {materials.map((item, idx) => {
                 return (
                   <option
@@ -250,7 +197,6 @@ export default function EntryControlForm({
               onChange={handleValues}
               name="dimensionConfirmation"
             >
-              <option defaultValue="">Uygunluğu seç</option>
               {confirmation.map((item, idx) => {
                 return (
                   <option
@@ -274,7 +220,6 @@ export default function EntryControlForm({
               onChange={handleValues}
               name="quantityConfirmation"
             >
-              <option defaultValue="">Uygunluğu seç</option>
               {confirmation.map((item, idx) => {
                 return (
                   <option
@@ -299,7 +244,6 @@ export default function EntryControlForm({
               onChange={handleValues}
               name="dirtyThreads"
             >
-              <option defaultValue="">Temizleme seç</option>
               {dirtyConfirmation.map((item, idx) => {
                 return (
                   <option
@@ -321,7 +265,6 @@ export default function EntryControlForm({
               onChange={handleValues}
               name="processFrequency"
             >
-              <option value="">Frekansi seç</option>
               {processConfirmation.map((item, idx) => {
                 return (
                   <option

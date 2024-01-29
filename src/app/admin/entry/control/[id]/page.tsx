@@ -13,6 +13,7 @@ import { LatestInvoicesSkeleton } from 'components/skeleton';
 import EntryControlForm from 'components/forms/faultControl';
 import { useSession } from 'next-auth/react';
 import Card from 'components/card';
+import { log } from 'utils';
 
 export default function EntryControl() {
   const router = useRouter();
@@ -27,8 +28,6 @@ export default function EntryControl() {
     const getSingleFault = async () => {
       setIsloading(true);
       const { status, data } = await getFaultById(queryParams.id);
-      // const { status: controlStatus, data: controlData } =
-      //   await getEntryControlByfaultId(queryParams.id);
       if (status === 200) {
         setFault(data);
         setFaultcontrol(data?.faultControl[0]);
@@ -45,42 +44,54 @@ export default function EntryControl() {
 
   const handleSubmit = async (val) => {
     const [values, isUpdate] = val;
-    // console.log(values, isUpdate);
 
     setIsSubmitting(true);
     if (isUpdate) {
-      const { status, data, response } = await updateFaultControl({
+      const resData: any = await updateFaultControl({
         ...values,
         ...{ updatedBy: session?.user?.name },
       });
+
+      const { status, response } = resData;
+      if (response?.error) {
+        const { message, detail } = response?.error;
+        toast.error('Hata oluştu!.' + message);
+        log(detail);
+        setIsSubmitting(false);
+        return;
+      }
+
       if (status === 200) {
         toast.success('Ürün kontrol güncelleme işlemi başarılı.');
         router.push('/admin/entry');
         setIsSubmitting(false);
         return;
       }
-      toast.error('Hata oluştu!.' + { response });
-      setIsSubmitting(false);
-      return;
     }
 
     // add new entry control
-    const { status, data, response } = await addControl({
+    const resControl: any = await addControl({
       ...values,
       ...{ createdBy: session?.user?.name },
     });
+    const { status, response } = resControl;
+    if (response?.error) {
+      const { message, detail } = response?.error;
+      toast.error('Hata oluştu!.' + message);
+      log(detail);
+      setIsSubmitting(false);
+      return;
+    }
     if (status === 200) {
       toast.success('Ürün girişi kontrol işlemi başarılı.');
       router.push('/admin/entry');
       setIsSubmitting(false);
       return;
     }
-    toast.error('Hata oluştu!.' + { response });
-    setIsSubmitting(false);
   };
 
   return (
-    <Card className="mx-auto mt-4 max-w-[700px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
+    <Card className="mx-auto mt-4 max-w-[800px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
       {isLoading ? (
         <LatestInvoicesSkeleton />
       ) : (

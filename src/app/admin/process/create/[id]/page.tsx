@@ -2,7 +2,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getProcessById, addProcess, updateProcess } from 'app/lib/apiRequest';
+import {
+  getProcessById,
+  addProcess,
+  updateProcess,
+  getMachines,
+} from 'app/lib/apiRequest';
 import { useParams, useRouter } from 'next/navigation';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
 import Card from 'components/card';
@@ -11,7 +16,6 @@ import {
   addTechParams,
   updateTechParams,
   deleteTechParams,
-  getMachines,
 } from 'app/lib/apiRequest';
 import Button from 'components/button/button';
 import Popup from 'components/popup';
@@ -20,7 +24,6 @@ import { useSession } from 'next-auth/react';
 import NextLink from 'next/link';
 import { MdAdd, MdOutlineArrowBack } from 'react-icons/md';
 import Select from 'components/select/page';
-import FileViewer from 'components/fileViewer';
 
 export default function EntryControl() {
   const router = useRouter();
@@ -31,8 +34,10 @@ export default function EntryControl() {
   const [process, setProcess] = useState({} as any);
   const [isTechParams, setIsTechParams] = useState(false);
   const [machineParams, setMachineParams] = useState([]);
-  const [finalControl, setFinalControl] = useState([]);
   const [isShowPopUp, setIsShowPopUp] = useState(false);
+  const [isShowMachinePopUp, setIsShowMachinePopUp] = useState(false);
+  const [machines, setMachines] = useState([]);
+  const [values, setValues] = useState({} as any);
   const { data: session } = useSession();
 
   const productInfo = [
@@ -62,10 +67,8 @@ export default function EntryControl() {
     const { status, data } = await getProcessById(queryParams.id);
     if (status === 200) {
       setProcess(data);
-      console.log({ data });
       setTechParams(data?.technicalParams);
       setMachineParams(data.machineParams.map((item) => item.param_name));
-      setFinalControl(data?.finalControl);
       setIsloading(false);
       return;
     }
@@ -100,6 +103,15 @@ export default function EntryControl() {
   };
 
   const onAddRow = async (val) => {
+    if (!process?.machineId) {
+      const { status, data } = await getMachines();
+      if (status === 200) {
+        setMachines(data);
+        setIsShowMachinePopUp(true);
+        return;
+      }
+    }
+
     setIsTechParams(true);
     const resData: any = await addTechParams({
       ...val,
@@ -122,7 +134,6 @@ export default function EntryControl() {
       return;
     }
   };
-
   const onRemoveRow = async (val) => {
     const resData: any = await deleteTechParams(val);
     const { status, data, response } = resData;
@@ -165,75 +176,31 @@ export default function EntryControl() {
     }
   };
 
+  const onAddMachine = async () => {
+    if (!values?.machineId) return;
+    setIsSubmitting(true);
+    const { status } = await updateProcess({
+      id: process.id,
+      faultId: process.faultId,
+      ...values,
+      createdBy: session?.user?.name,
+    });
+    if (status === 200) {
+      await getSingleProcess();
+      toast.success('Makine ekleme işlemi başarılı.');
+      setIsShowMachinePopUp(false);
+      return;
+    }
+    toast.error('Bir hata oluştu, tekrar deneyin !');
+    return;
+  };
+
+  const handleValues = (event) => {
+    setValues(JSON.parse(event.target?.value));
+  };
+
   const handleProcessControl = () => {
     router.push(`/admin/process/control/${process.id}`);
-  };
-
-  const handleComplete = () => {
-    router.push(`/admin/process/create/${process.id}`);
-  };
-
-  const processInfo = [
-    'faultId',
-    'olcu_Kontrol',
-    'gorunum_kontrol',
-    'tork_Kontrol',
-    'paketleme',
-    'kontrol_edilen_miktar',
-    'hatali_miktar',
-    'makliye_miktar',
-    'remarks',
-    'image',
-    'createdAt',
-    'updatedAt',
-    'createdBy',
-    'updatedBy',
-    'result',
-  ];
-
-  const infoProcessTranslate = {
-    faultId: 'Takıp Kodu',
-    olcu_Kontrol: 'Ölçü',
-    gorunum_kontrol: 'Görünüm',
-    tork_Kontrol: 'Tork',
-    paketleme: 'Paketleme',
-    kontrol_edilen_miktar: 'Kontrol edilen miktari',
-    hatali_miktar: 'Hatali Miktari',
-    makliye_miktar: 'Nakliye Miktari',
-    remarks: 'Açıklama',
-    createdAt: 'Oluşturma Tarihi',
-    updatedAt: 'Güncellenme Tarihi',
-    createdBy: 'Oluşturan',
-    updatedBy: 'Güncelleyen',
-    image: 'İlgili Doküman',
-    result: 'Sonuç',
-  };
-
-  const renderValues = (key, val) => {
-    const results = {
-      ACCEPT: 'Kabul',
-      ACCEPTANCE_WITH_CONDITION: 'Şartlı Kabul',
-      PRE_PROCESS: 'Ön İşlem gerekli',
-      REJECT: 'Ret',
-    };
-
-    if (['createdAt', 'updatedAt'].includes(key)) {
-      return <p className="font-bold"> {formatDateTime(val)} </p>;
-    }
-
-    if (['olcu_Kontrol', 'gorunum_kontrol', 'tork_Kontrol'].includes(key)) {
-      return (
-        <p className="font-bold"> {val === 'NOT_OK' ? 'İYİ DEĞİL' : 'İYİ'} </p>
-      );
-    }
-
-    if (key === 'result') {
-      return <p className="font-bold uppercase"> {results[val]} </p>;
-    }
-    if (key === 'image') {
-      return <FileViewer file={val} />;
-    }
-    return <p className="font-bold"> {val} </p>;
   };
 
   return (
@@ -242,7 +209,7 @@ export default function EntryControl() {
         <LatestInvoicesSkeleton />
       ) : (
         <div className="flex flex-col gap-8">
-          <div className="flex justify-end">
+          <div className="flex justify-end ">
             <NextLink
               href="/admin/process"
               className="text-md flex items-center gap-2 self-start  dark:text-white"
@@ -254,7 +221,7 @@ export default function EntryControl() {
             </NextLink>
           </div>
 
-          <Card extra="w-full px-6 py-8">
+          <Card extra="w-full p-4">
             <h2 className="my-5 text-2xl font-bold">Ürün Bilgileri</h2>
             <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
               {Object.entries(process).map(([key, value], idx) => {
@@ -271,21 +238,15 @@ export default function EntryControl() {
               })}
             </div>
           </Card>
-          <Card extra="w-full px-6 py-8">
+          <Card extra="w-full p-4">
             <div className="w-full">
               <div className="my-5 flex justify-between">
                 <h2 className="text-2xl font-bold">Teknik Parametreleri</h2>
-                {session?.user?.role === 'TECH' ||
-                session?.user?.role === 'ADMIN' ? (
+                {process?.status !== 'FINISHED' ? (
                   <Button
-                    icon={<MdAdd className="mr-1 h-5 w-5" />}
-                    extra="max-w-fit px-4  h-[40px]"
-                    text={`${
-                      techParams.length > 0
-                        ? 'PARAMETRE DÜZENLE'
-                        : 'PARAMETRE EKLE'
-                    }`}
-                    onClick={handleComplete}
+                    extra="max-w-fit px-4  h-[40px] bg-green-700 hover:bg-green-800"
+                    text="PROSESİ TAMAMLA"
+                    onClick={() => setIsShowPopUp(true)}
                   />
                 ) : null}
               </div>
@@ -294,58 +255,11 @@ export default function EntryControl() {
                 key={isTechParams as any}
                 fields={machineParams}
                 techParams={techParams}
-                status={'FINISHED'}
+                status={process?.status}
                 onUpdateData={(id, val) => onUpdateData(id, val)}
                 onAddRow={(val) => onAddRow(val)}
                 onRemoveRow={(val) => onRemoveRow(val)}
               />
-            </div>
-          </Card>
-
-          <Card extra="w-full px-6 py-8">
-            <div className="w-full">
-              <div className="my-5 flex justify-between">
-                <h2 className="text-2xl font-bold">Final Kontrol Bilgileri</h2>
-
-                {session?.user?.role === 'SUPER' ||
-                session?.user?.role === 'ADMIN' ? (
-                  <Button
-                    icon={<MdAdd className="mr-1 h-5 w-5" />}
-                    extra="max-w-fit px-4  h-[40px]"
-                    text={`${
-                      finalControl.length > 0
-                        ? 'FİNAL KONTROLÜ DÜZENLE'
-                        : 'FİNAL KONTROLÜ YAP'
-                    } `}
-                    onClick={handleProcessControl}
-                  />
-                ) : null}
-              </div>
-              {finalControl.length === 0 ? (
-                <div className="flex h-32 w-full items-center justify-center opacity-75">
-                  Henüz final kontrolü yapılamdı
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-                  {Object.entries(finalControl[0]).map(
-                    ([key, val]: any, index) => {
-                      if (processInfo.includes(key)) {
-                        return (
-                          <div
-                            key={index}
-                            className="mb-3 flex flex-col flex-nowrap"
-                          >
-                            <h4 className="mb-0 italic">
-                              {infoProcessTranslate[key]}
-                            </h4>
-                            {renderValues(key, val)}
-                          </div>
-                        );
-                      }
-                    },
-                  )}
-                </div>
-              )}
             </div>
           </Card>
 
@@ -384,6 +298,53 @@ export default function EntryControl() {
             text="HAYIR"
             extra="w-[60px] h-[40px] bg-red-700"
             onClick={() => setIsShowPopUp(false)}
+          />
+        </div>
+      </Popup>
+
+      <Popup
+        key={1}
+        show={isShowMachinePopUp}
+        extra="flex flex-col gap-3 py-6 px-8"
+      >
+        <h1 className="text-3xl">Makine Şeçimi</h1>
+        <div className="mb-2 flex flex-col gap-3 sm:flex-row">
+          <Select
+            extra="pt-1"
+            label="Makine Seçimi"
+            onChange={handleValues}
+            name="machineName"
+          >
+            <option value="{}" selected>
+              Makine Seç
+            </option>
+            {machines.map((item, idx) => {
+              return (
+                <option
+                  value={JSON.stringify({
+                    machineId: item.id,
+                    machineName: item.machine_Name,
+                  })}
+                  key={idx}
+                >
+                  {item.machine_Name}
+                </option>
+              );
+            })}
+          </Select>
+        </div>
+
+        <div className="flex gap-4">
+          <Button
+            text="GERİ"
+            extra="w-[60px] bg-red-700 h-[40px]"
+            onClick={() => setIsShowMachinePopUp(false)}
+          />
+          <Button
+            loading={isSubmitting}
+            text="DEVAM"
+            extra="w-[60px] h-[40px]"
+            onClick={onAddMachine}
           />
         </div>
       </Popup>

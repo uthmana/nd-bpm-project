@@ -3,18 +3,19 @@ import prisma from 'app/lib/db';
 import { FinalControl, Prisma } from '@prisma/client';
 import { checkUserRole } from 'utils/auth';
 
-//All Final Controls
+//All Final Control
 export async function GET(req: NextRequest) {
   try {
-    const allowedRoles = ['SUPER'];
+    const allowedRoles = ['SUPER', 'ADMIN'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
     }
     const finalControl = await prisma.finalControl.findMany();
-    if (!finalControl) {
-      throw new Error('No finalControl found');
-    }
+
     return NextResponse.json(finalControl, { status: 200 });
   } catch (e) {
     if (
@@ -29,14 +30,17 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// Create Fault Control
+// Create Final Control
 export async function PUT(req: Request) {
   try {
     //TODO: restrict unathorized user : only super and admin allowed
     const allowedRoles = ['SUPER', 'ADMIN'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
     }
     const result: FinalControl = await req.json();
     const { faultId, result: controlReult, processId } = result;
@@ -47,14 +51,9 @@ export async function PUT(req: Request) {
         { status: 401 },
       );
     }
-
     const finalControl = await prisma.finalControl.create({
       data: result,
     });
-
-    if (!finalControl) {
-      throw new Error('Error occuried while creating form control');
-    }
 
     //Create Notification
     const notification = await prisma.notification.create({
@@ -74,6 +73,7 @@ export async function PUT(req: Request) {
       e instanceof Prisma.PrismaClientValidationError ||
       e instanceof Prisma.PrismaClientRustPanicError
     ) {
+      console.log({ e });
       return NextResponse.json(e, { status: 403 });
     }
     return NextResponse.json(e, { status: 500 });

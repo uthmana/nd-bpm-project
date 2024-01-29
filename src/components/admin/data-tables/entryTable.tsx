@@ -8,6 +8,9 @@ import {
   MdCheckCircle,
   MdCancel,
   MdOutlineError,
+  MdDetails,
+  MdLocalSee,
+  MdPreview,
 } from 'react-icons/md';
 import {
   createColumnHelper,
@@ -43,8 +46,6 @@ function EntryTable({
     useDrage();
 
   const columns = useMemo(() => {
-    let col: any;
-
     const entryStatus = {
       PENDING: 'Beklemede',
       REJECT: 'Ret',
@@ -52,7 +53,6 @@ function EntryTable({
       ACCEPTANCE_WITH_CONDITION: 'Şartlı Kabul',
       PRE_PROCESS: 'Ön İşlem Gerekli',
     };
-
     const statusbgColor = (status: string) => {
       if (status === 'ACCEPT' || status === 'ACCEPTANCE_WITH_CONDITION') {
         return (
@@ -67,18 +67,7 @@ function EntryTable({
       );
     };
 
-    const statusbtnAction = (status: string) => {
-      if (
-        status === 'ACCEPT' ||
-        status === 'ACCEPTANCE_WITH_CONDITION' ||
-        status === 'REJECT'
-      ) {
-        return <MdCheck className="h-5 w-5 text-white" />;
-      }
-      return <MdAdd className="h-5 w-5 text-white" />;
-    };
-
-    col = [
+    return [
       columnHelper.accessor('id', {
         id: 'id',
         header: () => (
@@ -153,19 +142,6 @@ function EntryTable({
         ),
         cell: (info: any) => (
           <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
-          </p>
-        ),
-      }),
-      columnHelper.accessor('productBatchNumber', {
-        id: 'productBatchNumber',
-        header: () => (
-          <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Batch No.
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -264,8 +240,8 @@ function EntryTable({
       columnHelper.accessor('status', {
         id: 'status',
         header: () => (
-          <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            DURUM
+          <p className="min-w-[130px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+            KONTROL DURUMU
           </p>
         ),
         cell: (info: any) => (
@@ -277,82 +253,48 @@ function EntryTable({
           </div>
         ),
       }),
-    ];
-
-    if (variant === 'NORMAL' || variant === 'ADMIN') {
-      col.push(
-        columnHelper.accessor('id', {
-          id: 'id',
-          header: () => (
-            <p className="min-w-[80px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-              DÜZENLE
-            </p>
-          ),
-          cell: (info: any) => (
+      columnHelper.accessor('id', {
+        id: 'id',
+        header: () => (
+          <p className="min-w-[80px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+            AKSİYON
+          </p>
+        ),
+        cell: (info: any) => {
+          const isAccept =
+            info.row.original.status === 'ACCEPT' ||
+            info.row.original.status === 'ACCEPTANCE_WITH_CONDITION';
+          return (
             <div className="flex gap-2">
-              {info.row.original.status === 'ACCEPT' &&
-              variant === 'NORMAL' ? null : (
-                <>
-                  <button
-                    className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
-                    onClick={() => onEdit(info.getValue())}
-                  >
-                    <MdModeEdit className="h-5 w-5 text-white" />
-                  </button>
-                  <button
-                    className="rounded-md bg-red-600 px-2 py-1 hover:bg-red-700"
-                    onClick={() => onDelete(info.getValue())}
-                  >
-                    <MdOutlineDelete className="h-5 w-5 text-white" />
-                  </button>
-                </>
-              )}
-            </div>
-          ),
-        }),
-      );
-      if (variant === 'ADMIN')
-        col.push(
-          columnHelper.accessor('id', {
-            id: 'id',
-            header: () => (
-              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-                KONTROL FORMU
-              </p>
-            ),
-            cell: (info: any) => (
               <button
-                className="ml-3 flex items-center gap-1 rounded-md bg-blue-600 px-3 py-1 text-sm font-bold text-white hover:bg-blue-700"
+                className="rounded-md bg-blue-600 px-2 py-1 hover:bg-blue-700"
                 onClick={() => onControl(info.getValue())}
               >
-                {statusbtnAction(info.row.original.status)} Kontrol
+                <MdPreview className="h-5 w-5 text-white" />
               </button>
-            ),
-          }),
-        );
-      return col;
-    }
-    if (variant === 'SUPER' || variant === 'TECH') {
-      col.push(
-        columnHelper.accessor('id', {
-          id: 'id',
-          header: () => (
-            <p className="min-w-[130px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-              KONTROL FORMU
-            </p>
-          ),
-          cell: (info: any) => (
-            <button
-              className="ml-3 flex items-center gap-1 rounded-md bg-blue-600 px-3 py-1 text-sm font-bold text-white hover:bg-blue-700"
-              onClick={() => onControl(info.getValue())}
-            >
-              {statusbtnAction(info.row.original.status)} Kontrol
-            </button>
-          ),
-        }),
-      );
-      return col;
-    }
+              <button
+                className={`rounded-md bg-green-600 px-2 py-1 hover:bg-green-700 ${
+                  isAccept ? 'disabled:opacity-25' : ''
+                }`}
+                onClick={() => onEdit(info.getValue())}
+                disabled={isAccept}
+              >
+                <MdModeEdit className="h-5 w-5 text-white" />
+              </button>
+              <button
+                className={`rounded-md bg-red-600 px-2 py-1 hover:bg-red-700 ${
+                  isAccept ? 'disabled:opacity-25' : ''
+                }`}
+                onClick={() => onDelete(info.getValue())}
+                disabled={isAccept}
+              >
+                <MdOutlineDelete className="h-5 w-5 text-white" />
+              </button>
+            </div>
+          );
+        },
+      }),
+    ];
   }, []);
 
   const [data, setData] = useState(() => [...defaultData]);

@@ -65,12 +65,60 @@ export async function POST(req: NextRequest) {
     const { id } = reqbody;
 
     if (session?.user?.role === 'ADMIN') {
-      return NextResponse.json([], { status: 204 });
+      const notification = await prisma.notification.findUnique({
+        where: { id },
+      });
+      return NextResponse.json(notification, { status: 200 });
     }
+
     const notification = await prisma.notification.update({
       where: { id },
       data: { status: 'READ' },
     });
+
+    return NextResponse.json(notification, { status: 200 });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
+  }
+}
+
+//Update Notification
+export async function PUT(req: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session) {
+      return NextResponse.json([], { status: 204 });
+    }
+
+    const reqbody: any = await req.json();
+    const { id } = reqbody;
+
+    if (reqbody.length === 0) {
+      return NextResponse.json(
+        { message: 'You are missing a required data' },
+        { status: 401 },
+      );
+    }
+
+    const notification = await prisma.notification.updateMany({
+      where: {
+        id: {
+          in: reqbody,
+        },
+      },
+      data: { status: 'READ' },
+    });
+
+    console.log({ notification });
 
     return NextResponse.json(notification, { status: 200 });
   } catch (e) {

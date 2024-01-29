@@ -12,6 +12,7 @@ import { LatestInvoicesSkeleton } from 'components/skeleton';
 import ProcessControlForm from 'components/forms/processControl';
 import { useSession } from 'next-auth/react';
 import Card from 'components/card';
+import { log } from 'util';
 
 export default function EntryControl() {
   const router = useRouter();
@@ -44,38 +45,53 @@ export default function EntryControl() {
     const [values, isUpdate] = val;
     setIsSubmitting(true);
     if (isUpdate) {
-      const { status, data, response } = await updateProcessControl({
+      const resData: any = await updateProcessControl({
         ...values,
         processId: process.id,
         faultId: process.faultId,
         updatedBy: session?.user?.name,
       });
+
+      const { status, response } = resData;
+      if (response?.error) {
+        const { message, detail } = response?.error;
+        toast.error('Proses final kontrol başarısız.' + message);
+        log(detail);
+        setIsSubmitting(false);
+        return;
+      }
+
       if (status === 200) {
-        toast.success('Ürün final kontrol güncelleme işlemi başarılı.');
+        toast.success('Proses final kontrol güncelleme işlemi başarılı.');
         router.push('/admin/process');
         setIsSubmitting(false);
         return;
       }
-      toast.error('Hata oluştu!.' + { response });
-      setIsSubmitting(false);
-      return;
     }
 
     // add new final control
-    const { status, data, response } = await addProcessControl({
+    const resProcess: any = await addProcessControl({
       ...values,
       processId: process.id,
       faultId: process.faultId,
       createdBy: session?.user?.name,
     });
+
+    const { status, response } = resProcess;
+    if (response?.error) {
+      const { message, detail } = response?.error;
+      toast.error('Proses final kontrol ekleme işlemi başarısız.' + message);
+      log(detail);
+      setIsSubmitting(false);
+      return;
+    }
+
     if (status === 200) {
       toast.success('Ürün final kontrol işlemi başarılı.');
       router.push('/admin/process');
       setIsSubmitting(false);
       return;
     }
-    toast.error('Hata oluştu!.' + { response });
-    setIsSubmitting(false);
   };
 
   return (

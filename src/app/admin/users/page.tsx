@@ -43,7 +43,17 @@ const Users = () => {
 
   const onDelete = async () => {
     setIsSubmitting(true);
-    const { status, data } = await deleteUser(userId);
+    const resData: any = await deleteUser(userId);
+
+    const { status, response } = resData;
+    if (response?.error) {
+      const { message, detail } = response?.error;
+      toast.error('Kullanıcı silme işlemi başarısız' + message);
+      log(detail);
+      setIsSubmitting(false);
+      return;
+    }
+
     if (status === 200) {
       toast.success('Kullanıcı silme işlemi başarılı.');
       setIsSubmitting(false);
@@ -51,8 +61,6 @@ const Users = () => {
       setUsers([]);
       getAllUsers();
       return;
-    } else {
-      toast.error('Bir hata oluştu, tekrar deneyin !');
     }
   };
 

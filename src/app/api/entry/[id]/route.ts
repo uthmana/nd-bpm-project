@@ -79,20 +79,6 @@ export async function DELETE(
       },
     });
 
-    //Delete related faultcontrol
-    const deletedFaultControl = await prisma.faultControl.findFirst({
-      where: {
-        faultId: deletedFault.id,
-      },
-    });
-    if (deletedFaultControl) {
-      const _deletedFaultControl = await prisma.faultControl.delete({
-        where: {
-          id: deletedFaultControl.id,
-        },
-      });
-    }
-
     return NextResponse.json([deletedFault], { status: 200 });
   } catch (e) {
     if (

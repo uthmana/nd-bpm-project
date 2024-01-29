@@ -14,6 +14,7 @@ import {
   MdCheckCircle,
   MdCancel,
   MdOutlineError,
+  MdPreview,
 } from 'react-icons/md';
 import {
   createColumnHelper,
@@ -82,7 +83,7 @@ function ProcessTable({
       columnHelper.accessor('faultId', {
         id: 'faultId',
         header: () => (
-          <p className="text-sm font-bold text-gray-600 dark:text-white">
+          <p className="min-w-[100px] text-sm font-bold text-gray-600 dark:text-white">
             TAKIP KODU
           </p>
         ),
@@ -95,7 +96,7 @@ function ProcessTable({
       columnHelper.accessor('customerName', {
         id: 'customerName',
         header: () => (
-          <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[200px] text-sm font-bold uppercase text-gray-600 dark:text-white">
             Müşteri
           </p>
         ),
@@ -135,12 +136,12 @@ function ProcessTable({
       columnHelper.accessor('productCode', {
         id: 'productCode',
         header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
             Ürün Kodu
           </p>
         ),
         cell: (info: any) => (
-          <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -216,8 +217,8 @@ function ProcessTable({
       columnHelper.accessor('status', {
         id: 'status',
         header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            DURUM
+          <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+            PROSES DURUMU
           </p>
         ),
         cell: (info: any) => (
@@ -229,53 +230,29 @@ function ProcessTable({
           </div>
         ),
       }),
-      // columnHelper.accessor('id', {
-      //   id: 'id',
-      //   header: () => (
-      //     <p className="text-sm font-bold text-gray-600 dark:text-white">
-      //       DÜZENLE
-      //     </p>
-      //   ),
-      //   cell: (info) => (
-      //     <button
-      //       className="ml-3 rounded-md bg-green-600  px-2 py-1 hover:bg-green-700"
-      //       onClick={() => onEdit(info.getValue())}
-      //     >
-      //       <MdModeEdit className="h-5 w-5 text-white" />
-      //     </button>
-      //   ),
-      // }),
       columnHelper.accessor('id', {
         id: 'id',
         header: () => (
           <p className="text-sm font-bold text-gray-600 dark:text-white">
-            DELETE
+            AKSIYON
           </p>
         ),
         cell: (info) => (
-          <button
-            className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
-            onClick={() => onDelete(info.getValue())}
-          >
-            <MdOutlineDelete className="h-5 w-5 text-white" />
-          </button>
-        ),
-      }),
-      columnHelper.accessor('id', {
-        id: 'id',
-        header: () => (
-          <p className="min-w-[130px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            PARAMETRE
-          </p>
-        ),
-        cell: (info: any) => (
-          <button
-            className="ml-3 flex items-center gap-1 rounded-md bg-blue-600 px-3 py-1 text-sm font-bold text-white hover:bg-blue-700"
-            onClick={() => onAdd(info.row.original)}
-          >
-            <MdAdd className="h-5 w-5 text-white" />
-            Ekle
-          </button>
+          <div className="flex gap-2">
+            <button
+              className="rounded-md bg-blue-600  px-2 py-1 hover:bg-blue-700"
+              onClick={() => onControl(info.getValue())}
+            >
+              <MdPreview className="h-5 w-5 text-white" />
+            </button>
+
+            <button
+              className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
+              onClick={() => onDelete(info.getValue())}
+            >
+              <MdOutlineDelete className="h-5 w-5 text-white" />
+            </button>
+          </div>
         ),
       }),
     ];

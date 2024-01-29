@@ -62,7 +62,7 @@ const Customers = () => {
   };
 
   const onEdit = (val: string) => {
-    router.push(`/admin/customer/${val}`);
+    router.push(`/admin/customer/create/${val}`);
   };
 
   return (

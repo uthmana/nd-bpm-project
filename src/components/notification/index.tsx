@@ -5,7 +5,11 @@ import { IoMdNotificationsOutline } from 'react-icons/io';
 import { BsArrowBarUp } from 'react-icons/bs';
 import NotificationItem from './item';
 import { useRouter } from 'next/navigation';
-import { getNotifications, updateNotificStatus } from 'app/lib/apiRequest';
+import {
+  getNotifications,
+  updateNotificStatus,
+  markAllNotifAsRead,
+} from 'app/lib/apiRequest';
 
 export default function Notification({ user }) {
   const [notifications, setNotifications] = useState([]);
@@ -42,6 +46,14 @@ export default function Notification({ user }) {
     }
   };
 
+  const handleMarkAllRead = async () => {
+    const notifIds = notifications.map((item) => item.id);
+    const { status } = await markAllNotifAsRead(notifIds);
+    if (status === 200) {
+      getMyNotification();
+    }
+  };
+
   return (
     <Dropdown
       button={
@@ -65,9 +77,17 @@ export default function Notification({ user }) {
           <p className="text-base font-bold text-navy-700  dark:text-white">
             BİLDİRİMLER
           </p>
+          {notifications.length > 0 ? (
+            <button
+              className="text-xs font-bold capitalize underline opacity-70 hover:opacity-100"
+              onClick={handleMarkAllRead}
+            >
+              Tümünü okunmuş olarak işaretle
+            </button>
+          ) : null}
         </div>
         {notifications.length === 0 ? (
-          <div className="w-full p-4 text-center capitalize">
+          <div className="w-full p-4 text-center capitalize opacity-70">
             Okunmamış bildirim yok
           </div>
         ) : (

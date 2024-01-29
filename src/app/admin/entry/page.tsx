@@ -45,11 +45,11 @@ const Entry = () => {
   };
 
   const onEdit = (val) => {
-    router.push(`/admin/entry/${val}`);
+    router.push(`/admin/entry/create/${val}`);
   };
 
   const onControl = (val) => {
-    router.push(`/admin/entry/control/${val}`);
+    router.push(`/admin/entry/${val}`);
   };
 
   const onComfirm = async (val) => {
@@ -59,7 +59,17 @@ const Entry = () => {
 
   const onDelete = async () => {
     setIsSubmitting(true);
-    const { status, data } = await deleteFault(faultId);
+    const resFault: any = await deleteFault(faultId);
+
+    const { status, response } = resFault;
+    if (response?.error) {
+      const { message, detail } = response?.error;
+      toast.error('Ürün silmeişlemi başarısız.' + message);
+      log(detail);
+      setIsSubmitting(false);
+      return;
+    }
+
     if (status === 200) {
       toast.success('Ürün silme işlemi başarılı.');
       setIsSubmitting(false);
@@ -67,8 +77,6 @@ const Entry = () => {
       setFaults([]);
       getAllFaults();
       return;
-    } else {
-      toast.error('Bir hata oluştu, tekrar deneyin !');
     }
   };
 

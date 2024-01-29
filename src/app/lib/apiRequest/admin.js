@@ -93,6 +93,10 @@ export async function updateNotificStatus(payload) {
   return fetchAPI(`notification`, 'post', payload);
 }
 
+export async function markAllNotifAsRead(payload) {
+  return fetchAPI(`notification`, 'put', payload);
+}
+
 // Add Entry Form Control
 export async function addControl(payload) {
   return fetchAPI(`entryControl`, 'put', payload);
