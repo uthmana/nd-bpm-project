@@ -3,58 +3,58 @@ import { $Enums, Prisma } from '@prisma/client';
 export const machines = [
   {
     machine_Name: 'Mikrokapsül-1',
-    technicalParameters: {},
+    machineParams: {},
   },
   {
     machine_Name: 'Mikrokapsül-2',
-    technicalParameters: {},
+    machineParams: {},
   },
   {
     machine_Name: 'Mikrokapsül-3',
-    technicalParameters: {},
+    machineParams: {},
   },
   {
     machine_Name: 'Patch-1',
-    technicalParameters: {},
+    machineParams: {},
   },
   {
     machine_Name: 'Patch-2',
-    technicalParameters: {},
+    machineParams: {},
   },
   {
     machine_Name: 'Patch-3',
-    technicalParameters: {},
+    machineParams: {},
   },
   {
     machine_Name: 'Yarı Otomatik -1',
-    technicalParameters: {},
+    machineParams: {},
   },
   {
     machine_Name: 'Yarı Otomatik-2',
-    technicalParameters: {},
+    machineParams: {},
   },
   {
     machine_Name: 'Manuel',
-    technicalParameters: {},
+    machineParams: {},
   },
   {
     machine_Name: 'Yatay-1',
-    technicalParameters: {},
+    machineParams: {},
   },
   {
     machine_Name: 'Yatay-2',
-    technicalParameters: {},
+    machineParams: {},
   },
   {
     machine_Name: 'Strip',
-    technicalParameters: {},
+    machineParams: {},
   },
   {
     machine_Name: 'Dispenser',
-    technicalParameters: {},
+    machineParams: {},
   },
   {
     machine_Name: 'Somun',
-    technicalParameters: {},
+    machineParams: {},
   },
 ];

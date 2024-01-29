@@ -3,8 +3,12 @@ import csvParser from 'csv-parser';
 import prisma from 'app/lib/db';
 import { users } from './users';
 import { machines } from './machines';
+import { colors } from './colors';
+import { applications } from './application';
+import { standards } from './standard';
 import { $Enums, Prisma } from '@prisma/client';
 
+//Seeding of Users from users type script file
 async function Users() {
   for (let i = 0; i < users.length; i++) {
     await prisma.user.upsert({
@@ -23,17 +27,74 @@ async function Users() {
   }
 }
 
-// async function Machines() {
-//   for (let i = 0; i < machines.length; i++) {
-//     await prisma.user.upsert({
-//       create: {
+// Seeding of Machines
+async function Machines() {
+  for (const machineData of machines) {
+    try {
+      await prisma.machine.create({
+        data: machineData,
+      });
+      // console.log(`Machine "${machineData.machine_Name}" seeded successfully.`);
+    } catch (error) {
+      console.error(
+        `Error seeding Machine "${machineData.machine_Name}": ${error.message}`,
+      );
+    }
+  }
+  console.log('Machines Data seeded successfully.');
+}
 
-//         createdAt: new Date(),
-//       },
-//     });
-//   }
-// }
+// Seeding of Standards
+async function Standards() {
+  for (const standardData of standards) {
+    try {
+      await prisma.standards.create({
+        data: standardData,
+      });
+      // console.log(`Standards "${standardData.name}" seeded successfully.`);
+    } catch (error) {
+      console.error(
+        `Error seeding Standards "${standardData.name}": ${error.message}`,
+      );
+    }
+  }
+  console.log('Standards Data seeded successfully.');
+}
+// Seeding of Colors
+async function Colors() {
+  for (const colorData of colors) {
+    try {
+      await prisma.standards.create({
+        data: colorData,
+      });
+      // console.log(`Colors "${colorData.name}" seeded successfully.`);
+    } catch (error) {
+      console.error(
+        `Error seeding Colors "${colorData.name}": ${error.message}`,
+      );
+    }
+  }
+  console.log('Colors Data seeded successfully.');
+}
 
+// Seeding of Applicaitons
+async function Applicaitons() {
+  for (const applicationData of applications) {
+    try {
+      await prisma.standards.create({
+        data: applicationData,
+      });
+      // console.log(`Applicaitons "${applicationData.name}" seeded successfully.`);
+    } catch (error) {
+      console.error(
+        `Error seeding Applicaiton "${applicationData.name}": ${error.message}`,
+      );
+    }
+  }
+  console.log('Applicaitons Data seeded successfully.');
+}
+
+//Seeding for Customers from customers excell file
 async function Customers() {
   const csvData = [];
 
@@ -73,14 +134,14 @@ async function Customers() {
           }
         });
 
-        console.log({ ...data1 });
+        // console.log({ ...data1 });
 
         await prisma.customer.create({
           data: { ...data1 } as Prisma.CustomerCreateInput,
         });
       }
 
-      console.log('Data seeded successfully.');
+      console.log('Customers Data seeded successfully.');
       await prisma.$disconnect();
     });
 }
@@ -94,3 +155,11 @@ Users()
   });
 
 Customers();
+
+Machines();
+
+Standards();
+
+Colors();
+
+Applicaitons();
