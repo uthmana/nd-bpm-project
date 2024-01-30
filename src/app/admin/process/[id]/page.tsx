@@ -62,7 +62,6 @@ export default function EntryControl() {
     const { status, data } = await getProcessById(queryParams.id);
     if (status === 200) {
       setProcess(data);
-      console.log({ data });
       setTechParams(data?.technicalParams);
       setMachineParams(data.machineParams.map((item) => item.param_name));
       setFinalControl(data?.finalControl);
@@ -254,6 +253,7 @@ export default function EntryControl() {
             </NextLink>
           </div>
 
+          {/* Product Info */}
           <Card extra="w-full px-6 py-8">
             <h2 className="my-5 text-2xl font-bold">Ürün Bilgileri</h2>
             <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
@@ -271,12 +271,16 @@ export default function EntryControl() {
               })}
             </div>
           </Card>
+
+          {/* Tecknical Params */}
           <Card extra="w-full px-6 py-8">
             <div className="w-full">
               <div className="my-5 flex justify-between">
                 <h2 className="text-2xl font-bold">Teknik Parametreleri</h2>
-                {session?.user?.role === 'TECH' ||
-                session?.user?.role === 'ADMIN' ? (
+                {(finalControl.length === 0 ||
+                  finalControl[0].result !== 'ACCEPT') &&
+                (session?.user?.role === 'TECH' ||
+                  session?.user?.role === 'ADMIN') ? (
                   <Button
                     icon={<MdAdd className="mr-1 h-5 w-5" />}
                     extra="max-w-fit px-4  h-[40px]"
@@ -300,8 +304,26 @@ export default function EntryControl() {
                 onRemoveRow={(val) => onRemoveRow(val)}
               />
             </div>
+
+            <div className="mt-8 flex justify-between text-sm font-bold opacity-60">
+              <div>
+                <p>Oluşturan: {process?.createdBy}</p>
+                <p>
+                  Oluşturulma Tarihi:{' '}
+                  {process?.createdAt ? formatDateTime(process?.createdAt) : ''}
+                </p>
+              </div>
+              <div>
+                <p>Güncelleyen: {process?.updatedBy}</p>
+                <p>
+                  Güncelleme Tarihi:{' '}
+                  {process?.updatedAt ? formatDateTime(process?.updatedAt) : ''}
+                </p>
+              </div>
+            </div>
           </Card>
 
+          {/* Form  COntrol */}
           <Card extra="w-full px-6 py-8">
             <div className="w-full">
               <div className="my-5 flex justify-between">
@@ -323,8 +345,8 @@ export default function EntryControl() {
                 ) : null}
               </div>
               {finalControl.length === 0 ? (
-                <div className="flex h-32 w-full items-center justify-center opacity-75">
-                  Henüz final kontrolü yapılamdı
+                <div className="flex h-32 w-full items-center justify-center opacity-40">
+                  Henüz final kontrolü yapılmadı
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
@@ -349,23 +371,6 @@ export default function EntryControl() {
               )}
             </div>
           </Card>
-
-          <div className="mt-8 flex justify-between text-sm font-bold opacity-60">
-            <div>
-              <p>Oluşturan: {process?.createdBy}</p>
-              <p>
-                Oluşturulma Tarihi:{' '}
-                {process?.createdAt ? formatDateTime(process?.createdAt) : ''}
-              </p>
-            </div>
-            <div>
-              <p>Güncelleyen: {process?.updatedBy}</p>
-              <p>
-                Güncelleme Tarihi:{' '}
-                {process?.updatedAt ? formatDateTime(process?.updatedAt) : ''}
-              </p>
-            </div>
-          </div>
         </div>
       )}
 

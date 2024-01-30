@@ -59,9 +59,9 @@ export async function PUT(req: Request) {
     const notification = await prisma.notification.create({
       data: {
         title: 'Ürün Final Kontrolü',
-        description: 'Yeni bir ürün final kontrolu yapıldı',
+        description: 'Yeni bir ürün final kontrolü yapıldı',
         receiver: 'OTHER',
-        link: `/admin/process/control/${finalControl.id}`,
+        link: `/admin/process/${processId}`,
       },
     });
 

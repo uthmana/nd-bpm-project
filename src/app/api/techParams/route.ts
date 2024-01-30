@@ -10,9 +10,7 @@ export async function GET(req: NextRequest) {
     const techParams = await prisma.technicalParameter.findMany({
       orderBy: [{ createdAt: 'desc' }],
     });
-    if (!techParams) {
-      throw new Error('User not found');
-    }
+
     return NextResponse.json(techParams, { status: 200 });
   } catch (e) {
     if (
@@ -30,25 +28,23 @@ export async function GET(req: NextRequest) {
 // Create  TechParams
 export async function PUT(req: Request) {
   try {
-    const reqBody: Process = await req.json();
-    //TODO: validate reqBody
+    const reqBody: any = await req.json();
 
-    const { machineId } = reqBody;
+    const { machineId, processId } = reqBody;
     if (!machineId) {
-      throw new Error('You are missing a required feild');
+      return NextResponse.json(
+        { message: 'You are missing a required data' },
+        { status: 401 },
+      );
     }
 
     const techParams = await prisma.technicalParameter.create({
       data: reqBody,
     });
 
-    if (!techParams) {
-      throw new Error('Process not found');
-    }
-
     //Update process when tech Params is added
-    const process: Process = await prisma.process.findFirst({
-      where: { machineId },
+    const process: Process = await prisma.process.findUnique({
+      where: { id: processId },
     });
     if (process && process.status === 'PENDING') {
       const updatedProcess = await prisma.process.update({
@@ -63,7 +59,7 @@ export async function PUT(req: Request) {
     }
 
     const techParamsData = await prisma.technicalParameter.findMany({
-      where: { machineId: techParams.machineId },
+      where: { processId },
       orderBy: [{ createdAt: 'asc' }],
     });
     return NextResponse.json(techParamsData, { status: 200 });

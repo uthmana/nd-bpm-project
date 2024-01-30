@@ -29,7 +29,6 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
     const id = route.params.id;
     const result: TechnicalParameter = await req.json();
-    //TODO: validate reqBody
     const { processId } = result;
 
     if (!processId) {
@@ -54,7 +53,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     });
 
     const techParamsData = await prisma.technicalParameter.findMany({
-      where: { machineId: updatedtechParams.machineId },
+      where: { processId },
       orderBy: [{ createdAt: 'asc' }],
     });
 

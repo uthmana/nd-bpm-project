@@ -244,7 +244,7 @@ export default function EntryControl() {
                 <h2 className="text-2xl font-bold">Teknik Parametreleri</h2>
                 {process?.status !== 'FINISHED' ? (
                   <Button
-                    extra="max-w-fit px-4  h-[40px] bg-green-700 hover:bg-green-800"
+                    extra="max-w-fit px-4 h-[40px]"
                     text="PROSESİ TAMAMLA"
                     onClick={() => setIsShowPopUp(true)}
                   />

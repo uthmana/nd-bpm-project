@@ -150,7 +150,7 @@ const TechParamsTable = ({
                 colSpan={table.getCenterLeafColumns().length}
                 align="center"
               >
-                Henüz Teknik parametreleri eklenmedi
+                Henüz teknik parametreleri eklenmedi
               </th>
             </tr>
           </tfoot>

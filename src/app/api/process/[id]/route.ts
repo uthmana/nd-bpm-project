@@ -72,7 +72,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     if (result.status === 'FINISHED') {
       const notification = await prisma.notification.create({
         data: {
-          title: 'Proses Kontrolü',
+          title: 'Ürün Final Kontrolü',
           description: `${updatedProcess?.product} ürünün prosesi tamamalandı.`,
           receiver: 'SUPER',
           link: `/admin/process/${id}`,
@@ -107,29 +107,6 @@ export async function DELETE(
         id: id,
       },
     });
-
-    //Delete all relatated techParams
-    // const { machineId } = deletedProcess;
-    // const deletedProcessTechParams = await prisma.technicalParameter.findMany({
-    //   where: {
-    //     machineId,
-    //   },
-    // });
-    // if (deletedProcessTechParams) {
-    //   const techParamIds = deletedProcessTechParams.map((item) => {
-    //     return item.id;
-    //   });
-    //   if (techParamIds?.length > 0) {
-    //     const deletedTechParams = await prisma.technicalParameter.deleteMany({
-    //       where: {
-    //         id: {
-    //           in: techParamIds,
-    //         },
-    //         machineId,
-    //       },
-    //     });
-    //   }
-    // }
 
     return NextResponse.json(deletedProcess, { status: 200 });
   } catch (e) {

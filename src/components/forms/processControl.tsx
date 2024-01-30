@@ -94,13 +94,6 @@ export default function ProcessControlForm({
       setError(true);
       return;
     }
-    console.log({
-      ...values,
-      image: file,
-      kontrol_edilen_miktar: parseInt(values.kontrol_edilen_miktar),
-      hatali_miktar: parseInt(values.hatali_miktar),
-      makliye_miktar: parseInt(values.makliye_miktar),
-    });
 
     onSubmit(
       {

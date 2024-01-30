@@ -172,7 +172,7 @@ export default function Edit() {
               </div>
             ) : (
               <div className="flex h-32 w-full items-center justify-center opacity-75">
-                Henüz Ürün Kontrolü yapılamdı
+                Henüz Ürün Kontrolü yapılmadı
               </div>
             )}
           </Card>
