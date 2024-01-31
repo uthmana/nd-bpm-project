@@ -140,7 +140,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   }
 }
 
-//Delete Fault
+//Delete Fault Control
 export async function DELETE(
   req: NextRequest,
   route: { params: { id: string } },

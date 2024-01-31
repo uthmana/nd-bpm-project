@@ -219,6 +219,7 @@ model Process {
   id                         String               @id @default(cuid())
   faultId                    String?              @unique
   customerName               String?
+  customerId                 String?
   product                    String?
   quantity                   Int?
   productCode                String?
@@ -236,7 +237,7 @@ model Process {
   technicalParams            TechnicalParameter[]
   finalControl               FinalControl[]
 
-  Invoice   Invoice? @relation(fields: [invoiceId], references: [id])
+  Invoice   Invoice? @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   invoiceId String?
 }
 
@@ -267,14 +268,19 @@ enum FinalItemStatus {
 }
 
 model Invoice {
-  id          String        @id @default(cuid())
+  id          String    @id @default(cuid())
   barcode     String?
   invoiceDate DateTime
-  currency    Currency?     @default(TL)
+  currency    Currency? @default(TL)
   amount      Float?
   vat         Float?
   totalAmount Float?
+  address     String?
+
   description String?
+  rep_name    String?
+  tax_Office  String?
+  taxNo       String?
   status      InvoiceStatus @default(ACTIVE)
   process     Process[]
   customer    Customer      @relation(fields: [customerId], references: [id])

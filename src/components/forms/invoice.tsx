@@ -3,25 +3,15 @@
 import React, { useState } from 'react';
 import {
   formatDateTime,
-  platings,
-  processConfirmation,
-  materials,
-  dirtyConfirmation,
-  confirmation,
-  results,
-  faultInfo,
-  infoTranslate,
   removeMillisecondsAndUTC,
+  convertToISO8601,
 } from 'utils';
 import Checkbox from 'components/checkbox';
-import Upload from 'components/upload';
 import TextArea from 'components/fields/textArea';
 import Button from 'components/button/button';
 import Select from 'components/select/page';
-import Radio from 'components/radio';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import NextLink from 'next/link';
-import FileViewer from 'components/fileViewer';
 import InputField from 'components/fields/InputField';
 
 export default function InvoiceForm(props: {
@@ -32,14 +22,12 @@ export default function InvoiceForm(props: {
   isSubmitting?: boolean;
 }) {
   const { info, editData, title, onSubmit, isSubmitting } = props;
-
   const isUpdate = editData && editData?.id ? true : false;
-  const [fault, setFault] = useState(info || {});
   const [error, setError] = useState(false);
   const [formTouch, setFormTouch] = useState(isUpdate);
-  const [platingsOpt, setPlatingsOpt] = useState([]);
-
-  const [customers, setCustomers] = useState([]);
+  const [customers, setCustomers] = useState(info || []);
+  const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState([]);
 
   const [values, setValues] = useState(
     isUpdate
@@ -49,10 +37,14 @@ export default function InvoiceForm(props: {
           amount: null,
           vat: null,
           totalAmount: null,
-          currency: '',
+          currency: 'TL',
           description: '',
           customerId: '',
           createdBy: '',
+          rep_name: '',
+          tax_Office: '',
+          taxNo: '',
+          address: '',
         },
   );
 
@@ -63,26 +55,43 @@ export default function InvoiceForm(props: {
     setValues({ ...values, ...newVal });
   };
 
-  const handlePlating = (e) => {
+  const handleProduct = (e) => {
     setError(false);
     setFormTouch(false);
-    const value = e.target.value;
+    const value = JSON.parse(e.target.value);
     if (e.target.checked) {
-      if (![...platingsOpt].includes(value)) {
-        setPlatingsOpt([...platingsOpt, value]);
+      const existedVal = [...selectedProduct].filter((item) => {
+        return item.id === value.id;
+      });
+
+      if (existedVal.length > 0) {
+        const filteredVal = [...selectedProduct].filter((item) => {
+          return item.id !== value.id;
+        });
+        setSelectedProduct(filteredVal);
+        return;
       }
+      setSelectedProduct([...selectedProduct, value]);
       return;
     }
-    const _plating = [...platingsOpt].filter((item) => {
-      return item !== value;
-    });
-    setPlatingsOpt(_plating);
+    setSelectedProduct(
+      [...selectedProduct].filter((item) => {
+        return item.id !== value.id;
+      }),
+    );
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { result } = values;
-    if (!result) {
+    const { invoiceDate, customerId, tax_Office, taxNo, address } = values;
+    if (
+      selectedProduct.length === 0 ||
+      !customerId ||
+      !invoiceDate ||
+      !tax_Office ||
+      !taxNo ||
+      !address
+    ) {
       setError(true);
       window.scroll(100, 0);
       return;
@@ -91,6 +100,8 @@ export default function InvoiceForm(props: {
     onSubmit(
       {
         ...values,
+        invoiceDate: convertToISO8601(values.invoiceDate),
+        process: selectedProduct,
       },
       isUpdate,
     );
@@ -98,15 +109,16 @@ export default function InvoiceForm(props: {
 
   const onCustomerSelect = (event) => {
     if (!event.target?.value) return;
-    const stock = JSON.parse(event.target?.value);
-    const { product_code, product_name, inventory, date, customer } = stock;
+    const processed = JSON.parse(event.target?.value);
+    const { process, customer } = processed;
+    setProducts(process);
     setValues({
       ...values,
-      customerName: customer?.company_name,
-      product: product_name,
-      productCode: product_code,
-      quantity: inventory,
-      arrivalDate: removeMillisecondsAndUTC(date),
+      customerId: customer?.id,
+      rep_name: customer?.rep_name,
+      tax_Office: customer?.tax_Office,
+      taxNo: customer?.taxNo,
+      address: customer?.address,
     });
   };
 
@@ -133,7 +145,7 @@ export default function InvoiceForm(props: {
         </h1>
         {error ? (
           <p className="mb-3 w-full rounded-md bg-red-500 p-2 text-center text-sm  font-bold text-white">
-            Lütfen ilgili kontrol alanları boş bırakılmamalı.
+            Lütfen zorunlu alanları boş bırakılmamalı.
           </p>
         ) : null}
 
@@ -143,6 +155,7 @@ export default function InvoiceForm(props: {
               extra="pt-1"
               label="Müşteri Adı"
               onChange={onCustomerSelect}
+              name="customerName"
             >
               {customers.map((item, idx) => {
                 return (
@@ -168,30 +181,107 @@ export default function InvoiceForm(props: {
               placeholder="İrsalye Tarihi"
               extra="mb-2"
               value={values.invoiceDate}
+              required={true}
             />
           </div>
 
-          <div className="mb-4">
-            <h2 className="mb-4 text-sm font-bold">Ürünleri</h2>
-            <div className="mb-6 grid w-full grid-cols-2 gap-3 sm:grid-cols-3">
-              {platings.map((item, idx) => {
-                return (
-                  <label className="flex cursor-pointer items-center" key={idx}>
-                    <Checkbox
-                      name="plating"
-                      colorscheme="brandScheme"
-                      me="10px"
-                      checked={isUpdate ? values.plating.includes(item) : false}
-                      onChange={handlePlating}
-                      value={item}
-                    />
-                    <p className="ml-3 text-sm font-bold text-navy-700 dark:text-white">
-                      {item}
-                    </p>
-                  </label>
-                );
-              })}
+          <div className="mb-8 pl-2">
+            <h2 className="text-md mb-4 font-bold">
+              Ürün <span className="text-red-400">*</span>
+            </h2>
+            <div className="mb-6 grid w-full grid-cols-1">
+              <div className="grid w-full grid-cols-6 gap-1 border-b font-bold">
+                <div>No</div>
+                <div>Ürün</div>
+                <div>Uygulama</div>
+                <div>Standart</div>
+                <div>Renk</div>
+                <div>Miktar</div>
+              </div>
+
+              {products.length > 0 ? (
+                products.map((item, idx) => {
+                  return (
+                    <label
+                      className="flex cursor-pointer items-center"
+                      key={item.id}
+                    >
+                      <div className="grid w-full grid-cols-6 items-center gap-1 border-b py-2 text-sm font-bold text-navy-700 dark:text-white">
+                        <div>
+                          <Checkbox
+                            name="plating"
+                            colorscheme="brandScheme"
+                            checked={
+                              isUpdate ? values.products.includes(item) : false
+                            }
+                            onChange={handleProduct}
+                            value={JSON.stringify(item)}
+                          />
+                        </div>
+                        <div>{item.product}</div>
+                        <div>{item.application}</div>
+                        <div>{item.standard}</div>
+                        <div>{item.color}</div>
+                        <div>{item.quantity}</div>
+                      </div>
+                    </label>
+                  );
+                })
+              ) : (
+                <div className="flex min-h-[100px] items-center justify-center opacity-40">
+                  Müşteri adi seçmeniz gerekiyor.
+                </div>
+              )}
             </div>
+          </div>
+
+          <div className="w-full">
+            <TextArea
+              label="Adres"
+              onChange={handleValues}
+              id="address"
+              name="address"
+              placeholder="Adres"
+              extra="mb-8"
+              value={values.address}
+            />
+          </div>
+
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+            <InputField
+              label="Sorumlu"
+              onChange={handleValues}
+              type="text"
+              id="rep_name"
+              name="rep_name"
+              placeholder="Sorumlu"
+              extra="mb-2"
+              value={values.rep_name}
+              required={true}
+            />
+
+            <InputField
+              label="Vergi Dairesi"
+              onChange={handleValues}
+              type="text"
+              id="tax_Office"
+              name="tax_Office"
+              placeholder="Vergi Dairesi"
+              extra="mb-2"
+              value={values.tax_Office}
+              required={true}
+            />
+            <InputField
+              label="Vergi No"
+              onChange={handleValues}
+              type="text"
+              id="taxNo"
+              name="taxNo"
+              placeholder="Vergi No"
+              extra="mb-2"
+              value={values.taxNo}
+              required={true}
+            />
           </div>
 
           <div className="mb-4 flex flex-col gap-3 sm:flex-row">

@@ -56,7 +56,7 @@ const routes = [
     icon: <MdGroupWork className={`${iconStyle}`} />,
   },
   {
-    name: 'İrsalye',
+    name: 'İrsaliye',
     layout: '/admin',
     path: 'invoice',
     role: 'normal',

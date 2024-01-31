@@ -4,7 +4,7 @@ import InvoiceTable from 'components/admin/data-tables/invoiceTable';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { log } from 'utils';
 import { useEffect, useState } from 'react';
-import { deleteFault, getFaults } from 'app/lib/apiRequest';
+import { deleteInvoice, getInvoice } from 'app/lib/apiRequest';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
 import { toast } from 'react-toastify';
 import Popup from 'components/popup';
@@ -13,7 +13,7 @@ import { useSession } from 'next-auth/react';
 
 const Invoice = () => {
   const router = useRouter();
-  const [faults, setFaults] = useState([]);
+  const [invoices, setInvoices] = useState([]);
   const [isShowPopUp, setIsShowPopUp] = useState(false);
   const [faultId, setFaultId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,17 +23,31 @@ const Invoice = () => {
   const searchVal = searchParams.get('q');
   const [searchText, setSearchText] = useState(searchVal || '');
 
-  const getAllFaults = async () => {
+  const getAllInvoice = async () => {
     setIsLoading(true);
-    const { status, data } = await getFaults();
+    const { status, data } = await getInvoice();
+    console.log({ data });
     if (status === 200) {
-      setFaults(data);
+      const newData = data.map((item) => {
+        const customerName = item?.customer?.company_name;
+        const products = item?.process
+          ?.map((item, idx) => {
+            return `${idx + 1}. ${item.product}`;
+          })
+          ?.join('');
+
+        item.customerName = customerName;
+        item.products = products;
+        item.address = item?.customer?.address;
+        return item;
+      });
+      setInvoices(newData);
     }
     setIsLoading(false);
   };
 
   useEffect(() => {
-    getAllFaults();
+    getAllInvoice();
   }, []);
 
   useEffect(() => {
@@ -59,9 +73,9 @@ const Invoice = () => {
 
   const onDelete = async () => {
     setIsSubmitting(true);
-    const resFault: any = await deleteFault(faultId);
+    const resInvoice: any = await deleteInvoice(faultId);
 
-    const { status, response } = resFault;
+    const { status, response } = resInvoice;
     if (response?.error) {
       const { message, detail } = response?.error;
       toast.error('Ürün silmeişlemi başarısız.' + message);
@@ -74,8 +88,8 @@ const Invoice = () => {
       toast.success('Ürün silme işlemi başarılı.');
       setIsSubmitting(false);
       setIsShowPopUp(false);
-      setFaults([]);
-      getAllFaults();
+      setInvoices([]);
+      getAllInvoice();
       return;
     }
   };
@@ -93,7 +107,7 @@ const Invoice = () => {
           onAdd={onAdd}
           onDelete={onComfirm}
           onEdit={onEdit}
-          tableData={faults as any}
+          tableData={invoices as any}
           variant={session?.user?.role}
           onControl={onControl}
           searchValue={searchText}
@@ -103,7 +117,9 @@ const Invoice = () => {
 
       <Popup show={isShowPopUp} extra="flex flex-col gap-3 py-6 px-8">
         <h1 className="text-3xl">Ürün Silme</h1>
-        <p className="mb-2 text-lg">Bu Ürünü Silmek istediğini Emin misin ?</p>
+        <p className="mb-2 text-lg">
+          Bu İrsaliye'yi Silmek istediğini Emin misin ?
+        </p>
         <div className="flex gap-4">
           <Button
             loading={isSubmitting}

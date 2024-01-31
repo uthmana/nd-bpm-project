@@ -194,3 +194,20 @@ export async function updateProcessControl(payload) {
 export async function getFinishedProcess() {
   return fetchAPI('process?status=finished&result=accept');
 }
+
+// Invoice
+export async function addInvoice(payload) {
+  return fetchAPI('invoice', 'put', payload);
+}
+
+export async function getInvoice() {
+  return fetchAPI('invoice');
+}
+
+export async function deleteInvoice(id) {
+  return fetchAPI(`invoice/${id}`, 'delete');
+}
+
+export async function updateInvoice(payload) {
+  return fetchAPI(`invoice/${payload.id}`, 'put', payload);
+}

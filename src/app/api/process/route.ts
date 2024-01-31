@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     const result = searchParams.get('result');
 
     if (status && result) {
-      const process = await prisma.process.findMany({
+      const _process = await prisma.process.findMany({
         include: {
           finalControl: {
             where: { result: 'ACCEPT' },
@@ -29,8 +29,33 @@ export async function GET(req: NextRequest) {
         where: { status: 'FINISHED' },
       });
 
-      return NextResponse.json(process, { status: 200 });
+      if (_process.length > 0) {
+        const customerIds = [];
+        _process.map((item) => {
+          if (!customerIds.includes(item.customerId)) {
+            customerIds.push(item.customerId);
+          }
+        });
+        const finishedProcess = [];
+        if (customerIds.length > 0) {
+          const data = await Promise.all(
+            customerIds.map(async (item) => {
+              const customer = await prisma.customer.findUnique({
+                where: { id: item },
+              });
+              const process = _process.filter((pro) => {
+                return pro.customerId === item && pro.invoiceId === null;
+              });
+              if (process.length > 0) {
+                finishedProcess.push({ customer, process });
+              }
+            }),
+          );
+        }
+        return NextResponse.json(finishedProcess, { status: 200 });
+      }
     }
+
     const process = await prisma.process.findMany({
       include: { technicalParams: true },
     });

@@ -2,6 +2,9 @@
 CREATE TYPE "FinalItemStatus" AS ENUM ('OK', 'NOT_OK');
 
 -- CreateEnum
+CREATE TYPE "InvoiceStatus" AS ENUM ('ACTIVE', 'PAID', 'NOT_PAID');
+
+-- CreateEnum
 CREATE TYPE "NotifStatus" AS ENUM ('READ', 'NOT_READ');
 
 -- CreateEnum
@@ -250,6 +253,7 @@ CREATE TABLE "Process" (
     "id" TEXT NOT NULL,
     "faultId" TEXT,
     "customerName" TEXT,
+    "customerId" TEXT,
     "product" TEXT,
     "quantity" INTEGER,
     "productCode" TEXT,
@@ -264,6 +268,7 @@ CREATE TABLE "Process" (
     "createdBy" TEXT,
     "updatedBy" TEXT,
     "status" "ProcessStatus" NOT NULL DEFAULT 'PENDING',
+    "invoiceId" TEXT,
 
     CONSTRAINT "Process_pkey" PRIMARY KEY ("id")
 );
@@ -294,9 +299,23 @@ CREATE TABLE "FinalControl" (
 -- CreateTable
 CREATE TABLE "Invoice" (
     "id" TEXT NOT NULL,
-    "faultId" TEXT NOT NULL,
-    "invoiceDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "barcode" TEXT,
+    "invoiceDate" TIMESTAMP(3) NOT NULL,
+    "currency" "Currency" DEFAULT 'TL',
+    "amount" DOUBLE PRECISION,
+    "vat" DOUBLE PRECISION,
     "totalAmount" DOUBLE PRECISION,
+    "address" TEXT,
+    "description" TEXT,
+    "rep_name" TEXT,
+    "tax_Office" TEXT,
+    "taxNo" TEXT,
+    "status" "InvoiceStatus" NOT NULL DEFAULT 'ACTIVE',
+    "customerId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
 
     CONSTRAINT "Invoice_pkey" PRIMARY KEY ("id")
 );
@@ -389,7 +408,10 @@ ALTER TABLE "MachineParams" ADD CONSTRAINT "MachineParams_machineId_fkey" FOREIG
 ALTER TABLE "TechnicalParameter" ADD CONSTRAINT "TechnicalParameter_processId_fkey" FOREIGN KEY ("processId") REFERENCES "Process"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Process" ADD CONSTRAINT "Process_invoiceId_fkey" FOREIGN KEY ("invoiceId") REFERENCES "Invoice"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "FinalControl" ADD CONSTRAINT "FinalControl_processId_fkey" FOREIGN KEY ("processId") REFERENCES "Process"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_faultId_fkey" FOREIGN KEY ("faultId") REFERENCES "Fault"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

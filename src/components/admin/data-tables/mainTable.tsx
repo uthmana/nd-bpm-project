@@ -46,7 +46,7 @@ function MainTable({
           columnHelper.accessor('id', {
             id: 'id',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="min-w-[100px] text-sm font-bold text-gray-600 dark:text-white">
                 SİRA NO.
               </p>
             ),
@@ -306,7 +306,7 @@ function MainTable({
           columnHelper.accessor('id', {
             id: 'id',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
                 Sira No.
               </p>
             ),
@@ -320,7 +320,7 @@ function MainTable({
           columnHelper.accessor('product_code', {
             id: 'product_code',
             header: () => (
-              <p className=" min-w-[80px] text-sm font-bold text-gray-600 dark:text-white">
+              <p className=" min-w-[90px] text-sm font-bold uppercase text-gray-600 dark:text-white">
                 Ürün Kodu
               </p>
             ),
@@ -333,7 +333,7 @@ function MainTable({
           columnHelper.accessor('product_name', {
             id: 'product_name',
             header: () => (
-              <p className="min-w-[120px] text-sm font-bold text-gray-600 dark:text-white">
+              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
                 Ürün Adı
               </p>
             ),
@@ -346,8 +346,8 @@ function MainTable({
           columnHelper.accessor('image', {
             id: 'image',
             header: () => (
-              <p className="min-w-[80px] text-sm font-bold text-gray-600 dark:text-white">
-                Ürün Resmi
+              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                İLGİLİ DOKÜMAN
               </p>
             ),
             cell: (info: any) => (
@@ -360,7 +360,7 @@ function MainTable({
           columnHelper.accessor('brand', {
             id: 'brand',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="min-w-[100px] text-sm  font-bold uppercase text-gray-600 dark:text-white">
                 Marka
               </p>
             ),
@@ -373,7 +373,7 @@ function MainTable({
           columnHelper.accessor('product_barcode', {
             id: 'product_barcode',
             header: () => (
-              <p className="min-w-[100px] text-sm font-bold text-gray-600 dark:text-white">
+              <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
                 Barkodu
               </p>
             ),
@@ -386,7 +386,7 @@ function MainTable({
           columnHelper.accessor('inventory', {
             id: 'inventory',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
                 Envanter
               </p>
             ),
@@ -399,7 +399,7 @@ function MainTable({
           columnHelper.accessor('unit', {
             id: 'unit',
             header: () => (
-              <p className="min-w-[100px] text-sm font-bold text-gray-600 dark:text-white">
+              <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
                 Birim
               </p>
             ),
@@ -412,7 +412,7 @@ function MainTable({
           columnHelper.accessor('current_price', {
             id: 'current_price',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="min-w-[80px] text-sm font-bold uppercase text-gray-600 dark:text-white">
                 Maliyet
               </p>
             ),
@@ -425,7 +425,7 @@ function MainTable({
           columnHelper.accessor('curency', {
             id: 'curency',
             header: () => (
-              <p className="min-w-[80px] text-sm font-bold text-gray-600 dark:text-white">
+              <p className="min-w-[90px] text-sm font-bold uppercase text-gray-600 dark:text-white">
                 Para Birimi
               </p>
             ),
@@ -438,7 +438,7 @@ function MainTable({
           columnHelper.accessor('main_group', {
             id: 'main_group',
             header: () => (
-              <p className="min-w-[120px] text-sm font-bold text-gray-600 dark:text-white">
+              <p className="min-w-[120px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
                 Ana Grubu
               </p>
             ),
@@ -451,7 +451,7 @@ function MainTable({
           columnHelper.accessor('group1', {
             id: 'group1',
             header: () => (
-              <p className="min-w-[120px] text-sm font-bold text-gray-600 dark:text-white">
+              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
                 Grub 1
               </p>
             ),
@@ -464,7 +464,7 @@ function MainTable({
           columnHelper.accessor('group2', {
             id: 'group2',
             header: () => (
-              <p className="min-w-[120px] text-sm font-bold text-gray-600 dark:text-white">
+              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
                 Grub 2
               </p>
             ),
@@ -477,7 +477,7 @@ function MainTable({
           columnHelper.accessor('description', {
             id: 'description',
             header: () => (
-              <p className="min-w-[140px] text-sm font-bold text-gray-600 dark:text-white">
+              <p className="min-w-[140px] text-sm font-bold uppercase text-gray-600 dark:text-white">
                 Açıklama
               </p>
             ),
@@ -490,7 +490,7 @@ function MainTable({
           columnHelper.accessor('date', {
             id: 'date',
             header: () => (
-              <p className="min-w-[120px] text-sm font-bold text-gray-600 dark:text-white">
+              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
                 Tarih
               </p>
             ),
@@ -503,7 +503,7 @@ function MainTable({
           columnHelper.accessor('id', {
             id: 'id',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
                 DÜZENLE
               </p>
             ),

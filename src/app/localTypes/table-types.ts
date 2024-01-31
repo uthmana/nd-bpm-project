@@ -28,13 +28,15 @@ export type InvoiceObj = {
   totalAmount: number;
   description: string;
   status: string;
-  process: string;
-  customer: string;
   customerId: string;
   createdAt: string;
   updatedAt: string;
   createdBy: string;
   updatedBy: string;
+  address: string;
+  totalQuantity: string;
+  products: string;
+  customerName: string;
 };
 
 export type InvoiceTable = {

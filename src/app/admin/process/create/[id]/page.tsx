@@ -173,6 +173,7 @@ export default function EntryControl() {
     if (status === 200) {
       await getSingleProcess();
       setIsShowPopUp(false);
+      router.push(`/admin/process/${process.id}`);
     }
   };
 
@@ -189,6 +190,7 @@ export default function EntryControl() {
       await getSingleProcess();
       toast.success('Makine ekleme işlemi başarılı.');
       setIsShowMachinePopUp(false);
+      setIsSubmitting(false);
       return;
     }
     toast.error('Bir hata oluştu, tekrar deneyin !');

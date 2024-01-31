@@ -31,7 +31,6 @@ export default function Fault(props: {
     : {
         customerName: '',
         arrivalDate: '',
-        invoiceDate: '',
         product: '',
         quantity: 1,
         productCode: '',
@@ -41,6 +40,7 @@ export default function Fault(props: {
         color: 'Mavi',
         technicalDrawingAttachment: '',
         faultDescription: '',
+        customerId: '',
       };
 
   const [values, setValues] = useState(initialValues);
@@ -83,7 +83,6 @@ export default function Fault(props: {
       quantity: parseInt(values.quantity.toString()),
       technicalDrawingAttachment: file,
       arrivalDate: convertToISO8601(values.arrivalDate),
-      invoiceDate: convertToISO8601(values.invoiceDate),
     });
   };
 
@@ -94,6 +93,7 @@ export default function Fault(props: {
     setValues({
       ...values,
       customerName: customer?.company_name,
+      customerId: customer?.id,
       product: product_name,
       productCode: product_code,
       quantity: inventory,
@@ -127,7 +127,12 @@ export default function Fault(props: {
       ) : null}
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">
-        <Select extra="pt-1" label="Müşteri Adı" onChange={onCustomerSelect}>
+        <Select
+          required={true}
+          extra="pt-1"
+          label="Müşteri Adı"
+          onChange={onCustomerSelect}
+        >
           {customers.map((item, idx) => {
             return (
               <option
@@ -188,6 +193,17 @@ export default function Fault(props: {
           extra="mb-2"
           value={values.quantity}
         />
+
+        <InputField
+          label="Varış tarihi"
+          onChange={handleValues}
+          type="datetime-local"
+          id="arrivalDate"
+          name="arrivalDate"
+          placeholder="varış tarihi"
+          extra="mb-2"
+          value={values.arrivalDate}
+        />
       </div>
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">
@@ -202,18 +218,8 @@ export default function Fault(props: {
           min={1}
           value={values.productBatchNumber}
         /> */}
-        <InputField
-          label="Varış tarihi"
-          onChange={handleValues}
-          type="datetime-local"
-          id="arrivalDate"
-          name="arrivalDate"
-          placeholder="varış tarihi"
-          extra="mb-2"
-          value={values.arrivalDate}
-        />
 
-        <InputField
+        {/* <InputField
           label="İrsalye Tarihi"
           onChange={handleValues}
           type="datetime-local"
@@ -222,11 +228,12 @@ export default function Fault(props: {
           placeholder="İrsalye Tarihi"
           extra="mb-2"
           value={values.invoiceDate}
-        />
+        /> */}
       </div>
 
       <div className="mb-8 flex flex-col gap-3 sm:flex-row">
         <Select
+          required={true}
           extra="pt-1"
           label="Uygulama"
           onChange={handleValues}
@@ -246,6 +253,7 @@ export default function Fault(props: {
         </Select>
 
         <Select
+          required={true}
           extra="pt-1"
           label="Standart"
           onChange={handleValues}
@@ -265,6 +273,7 @@ export default function Fault(props: {
         </Select>
 
         <Select
+          required={true}
           extra="pt-1"
           label="Renk Seçimi"
           onChange={handleValues}

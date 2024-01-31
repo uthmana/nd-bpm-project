@@ -65,6 +65,7 @@ export async function PUT(req: Request) {
         const {
           id,
           customerName,
+          customerId,
           product,
           quantity,
           productCode,
@@ -77,6 +78,7 @@ export async function PUT(req: Request) {
           data: {
             faultId: id,
             customerName,
+            customerId,
             product,
             quantity,
             productCode,

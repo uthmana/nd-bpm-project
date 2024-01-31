@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import InvoiceForm from 'components/forms/invoice';
 import { useRouter } from 'next/navigation';
 import { log } from 'utils';
-import { addFault, getFinishedProcess } from 'app/lib/apiRequest';
+import { addInvoice, getFinishedProcess } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
 import Card from 'components/card';
@@ -28,7 +28,7 @@ export default function Edit() {
 
   const handleSubmit = async (val) => {
     setIsSubmitting(true);
-    const resData: any = await addFault({
+    const resData: any = await addInvoice({
       ...val,
       ...{ createdBy: session?.user?.name },
     });
@@ -42,7 +42,7 @@ export default function Edit() {
     }
 
     if (status === 200) {
-      toast.success('Ürün girişi ekleme işlemi başarılı.');
+      toast.success('İrsaliye oluşturma işlemi başarılı.');
       router.push('/admin/invoice');
       setIsSubmitting(false);
       return;
@@ -52,9 +52,10 @@ export default function Edit() {
   return (
     <Card extra="mt-12 mx-auto mt-4 max-w-[700px] rounded-2xl px-8 py-10 bg-white dark:bg-[#111c44] dark:text-white">
       <InvoiceForm
+        key={customers[0]}
         info={customers}
         isSubmitting={isSubmitting}
-        title="İrsalıye Oluşturma"
+        title="İrsaliye Oluşturma"
         onSubmit={(val) => handleSubmit(val)}
       />
     </Card>

@@ -89,8 +89,8 @@ function InvoiceTable({
           </p>
         ),
       }),
-      columnHelper.accessor('customerId', {
-        id: 'customerId',
+      columnHelper.accessor('customerName', {
+        id: 'customerName',
         header: () => (
           <p className="min-w-[200px] text-sm font-bold uppercase text-gray-600 dark:text-white">
             Müşteri
@@ -102,24 +102,11 @@ function InvoiceTable({
           </p>
         ),
       }),
-      columnHelper.accessor('process', {
-        id: 'process',
+      columnHelper.accessor('products', {
+        id: 'products',
         header: () => (
-          <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[300px] text-sm font-bold uppercase text-gray-600 dark:text-white">
             Ürünleri
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
-          </p>
-        ),
-      }),
-      columnHelper.accessor('process', {
-        id: 'process',
-        header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Miktar
           </p>
         ),
         cell: (info: any) => (
@@ -131,7 +118,7 @@ function InvoiceTable({
       columnHelper.accessor('createdAt', {
         id: 'createdAt',
         header: () => (
-          <p className="min-w-[120px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[130px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
             Oluşturma Tarihi
           </p>
         ),
@@ -151,6 +138,19 @@ function InvoiceTable({
         cell: (info: any) => (
           <p className="text-sm font-bold text-navy-700 dark:text-white">
             {formatDateTime(info.getValue())}
+          </p>
+        ),
+      }),
+      columnHelper.accessor('address', {
+        id: 'address',
+        header: () => (
+          <p className="min-w-[160px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Adres
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
           </p>
         ),
       }),
