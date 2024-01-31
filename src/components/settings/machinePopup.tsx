@@ -1,10 +1,11 @@
 'use client';
 
+import { addMachineParam, deleteMachineParam } from 'app/lib/apiRequest';
 import Button from 'components/button/button';
 import InputField from 'components/fields/InputField';
 import Popup from 'components/popup';
 import { useState } from 'react';
-import { techParameters } from 'utils';
+import { techParameters, log } from 'utils';
 
 const MachinePopup = ({
   isSubmitting,
@@ -52,24 +53,52 @@ const MachinePopup = ({
     setValues({ ...values, ...newVal });
   };
 
-  const handleRemoveTechParam = (val) => {
-    const values = [...techParamItems, val];
-    setTechParamItems(values);
-    const selectedParams = [...techParamSelected];
-    setTechParamSelected(
-      selectedParams.filter((item) => {
-        return item.id !== val.id;
-      }),
-    );
-  };
-
-  const handleAddTechParam = (val) => {
-    const selectedParams = [...techParamSelected, val];
+  const handleAddTechParam = async (val) => {
+    let selectedParams;
+    if (editData?.id) {
+      const { param_name } = val;
+      const { status, data } = await addMachineParam({
+        param_name,
+        machineId: editData?.id,
+      });
+      if (status === 200) {
+        selectedParams = [
+          ...techParamSelected,
+          { id: data.id, param_name: data.param_name },
+        ];
+      }
+    } else {
+      selectedParams = [...techParamSelected, val];
+    }
     setTechParamSelected(selectedParams);
     const values = [...techParamItems];
     setTechParamItems(
       values.filter((item) => {
-        return item.id !== val.id;
+        return item.param_name !== val.param_name;
+      }),
+    );
+  };
+
+  const handleRemoveTechParam = async (val) => {
+    let values;
+    if (editData?.id) {
+      const { id } = val;
+      const { status, data } = await deleteMachineParam({ id });
+      if (status === 200) {
+        values = [
+          ...techParamItems,
+          { id: data.id, param_name: data.param_name },
+        ];
+      }
+    } else {
+      values = [...techParamItems, val];
+    }
+
+    setTechParamItems(values);
+    const selectedParams = [...techParamSelected];
+    setTechParamSelected(
+      selectedParams.filter((item) => {
+        return item.param_name !== val.param_name;
       }),
     );
   };

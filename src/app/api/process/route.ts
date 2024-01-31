@@ -14,6 +14,23 @@ export async function GET(req: NextRequest) {
         { status: 403 },
       );
     }
+
+    const searchParams = req.nextUrl.searchParams;
+    const status = searchParams.get('status');
+    const result = searchParams.get('result');
+
+    if (status && result) {
+      const process = await prisma.process.findMany({
+        include: {
+          finalControl: {
+            where: { result: 'ACCEPT' },
+          },
+        },
+        where: { status: 'FINISHED' },
+      });
+
+      return NextResponse.json(process, { status: 200 });
+    }
     const process = await prisma.process.findMany({
       include: { technicalParams: true },
     });

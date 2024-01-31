@@ -32,7 +32,14 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     const id = route.params.id;
     const result: any = await req.json();
     //TODO: validate reqBody
-    const { machine_Name, params } = result;
+    const { machine_Name, id: machineId } = result;
+
+    if (!machineId || !machine_Name) {
+      return NextResponse.json(
+        { message: 'You are missing a required data' },
+        { status: 401 },
+      );
+    }
 
     const machine: Machine = await prisma.machine.findUnique({
       where: { id },
@@ -46,29 +53,29 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     });
 
     //delete and create machine params
-    const machineParams: any = await prisma.machineParams.findMany({
-      where: { machineId: id },
-    });
+    // const machineParams: any = await prisma.machineParams.findMany({
+    //   where: { machineId: id },
+    // });
 
-    if (machineParams && machineParams?.length > 0) {
-      const machineParamsIds = machineParams.map((item) => item.id);
-      const machineParamsDeleted: any = await prisma.machineParams.deleteMany({
-        where: {
-          id: {
-            in: machineParamsIds,
-          },
-        },
-      });
+    // if (machineParams && machineParams?.length > 0) {
+    //   const machineParamsIds = machineParams.map((item) => item.id);
+    //   const machineParamsDeleted: any = await prisma.machineParams.deleteMany({
+    //     where: {
+    //       id: {
+    //         in: machineParamsIds,
+    //       },
+    //     },
+    //   });
 
-      if (machineParamsDeleted) {
-        const machineParamsData = params.map((item) => {
-          return { machineId: machine.id, param_name: item.param_name };
-        });
-        const machineParams = await prisma.machineParams.createMany({
-          data: machineParamsData,
-        });
-      }
-    }
+    //   if (machineParamsDeleted) {
+    //     const machineParamsData = params.map((item) => {
+    //       return { machineId: machine.id, param_name: item.param_name };
+    //     });
+    //     const machineParams = await prisma.machineParams.createMany({
+    //       data: machineParamsData,
+    //     });
+    //   }
+    // }
 
     return NextResponse.json(updatedMachine, { status: 200 });
   } catch (e) {

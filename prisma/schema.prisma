@@ -73,6 +73,7 @@ model Customer {
   updatedAt     DateTime? @updatedAt
   createdBy     String?
   updatedBy     String?
+  Invoice       Invoice[]
 
   @@map("customers")
 }
@@ -132,7 +133,6 @@ model Fault {
   customerId                 String?
   Customer                   Customer?      @relation(fields: [customerId], references: [id])
   faultControlId             String?        @unique
-  Invoice                    Invoice[]
   createdAt                  DateTime       @default(now())
   updatedAt                  DateTime?      @updatedAt
   createdBy                  String?
@@ -235,6 +235,9 @@ model Process {
   status                     ProcessStatus        @default(PENDING)
   technicalParams            TechnicalParameter[]
   finalControl               FinalControl[]
+
+  Invoice   Invoice? @relation(fields: [invoiceId], references: [id])
+  invoiceId String?
 }
 
 model FinalControl {
@@ -264,11 +267,28 @@ enum FinalItemStatus {
 }
 
 model Invoice {
-  id          String   @id @default(cuid())
-  faultId     String
-  invoiceDate DateTime @default(now())
+  id          String        @id @default(cuid())
+  barcode     String?
+  invoiceDate DateTime
+  currency    Currency?     @default(TL)
+  amount      Float?
+  vat         Float?
   totalAmount Float?
-  fault       Fault    @relation(fields: [faultId], references: [id])
+  description String?
+  status      InvoiceStatus @default(ACTIVE)
+  process     Process[]
+  customer    Customer      @relation(fields: [customerId], references: [id])
+  customerId  String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime?     @updatedAt
+  createdBy   String?
+  updatedBy   String?
+}
+
+enum InvoiceStatus {
+  ACTIVE
+  PAID
+  NOT_PAID
 }
 
 model Notification {

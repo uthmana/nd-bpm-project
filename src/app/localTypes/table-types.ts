@@ -18,6 +18,35 @@ export type FaultObj = {
   faultControl?: any;
 };
 
+export type InvoiceObj = {
+  id: string;
+  barcode: string;
+  invoiceDate: string;
+  currency: string;
+  amount: number;
+  vat: number;
+  totalAmount: number;
+  description: string;
+  status: string;
+  process: string;
+  customer: string;
+  customerId: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+  updatedBy: string;
+};
+
+export type InvoiceTable = {
+  tableData: InvoiceObj[];
+  variant: string;
+  onEdit: (e: any) => void;
+  onDelete: (e: any) => void;
+  onAdd: (e: any) => void;
+  onControl: (e: any) => void;
+  searchValue: string;
+};
+
 export type MainTable = {
   tableData: FaultObj[];
   variant: string;

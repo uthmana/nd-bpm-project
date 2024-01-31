@@ -156,6 +156,10 @@ export async function addMachineWithParams(payload) {
   return fetchAPI('machine', 'put', payload);
 }
 
+export async function updateMachine(payload) {
+  return fetchAPI(`machine/${payload.id}`, 'put', payload);
+}
+
 export async function deleteMachine(id) {
   return fetchAPI(`machine/${id}`, 'delete');
 }
@@ -169,6 +173,14 @@ export async function updateMachineWithParams(payload) {
   return fetchAPI(`machine/${payload.id}`, 'put', payload);
 }
 
+export async function addMachineParam(payload) {
+  return fetchAPI(`machineParams`, 'put', payload);
+}
+
+export async function deleteMachineParam(payload) {
+  return fetchAPI(`machineParams/${payload.id}`, 'delete');
+}
+
 // Final Control
 export async function addProcessControl(payload) {
   return fetchAPI('finalControl', 'put', payload);
@@ -176,4 +188,9 @@ export async function addProcessControl(payload) {
 
 export async function updateProcessControl(payload) {
   return fetchAPI(`finalControl/${payload.id}`, 'put', payload);
+}
+
+// Finished Process
+export async function getFinishedProcess() {
+  return fetchAPI('process?status=finished&result=accept');
 }

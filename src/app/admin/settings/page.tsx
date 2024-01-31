@@ -6,14 +6,18 @@ import Card from 'components/card';
 import { useEffect, useState } from 'react';
 
 import {
-  addMachineWithParams,
+  updateMachine,
   getMachines,
   deleteMachine,
   deleteMachineParams,
+  addMachineWithParams,
   updateMachineWithParams,
+  addMachineParam,
+  deleteMachineParam,
 } from 'app/lib/apiRequest';
 import MachinePopup from 'components/settings/machinePopup';
 import MachineList from 'components/settings/machineList';
+import { log } from 'utils';
 
 const Setting = () => {
   const [isShowPopUp, setIsShowPopUp] = useState(false);
@@ -68,10 +72,9 @@ const Setting = () => {
   const onEditMachine = async (val) => {
     const { machine, params } = val;
     setIsSubmitting(true);
-    const { status } = await updateMachineWithParams({
+    const { status } = await updateMachine({
       id: machineEdit.id,
       machine_Name: machine.machine_Name,
-      params,
     });
     if (status === 200) {
       await getAllMachines();

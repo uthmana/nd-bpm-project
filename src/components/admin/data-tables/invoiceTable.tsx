@@ -23,10 +23,10 @@ import Search from 'components/search/search';
 import Button from 'components/button/button';
 import { formatDateTime, useDrage } from 'utils';
 import FileViewer from 'components/fileViewer';
-import { FaultObj, MainTable } from '../../../app/localTypes/table-types';
+import { InvoiceObj, InvoiceTable } from '../../../app/localTypes/table-types';
 import TablePagination from './tablePagination';
 
-function EntryTable({
+function InvoiceTable({
   tableData,
   onEdit,
   onDelete,
@@ -34,7 +34,7 @@ function EntryTable({
   onControl,
   variant = 'NORMAL',
   searchValue,
-}: MainTable) {
+}: InvoiceTable) {
   let defaultData = tableData;
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
@@ -43,20 +43,18 @@ function EntryTable({
     useDrage();
 
   const columns = useMemo(() => {
-    const entryStatus = {
-      PENDING: 'Beklemede',
-      REJECT: 'Ret',
-      ACCEPT: 'Kabul',
-      ACCEPTANCE_WITH_CONDITION: 'Şartlı Kabul',
-      PRE_PROCESS: 'Ön İşlem Gerekli',
+    const invoiceStatus = {
+      ACTIVE: 'Aktif',
+      PAID: 'Ödendi',
+      NOT_PAID: 'Ödenmedi',
     };
     const statusbgColor = (status: string) => {
-      if (status === 'ACCEPT' || status === 'ACCEPTANCE_WITH_CONDITION') {
+      if (status === 'PAID') {
         return (
           <MdCheckCircle className="me-1 text-green-500 dark:text-green-300" />
         );
       }
-      if (status === 'REJECT') {
+      if (status === 'NOT_PAID') {
         return <MdCancel className="me-1 text-red-500 dark:text-red-300" />;
       }
       return (
@@ -68,7 +66,7 @@ function EntryTable({
       columnHelper.accessor('id', {
         id: 'id',
         header: () => (
-          <p className="min-w-[100px]  text-sm font-bold text-gray-600 dark:text-white">
+          <p className="min-w-[80px] text-sm font-bold text-gray-600 dark:text-white">
             SİRA NO.
           </p>
         ),
@@ -78,8 +76,8 @@ function EntryTable({
           </p>
         ),
       }),
-      columnHelper.accessor('id', {
-        id: 'id',
+      columnHelper.accessor('barcode', {
+        id: 'barcode',
         header: () => (
           <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
             Takip Kodu
@@ -91,8 +89,8 @@ function EntryTable({
           </p>
         ),
       }),
-      columnHelper.accessor('customerName', {
-        id: 'customerName',
+      columnHelper.accessor('customerId', {
+        id: 'customerId',
         header: () => (
           <p className="min-w-[200px] text-sm font-bold uppercase text-gray-600 dark:text-white">
             Müşteri
@@ -104,11 +102,11 @@ function EntryTable({
           </p>
         ),
       }),
-      columnHelper.accessor('product', {
-        id: 'product',
+      columnHelper.accessor('process', {
+        id: 'process',
         header: () => (
           <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Ürün İsmi
+            Ürünleri
           </p>
         ),
         cell: (info: any) => (
@@ -117,8 +115,8 @@ function EntryTable({
           </p>
         ),
       }),
-      columnHelper.accessor('quantity', {
-        id: 'quantity',
+      columnHelper.accessor('process', {
+        id: 'process',
         header: () => (
           <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
             Miktar
@@ -130,24 +128,11 @@ function EntryTable({
           </p>
         ),
       }),
-      columnHelper.accessor('productCode', {
-        id: 'productCode',
-        header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Ürün Kodu
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
-          </p>
-        ),
-      }),
-      columnHelper.accessor('arrivalDate', {
-        id: 'arrivalDate',
+      columnHelper.accessor('createdAt', {
+        id: 'createdAt',
         header: () => (
           <p className="min-w-[120px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Variş Tarihi
+            Oluşturma Tarihi
           </p>
         ),
         cell: (info: any) => (
@@ -169,47 +154,9 @@ function EntryTable({
           </p>
         ),
       }),
-      columnHelper.accessor('application', {
-        id: 'application',
-        header: () => (
-          <p className="min-w-[200px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Uygulama
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
-          </p>
-        ),
-      }),
-      columnHelper.accessor('standard', {
-        id: 'standard',
-        header: () => (
-          <p className="text-sm font-bold text-gray-600 dark:text-white">
-            STANDART
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
-          </p>
-        ),
-      }),
-      columnHelper.accessor('color', {
-        id: 'color',
-        header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Renk
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
-          </p>
-        ),
-      }),
-      columnHelper.accessor('faultDescription', {
-        id: 'faultDescription',
+
+      columnHelper.accessor('description', {
+        id: 'description',
         header: () => (
           <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
             Açıklama
@@ -218,19 +165,6 @@ function EntryTable({
         cell: (info: any) => (
           <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
-          </p>
-        ),
-      }),
-      columnHelper.accessor('technicalDrawingAttachment', {
-        id: 'technicalDrawingAttachment',
-        header: () => (
-          <p className="min-w-[110px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            İlgi Doküman
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue() ? <FileViewer file={info.getValue()} /> : null}
           </p>
         ),
       }),
@@ -245,7 +179,7 @@ function EntryTable({
           <div className="flex items-center">
             {statusbgColor(info.getValue())}
             <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {entryStatus[info.getValue()]}
+              {invoiceStatus[info.getValue()]}
             </p>
           </div>
         ),
@@ -258,9 +192,7 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => {
-          const isAccept =
-            info.row.original.status === 'ACCEPT' ||
-            info.row.original.status === 'ACCEPTANCE_WITH_CONDITION';
+          const isAccept = info.row.original.status === 'PAID';
           return (
             <div className="flex gap-2">
               <button
@@ -329,8 +261,8 @@ function EntryTable({
 
         {variant === 'NORMAL' || variant === 'ADMIN' ? (
           <Button
-            text="EKLE"
-            extra="!w-[140px] h-[38px] font-bold"
+            text="İrsalye Oluştur"
+            extra="!w-fit px-4 h-[38px] font-bold"
             onClick={onAdd}
             icon={<MdAdd className="ml-1 h-6 w-6" />}
           />
@@ -403,5 +335,5 @@ function EntryTable({
   );
 }
 
-export default EntryTable;
-const columnHelper = createColumnHelper<FaultObj>();
+export default InvoiceTable;
+const columnHelper = createColumnHelper<InvoiceObj>();
