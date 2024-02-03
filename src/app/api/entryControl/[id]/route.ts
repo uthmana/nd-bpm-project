@@ -80,11 +80,13 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
           standard,
           color,
           technicalDrawingAttachment,
+          customerId,
         } = updateFault;
         const processCreate = await prisma.process.create({
           data: {
             faultId: id,
             customerName,
+            customerId,
             product,
             quantity,
             productCode,
@@ -99,6 +101,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
           const {
             id,
             customerName,
+            customerId,
             product,
             quantity,
             productCode,
@@ -112,6 +115,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
             where: { id: processData.id },
             data: {
               faultId: id,
+              customerId,
               customerName,
               product,
               quantity,

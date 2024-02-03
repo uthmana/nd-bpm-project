@@ -16,6 +16,7 @@ export type FaultObj = {
   technicalDrawingAttachment: string;
   controlInfo: string;
   faultControl?: any;
+  product_name?: string;
 };
 
 export type InvoiceObj = {
@@ -26,6 +27,7 @@ export type InvoiceObj = {
   amount: number;
   vat: number;
   totalAmount: number;
+  tolalQty: number;
   description: string;
   status: string;
   customerId: string;
@@ -132,6 +134,7 @@ export type StockObj = {
   curency: string;
   date: string;
   image: string;
+  customerName: string;
 };
 
 export type PrimaryTable = {

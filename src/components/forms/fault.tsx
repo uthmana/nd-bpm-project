@@ -17,7 +17,10 @@ import {
   removeMillisecondsAndUTC,
 } from 'utils';
 import { FaultObj } from '../../app/localTypes/table-types';
-import { getStocks } from '../../app/lib/apiRequest';
+import {
+  getCustomersWithStock,
+  getFaultSettings,
+} from '../../app/lib/apiRequest';
 
 export default function Fault(props: {
   onSubmit: (e: any) => void;
@@ -35,12 +38,14 @@ export default function Fault(props: {
         quantity: 1,
         productCode: '',
         productBatchNumber: '',
-        application: 'ND Strip',
-        standard: 'DIN 267-27',
-        color: 'Mavi',
+        application: '',
+        standard: '',
+        color: '',
         technicalDrawingAttachment: '',
         faultDescription: '',
         customerId: '',
+        product_name: '',
+        stockId: '',
       };
 
   const [values, setValues] = useState(initialValues);
@@ -51,8 +56,20 @@ export default function Fault(props: {
       : '',
   );
 
+  type SettingItem = {
+    id: string;
+    name: string;
+  };
+
+  type Settings = {
+    applications: Array<SettingItem>;
+    standards: Array<SettingItem>;
+    colors: Array<SettingItem>;
+  };
+
   const [customers, setCustomers] = useState([]);
-  const [isLoading, setIsloading] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [faultSettings, setFaultSettings] = useState({} as Settings);
 
   const handleValues = (event) => {
     setError(false);
@@ -62,11 +79,50 @@ export default function Fault(props: {
 
   useEffect(() => {
     const getStock = async () => {
-      const { status, data } = await getStocks();
+      const { status, data } = await getCustomersWithStock();
       if (status === 200) {
         setCustomers(data);
+        if (editData?.customerName) {
+          const editedStock = data?.filter((item) => {
+            return item.company_name === editData?.customerName;
+          });
+          if (editedStock.length > 0) {
+            const selectedStock = editedStock[0]?.Stock?.filter((item) => {
+              return item.product_code === editData?.productCode;
+            });
+
+            if (selectedStock.length > 0) {
+              setValues({
+                ...values,
+                product: selectedStock[0]?.product_name,
+                productCode: selectedStock[0]?.product_code,
+                quantity: selectedStock[0]?.inventory,
+                arrivalDate: removeMillisecondsAndUTC(selectedStock[0]?.date),
+              });
+            }
+            setProducts(editedStock[0]?.Stock);
+          }
+        }
       }
     };
+
+    const getAllFaultSettings = async () => {
+      const { status: faultSettingsStatus, data: faultSettingsData } =
+        await getFaultSettings();
+      if (faultSettingsStatus === 200) {
+        setFaultSettings(faultSettingsData);
+        if (!editData) {
+          setValues({
+            ...values,
+            application: faultSettingsData.applications[0].name,
+            standard: faultSettingsData.standards[0].name,
+            color: faultSettingsData.colors[0].name,
+          });
+        }
+      }
+    };
+
+    getAllFaultSettings();
     getStock();
   }, []);
 
@@ -78,6 +134,8 @@ export default function Fault(props: {
       setError(true);
       return;
     }
+
+    delete values.product_name;
     onSubmit({
       ...values,
       quantity: parseInt(values.quantity.toString()),
@@ -88,15 +146,42 @@ export default function Fault(props: {
 
   const onCustomerSelect = (event) => {
     if (!event.target?.value) return;
-    const stock = JSON.parse(event.target?.value);
-    const { product_code, product_name, inventory, date, customer } = stock;
+    const customer = JSON.parse(event.target?.value);
+    const { company_name, id, Stock } = customer;
+
+    //Get only product that has no entry
+    const filteredStock = Stock?.filter((item) => {
+      return item.faultId === null;
+    });
+
+    setProducts(filteredStock);
     setValues({
       ...values,
-      customerName: customer?.company_name,
-      customerId: customer?.id,
+      customerName: company_name,
+      customerId: id,
+      product: filteredStock[0]?.product_name || '',
+      productCode: filteredStock[0]?.product_code || '',
+      quantity: filteredStock[0]?.inventory || 0,
+      stockId: filteredStock[0]?.id || '',
+      arrivalDate: removeMillisecondsAndUTC(filteredStock[0]?.date) || null,
+    });
+  };
+
+  const onProductSelect = (event) => {
+    if (!event.target?.value) return;
+    const stock = JSON.parse(event.target?.value);
+    //Get only product that has no entry
+    const filteredStock = stock?.filter((item) => {
+      return item.faultId === null;
+    });
+
+    const { product_code, product_name, inventory, date, id } = filteredStock;
+    setValues({
+      ...values,
       product: product_name,
       productCode: product_code,
       quantity: inventory,
+      stockId: id,
       arrivalDate: removeMillisecondsAndUTC(date),
     });
   };
@@ -121,8 +206,7 @@ export default function Fault(props: {
 
       {error ? (
         <p className="mb-3 w-full rounded-md bg-red-500 p-2 text-center text-sm  font-bold text-white">
-          Lütfen boş <b> ürün adi</b>, <b> ürün kodu</b>, <b>fiyatı</b> ve para
-          birimi alanları doldurmanız lazım !
+          Lütfen kırmızı ile işaretlenmiş alanları doldurmanız gerekiyor!
         </p>
       ) : null}
 
@@ -133,42 +217,38 @@ export default function Fault(props: {
           label="Müşteri Adı"
           onChange={onCustomerSelect}
         >
-          {customers.map((item, idx) => {
+          {customers?.map((item, idx) => {
             return (
               <option
                 key={idx}
                 value={JSON.stringify(item)}
-                selected={values.customerName === item.customer?.company_name}
+                selected={values.customerName === item?.company_name}
               >
-                {item.customer?.company_name || item.customer?.rep_name}
+                {item?.company_name || item?.rep_name}
               </option>
             );
           })}
         </Select>
 
-        {/* <InputField
-          label="Müşteri Adı"
-          onChange={handleValues}
-          type="text"
-          id="customerName"
-          name="customerName"
-          placeholder="Müşteri Adı"
-          extra="mb-2"
-          value={values.customerName}
+        <Select
           required={true}
-        /> */}
-
-        <InputField
+          extra="pt-1"
           label="Ürün İsmi"
-          onChange={handleValues}
-          type="text"
-          id="product"
-          name="product"
-          placeholder="Ürün İsmi"
-          extra="mb-2"
-          value={values.product}
-          required={true}
-        />
+          onChange={onProductSelect}
+          key={products && products[0]}
+        >
+          {products?.map((item, idx) => {
+            return (
+              <option
+                key={idx}
+                value={JSON.stringify(item)}
+                selected={values.product === item?.product_name}
+              >
+                {item?.product_name}
+              </option>
+            );
+          })}
+        </Select>
       </div>
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">
@@ -239,14 +319,16 @@ export default function Fault(props: {
           onChange={handleValues}
           name="application"
         >
-          {applications.map((item, idx) => {
+          {faultSettings?.applications?.map((item, idx) => {
             return (
               <option
-                value={item}
+                value={item.name}
                 key={idx}
-                selected={editData ? editData?.application === item : idx === 0}
+                selected={
+                  editData ? editData?.application === item.name : idx === 0
+                }
               >
-                {item}
+                {item.name}
               </option>
             );
           })}
@@ -259,14 +341,16 @@ export default function Fault(props: {
           onChange={handleValues}
           name="standard"
         >
-          {standards.map((item, idx) => {
+          {faultSettings?.standards?.map((item, idx) => {
             return (
               <option
-                value={item}
+                value={item.name}
                 key={idx}
-                selected={editData ? editData?.standard === item : idx === 0}
+                selected={
+                  editData ? editData?.standard === item.name : idx === 0
+                }
               >
-                {item}
+                {item.name}
               </option>
             );
           })}
@@ -279,14 +363,14 @@ export default function Fault(props: {
           onChange={handleValues}
           name="color"
         >
-          {colors.map((item, idx) => {
+          {faultSettings?.colors?.map((item, idx) => {
             return (
               <option
-                value={item}
+                value={item.name}
                 key={idx}
-                selected={editData ? editData?.color === item : idx === 0}
+                selected={editData ? editData?.color === item.name : idx === 0}
               >
-                {item}
+                {item.name}
               </option>
             );
           })}

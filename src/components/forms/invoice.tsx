@@ -26,17 +26,19 @@ export default function InvoiceForm(props: {
   const [error, setError] = useState(false);
   const [formTouch, setFormTouch] = useState(isUpdate);
   const [customers, setCustomers] = useState(info || []);
-  const [products, setProducts] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState([]);
-
+  const [products, setProducts] = useState(isUpdate ? editData?.process : []);
+  const [selectedProduct, setSelectedProduct] = useState(
+    isUpdate ? editData?.process : [],
+  );
+  const [productPrice, setProductPrice] = useState([]);
   const [values, setValues] = useState(
     isUpdate
       ? editData
       : {
-          invoiceDate: '',
-          amount: null,
-          vat: null,
-          totalAmount: null,
+          invoiceDate: null,
+          amount: 0,
+          vat: 0,
+          totalAmount: 0,
           currency: 'TL',
           description: '',
           customerId: '',
@@ -58,7 +60,9 @@ export default function InvoiceForm(props: {
   const handleProduct = (e) => {
     setError(false);
     setFormTouch(false);
+
     const value = JSON.parse(e.target.value);
+
     if (e.target.checked) {
       const existedVal = [...selectedProduct].filter((item) => {
         return item.id === value.id;
@@ -83,25 +87,54 @@ export default function InvoiceForm(props: {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { invoiceDate, customerId, tax_Office, taxNo, address } = values;
+    const {
+      invoiceDate,
+      customerId,
+      tax_Office,
+      taxNo,
+      address,
+      amount,
+      totalAmount,
+      vat,
+    } = values;
+
     if (
-      selectedProduct.length === 0 ||
+      (isUpdate === false && selectedProduct.length === 0) ||
       !customerId ||
       !invoiceDate ||
       !tax_Office ||
       !taxNo ||
-      !address
+      !address ||
+      amount === 0 ||
+      totalAmount === 0 ||
+      vat === 0
     ) {
       setError(true);
       window.scroll(100, 0);
       return;
     }
 
+    //TODO: fix selected fault price
+    let mergedProduct = [];
+    if (selectedProduct.length > 1) {
+      selectedProduct.map((item1) => {
+        const matchingItem2 = productPrice.find(
+          (item2) => item2.id === item1.id,
+        );
+        return { ...item1, ...matchingItem2 };
+      });
+    } else {
+      mergedProduct = selectedProduct;
+    }
+
     onSubmit(
       {
         ...values,
+        amount: parseFloat(values.amount),
+        totalAmount: parseFloat(values.totalAmount),
+        vat: parseFloat(values.vat),
         invoiceDate: convertToISO8601(values.invoiceDate),
-        process: selectedProduct,
+        process: mergedProduct,
       },
       isUpdate,
     );
@@ -128,6 +161,29 @@ export default function InvoiceForm(props: {
     { label: 'EUR', value: 'EUR' },
   ];
 
+  const handlePrice = (val: any, id: string) => {
+    const parsedVal = parseInt(val.target.value) || 0;
+    if (productPrice.length === 0) {
+      setProductPrice([{ id, price: parsedVal }]);
+      return;
+    }
+    const valExit = [...productPrice].filter((item) => {
+      return item.id === id;
+    });
+
+    if (valExit.length > 0) {
+      const oldVal = [...productPrice].filter((item) => {
+        return item.id !== id;
+      });
+      if (oldVal.length > 0) {
+        oldVal.push({ id, price: parsedVal });
+        setProductPrice(oldVal);
+      }
+      return;
+    }
+    setProductPrice([...productPrice, { id, price: parsedVal }]);
+  };
+
   return (
     <>
       <div className="w-full">
@@ -138,7 +194,7 @@ export default function InvoiceForm(props: {
           <span>
             <MdOutlineArrowBack />
           </span>
-          Tüm İrsalyeler
+          Tüm İrsaliyeler
         </NextLink>
         <h1 className="mb-8 text-center text-2xl font-bold md:text-4xl">
           {title}
@@ -163,6 +219,9 @@ export default function InvoiceForm(props: {
                     key={idx}
                     value={JSON.stringify(item)}
                     selected={
+                      (isUpdate &&
+                        editData.customer.company_name ===
+                          item.customer?.company_name) ||
                       values.customerName === item.customer?.company_name
                     }
                   >
@@ -190,13 +249,14 @@ export default function InvoiceForm(props: {
               Ürün <span className="text-red-400">*</span>
             </h2>
             <div className="mb-6 grid w-full grid-cols-1">
-              <div className="grid w-full grid-cols-6 gap-1 border-b font-bold">
+              <div className="grid w-full grid-cols-7 gap-1 border-b font-bold">
                 <div>No</div>
                 <div>Ürün</div>
                 <div>Uygulama</div>
                 <div>Standart</div>
                 <div>Renk</div>
                 <div>Miktar</div>
+                <div>Tutar</div>
               </div>
 
               {products.length > 0 ? (
@@ -206,23 +266,32 @@ export default function InvoiceForm(props: {
                       className="flex cursor-pointer items-center"
                       key={item.id}
                     >
-                      <div className="grid w-full grid-cols-6 items-center gap-1 border-b py-2 text-sm font-bold text-navy-700 dark:text-white">
+                      <div className="grid w-full grid-cols-7 items-center gap-1 border-b py-2 text-sm font-bold text-navy-700 dark:text-white">
                         <div>
                           <Checkbox
-                            name="plating"
+                            name="product"
                             colorscheme="brandScheme"
-                            checked={
-                              isUpdate ? values.products.includes(item) : false
-                            }
+                            checked={isUpdate}
                             onChange={handleProduct}
                             value={JSON.stringify(item)}
                           />
                         </div>
-                        <div>{item.product}</div>
-                        <div>{item.application}</div>
-                        <div>{item.standard}</div>
-                        <div>{item.color}</div>
-                        <div>{item.quantity}</div>
+                        <div>{item?.product}</div>
+                        <div>{item?.application}</div>
+                        <div>{item?.standard}</div>
+                        <div>{item?.color}</div>
+                        <div>{item?.quantity}</div>
+                        <div>
+                          <InputField
+                            label=""
+                            onChange={(e) => handlePrice(e, item.id)}
+                            type="number"
+                            id="price"
+                            name="price"
+                            placeholder="Tutar"
+                            extra="mb-2"
+                          />
+                        </div>
                       </div>
                     </label>
                   );
@@ -244,6 +313,7 @@ export default function InvoiceForm(props: {
               placeholder="Adres"
               extra="mb-8"
               value={values.address}
+              required={true}
             />
           </div>
 
@@ -294,6 +364,7 @@ export default function InvoiceForm(props: {
               placeholder="Toplam Miktar"
               extra="mb-2"
               value={values.amount}
+              required={true}
             />
 
             <InputField
@@ -305,6 +376,7 @@ export default function InvoiceForm(props: {
               placeholder="kdv"
               extra="mb-2"
               value={values.vat}
+              required={true}
             />
             <InputField
               label="Genel Toplam"
@@ -315,18 +387,25 @@ export default function InvoiceForm(props: {
               placeholder="Genel Toplam"
               extra="mb-2"
               value={values.totalAmount}
+              required={true}
             />
           </div>
 
           <div className="mb-4 flex flex-col gap-3 sm:flex-row">
             <Select
+              required={true}
               extra="pt-1 max-w-[200px]"
               label="Para Birirmi"
               onChange={handleValues}
+              name="currency"
             >
               {currencies.map((item, idx) => {
                 return (
-                  <option key={idx} value={item.value}>
+                  <option
+                    key={idx}
+                    selected={values.currency === item.value}
+                    value={item.value}
+                  >
                     {item.label}
                   </option>
                 );

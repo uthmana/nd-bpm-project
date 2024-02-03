@@ -24,7 +24,11 @@ const Stock = () => {
     setIsLoading(true);
     const { status, data } = await getStocks();
     if (status === 200) {
-      setStocks(data);
+      setStocks(
+        data?.map((item) => {
+          return { ...item, customerName: item.customer.company_name };
+        }),
+      );
     }
     setIsLoading(false);
   };

@@ -99,19 +99,7 @@ model Stock {
   image           String?
   customerId      String?
   customer        Customer? @relation(fields: [customerId], references: [id])
-}
-
-//TODO: add stock relation 
-model Offer {
-  id         String      @id @default(cuid())
-  name       String
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime?   @updatedAt
-  createdBy  String?
-  updatedBy  String?
-  status     OfferStatus @default(PENDING)
-  customerId String
-  Customer   Customer    @relation(fields: [customerId], references: [id])
+  faultId         String?   @unique
 }
 
 model Fault {
@@ -137,6 +125,7 @@ model Fault {
   updatedAt                  DateTime?      @updatedAt
   createdBy                  String?
   updatedBy                  String?
+  stockId                    String?        @unique
 }
 
 model FaultControl {
@@ -167,6 +156,58 @@ model FaultControl {
   result FaultControlResult
 
   Fault Fault @relation(fields: [faultId], references: [id], onDelete: Cascade)
+}
+
+model Process {
+  id                         String               @id @default(cuid())
+  faultId                    String?              @unique
+  customerName               String?
+  customerId                 String?
+  product                    String?
+  quantity                   Int?
+  productCode                String?
+  application                String?
+  standard                   String?
+  color                      String?
+  price                      Float?
+  technicalDrawingAttachment String?
+  machineName                String?
+  machineId                  String?
+  createdAt                  DateTime             @default(now())
+  updatedAt                  DateTime             @updatedAt
+  createdBy                  String?
+  updatedBy                  String?
+  status                     ProcessStatus        @default(PENDING)
+  technicalParams            TechnicalParameter[]
+  finalControl               FinalControl[]
+  Invoice                    Invoice?             @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  invoiceId                  String?
+}
+
+model FinalControl {
+  id                    String             @id @default(cuid())
+  faultId               String             @unique
+  olcu_Kontrol          FinalItemStatus?
+  gorunum_kontrol       FinalItemStatus?
+  tork_Kontrol          FinalItemStatus?
+  paketleme             String?
+  kontrol_edilen_miktar Int?
+  hatali_miktar         Int?
+  makliye_miktar        Int?
+  image                 String?
+  remarks               String?
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime?          @updatedAt
+  createdBy             String?
+  updatedBy             String?
+  result                FaultControlResult
+  Process               Process?           @relation(fields: [processId], references: [id], onDelete: Cascade)
+  processId             String?
+}
+
+enum FinalItemStatus {
+  OK
+  NOT_OK
 }
 
 model Machine {
@@ -215,58 +256,6 @@ model TechnicalParameter {
   processId String?
 }
 
-model Process {
-  id                         String               @id @default(cuid())
-  faultId                    String?              @unique
-  customerName               String?
-  customerId                 String?
-  product                    String?
-  quantity                   Int?
-  productCode                String?
-  application                String?
-  standard                   String?
-  color                      String?
-  technicalDrawingAttachment String?
-  machineName                String?
-  machineId                  String?
-  createdAt                  DateTime             @default(now())
-  updatedAt                  DateTime             @updatedAt
-  createdBy                  String?
-  updatedBy                  String?
-  status                     ProcessStatus        @default(PENDING)
-  technicalParams            TechnicalParameter[]
-  finalControl               FinalControl[]
-
-  Invoice   Invoice? @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  invoiceId String?
-}
-
-model FinalControl {
-  id                    String             @id @default(cuid())
-  faultId               String             @unique
-  olcu_Kontrol          FinalItemStatus?
-  gorunum_kontrol       FinalItemStatus?
-  tork_Kontrol          FinalItemStatus?
-  paketleme             String?
-  kontrol_edilen_miktar Int?
-  hatali_miktar         Int?
-  makliye_miktar        Int?
-  image                 String?
-  remarks               String?
-  createdAt             DateTime           @default(now())
-  updatedAt             DateTime?          @updatedAt
-  createdBy             String?
-  updatedBy             String?
-  result                FaultControlResult
-  Process               Process?           @relation(fields: [processId], references: [id], onDelete: Cascade)
-  processId             String?
-}
-
-enum FinalItemStatus {
-  OK
-  NOT_OK
-}
-
 model Invoice {
   id          String    @id @default(cuid())
   barcode     String?
@@ -289,6 +278,19 @@ model Invoice {
   updatedAt   DateTime?     @updatedAt
   createdBy   String?
   updatedBy   String?
+}
+
+//TODO: add stock relation 
+model Offer {
+  id         String      @id @default(cuid())
+  name       String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime?   @updatedAt
+  createdBy  String?
+  updatedBy  String?
+  status     OfferStatus @default(PENDING)
+  customerId String
+  Customer   Customer    @relation(fields: [customerId], references: [id])
 }
 
 enum InvoiceStatus {

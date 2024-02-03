@@ -79,7 +79,17 @@ export async function DELETE(
       },
     });
 
-    return NextResponse.json([deletedFault], { status: 200 });
+    //Tracking stock
+    if (deletedFault) {
+      const updateStock = await prisma.stock.update({
+        where: {
+          id: deletedFault.stockId,
+        },
+        data: { faultId: null },
+      });
+    }
+
+    return NextResponse.json(deletedFault, { status: 200 });
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||

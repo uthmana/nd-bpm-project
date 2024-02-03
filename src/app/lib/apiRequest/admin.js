@@ -46,6 +46,10 @@ export async function getCustomers() {
   return fetchAPI('customer');
 }
 
+export async function getCustomersWithStock() {
+  return fetchAPI('customer?stock=true');
+}
+
 export async function getCustomerById(id) {
   return fetchAPI(`customer/${id}`);
 }
@@ -147,7 +151,6 @@ export async function updateTechParams(payload) {
   return fetchAPI(`techParams/${payload.id}`, 'put', payload);
 }
 
-// Machine
 export async function getMachines() {
   return fetchAPI('machine');
 }
@@ -181,6 +184,11 @@ export async function deleteMachineParam(payload) {
   return fetchAPI(`machineParams/${payload.id}`, 'delete');
 }
 
+// Fault Settings
+export async function getFaultSettings() {
+  return fetchAPI('settings');
+}
+
 // Final Control
 export async function addProcessControl(payload) {
   return fetchAPI('finalControl', 'put', payload);
@@ -210,4 +218,8 @@ export async function deleteInvoice(id) {
 
 export async function updateInvoice(payload) {
   return fetchAPI(`invoice/${payload.id}`, 'put', payload);
+}
+
+export async function getInvoiceById(id) {
+  return fetchAPI(`invoice/${id}`);
 }

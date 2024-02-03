@@ -146,6 +146,8 @@ module.exports = {
       '3xl-max': { max: '1600px' },
       '4xl': '1850px',
       '4xl-max': { max: '1850px' },
+      print: { raw: 'print' },
+      screen: { raw: 'screen' },
     },
     colors: {
       white: '#ffffff',

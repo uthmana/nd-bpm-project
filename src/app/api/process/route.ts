@@ -19,14 +19,14 @@ export async function GET(req: NextRequest) {
     const status = searchParams.get('status');
     const result = searchParams.get('result');
 
-    if (status && result) {
+    if (status && status === 'finished' && result && result === 'accept') {
       const _process = await prisma.process.findMany({
+        where: { status: 'FINISHED' },
         include: {
           finalControl: {
             where: { result: 'ACCEPT' },
           },
         },
-        where: { status: 'FINISHED' },
       });
 
       if (_process.length > 0) {
@@ -44,8 +44,13 @@ export async function GET(req: NextRequest) {
                 where: { id: item },
               });
               const process = _process.filter((pro) => {
-                return pro.customerId === item && pro.invoiceId === null;
+                return (
+                  pro.customerId === item &&
+                  pro.invoiceId === null &&
+                  pro.finalControl?.length > 0
+                );
               });
+
               if (process.length > 0) {
                 finishedProcess.push({ customer, process });
               }

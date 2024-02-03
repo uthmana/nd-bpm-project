@@ -42,9 +42,10 @@ export async function PUT(req: Request) {
       );
     }
     const result: Fault = await req.json();
-    const { customerName, productCode, quantity, application } = result;
+    const { customerName, productCode, quantity, application, stockId } =
+      result;
 
-    if (!customerName || !productCode || !quantity || !application) {
+    if (!customerName || !productCode || !application || !stockId) {
       return NextResponse.json(
         { message: 'You are missing a required data' },
         { status: 401 },
@@ -53,6 +54,11 @@ export async function PUT(req: Request) {
 
     const fault = await prisma.fault.create({
       data: result,
+    });
+
+    const stock = await prisma.stock.update({
+      where: { id: stockId },
+      data: { faultId: fault.id },
     });
 
     //Create Notification
@@ -67,6 +73,7 @@ export async function PUT(req: Request) {
 
     return NextResponse.json({ fault }, { status: 200 });
   } catch (e) {
+    console.log({ e });
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
       e instanceof Prisma.PrismaClientUnknownRequestError ||

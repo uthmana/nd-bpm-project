@@ -26,9 +26,8 @@ const Invoice = () => {
   const getAllInvoice = async () => {
     setIsLoading(true);
     const { status, data } = await getInvoice();
-    console.log({ data });
     if (status === 200) {
-      const newData = data.map((item) => {
+      const newData = data?.map((item) => {
         const customerName = item?.customer?.company_name;
         const products = item?.process
           ?.map((item, idx) => {
@@ -36,11 +35,14 @@ const Invoice = () => {
           })
           ?.join('');
 
-        item.customerName = customerName;
         item.products = products;
+        item.customerName = customerName;
         item.address = item?.customer?.address;
+        item.tolalQty = item?.process.reduce((a, b) => a + b.quantity, 0);
+
         return item;
       });
+
       setInvoices(newData);
     }
     setIsLoading(false);

@@ -68,7 +68,7 @@ function EntryTable({
       columnHelper.accessor('id', {
         id: 'id',
         header: () => (
-          <p className="min-w-[100px]  text-sm font-bold text-gray-600 dark:text-white">
+          <p className="min-w-[65px]  text-sm font-bold text-gray-600 dark:text-white">
             SİRA NO.
           </p>
         ),

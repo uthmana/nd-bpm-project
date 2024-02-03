@@ -306,7 +306,7 @@ function MainTable({
           columnHelper.accessor('id', {
             id: 'id',
             header: () => (
-              <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+              <p className="min-w-[50px] text-sm font-bold uppercase text-gray-600 dark:text-white">
                 Sira No.
               </p>
             ),
@@ -316,7 +316,19 @@ function MainTable({
               </p>
             ),
           }),
-
+          columnHelper.accessor('customerName', {
+            id: 'customerName',
+            header: () => (
+              <p className=" min-w-[160px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                MÜŞTERİ
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
           columnHelper.accessor('product_code', {
             id: 'product_code',
             header: () => (
@@ -343,20 +355,6 @@ function MainTable({
               </p>
             ),
           }),
-          columnHelper.accessor('image', {
-            id: 'image',
-            header: () => (
-              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-                İLGİLİ DOKÜMAN
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue() ? <FileViewer file={info.getValue()} /> : null}
-              </p>
-            ),
-          }),
-
           columnHelper.accessor('brand', {
             id: 'brand',
             header: () => (
@@ -438,7 +436,7 @@ function MainTable({
           columnHelper.accessor('main_group', {
             id: 'main_group',
             header: () => (
-              <p className="min-w-[120px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
+              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
                 Ana Grubu
               </p>
             ),
@@ -474,6 +472,32 @@ function MainTable({
               </p>
             ),
           }),
+          columnHelper.accessor('date', {
+            id: 'date',
+            header: () => (
+              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                Ekleme Tarihi
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {formatDateTime(info.getValue())}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('image', {
+            id: 'image',
+            header: () => (
+              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                İLGİLİ DOKÜMAN
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue() ? <FileViewer file={info.getValue()} /> : null}
+              </p>
+            ),
+          }),
           columnHelper.accessor('description', {
             id: 'description',
             header: () => (
@@ -487,19 +511,7 @@ function MainTable({
               </p>
             ),
           }),
-          columnHelper.accessor('date', {
-            id: 'date',
-            header: () => (
-              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-                Tarih
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {formatDateTime(info.getValue())}
-              </p>
-            ),
-          }),
+
           columnHelper.accessor('id', {
             id: 'id',
             header: () => (

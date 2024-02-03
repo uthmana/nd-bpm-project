@@ -135,7 +135,9 @@ export default function Edit() {
 
           <Card extra="my-12 mx-auto mt-4 w-full rounded-2xl px-8 py-10 bg-white dark:bg-[#111c44] dark:text-white">
             <div className="mb-8 flex justify-between gap-3">
-              <h2 className="text-2xl font-bold">Kontrol Bilgileri</h2>
+              <h2 className="text-2xl font-bold">
+                Ürün Giriş Kontrol Bilgileri
+              </h2>
 
               {session?.user?.role === 'SUPER' ||
               session?.user?.role === 'ADMIN' ? (

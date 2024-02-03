@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/db';
-import { Prisma, Process } from '@prisma/client';
+import { Prisma, Process, Stock } from '@prisma/client';
 
 //Get single  Process
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
@@ -107,6 +107,21 @@ export async function DELETE(
         id: id,
       },
     });
+
+    if (deletedProcess) {
+      //Tracking stock
+      const stock: Stock = await prisma.stock.findUnique({
+        where: { id },
+      });
+      if (stock) {
+        const updateStock = await prisma.stock.update({
+          where: {
+            faultId: deletedProcess.faultId,
+          },
+          data: { faultId: null },
+        });
+      }
+    }
 
     return NextResponse.json(deletedProcess, { status: 200 });
   } catch (e) {

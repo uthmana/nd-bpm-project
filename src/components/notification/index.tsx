@@ -91,7 +91,7 @@ export default function Notification({ user }) {
             Okunmamış bildirim yok
           </div>
         ) : (
-          <div className="max-h-[400px] overflow-y-auto pr-3 md:max-h-[800px]">
+          <div className="!md:max-h-[800px] max-h-[400px] overflow-y-auto pr-3">
             {notifications?.map((item, idx) => {
               return (
                 <NotificationItem

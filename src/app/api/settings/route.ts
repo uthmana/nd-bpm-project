@@ -1,19 +1,31 @@
 import { authOptions } from '../../lib/authOptions';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
-
-//import prisma  from "../../lib/db1";
+import { Prisma } from '@prisma/client';
 export async function GET(request: Request) {
-  const session = await getServerSession(authOptions);
+  try {
+    const applications = await prisma.applications.findMany();
+    const standards = await prisma.standards.findMany();
+    const color = await prisma.colors.findMany();
 
-  if (!session) {
-    return new NextResponse(
-      JSON.stringify({ status: 'fail', message: 'You are not logged in' }),
-      { status: 401 },
+    return NextResponse.json(
+      {
+        applications,
+        standards,
+        colors: color,
+      },
+      { status: 200 },
     );
+  } catch (e) {
+    console.log({ e });
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
-  return NextResponse.json({
-    authenticated: !!session,
-    session,
-  });
 }

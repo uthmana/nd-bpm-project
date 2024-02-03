@@ -144,8 +144,63 @@ function InvoiceTable({
       columnHelper.accessor('address', {
         id: 'address',
         header: () => (
-          <p className="min-w-[160px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[200px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
             Adres
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
+          </p>
+        ),
+      }),
+
+      columnHelper.accessor('tolalQty', {
+        id: 'tolalQty',
+        header: () => (
+          <p className="min-w-[160px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
+            TOPLAM Miktari
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
+          </p>
+        ),
+      }),
+
+      columnHelper.accessor('amount', {
+        id: 'amount',
+        header: () => (
+          <p className="min-w-[160px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Toplam {'TL'}
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
+          </p>
+        ),
+      }),
+      columnHelper.accessor('vat', {
+        id: 'vat',
+        header: () => (
+          <p className="min-w-[160px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
+            KDV%
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
+          </p>
+        ),
+      }),
+
+      columnHelper.accessor('totalAmount', {
+        id: 'totalAmount',
+        header: () => (
+          <p className="min-w-[160px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Genel Toplam {'TL'}
           </p>
         ),
         cell: (info: any) => (
@@ -172,7 +227,7 @@ function InvoiceTable({
         id: 'status',
         header: () => (
           <p className="min-w-[130px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            KONTROL DURUMU
+            KESME DURUMU
           </p>
         ),
         cell: (info: any) => (

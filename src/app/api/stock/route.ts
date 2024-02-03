@@ -7,6 +7,9 @@ export async function GET(req: NextRequest) {
   try {
     const stock = await prisma.stock.findMany({
       include: { customer: true },
+      orderBy: {
+        date: 'desc',
+      },
     });
 
     return NextResponse.json(stock, { status: 200 });
@@ -36,15 +39,10 @@ export async function PUT(req: Request) {
         { status: 401 },
       );
     }
-
     const stock = await prisma.stock.create({
       data: result,
     });
-    if (!stock) {
-      throw new Error('No stock found');
-    }
-
-    return NextResponse.json({ stock }, { status: 200 });
+    return NextResponse.json(stock, { status: 200 });
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||

@@ -124,22 +124,9 @@ CREATE TABLE "Stock" (
     "updatedBy" TEXT,
     "image" TEXT,
     "customerId" TEXT,
+    "faultId" TEXT,
 
     CONSTRAINT "Stock_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Offer" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3),
-    "createdBy" TEXT,
-    "updatedBy" TEXT,
-    "status" "OfferStatus" NOT NULL DEFAULT 'PENDING',
-    "customerId" TEXT NOT NULL,
-
-    CONSTRAINT "Offer_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -164,6 +151,7 @@ CREATE TABLE "Fault" (
     "updatedAt" TIMESTAMP(3),
     "createdBy" TEXT,
     "updatedBy" TEXT,
+    "stockId" TEXT,
 
     CONSTRAINT "Fault_pkey" PRIMARY KEY ("id")
 );
@@ -196,6 +184,55 @@ CREATE TABLE "FaultControl" (
     "result" "FaultControlResult" NOT NULL,
 
     CONSTRAINT "FaultControl_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Process" (
+    "id" TEXT NOT NULL,
+    "faultId" TEXT,
+    "customerName" TEXT,
+    "customerId" TEXT,
+    "product" TEXT,
+    "quantity" INTEGER,
+    "productCode" TEXT,
+    "application" TEXT,
+    "standard" TEXT,
+    "color" TEXT,
+    "price" DOUBLE PRECISION,
+    "technicalDrawingAttachment" TEXT,
+    "machineName" TEXT,
+    "machineId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "status" "ProcessStatus" NOT NULL DEFAULT 'PENDING',
+    "invoiceId" TEXT,
+
+    CONSTRAINT "Process_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "FinalControl" (
+    "id" TEXT NOT NULL,
+    "faultId" TEXT NOT NULL,
+    "olcu_Kontrol" "FinalItemStatus",
+    "gorunum_kontrol" "FinalItemStatus",
+    "tork_Kontrol" "FinalItemStatus",
+    "paketleme" TEXT,
+    "kontrol_edilen_miktar" INTEGER,
+    "hatali_miktar" INTEGER,
+    "makliye_miktar" INTEGER,
+    "image" TEXT,
+    "remarks" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "result" "FaultControlResult" NOT NULL,
+    "processId" TEXT,
+
+    CONSTRAINT "FinalControl_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -249,54 +286,6 @@ CREATE TABLE "TechnicalParameter" (
 );
 
 -- CreateTable
-CREATE TABLE "Process" (
-    "id" TEXT NOT NULL,
-    "faultId" TEXT,
-    "customerName" TEXT,
-    "customerId" TEXT,
-    "product" TEXT,
-    "quantity" INTEGER,
-    "productCode" TEXT,
-    "application" TEXT,
-    "standard" TEXT,
-    "color" TEXT,
-    "technicalDrawingAttachment" TEXT,
-    "machineName" TEXT,
-    "machineId" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "createdBy" TEXT,
-    "updatedBy" TEXT,
-    "status" "ProcessStatus" NOT NULL DEFAULT 'PENDING',
-    "invoiceId" TEXT,
-
-    CONSTRAINT "Process_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "FinalControl" (
-    "id" TEXT NOT NULL,
-    "faultId" TEXT NOT NULL,
-    "olcu_Kontrol" "FinalItemStatus",
-    "gorunum_kontrol" "FinalItemStatus",
-    "tork_Kontrol" "FinalItemStatus",
-    "paketleme" TEXT,
-    "kontrol_edilen_miktar" INTEGER,
-    "hatali_miktar" INTEGER,
-    "makliye_miktar" INTEGER,
-    "image" TEXT,
-    "remarks" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3),
-    "createdBy" TEXT,
-    "updatedBy" TEXT,
-    "result" "FaultControlResult" NOT NULL,
-    "processId" TEXT,
-
-    CONSTRAINT "FinalControl_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "Invoice" (
     "id" TEXT NOT NULL,
     "barcode" TEXT,
@@ -318,6 +307,20 @@ CREATE TABLE "Invoice" (
     "updatedBy" TEXT,
 
     CONSTRAINT "Invoice_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Offer" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "status" "OfferStatus" NOT NULL DEFAULT 'PENDING',
+    "customerId" TEXT NOT NULL,
+
+    CONSTRAINT "Offer_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -372,7 +375,13 @@ CREATE UNIQUE INDEX "Address_userId_key" ON "Address"("userId");
 CREATE UNIQUE INDEX "ContactInfo_userId_key" ON "ContactInfo"("userId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Stock_faultId_key" ON "Stock"("faultId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Fault_faultControlId_key" ON "Fault"("faultControlId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Fault_stockId_key" ON "Fault"("stockId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "FaultControl_faultId_key" ON "FaultControl"("faultId");
@@ -393,13 +402,16 @@ ALTER TABLE "ContactInfo" ADD CONSTRAINT "ContactInfo_userId_fkey" FOREIGN KEY (
 ALTER TABLE "Stock" ADD CONSTRAINT "Stock_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Offer" ADD CONSTRAINT "Offer_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Fault" ADD CONSTRAINT "Fault_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "FaultControl" ADD CONSTRAINT "FaultControl_faultId_fkey" FOREIGN KEY ("faultId") REFERENCES "Fault"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Process" ADD CONSTRAINT "Process_invoiceId_fkey" FOREIGN KEY ("invoiceId") REFERENCES "Invoice"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "FinalControl" ADD CONSTRAINT "FinalControl_processId_fkey" FOREIGN KEY ("processId") REFERENCES "Process"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "MachineParams" ADD CONSTRAINT "MachineParams_machineId_fkey" FOREIGN KEY ("machineId") REFERENCES "Machine"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -408,10 +420,7 @@ ALTER TABLE "MachineParams" ADD CONSTRAINT "MachineParams_machineId_fkey" FOREIG
 ALTER TABLE "TechnicalParameter" ADD CONSTRAINT "TechnicalParameter_processId_fkey" FOREIGN KEY ("processId") REFERENCES "Process"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Process" ADD CONSTRAINT "Process_invoiceId_fkey" FOREIGN KEY ("invoiceId") REFERENCES "Invoice"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "FinalControl" ADD CONSTRAINT "FinalControl_processId_fkey" FOREIGN KEY ("processId") REFERENCES "Process"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Offer" ADD CONSTRAINT "Offer_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

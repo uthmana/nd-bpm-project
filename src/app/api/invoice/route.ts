@@ -58,6 +58,7 @@ export async function PUT(req: Request) {
       amount,
       address,
     } = result;
+
     if (
       process.length === 0 ||
       !customerId ||
@@ -93,12 +94,12 @@ export async function PUT(req: Request) {
           where: {
             id: item.id,
           },
-          data: { invoiceId: invoice.id },
+          data: { invoiceId: invoice.id, price: item.price },
         });
       }),
     );
 
-    //TODO: Create Notification to customer
+    //TODO: Create Notification for invoice
 
     return NextResponse.json(invoice, { status: 200 });
   } catch (e) {
