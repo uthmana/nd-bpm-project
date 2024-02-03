@@ -257,15 +257,14 @@ model TechnicalParameter {
 }
 
 model Invoice {
-  id          String    @id @default(cuid())
+  id          String        @id @default(cuid())
   barcode     String?
   invoiceDate DateTime
-  currency    Currency? @default(TL)
+  currency    Currency?     @default(TL)
   amount      Float?
   vat         Float?
   totalAmount Float?
   address     String?
-
   description String?
   rep_name    String?
   tax_Office  String?

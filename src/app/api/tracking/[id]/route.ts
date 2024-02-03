@@ -25,7 +25,6 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
 
       const invoice = await query.invoice.findUnique({
         where: { id: id },
-        include: { fault: true },
       });
 
       return {

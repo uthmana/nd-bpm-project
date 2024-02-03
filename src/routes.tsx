@@ -40,7 +40,6 @@ const routes = [
     role: 'normal',
     icon: <MdOutlineMultilineChart className={`${iconStyle}`} />,
   },
-
   {
     name: 'Ürün Girişi',
     layout: '/admin',

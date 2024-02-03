@@ -4,8 +4,6 @@ import { getInvoiceById } from 'app/lib/apiRequest';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { formatDateTime } from 'utils';
-import nd_logo from '/public/img/auth/nd_logo.webp';
 import NextLink from 'next/link';
 import { MdOutlineArrowBack, MdPrint } from 'react-icons/md';
 import InvoiceDoc from 'components/invoice';
@@ -32,8 +30,7 @@ export default function Invoice() {
   }, [queryParams?.id]);
 
   const handlePrint = () => {
-    const test = window.print();
-    alert(test);
+    window.print();
   };
 
   return (

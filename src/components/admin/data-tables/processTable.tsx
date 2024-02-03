@@ -109,7 +109,7 @@ function ProcessTable({
       columnHelper.accessor('product', {
         id: 'product',
         header: () => (
-          <p className="min-w-[100px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[130px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
             Ürün İsmi
           </p>
         ),
@@ -162,7 +162,7 @@ function ProcessTable({
       columnHelper.accessor('standard', {
         id: 'standard',
         header: () => (
-          <p className="text-sm font-bold text-gray-600 dark:text-white">
+          <p className="min-w-[110px] text-sm font-bold text-gray-600 dark:text-white">
             STANDART
           </p>
         ),

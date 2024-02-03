@@ -22,18 +22,6 @@ export default function Edit() {
   const [isLoading, setIsLoading] = useState(false);
   const [invoice, setInvoice] = useState([]);
 
-  // useEffect(() => {
-  //   const getAllFinishedProcess = async () => {
-  //     const finishedProcess: any = await getFinishedProcess();
-  //     const { status, data, response } = finishedProcess;
-  //     //TODO: handle error
-  //     if (status === 200) {
-  //       setCustomers(data);
-  //     }
-  //   };
-  //   getAllFinishedProcess();
-  // }, []);
-
   useEffect(() => {
     const getSingleInvoice = async (id) => {
       setIsLoading(true);
