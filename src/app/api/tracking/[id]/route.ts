@@ -11,20 +11,22 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     const trackings = await prisma.$transaction(async (query) => {
       const entry = await query.fault.findUnique({
         where: { id },
-        select: {
-          arrivalDate: true,
+        include: {
           faultControl: true,
-          faultDescription: true,
         },
       });
 
       const process = await query.process.findUnique({
         where: { faultId: id },
-        include: { technicalParams: true },
+        include: { technicalParams: true, finalControl: true },
       });
 
-      const invoice = await query.invoice.findUnique({
-        where: { id: id },
+      const invoice = await query.invoice.findFirst({
+        include: {
+          process: {
+            where: { faultId: id },
+          },
+        },
       });
 
       return {

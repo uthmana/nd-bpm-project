@@ -223,3 +223,7 @@ export async function updateInvoice(payload) {
 export async function getInvoiceById(id) {
   return fetchAPI(`invoice/${id}`);
 }
+
+export async function getTrackingInfo(id) {
+  return fetchAPI(`tracking/${id}`);
+}
