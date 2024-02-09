@@ -40,6 +40,7 @@ export default function EntryControl() {
   const [machines, setMachines] = useState([]);
   const [values, setValues] = useState({} as any);
   const { data: session } = useSession();
+  const [isFrequencyPopUp, setIsFrequencyPopUp] = useState(false);
 
   const productInfo = [
     'faultId',
@@ -161,6 +162,7 @@ export default function EntryControl() {
   const onFinish = async () => {
     const { id, faultId } = process;
     if (!id || !faultId) return;
+
     setIsSubmitting(true);
     const resData: any = await updateProcess({
       id,
@@ -208,8 +210,13 @@ export default function EntryControl() {
     setValues(JSON.parse(event.target?.value));
   };
 
-  const handleProcessControl = () => {
-    router.push(`/admin/process/control/${process.id}`);
+  const handleOnFinish = () => {
+    if (process?.frequency === 'Yazılsın' && techParams.length === 0) {
+      setIsFrequencyPopUp(true);
+      return;
+    }
+
+    setIsShowPopUp(true);
   };
 
   return (
@@ -240,12 +247,12 @@ export default function EntryControl() {
           <Card extra="w-full px-4 pt-4 pb-8">
             <div className="w-full">
               <div className="my-5 flex justify-between">
-                <h2 className="text-2xl font-bold">Teknik Parametreleri</h2>
+                <h2 className="text-2xl font-bold">Frekans Bilgileri</h2>
                 {process?.status !== 'FINISHED' ? (
                   <Button
                     extra="max-w-fit px-4 h-[40px]"
                     text="PROSESİ TAMAMLA"
-                    onClick={() => setIsShowPopUp(true)}
+                    onClick={handleOnFinish}
                   />
                 ) : null}
               </div>
@@ -280,6 +287,20 @@ export default function EntryControl() {
           </div>
         </div>
       )}
+
+      <Popup show={isFrequencyPopUp} extra="flex flex-col gap-3 py-6 px-8">
+        <h1 className="text-3xl">Proses Tamamlama</h1>
+        <p className="mb-2 text-lg  text-red-500">
+          Frekans bilgileri girmeniz gerekiyor !
+        </p>
+        <div className="flex gap-4">
+          <Button
+            text="GERİ"
+            extra="w-[60px] h-[40px]"
+            onClick={() => setIsFrequencyPopUp(false)}
+          />
+        </div>
+      </Popup>
 
       <Popup show={isShowPopUp} extra="flex flex-col gap-3 py-6 px-8">
         <h1 className="text-3xl">Proses Tamamlama</h1>

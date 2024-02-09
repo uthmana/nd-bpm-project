@@ -271,8 +271,9 @@ export default function EntryControl() {
             <Card extra="w-full px-4 pt-4 pb-8">
               <div className="w-full">
                 <div className="my-5 flex justify-between">
-                  <h2 className="text-2xl font-bold">Teknik Parametreleri</h2>
-                  {(finalControl.length === 0 ||
+                  <h2 className="text-2xl font-bold">Frekans Bilgileri</h2>
+                  {process?.status !== 'FINISHED' &&
+                  (finalControl.length === 0 ||
                     finalControl[0].result !== 'ACCEPT') &&
                   (session?.user?.role === 'TECH' ||
                     session?.user?.role === 'ADMIN') ? (

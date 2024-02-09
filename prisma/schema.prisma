@@ -169,6 +169,7 @@ model Process {
   application                String?
   standard                   String?
   color                      String?
+  frequency                  String?
   price                      Float?
   technicalDrawingAttachment String?
   machineName                String?

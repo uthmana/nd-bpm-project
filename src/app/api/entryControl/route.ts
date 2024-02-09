@@ -36,7 +36,7 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: 'Access forbidden', status: 403 });
     }
     const result: FaultControl = await req.json();
-    const { faultId, result: controlReult } = result;
+    const { faultId, result: controlReult, processFrequency } = result;
 
     if (!faultId || !controlReult) {
       return NextResponse.json(
@@ -76,7 +76,6 @@ export async function PUT(req: Request) {
         } = updateFault;
         const process = await prisma.process.create({
           data: {
-            faultId: id,
             customerName,
             customerId,
             product,
@@ -86,6 +85,8 @@ export async function PUT(req: Request) {
             standard,
             color,
             technicalDrawingAttachment,
+            frequency: processFrequency,
+            faultId: id,
           },
         });
       }
@@ -103,6 +104,7 @@ export async function PUT(req: Request) {
 
     return NextResponse.json(faultControl, { status: 200 });
   } catch (e) {
+    console.log(e);
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
       e instanceof Prisma.PrismaClientUnknownRequestError ||

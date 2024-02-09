@@ -31,7 +31,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
     const id = route.params.id;
     const data: FaultControl = await req.json();
-    const { faultId, result } = data;
+    const { faultId, result, processFrequency } = data;
 
     const faultControl: FaultControl = await prisma.faultControl.findUnique({
       where: { id },
@@ -65,7 +65,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       }
     }
     if (result === 'ACCEPT') {
-      const processData: Process = await prisma.process.findFirst({
+      const processData: Process = await prisma.process.findUnique({
         where: { faultId },
       });
 
@@ -84,7 +84,6 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         } = updateFault;
         const processCreate = await prisma.process.create({
           data: {
-            faultId: id,
             customerName,
             customerId,
             product,
@@ -94,12 +93,13 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
             standard,
             color,
             technicalDrawingAttachment,
+            faultId: id,
+            frequency: processFrequency,
           },
         });
       } else {
         if (updateFault) {
           const {
-            id,
             customerName,
             customerId,
             product,
@@ -114,7 +114,6 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
           const processUpdate = await prisma.process.update({
             where: { id: processData.id },
             data: {
-              faultId: id,
               customerId,
               customerName,
               product,
@@ -124,6 +123,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
               standard,
               color,
               technicalDrawingAttachment,
+              frequency: processFrequency,
             },
           });
         }
