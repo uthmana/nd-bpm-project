@@ -220,6 +220,10 @@ export async function updateInvoice(payload) {
   return fetchAPI(`invoice/${payload.id}`, 'put', payload);
 }
 
+export async function sendInvoice(payload) {
+  return fetchAPI('send', 'post', payload);
+}
+
 export async function getInvoiceById(id) {
   return fetchAPI(`invoice/${id}`);
 }

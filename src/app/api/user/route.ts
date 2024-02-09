@@ -15,7 +15,9 @@ export async function GET(req: NextRequest) {
         { status: 403 },
       );
     }
-    const users = await prisma.user.findMany();
+    const users = await prisma.user.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
     return NextResponse.json(users, { status: 200 });
   } catch (e) {
     if (

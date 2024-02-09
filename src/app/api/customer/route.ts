@@ -33,7 +33,9 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(customers, { status: 200 });
     }
 
-    const customers = await prisma.customer.findMany();
+    const customers = await prisma.customer.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
     return NextResponse.json(customers, { status: 200 });
   } catch (e) {
     if (

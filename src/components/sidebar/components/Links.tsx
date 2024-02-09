@@ -15,7 +15,7 @@ type user = {
 
 // chakra imports
 
-export const SidebarLinks = ({ routes }): JSX.Element => {
+export const SidebarLinks = ({ routes, onClick }): JSX.Element => {
   const { data: session, status } = useSession();
   const [user, setUser] = useState(null);
 
@@ -56,6 +56,7 @@ export const SidebarLinks = ({ routes }): JSX.Element => {
         >
           <div className="relative flex w-full hover:cursor-pointer">
             <li
+              onClick={onClick}
               className={`group flex w-full cursor-pointer items-center px-8 py-[9px] hover:bg-lightPrimary dark:hover:bg-gray-900 ${
                 activeRoute(route.path) === true
                   ? 'bg-lightPrimary dark:bg-gray-900'

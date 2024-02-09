@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useRef } from 'react';
 
 function useOutsideAlerter(ref: any, setX: any): void {
   React.useEffect(() => {
@@ -26,10 +26,11 @@ const Dropdown = (props: {
   children: JSX.Element;
   classNames: string;
   animation?: string;
+  open?: boolean;
 }) => {
-  const { button, children, classNames, animation } = props;
-  const wrapperRef = React.useRef(null);
-  const [openWrapper, setOpenWrapper] = React.useState(false);
+  const { button, children, classNames, animation, open } = props;
+  const wrapperRef = useRef(null);
+  const [openWrapper, setOpenWrapper] = React.useState(open || false);
   useOutsideAlerter(wrapperRef, setOpenWrapper);
 
   return (

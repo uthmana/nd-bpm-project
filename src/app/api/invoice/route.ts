@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
     }
     const invoice = await prisma.invoice.findMany({
       include: { customer: true, process: true },
+      orderBy: { createdAt: 'desc' },
     });
 
     return NextResponse.json(invoice, { status: 200 });

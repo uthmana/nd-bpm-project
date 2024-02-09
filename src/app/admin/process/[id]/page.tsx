@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getProcessById, addProcess, updateProcess } from 'app/lib/apiRequest';
+import { getProcessById, updateProcess } from 'app/lib/apiRequest';
 import { useParams, useRouter } from 'next/navigation';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
 import Card from 'components/card';
@@ -11,16 +11,15 @@ import {
   addTechParams,
   updateTechParams,
   deleteTechParams,
-  getMachines,
 } from 'app/lib/apiRequest';
 import Button from 'components/button/button';
 import Popup from 'components/popup';
 import { formatDateTime, log } from 'utils';
 import { useSession } from 'next-auth/react';
-import NextLink from 'next/link';
-import { MdAdd, MdOutlineArrowBack } from 'react-icons/md';
-import Select from 'components/select/page';
+import { MdAdd } from 'react-icons/md';
+
 import FileViewer from 'components/fileViewer';
+import DetailHeader from 'components/detailHeader';
 
 export default function EntryControl() {
   const router = useRouter();
@@ -45,6 +44,12 @@ export default function EntryControl() {
     'color',
     'machineName',
   ];
+
+  const detailData = {
+    title: 'Proses Detayi',
+    seeAllLink: '/admin/process',
+    seeAllText: 'Tün Proses',
+  };
 
   const infoTranslate = {
     customerName: 'Müşteri',
@@ -240,138 +245,135 @@ export default function EntryControl() {
       {isLoading ? (
         <LatestInvoicesSkeleton />
       ) : (
-        <div className="flex flex-col gap-8">
-          <div className="flex justify-end">
-            <NextLink
-              href="/admin/process"
-              className="text-md flex items-center gap-2 self-start  dark:text-white"
-            >
-              <span>
-                <MdOutlineArrowBack />
-              </span>
-              Tüm Prosesleri
-            </NextLink>
+        <>
+          <DetailHeader {...detailData} />
+          <div className="flex flex-col gap-4">
+            {/* Product Info */}
+            <Card extra="w-full px-4 pt-4 pb-8">
+              <h2 className="my-5 text-2xl font-bold">Ürün Bilgileri</h2>
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+                {Object.entries(process).map(([key, value], idx) => {
+                  if (productInfo.includes(key)) {
+                    return (
+                      <div className="" key={idx}>
+                        <h2 className="font-bold capitalize italic">
+                          {infoTranslate[key]}
+                        </h2>
+                        <> {value}</>
+                      </div>
+                    );
+                  }
+                })}
+              </div>
+            </Card>
+
+            {/* Tecknical Params */}
+            <Card extra="w-full px-4 pt-4 pb-8">
+              <div className="w-full">
+                <div className="my-5 flex justify-between">
+                  <h2 className="text-2xl font-bold">Teknik Parametreleri</h2>
+                  {(finalControl.length === 0 ||
+                    finalControl[0].result !== 'ACCEPT') &&
+                  (session?.user?.role === 'TECH' ||
+                    session?.user?.role === 'ADMIN') ? (
+                    <Button
+                      icon={<MdAdd className="mr-1 h-5 w-5" />}
+                      extra="max-w-fit px-4  h-[40px]"
+                      text={`${
+                        techParams.length > 0
+                          ? 'PARAMETRE DÜZENLE'
+                          : 'PARAMETRE EKLE'
+                      }`}
+                      onClick={handleComplete}
+                    />
+                  ) : null}
+                </div>
+
+                <TechParamsTable
+                  key={isTechParams as any}
+                  fields={machineParams}
+                  techParams={techParams}
+                  status={'FINISHED'}
+                  onUpdateData={(id, val) => onUpdateData(id, val)}
+                  onAddRow={(val) => onAddRow(val)}
+                  onRemoveRow={(val) => onRemoveRow(val)}
+                />
+              </div>
+
+              <div className="mt-8 flex justify-between text-sm font-bold opacity-60">
+                <div>
+                  <p>Oluşturan: {process?.createdBy}</p>
+                  <p>
+                    Oluşturulma Tarihi:{' '}
+                    {process?.createdAt
+                      ? formatDateTime(process?.createdAt)
+                      : ''}
+                  </p>
+                </div>
+                <div>
+                  <p>Güncelleyen: {process?.updatedBy}</p>
+                  <p>
+                    Güncelleme Tarihi:{' '}
+                    {process?.updatedAt
+                      ? formatDateTime(process?.updatedAt)
+                      : ''}
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Form  COntrol */}
+            <Card extra="w-full px-4 pt-4 pb-8">
+              <div className="w-full">
+                <div className="my-5 flex justify-between">
+                  <h2 className="text-2xl font-bold">
+                    Final Kontrol Bilgileri
+                  </h2>
+
+                  {process.status === 'FINISHED' &&
+                  (session?.user?.role === 'SUPER' ||
+                    session?.user?.role === 'ADMIN') ? (
+                    <Button
+                      icon={<MdAdd className="mr-1 h-5 w-5" />}
+                      extra="max-w-fit px-4  h-[40px]"
+                      text={`${
+                        finalControl.length > 0
+                          ? 'FİNAL KONTROLÜ DÜZENLE'
+                          : 'FİNAL KONTROLÜ YAP'
+                      } `}
+                      onClick={handleProcessControl}
+                    />
+                  ) : null}
+                </div>
+                {finalControl.length === 0 ? (
+                  <div className="flex h-32 w-full items-center justify-center opacity-40">
+                    Henüz final kontrolü yapılmadı
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+                    {Object.entries(finalControl[0]).map(
+                      ([key, val]: any, index) => {
+                        if (processInfo.includes(key)) {
+                          return (
+                            <div
+                              key={index}
+                              className="mb-3 flex flex-col flex-nowrap"
+                            >
+                              <h4 className="mb-0 italic">
+                                {infoProcessTranslate[key]}
+                              </h4>
+                              {renderValues(key, val)}
+                            </div>
+                          );
+                        }
+                      },
+                    )}
+                  </div>
+                )}
+              </div>
+            </Card>
           </div>
-
-          {/* Product Info */}
-          <Card extra="w-full px-6 py-8">
-            <h2 className="my-5 text-2xl font-bold">Ürün Bilgileri</h2>
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-              {Object.entries(process).map(([key, value], idx) => {
-                if (productInfo.includes(key)) {
-                  return (
-                    <div className="" key={idx}>
-                      <h2 className="font-bold capitalize italic">
-                        {infoTranslate[key]}
-                      </h2>
-                      <> {value}</>
-                    </div>
-                  );
-                }
-              })}
-            </div>
-          </Card>
-
-          {/* Tecknical Params */}
-          <Card extra="w-full px-6 py-8">
-            <div className="w-full">
-              <div className="my-5 flex justify-between">
-                <h2 className="text-2xl font-bold">Teknik Parametreleri</h2>
-                {(finalControl.length === 0 ||
-                  finalControl[0].result !== 'ACCEPT') &&
-                (session?.user?.role === 'TECH' ||
-                  session?.user?.role === 'ADMIN') ? (
-                  <Button
-                    icon={<MdAdd className="mr-1 h-5 w-5" />}
-                    extra="max-w-fit px-4  h-[40px]"
-                    text={`${
-                      techParams.length > 0
-                        ? 'PARAMETRE DÜZENLE'
-                        : 'PARAMETRE EKLE'
-                    }`}
-                    onClick={handleComplete}
-                  />
-                ) : null}
-              </div>
-
-              <TechParamsTable
-                key={isTechParams as any}
-                fields={machineParams}
-                techParams={techParams}
-                status={'FINISHED'}
-                onUpdateData={(id, val) => onUpdateData(id, val)}
-                onAddRow={(val) => onAddRow(val)}
-                onRemoveRow={(val) => onRemoveRow(val)}
-              />
-            </div>
-
-            <div className="mt-8 flex justify-between text-sm font-bold opacity-60">
-              <div>
-                <p>Oluşturan: {process?.createdBy}</p>
-                <p>
-                  Oluşturulma Tarihi:{' '}
-                  {process?.createdAt ? formatDateTime(process?.createdAt) : ''}
-                </p>
-              </div>
-              <div>
-                <p>Güncelleyen: {process?.updatedBy}</p>
-                <p>
-                  Güncelleme Tarihi:{' '}
-                  {process?.updatedAt ? formatDateTime(process?.updatedAt) : ''}
-                </p>
-              </div>
-            </div>
-          </Card>
-
-          {/* Form  COntrol */}
-          <Card extra="w-full px-6 py-8">
-            <div className="w-full">
-              <div className="my-5 flex justify-between">
-                <h2 className="text-2xl font-bold">Final Kontrol Bilgileri</h2>
-
-                {process.status === 'FINISHED' &&
-                (session?.user?.role === 'SUPER' ||
-                  session?.user?.role === 'ADMIN') ? (
-                  <Button
-                    icon={<MdAdd className="mr-1 h-5 w-5" />}
-                    extra="max-w-fit px-4  h-[40px]"
-                    text={`${
-                      finalControl.length > 0
-                        ? 'FİNAL KONTROLÜ DÜZENLE'
-                        : 'FİNAL KONTROLÜ YAP'
-                    } `}
-                    onClick={handleProcessControl}
-                  />
-                ) : null}
-              </div>
-              {finalControl.length === 0 ? (
-                <div className="flex h-32 w-full items-center justify-center opacity-40">
-                  Henüz final kontrolü yapılmadı
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-                  {Object.entries(finalControl[0]).map(
-                    ([key, val]: any, index) => {
-                      if (processInfo.includes(key)) {
-                        return (
-                          <div
-                            key={index}
-                            className="mb-3 flex flex-col flex-nowrap"
-                          >
-                            <h4 className="mb-0 italic">
-                              {infoProcessTranslate[key]}
-                            </h4>
-                            {renderValues(key, val)}
-                          </div>
-                        );
-                      }
-                    },
-                  )}
-                </div>
-              )}
-            </div>
-          </Card>
-        </div>
+        </>
       )}
 
       <Popup show={isShowPopUp} extra="flex flex-col gap-3 py-6 px-8">

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/db';
 import { Fault, Invoice, Prisma, Process } from '@prisma/client';
-
+import bwipjs from 'bwip-js';
 //Get single Invoice
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
   try {
@@ -42,6 +42,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       vat,
       amount,
       address,
+      status,
     } = result;
     if (!customerId || !invoiceDate || !tax_Office || !taxNo || !address) {
       return NextResponse.json(
@@ -52,6 +53,26 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     const invoice: Invoice = await prisma.invoice.findUnique({
       where: { id },
     });
+
+    let invoiceBarCode = invoice.barcode;
+    if (!invoice.barcode) {
+      const barcodeOptions = {
+        bcid: 'code128',
+        text: invoice.id,
+        scale: 3,
+      };
+
+      const pngBuffer = await new Promise<Buffer>((resolve, reject) => {
+        bwipjs.toBuffer(barcodeOptions, (err, buffer) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(buffer);
+          }
+        });
+      });
+      invoiceBarCode = pngBuffer.toString('base64');
+    }
 
     const updateInvoice = await prisma.invoice.update({
       where: {
@@ -68,6 +89,8 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         vat,
         amount,
         address,
+        status,
+        barcode: invoiceBarCode,
       },
     });
 

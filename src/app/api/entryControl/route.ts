@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     const allowedRoles = ['SUPER'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json({ message: 'Access forbidden', status: 403 });
     }
     const fault = await prisma.fault.findMany({ where: { status: 'PENDING' } });
     return NextResponse.json(fault, { status: 200 });

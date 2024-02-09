@@ -63,6 +63,7 @@ export async function GET(req: NextRequest) {
 
     const process = await prisma.process.findMany({
       include: { technicalParams: true },
+      orderBy: { createdAt: 'desc' },
     });
 
     return NextResponse.json(process, { status: 200 });

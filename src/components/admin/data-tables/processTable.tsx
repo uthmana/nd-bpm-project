@@ -3,14 +3,12 @@ import Card from 'components/card';
 import Search from 'components/search/search';
 import Button from 'components/button/button';
 import FileViewer from 'components/fileViewer';
-import { formatDateTime, useDrage } from 'utils';
+import { useDrage } from 'utils';
 import { ProcessObj, ProcessTable } from '../../../app/localTypes/table-types';
 import TablePagination from './tablePagination';
+import Barcode from 'react-jsbarcode';
 import {
-  MdModeEdit,
   MdOutlineDelete,
-  MdAdd,
-  MdCheck,
   MdCheckCircle,
   MdCancel,
   MdOutlineError,
@@ -83,13 +81,17 @@ function ProcessTable({
       columnHelper.accessor('faultId', {
         id: 'faultId',
         header: () => (
-          <p className="min-w-[100px] text-sm font-bold text-gray-600 dark:text-white">
-            TAKIP KODU
+          <p className="min-w-[150px] text-sm font-bold text-gray-600 dark:text-white">
+            BARKOD
           </p>
         ),
         cell: (info: any) => (
           <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
+            <Barcode
+              className="h-full w-full"
+              value={info.getValue()}
+              options={{ format: 'code128' }}
+            />
           </p>
         ),
       }),

@@ -13,6 +13,7 @@ import {
 
 export default function Notification({ user }) {
   const [notifications, setNotifications] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 
   const getMyNotification = async () => {
@@ -39,6 +40,7 @@ export default function Notification({ user }) {
   }, []);
 
   const handleNotifClick = async ({ id, link }) => {
+    setIsOpen(false);
     const { status, data } = await updateNotificStatus({ id });
     if (status === 200) {
       getMyNotification();
@@ -56,6 +58,7 @@ export default function Notification({ user }) {
 
   return (
     <Dropdown
+      open={isOpen}
       button={
         <>
           <p className="cursor-pointer">

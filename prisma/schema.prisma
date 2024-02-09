@@ -269,10 +269,10 @@ model Invoice {
   rep_name    String?
   tax_Office  String?
   taxNo       String?
-  status      InvoiceStatus @default(ACTIVE)
+  status      InvoiceStatus @default(PENDING)
   process     Process[]
   customer    Customer      @relation(fields: [customerId], references: [id])
-  customerId  String
+  customerId  String        @unique
   createdAt   DateTime      @default(now())
   updatedAt   DateTime?     @updatedAt
   createdBy   String?
@@ -293,6 +293,7 @@ model Offer {
 }
 
 enum InvoiceStatus {
+  PENDING
   ACTIVE
   PAID
   NOT_PAID

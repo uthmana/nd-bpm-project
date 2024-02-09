@@ -2,7 +2,7 @@
 CREATE TYPE "FinalItemStatus" AS ENUM ('OK', 'NOT_OK');
 
 -- CreateEnum
-CREATE TYPE "InvoiceStatus" AS ENUM ('ACTIVE', 'PAID', 'NOT_PAID');
+CREATE TYPE "InvoiceStatus" AS ENUM ('PENDING', 'ACTIVE', 'PAID', 'NOT_PAID');
 
 -- CreateEnum
 CREATE TYPE "NotifStatus" AS ENUM ('READ', 'NOT_READ');
@@ -391,6 +391,9 @@ CREATE UNIQUE INDEX "Process_faultId_key" ON "Process"("faultId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "FinalControl_faultId_key" ON "FinalControl"("faultId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Invoice_customerId_key" ON "Invoice"("customerId");
 
 -- AddForeignKey
 ALTER TABLE "Address" ADD CONSTRAINT "Address_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;

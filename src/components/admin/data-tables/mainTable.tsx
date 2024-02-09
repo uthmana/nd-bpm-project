@@ -2,6 +2,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Card from 'components/card';
 import { MdModeEdit, MdOutlineDelete, MdAdd } from 'react-icons/md';
+import Barcode from 'react-jsbarcode';
 import {
   createColumnHelper,
   flexRender,
@@ -316,6 +317,23 @@ function MainTable({
               </p>
             ),
           }),
+          columnHelper.accessor('id', {
+            id: 'id',
+            header: () => (
+              <p className="min-w-[150px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                Barkodu
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                <Barcode
+                  className="h-full w-full"
+                  value={info.getValue()}
+                  options={{ format: 'code128' }}
+                />
+              </p>
+            ),
+          }),
           columnHelper.accessor('customerName', {
             id: 'customerName',
             header: () => (
@@ -360,19 +378,6 @@ function MainTable({
             header: () => (
               <p className="min-w-[100px] text-sm  font-bold uppercase text-gray-600 dark:text-white">
                 Marka
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
-              </p>
-            ),
-          }),
-          columnHelper.accessor('product_barcode', {
-            id: 'product_barcode',
-            header: () => (
-              <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-                Barkodu
               </p>
             ),
             cell: (info: any) => (
@@ -511,7 +516,6 @@ function MainTable({
               </p>
             ),
           }),
-
           columnHelper.accessor('id', {
             id: 'id',
             header: () => (

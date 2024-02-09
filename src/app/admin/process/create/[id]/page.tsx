@@ -24,6 +24,7 @@ import { useSession } from 'next-auth/react';
 import NextLink from 'next/link';
 import { MdAdd, MdOutlineArrowBack } from 'react-icons/md';
 import Select from 'components/select/page';
+import DetailHeader from 'components/detailHeader';
 
 export default function EntryControl() {
   const router = useRouter();
@@ -60,6 +61,12 @@ export default function EntryControl() {
     color: 'Renk',
     machineName: 'Makine',
     faultId: 'Takıp Kodu',
+  };
+
+  const detailData = {
+    title: 'Proses Detayi',
+    seeAllLink: '/admin/process',
+    seeAllText: 'Tün Proses',
   };
 
   const getSingleProcess = async () => {
@@ -210,20 +217,10 @@ export default function EntryControl() {
       {isLoading ? (
         <LatestInvoicesSkeleton />
       ) : (
-        <div className="flex flex-col gap-8">
-          <div className="flex justify-end ">
-            <NextLink
-              href="/admin/process"
-              className="text-md flex items-center gap-2 self-start  dark:text-white"
-            >
-              <span>
-                <MdOutlineArrowBack />
-              </span>
-              Tüm Prosesleri
-            </NextLink>
-          </div>
+        <div className="flex flex-col gap-4">
+          <DetailHeader {...detailData} />
 
-          <Card extra="w-full p-4">
+          <Card extra="w-full px-4 pt-4 pb-8">
             <h2 className="my-5 text-2xl font-bold">Ürün Bilgileri</h2>
             <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
               {Object.entries(process).map(([key, value], idx) => {
@@ -240,7 +237,7 @@ export default function EntryControl() {
               })}
             </div>
           </Card>
-          <Card extra="w-full p-4">
+          <Card extra="w-full px-4 pt-4 pb-8">
             <div className="w-full">
               <div className="my-5 flex justify-between">
                 <h2 className="text-2xl font-bold">Teknik Parametreleri</h2>

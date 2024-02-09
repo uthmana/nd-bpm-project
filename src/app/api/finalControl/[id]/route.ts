@@ -52,8 +52,63 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         ...data,
       },
     });
+
+    // Update Invoice and Process
+    if (result === 'REJECT') {
+      const updatedProcess = await prisma.process.update({
+        where: {
+          id: processId,
+        },
+        data: { invoiceId: null },
+      });
+    }
+
+    if (result === 'ACCEPT') {
+      const invoice = await prisma.invoice.findUnique({
+        where: { customerId: id },
+      });
+      if (invoice) {
+        const updatedProcess = await prisma.process.update({
+          where: {
+            id: processId,
+          },
+          data: { invoiceId: invoice.id },
+        });
+
+        return NextResponse.json(updateFinalControl, { status: 200 });
+      }
+
+      const stock = await prisma.stock.findUnique({
+        where: { faultId },
+        include: { customer: true },
+      });
+      if (stock) {
+        const { customer } = stock;
+        const { id, tax_Office, taxNo, rep_name, address } = customer;
+        const invoice = await prisma.invoice.create({
+          data: {
+            invoiceDate: new Date(),
+            customerId: id,
+            tax_Office,
+            taxNo,
+            rep_name,
+            address,
+          },
+        });
+        if (invoice) {
+          const updatedProcess = await prisma.process.update({
+            where: {
+              id: processId,
+            },
+            data: { invoiceId: invoice.id },
+          });
+        }
+      }
+    }
+
     return NextResponse.json(updateFinalControl, { status: 200 });
   } catch (e) {
+    console.log(e);
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
       e instanceof Prisma.PrismaClientUnknownRequestError ||

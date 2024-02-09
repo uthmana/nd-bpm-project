@@ -25,6 +25,7 @@ import { formatDateTime, useDrage } from 'utils';
 import FileViewer from 'components/fileViewer';
 import { FaultObj, MainTable } from '../../../app/localTypes/table-types';
 import TablePagination from './tablePagination';
+import Barcode from 'react-jsbarcode';
 
 function EntryTable({
   tableData,
@@ -81,13 +82,17 @@ function EntryTable({
       columnHelper.accessor('id', {
         id: 'id',
         header: () => (
-          <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Takip Kodu
+          <p className="min-w-[150px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+            BARKOD
           </p>
         ),
         cell: (info: any) => (
           <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
+            <Barcode
+              className="h-full w-full"
+              value={info.getValue()}
+              options={{ format: 'code128' }}
+            />
           </p>
         ),
       }),

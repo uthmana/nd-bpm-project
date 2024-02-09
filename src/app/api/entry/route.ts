@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
     }
     const fault = await prisma.fault.findMany({
       include: { faultControl: true },
+      orderBy: { createdAt: 'desc' },
     });
 
     return NextResponse.json(fault, { status: 200 });

@@ -8,14 +8,7 @@ import Select from 'components/select/page';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import TextArea from 'components/fields/textArea';
 import Upload from 'components/upload';
-import {
-  log,
-  applications,
-  standards,
-  colors,
-  convertToISO8601,
-  removeMillisecondsAndUTC,
-} from 'utils';
+import { log, convertToISO8601, removeMillisecondsAndUTC } from 'utils';
 import { FaultObj } from '../../app/localTypes/table-types';
 import {
   getCustomersWithStock,

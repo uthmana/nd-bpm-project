@@ -55,6 +55,37 @@ export async function PUT(req: Request) {
       data: result,
     });
 
+    if (result.result === 'ACCEPT') {
+      const stock = await prisma.stock.findUnique({
+        where: { faultId },
+        include: { customer: true },
+      });
+
+      if (stock) {
+        const { customer } = stock;
+        const { id, tax_Office, taxNo, rep_name, address } = customer;
+        const invoice = await prisma.invoice.create({
+          data: {
+            invoiceDate: new Date(),
+            customerId: id,
+            tax_Office,
+            taxNo,
+            rep_name,
+            address,
+          },
+        });
+
+        if (invoice) {
+          const updatedProcess = await prisma.process.update({
+            where: {
+              id: processId,
+            },
+            data: { invoiceId: invoice.id },
+          });
+        }
+      }
+    }
+
     //Create Notification
     const notification = await prisma.notification.create({
       data: {

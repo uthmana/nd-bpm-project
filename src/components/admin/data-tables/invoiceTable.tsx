@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import Card from 'components/card';
+import Barcode from 'react-jsbarcode';
 import {
   MdModeEdit,
   MdOutlineDelete,
@@ -44,11 +45,17 @@ function InvoiceTable({
 
   const columns = useMemo(() => {
     const invoiceStatus = {
+      PENDING: 'Beklemede',
       ACTIVE: 'Aktif',
       PAID: 'Ödendi',
       NOT_PAID: 'Ödenmedi',
     };
     const statusbgColor = (status: string) => {
+      if (status === 'ACTIVE') {
+        return (
+          <MdCheckCircle className="me-1 text-blue-700 dark:text-blue-500" />
+        );
+      }
       if (status === 'PAID') {
         return (
           <MdCheckCircle className="me-1 text-green-500 dark:text-green-300" />
@@ -57,6 +64,7 @@ function InvoiceTable({
       if (status === 'NOT_PAID') {
         return <MdCancel className="me-1 text-red-500 dark:text-red-300" />;
       }
+
       return (
         <MdOutlineError className="me-1 text-amber-500 dark:text-amber-300" />
       );
@@ -66,7 +74,7 @@ function InvoiceTable({
       columnHelper.accessor('id', {
         id: 'id',
         header: () => (
-          <p className="min-w-[80px] text-sm font-bold text-gray-600 dark:text-white">
+          <p className="min-w-[60px] text-sm font-bold text-gray-600 dark:text-white">
             SİRA NO.
           </p>
         ),
@@ -76,16 +84,20 @@ function InvoiceTable({
           </p>
         ),
       }),
-      columnHelper.accessor('barcode', {
-        id: 'barcode',
+      columnHelper.accessor('id', {
+        id: 'id',
         header: () => (
-          <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Takip Kodu
+          <p className="min-w-[150px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+            BARKOD
           </p>
         ),
         cell: (info: any) => (
           <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
+            <Barcode
+              className="h-full w-full"
+              value={info.getValue()}
+              options={{ format: 'code128' }}
+            />
           </p>
         ),
       }),
@@ -105,8 +117,8 @@ function InvoiceTable({
       columnHelper.accessor('products', {
         id: 'products',
         header: () => (
-          <p className="min-w-[300px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Ürünleri
+          <p className="min-w-[200px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+            ÜRÜNLERİ
           </p>
         ),
         cell: (info: any) => (
@@ -158,8 +170,8 @@ function InvoiceTable({
       columnHelper.accessor('tolalQty', {
         id: 'tolalQty',
         header: () => (
-          <p className="min-w-[160px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
-            TOPLAM Miktari
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Miktar
           </p>
         ),
         cell: (info: any) => (
@@ -172,8 +184,8 @@ function InvoiceTable({
       columnHelper.accessor('amount', {
         id: 'amount',
         header: () => (
-          <p className="min-w-[160px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Toplam {'TL'}
+          <p className="min-w-[60px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
+            TUTAR
           </p>
         ),
         cell: (info: any) => (
@@ -185,7 +197,7 @@ function InvoiceTable({
       columnHelper.accessor('vat', {
         id: 'vat',
         header: () => (
-          <p className="min-w-[160px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[60px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
             KDV%
           </p>
         ),
@@ -199,8 +211,8 @@ function InvoiceTable({
       columnHelper.accessor('totalAmount', {
         id: 'totalAmount',
         header: () => (
-          <p className="min-w-[160px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Genel Toplam {'TL'}
+          <p className="min-w-[60px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Toplam
           </p>
         ),
         cell: (info: any) => (
@@ -213,12 +225,12 @@ function InvoiceTable({
       columnHelper.accessor('description', {
         id: 'description',
         header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[200px] text-sm font-bold uppercase text-gray-600 dark:text-white">
             Açıklama
           </p>
         ),
         cell: (info: any) => (
-          <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
+          <p className="line-clamp-2 text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -226,12 +238,12 @@ function InvoiceTable({
       columnHelper.accessor('status', {
         id: 'status',
         header: () => (
-          <p className="min-w-[130px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            KESME DURUMU
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            DURUM
           </p>
         ),
         cell: (info: any) => (
-          <div className="flex items-center">
+          <div className="flex min-w-[90px] items-center">
             {statusbgColor(info.getValue())}
             <p className="text-sm font-bold text-navy-700 dark:text-white">
               {invoiceStatus[info.getValue()]}
@@ -314,14 +326,14 @@ function InvoiceTable({
           />
         </div>
 
-        {variant === 'NORMAL' || variant === 'ADMIN' ? (
+        {/* {variant === 'NORMAL' || variant === 'ADMIN' ? (
           <Button
             text="İrsalye Oluştur"
             extra="!w-fit px-4 h-[38px] font-bold"
             onClick={onAdd}
             icon={<MdAdd className="ml-1 h-6 w-6" />}
           />
-        ) : null}
+        ) : null} */}
       </header>
 
       <div

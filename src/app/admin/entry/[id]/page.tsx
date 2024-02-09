@@ -16,18 +16,25 @@ import {
   faultControlTranslate,
 } from 'utils';
 import Button from 'components/button/button';
-import NextLink from 'next/link';
-import { MdAdd, MdOutlineArrowBack } from 'react-icons/md';
+import { MdAdd } from 'react-icons/md';
 import FileViewer from 'components/fileViewer';
+import DetailHeader from 'components/detailHeader';
 
 export default function Edit() {
   const router = useRouter();
   const { data: session } = useSession();
   const queryParams = useParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [fault, setFault] = useState([]);
+  const [fault, setFault] = useState([] as any);
   const [faultControl, setFaultControl] = useState({} as any);
   const [isLoading, setIsLoading] = useState(false);
+
+  const detailData = {
+    title: 'Ürün Detayi',
+    seeAllLink: '/admin/entry',
+    seeAllText: 'Tün Ürünler',
+    actionLink: '/admin/entry/create/' + queryParams?.id,
+  };
 
   useEffect(() => {
     const getSingleFault = async () => {
@@ -99,41 +106,35 @@ export default function Edit() {
         <UserFormSkeleton />
       ) : (
         <>
-          <div className="flex justify-end">
-            <NextLink
-              href="/admin/entry"
-              className="text-md flex w-fit items-center gap-2 self-start  dark:text-white"
-            >
-              <span>
-                <MdOutlineArrowBack />
-              </span>
-              Tüm Ürün Girişleri
-            </NextLink>
-          </div>
-
-          <Card extra="my-12 mx-auto mt-4 w-full rounded-2xl px-8 py-10 bg-white dark:bg-[#111c44] dark:text-white">
+          <DetailHeader {...detailData} />
+          <Card extra="my-4 mx-auto mt-4 w-full rounded-2xl px-8 pt-10 bg-white dark:bg-[#111c44] dark:text-white">
             <h2 className="mb-4 text-2xl font-bold">Ürün Bilgileri</h2>
             <div className="mb-10 grid w-full grid-cols-2 gap-2  md:grid-cols-3 lg:grid-cols-4">
-              {Object.entries(fault).map(([key, val]: any, index) => {
-                if (faultInfo.includes(key)) {
-                  return (
-                    <div key={index} className="mb-5 flex flex-col flex-nowrap">
-                      <h4 className="mx-1 italic">{infoTranslate[key]}</h4>
-                      {key === 'arrivalDate' ? (
-                        <p className="font-bold"> {formatDateTime(val)} </p>
-                      ) : key === 'technicalDrawingAttachment' ? (
-                        <FileViewer file={val} />
-                      ) : (
-                        <p className="font-bold"> {val} </p>
-                      )}
-                    </div>
-                  );
-                }
-              })}
+              {fault && fault.id
+                ? Object.entries(fault).map(([key, val]: any, index) => {
+                    if (faultInfo.includes(key)) {
+                      return (
+                        <div
+                          key={index}
+                          className="mb-5 flex flex-col flex-nowrap"
+                        >
+                          <h4 className="mx-1 italic">{infoTranslate[key]}</h4>
+                          {key === 'arrivalDate' ? (
+                            <p className="font-bold"> {formatDateTime(val)} </p>
+                          ) : key === 'technicalDrawingAttachment' ? (
+                            <FileViewer file={val} />
+                          ) : (
+                            <p className="font-bold"> {val} </p>
+                          )}
+                        </div>
+                      );
+                    }
+                  })
+                : null}
             </div>
           </Card>
 
-          <Card extra="my-12 mx-auto mt-4 w-full rounded-2xl px-8 py-10 bg-white dark:bg-[#111c44] dark:text-white">
+          <Card extra="mx-auto mt-4 w-full rounded-2xl px-8 pt-10 bg-white dark:bg-[#111c44] dark:text-white">
             <div className="mb-8 flex justify-between gap-3">
               <h2 className="text-2xl font-bold">
                 Ürün Giriş Kontrol Bilgileri

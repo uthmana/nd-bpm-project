@@ -3,12 +3,7 @@ import React, { useEffect, useState } from 'react';
 import InvoiceForm from 'components/forms/invoice';
 import { useParams, useRouter } from 'next/navigation';
 import { log, removeMillisecondsAndUTC } from 'utils';
-import {
-  addInvoice,
-  getFinishedProcess,
-  getInvoiceById,
-  updateInvoice,
-} from 'app/lib/apiRequest';
+import { getInvoiceById, updateInvoice } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
 import Card from 'components/card';
@@ -29,7 +24,6 @@ export default function Edit() {
       if (status === 200) {
         const { customer, process } = data;
         setCustomers([{ customer, process }]);
-        console.log({ data });
         setInvoice({
           ...data,
           invoiceDate: removeMillisecondsAndUTC(data.invoiceDate),
@@ -51,6 +45,7 @@ export default function Edit() {
     const resData: any = await updateInvoice({
       ...formData,
       ...{ updatedBy: session?.user?.name },
+      status: 'ACTIVE',
     });
     const { status, data, response } = resData;
     if (response?.error) {

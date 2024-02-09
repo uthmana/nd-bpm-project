@@ -3,11 +3,13 @@ import { NextResponse } from 'next/server';
 import ResetPassword from 'components/emails/resetPassword';
 import prisma from 'app/lib/db';
 import crypto from 'crypto';
+import InvoiceDoc from 'components/invoice';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   const formData = await request.json();
+
   const emailBody: any = {
     from: 'ND <majeed@ndindustriesbmp.com>',
     to: formData.email,
@@ -16,11 +18,24 @@ export async function POST(request: Request) {
 
   if (formData.type === 'offer') {
     emailBody.html = `<p>${formData.message}</p>`;
-    const { data, error } = await resend.emails.send(emailBody);
+    const { data, error }: any = await resend.emails.send(emailBody);
     if (error) {
       return NextResponse.json({ error }, { status: 404 });
     }
     return NextResponse.json({ data }, { status: 200 });
+  }
+
+  if (formData.type === 'invoice') {
+    formData.data.serverSide = true;
+    emailBody.react = InvoiceDoc({ invoice: formData.data });
+    const { data, error }: any = await resend.emails.send(emailBody);
+    if (error) {
+      return NextResponse.json(
+        { message: error.message },
+        { status: error.statusCode },
+      );
+    }
+    return NextResponse.json(data, { status: 200 });
   }
 
   if (formData.type === 'forgotPassword') {
