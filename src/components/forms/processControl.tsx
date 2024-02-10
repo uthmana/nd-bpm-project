@@ -89,9 +89,10 @@ export default function ProcessControlForm({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { result } = values;
-    if (!result) {
+    const { result, tork_Kontrol, olcu_Kontrol, gorunum_kontrol } = values;
+    if (!result || !tork_Kontrol || !olcu_Kontrol || !gorunum_kontrol) {
       setError(true);
+      window.scroll(0, 0);
       return;
     }
 
@@ -151,6 +152,7 @@ export default function ProcessControlForm({
               label="Ölçü Kontrolü"
               onChange={handleValues}
               name="olcu_Kontrol"
+              required={true}
             >
               {sizeConfirmation.map((item, idx) => {
                 return (
@@ -172,6 +174,7 @@ export default function ProcessControlForm({
               label="Görünüm Kontrolü"
               onChange={handleValues}
               name="gorunum_kontrol"
+              required={true}
             >
               {sizeConfirmation.map((item, idx) => {
                 return (
@@ -193,6 +196,7 @@ export default function ProcessControlForm({
               label="Tork Kontrolü"
               onChange={handleValues}
               name="tork_Kontrol"
+              required={true}
             >
               {sizeConfirmation.map((item, idx) => {
                 return (

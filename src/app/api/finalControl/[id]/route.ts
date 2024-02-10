@@ -44,6 +44,13 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       where: { id },
     });
 
+    if (!finalControl) {
+      return NextResponse.json(
+        { message: 'Content not found' },
+        { status: 404 },
+      );
+    }
+
     const updateFinalControl = await prisma.finalControl.update({
       where: {
         id: id,
@@ -55,29 +62,55 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
 
     // Update Invoice and Process
     if (result === 'REJECT') {
-      const updatedProcess = await prisma.process.update({
+      const process = await prisma.process.findUnique({
         where: {
           id: processId,
         },
-        data: { invoiceId: null },
       });
-    }
 
-    if (result === 'ACCEPT') {
-      const invoice = await prisma.invoice.findUnique({
-        where: { customerId: id },
-      });
-      if (invoice) {
+      if (process && process.invoiceId) {
         const updatedProcess = await prisma.process.update({
           where: {
             id: processId,
           },
-          data: { invoiceId: invoice.id },
+          data: { invoiceId: null },
+        });
+        const invoice = await prisma.invoice.findUnique({
+          where: { id: process.invoiceId },
         });
 
+        if (invoice && invoice.status !== 'PAID') {
+          const deletedInvoice = await prisma.invoice.delete({
+            where: {
+              id: process.invoiceId,
+            },
+          });
+        }
+      }
+      return NextResponse.json(updateFinalControl, { status: 200 });
+    }
+
+    if (result === 'ACCEPT') {
+      //Update invoice if exit
+      const process = await prisma.process.findUnique({
+        where: { id: processId },
+      });
+      if (process.invoiceId) {
+        const invoice = await prisma.invoice.findUnique({
+          where: { id: process.invoiceId },
+        });
+        if (invoice) {
+          const updatedProcess = await prisma.process.update({
+            where: {
+              id: processId,
+            },
+            data: { invoiceId: invoice.id },
+          });
+        }
         return NextResponse.json(updateFinalControl, { status: 200 });
       }
 
+      //Create invoice if not exit
       const stock = await prisma.stock.findUnique({
         where: { faultId },
         include: { customer: true },
@@ -103,6 +136,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
             data: { invoiceId: invoice.id },
           });
         }
+        return NextResponse.json(updateFinalControl, { status: 200 });
       }
     }
 

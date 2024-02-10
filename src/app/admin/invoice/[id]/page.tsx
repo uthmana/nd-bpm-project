@@ -1,10 +1,10 @@
 'use client';
 
-import { getInvoiceById, sendInvoice } from 'app/lib/apiRequest';
+import { getInvoiceById, sendInvoice, updateInvoice } from 'app/lib/apiRequest';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { MdPrint } from 'react-icons/md';
+import { MdOutlinePayment, MdPrint } from 'react-icons/md';
 import InvoiceDoc from 'components/invoice';
 import Button from 'components/button/button';
 import DetailHeader from 'components/detailHeader';
@@ -17,14 +17,8 @@ export default function Invoice() {
   const [invoice, setInvoice] = useState({} as any);
   const [value, setValues] = useState({} as any);
   const [isSubmiting, setIsSubmiting] = useState(false);
+  const [isInvoiceSubmiting, setIsInvoiceSubmiting] = useState(false);
   const queryParams = useParams();
-
-  const detailData = {
-    title: 'İrsaliye Detayi',
-    seeAllLink: '/admin/invoice',
-    seeAllText: 'Tün İrsaliye',
-    actionLink: '/admin/invoice/create/' + queryParams?.id,
-  };
 
   const getSingleInvoice = async (id) => {
     setIsLoading(true);
@@ -74,6 +68,26 @@ export default function Invoice() {
     setIsSubmiting(false);
   };
 
+  const onInoviceComplete = async () => {
+    setIsInvoiceSubmiting(true);
+    const { status, data } = await updateInvoice({
+      id: queryParams?.id,
+      status: 'PAID',
+    });
+
+    if (status === 200) {
+      getSingleInvoice(queryParams?.id);
+    }
+    setIsInvoiceSubmiting(false);
+  };
+
+  const detailData = {
+    title: 'İrsaliye Detayi',
+    seeAllLink: '/admin/invoice',
+    seeAllText: 'Tün İrsaliye',
+    actionLink: '/admin/invoice/create/' + queryParams?.id,
+  };
+
   return (
     <div className="w-full">
       <div className="w-full lg:mx-auto lg:w-[1000px]">
@@ -88,8 +102,12 @@ export default function Invoice() {
         <div className="flex w-full flex-wrap gap-5 lg:mx-auto lg:w-[1000px]">
           <InvoiceDoc invoice={invoice} />
           <div className="flex min-h-[200px] w-full flex-col gap-3 self-start bg-white px-2 py-4 lg:w-[calc(100%-700px)]">
-            <div className="flex w-full flex-col gap-3 border-b px-3 py-4">
-              <h3 className="mb-2 border-b text-2xl">Müşteri Bilgileri</h3>
+            <div className="flex w-full flex-col gap-3 border-b px-3 py-4 text-sm">
+              <h3 className="mb-2 border-b text-lg">Müşteri Bilgileri</h3>
+              <div className="flex flex-col flex-nowrap">
+                <h3 className="mb-0 italic">Müşteri</h3>
+                <p className="font-bold">{invoice?.customer?.company_name}</p>
+              </div>
               <div className="flex flex-col flex-nowrap">
                 <h3 className="mb-0 italic">Kodu</h3>
                 <p className="font-bold">{invoice?.customer?.code}</p>
@@ -129,7 +147,17 @@ export default function Invoice() {
               extra="px-8 h-[40px] max-w-[300px]"
               onClick={handlePrint}
               text="YAZDIR"
-              icon={<MdPrint className="mr-1 h-4 w-4" />}
+              icon={<MdPrint className="mr-1 h-5 w-5" />}
+            />
+            <Button
+              extra={`px-8 h-[40px] max-w-[300px] ${
+                invoice.status === 'PAID' ? 'opacity-25' : ''
+              }`}
+              onClick={onInoviceComplete}
+              text="ÖDEME TAMAMLANDI"
+              icon={<MdOutlinePayment className="mr-1 h-5 w-5" />}
+              disabled={invoice.status === 'PAID'}
+              loading={isInvoiceSubmiting}
             />
           </div>
         </div>

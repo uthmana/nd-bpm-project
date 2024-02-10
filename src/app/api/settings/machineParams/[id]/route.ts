@@ -1,18 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '../../../lib/db';
-import { Machine, MachineParams, Prisma } from '@prisma/client';
+import prisma from 'app/lib/db';
+import { MachineParams, Prisma } from '@prisma/client';
+import { checkUserRole } from 'utils/auth';
 
-//Get single  machine
+//Get single  MachineParams
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
   try {
     const id = route.params.id;
-    const machine: Machine = await prisma.machine.findUnique({
+    const machineParams: MachineParams = await prisma.machineParams.findUnique({
       where: { id: id },
-      include: {
-        machineParams: true,
-      },
     });
-    return NextResponse.json(machine, { status: 200 });
+    return NextResponse.json(machineParams, { status: 200 });
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
@@ -26,58 +24,42 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
   }
 }
 
-//Update  machine
+//Update  MachineParams
 export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
-    const id = route.params.id;
-    const result: any = await req.json();
-    //TODO: validate reqBody
-    const { machine_Name, id: machineId } = result;
+    //Allow only Admin to make changes
+    const allowedRoles = ['ADMIN'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json({ message: 'Access forbidden', status: 403 });
+    }
 
-    if (!machineId || !machine_Name) {
+    const id = route.params.id;
+    const result: MachineParams = await req.json();
+    //TODO: validate reqBody
+    const { param_name } = result;
+
+    if (!param_name) {
       return NextResponse.json(
         { message: 'You are missing a required data' },
         { status: 401 },
       );
     }
 
-    const machine: Machine = await prisma.machine.findUnique({
+    const machineParams: MachineParams = await prisma.machineParams.findUnique({
       where: { id },
     });
 
-    const updatedMachine = await prisma.machine.update({
+    const updatedMachineParams = await prisma.machineParams.update({
       where: {
         id: id,
       },
-      data: { machine_Name },
+      data: {
+        ...result,
+      },
     });
 
-    //delete and create machine params
-    // const machineParams: any = await prisma.machineParams.findMany({
-    //   where: { machineId: id },
-    // });
-
-    // if (machineParams && machineParams?.length > 0) {
-    //   const machineParamsIds = machineParams.map((item) => item.id);
-    //   const machineParamsDeleted: any = await prisma.machineParams.deleteMany({
-    //     where: {
-    //       id: {
-    //         in: machineParamsIds,
-    //       },
-    //     },
-    //   });
-
-    //   if (machineParamsDeleted) {
-    //     const machineParamsData = params.map((item) => {
-    //       return { machineId: machine.id, param_name: item.param_name };
-    //     });
-    //     const machineParams = await prisma.machineParams.createMany({
-    //       data: machineParamsData,
-    //     });
-    //   }
-    // }
-
-    return NextResponse.json(updatedMachine, { status: 200 });
+    return NextResponse.json(updatedMachineParams, { status: 200 });
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
@@ -91,20 +73,27 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   }
 }
 
-//Delete  machine
+//Delete  machineParams
 export async function DELETE(
   req: NextRequest,
   route: { params: { id: string } },
 ) {
   try {
+    //Allow only Admin to make changes
+    const allowedRoles = ['ADMIN'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json({ message: 'Access forbidden', status: 403 });
+    }
     //TODO: restrict unathorized user : only normal and admin allowed
     const id = route.params.id;
-    const deletedmachine = await prisma.machine.delete({
+    const deletedMachineParams = await prisma.machineParams.delete({
       where: {
         id: id,
       },
     });
-    return NextResponse.json(deletedmachine, { status: 200 });
+
+    return NextResponse.json(deletedMachineParams, { status: 200 });
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||

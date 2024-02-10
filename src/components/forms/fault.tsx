@@ -278,32 +278,6 @@ export default function Fault(props: {
           value={values.arrivalDate}
         />
       </div>
-
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row">
-        {/* <InputField
-          label="Baç No."
-          onChange={handleValues}
-          type="text"
-          id="productBatchNumber"
-          name="productBatchNumber"
-          placeholder="Baç No."
-          extra="mb-2"
-          min={1}
-          value={values.productBatchNumber}
-        /> */}
-
-        {/* <InputField
-          label="İrsalye Tarihi"
-          onChange={handleValues}
-          type="datetime-local"
-          id="invoiceDate"
-          name="invoiceDate"
-          placeholder="İrsalye Tarihi"
-          extra="mb-2"
-          value={values.invoiceDate}
-        /> */}
-      </div>
-
       <div className="mb-8 flex flex-col gap-3 sm:flex-row">
         <Select
           required={true}

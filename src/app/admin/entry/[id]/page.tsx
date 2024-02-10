@@ -87,7 +87,7 @@ export default function Edit() {
     }
 
     if (key === 'processFrequency') {
-      return <p className="font-bold"> {val ? 'YAZILSIN' : 'YAZILMASIN'} </p>;
+      return <p className="font-bold"> {val?.toUpperCase()} </p>;
     }
 
     if (key === 'result') {

@@ -1,25 +1,19 @@
-import { authOptions } from '../../../lib/authOptions';
-import { getServerSession } from 'next-auth';
-import { NextResponse, NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import prisma from '../../../lib/db';
+import { hash } from 'bcryptjs';
 import { checkUserRole } from 'utils/auth';
-import { Prisma } from '@prisma/client';
+import { Machine, MachineParams, Prisma, Process, User } from '@prisma/client';
 
-//All Machine
+//All  machine
 export async function GET(req: NextRequest) {
   try {
-    //Allow only Admin to make changes
-    const allowedRoles = ['ADMIN'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
-    }
-    const Machines = await prisma.machine.findMany({
+    const machine = await prisma.machine.findMany({
       include: { machineParams: true },
     });
-    if (!Machines) {
-      throw new Error('No Machine found');
+    if (!machine) {
+      throw new Error('User not found');
     }
-    return NextResponse.json(Machines, { status: 200 });
+    return NextResponse.json(machine, { status: 200 });
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
@@ -33,25 +27,38 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// Create Machine
+// Create  machine
 export async function PUT(req: Request) {
   try {
     //Allow only Admin to make changes
     const allowedRoles = ['ADMIN'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json({ message: 'Access forbidden', status: 403 });
     }
-    const regData = await req.json();
-    const createdMachine = await prisma.machine.create({
-      data: regData,
+    const reqBody: any = await req.json();
+    //TODO: validate reqBody
+    const { machine: machineData, params } = reqBody;
+    if (!machineData.machine_Name) {
+      throw new Error('Missing required field');
+    }
+    const machine = await prisma.machine.create({
+      data: machineData,
     });
 
-    if (!createdMachine) {
-      throw new Error('No Machine found');
+    if (!machine) {
+      throw new Error('machine not found');
     }
 
-    return NextResponse.json({ createdMachine }, { status: 200 });
+    const machineParamsData = params.map((item) => {
+      return { machineId: machine.id, param_name: item.param_name };
+    });
+
+    const machineParams = await prisma.machineParams.createMany({
+      data: machineParamsData,
+    });
+
+    return NextResponse.json(machineParams, { status: 200 });
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||

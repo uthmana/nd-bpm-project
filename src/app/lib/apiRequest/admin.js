@@ -151,37 +151,38 @@ export async function updateTechParams(payload) {
   return fetchAPI(`techParams/${payload.id}`, 'put', payload);
 }
 
+// Machine
 export async function getMachines() {
-  return fetchAPI('machine');
+  return fetchAPI('settings/machine');
 }
 
 export async function addMachineWithParams(payload) {
-  return fetchAPI('machine', 'put', payload);
+  return fetchAPI('settings/machine', 'put', payload);
 }
 
 export async function updateMachine(payload) {
-  return fetchAPI(`machine/${payload.id}`, 'put', payload);
+  return fetchAPI(`settings/machine/${payload.id}`, 'put', payload);
 }
 
 export async function deleteMachine(id) {
-  return fetchAPI(`machine/${id}`, 'delete');
+  return fetchAPI(`settings/machine/${id}`, 'delete');
 }
 
 // MachineParams
 export async function deleteMachineParams(id) {
-  return fetchAPI(`machineParams/${id}`, 'delete');
+  return fetchAPI(`settings/machineParams/${id}`, 'delete');
 }
 
 export async function updateMachineWithParams(payload) {
-  return fetchAPI(`machine/${payload.id}`, 'put', payload);
+  return fetchAPI(`settings/machine/${payload.id}`, 'put', payload);
 }
 
 export async function addMachineParam(payload) {
-  return fetchAPI(`machineParams`, 'put', payload);
+  return fetchAPI(`settings/machineParams`, 'put', payload);
 }
 
 export async function deleteMachineParam(payload) {
-  return fetchAPI(`machineParams/${payload.id}`, 'delete');
+  return fetchAPI(`settings/machineParams/${payload.id}`, 'delete');
 }
 
 // Fault Settings

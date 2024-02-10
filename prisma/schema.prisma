@@ -3,10 +3,10 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  // url       = env("POSTGRES_PRISMA_URL")
-  //directUrl = env("POSTGRES_URL_NON_POOLING")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+  // url      = env("DATABASE_URL")
 }
 
 model User {
@@ -181,7 +181,7 @@ model Process {
   status                     ProcessStatus        @default(PENDING)
   technicalParams            TechnicalParameter[]
   finalControl               FinalControl[]
-  Invoice                    Invoice?             @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  Invoice                    Invoice?             @relation(fields: [invoiceId], references: [id])
   invoiceId                  String?
 }
 
@@ -273,7 +273,7 @@ model Invoice {
   status      InvoiceStatus @default(PENDING)
   process     Process[]
   customer    Customer      @relation(fields: [customerId], references: [id])
-  customerId  String        @unique
+  customerId  String
   createdAt   DateTime      @default(now())
   updatedAt   DateTime?     @updatedAt
   createdBy   String?

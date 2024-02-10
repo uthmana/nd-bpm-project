@@ -24,6 +24,13 @@ export async function GET(req: NextRequest) {
 // Create  machine
 export async function PUT(req: Request) {
   try {
+    //Allow only Admin to make changes
+    const allowedRoles = ['ADMIN'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json({ message: 'Access forbidden', status: 403 });
+    }
+
     const reqBody: any = await req.json();
     //TODO: validate reqBody
     const { param_name } = reqBody;

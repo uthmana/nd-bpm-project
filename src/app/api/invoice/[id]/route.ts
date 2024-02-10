@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/db';
-import { Fault, Invoice, Prisma, Process } from '@prisma/client';
+import { Fault, Invoice, Prisma, Process, Stock } from '@prisma/client';
 import bwipjs from 'bwip-js';
 //Get single Invoice
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
@@ -44,6 +44,39 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       address,
       status,
     } = result;
+
+    // Handle Invoice complete
+    if (id && status === 'PAID') {
+      const invoiceData: any = await prisma.invoice.findUnique({
+        where: { id },
+        include: { process: true },
+      });
+      if (invoiceData && invoiceData.status !== 'PAID') {
+        const invoice: Invoice = await prisma.invoice.update({
+          where: { id: invoiceData.id },
+          data: { status },
+        });
+
+        if (invoiceData.process && invoiceData.process.length > 0) {
+          const faultIds = invoiceData.process.map((item) => {
+            return item.faultId;
+          });
+
+          await prisma.stock.deleteMany({
+            where: {
+              faultId: {
+                in: faultIds,
+              },
+            },
+          });
+        }
+        return NextResponse.json(invoice, { status: 200 });
+      }
+
+      return NextResponse.json(invoiceData, { status: 200 });
+    }
+    // Handle Invoice complete end
+
     if (!customerId || !invoiceDate || !tax_Office || !taxNo || !address) {
       return NextResponse.json(
         { message: 'You are missing a required data' },
@@ -154,7 +187,7 @@ export async function DELETE(
       },
     });
 
-    return NextResponse.json([deletedInvoice], { status: 200 });
+    return NextResponse.json(deletedInvoice, { status: 200 });
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
