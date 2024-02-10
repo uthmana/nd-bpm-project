@@ -2,6 +2,8 @@ import { authOptions } from '../../lib/authOptions';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 import { Prisma } from '@prisma/client';
+import prisma from '../../lib/db';
+
 export async function GET(request: Request) {
   try {
     const applications = await prisma.applications.findMany();
