@@ -77,7 +77,7 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
       </NextLink>
 
       {title ? (
-        <h1 className="my-5 text-center text-[24px] font-bold dark:text-white">
+        <h1 className="mb-8 text-center text-2xl font-bold md:text-4xl">
           {title}
         </h1>
       ) : null}
