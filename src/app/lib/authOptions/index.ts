@@ -6,7 +6,6 @@ export const authOptions: NextAuthOptions = {
   // ** Please refer to https://next-auth.js.org/configuration/options#providers for more `providers` options
   providers: [
     CredentialsProvider({
-      // ** The name to display on the sign in form (e.g. 'Sign in with...')
       name: 'Credentials',
       credentials: {},
       async authorize(credentials: any, req) {
@@ -41,10 +40,6 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        /*
-         * For adding custom parameters to user in session, we first need to add those parameters
-         * in token which then will be available in the `session()` callback
-         */
         token.role = user.role;
         token.email = user.email;
         token.name = user.name;

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '../../../../lib/db';
+import prisma from '../../../lib/db';
 import { Machine, MachineParams, Prisma } from '@prisma/client';
 
 //Get single  machine
