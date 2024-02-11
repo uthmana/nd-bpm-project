@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { log } from 'utils';
 import { register } from '../../../lib/apiRequest';
 import { toast } from 'react-toastify';
+import Card from 'components/card';
 
 export default function Create() {
   const router = useRouter();
@@ -29,12 +30,12 @@ export default function Create() {
   };
 
   return (
-    <div className="mt-12">
+    <Card extra="mt-12 mx-auto mt-4 max-w-[780px] rounded-2xl px-8 py-10 bg-white dark:bg-[#111c44] dark:text-white">
       <UserForm
         title="Kullanıcı Ekle"
         loading={isSubmitting}
         onSubmit={(val) => handleSubmit(val)}
       />
-    </div>
+    </Card>
   );
 }

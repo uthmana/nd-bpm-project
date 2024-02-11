@@ -6,6 +6,7 @@ import { log } from 'utils';
 import { getCustomerById, updateCustomer } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import { UserFormSkeleton } from 'components/skeleton';
+import Card from 'components/card';
 
 export default function Edit() {
   const router = useRouter();
@@ -49,19 +50,19 @@ export default function Edit() {
   };
 
   return (
-    <div className="mt-12">
+    <Card extra="mt-12 mx-auto mt-4 max-w-[780px] rounded-2xl px-8 py-10 bg-white dark:bg-[#111c44] dark:text-white">
       {isLoading ? (
-        <div className="mx-auto max-w-[600px]">
+        <div className="w-full">
           <UserFormSkeleton />
         </div>
       ) : (
         <CustomerForm
-          title="Müşteri bilgi güncelle"
+          title="Müşteri Bilgileri Güncelleme"
           loading={isSubmitting}
           onSubmit={(val) => handleSubmit(val)}
           data={customer as any}
         />
       )}
-    </div>
+    </Card>
   );
 }

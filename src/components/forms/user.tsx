@@ -56,10 +56,7 @@ export default function User({ onSubmit, data, title, loading }: userForm) {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="mx-auto w-full max-w-[400px] rounded-[20px] bg-white p-5 dark:bg-opacity-10"
-    >
+    <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4">
       <NextLink
         href="/admin/users"
         className="flex items-center gap-2 text-sm dark:text-white"
@@ -71,7 +68,7 @@ export default function User({ onSubmit, data, title, loading }: userForm) {
       </NextLink>
 
       {title ? (
-        <h1 className="my-5 text-center text-[24px] font-bold dark:text-white">
+        <h1 className="dark:white mb-8 text-center text-2xl font-bold md:text-4xl">
           {title}
         </h1>
       ) : null}
@@ -139,7 +136,7 @@ export default function User({ onSubmit, data, title, loading }: userForm) {
           );
         })}
       </Select>
-      <Button loading={loading} extra="mt-4" text="SAVE" />
+      <Button loading={loading} extra="mt-8" text="SAVE" />
     </form>
   );
 }

@@ -45,7 +45,7 @@ function TextArea(props: {
         name={name}
         required={required}
         placeholder={placeholder}
-        className={`mt-1 flex w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${
+        className={`mt-1 flex w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none focus:border-[#777777] dark:focus:!border-[#cccccc] ${
           disabled === true
             ? '!border-none !bg-gray-100 dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)]'
             : state === 'error'

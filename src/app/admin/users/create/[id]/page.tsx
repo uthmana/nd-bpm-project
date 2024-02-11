@@ -7,6 +7,7 @@ import { useParams } from 'next/navigation';
 import { getUserById, updateUser } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import { UserFormSkeleton } from 'components/skeleton';
+import Card from 'components/card';
 
 export default function Edit() {
   const router = useRouter();
@@ -53,9 +54,9 @@ export default function Edit() {
   };
 
   return (
-    <div className="mt-12">
+    <Card extra="mt-12 mx-auto mt-4 max-w-[780px] rounded-2xl px-8 py-10 bg-white dark:bg-[#111c44] dark:text-white">
       {isLoading ? (
-        <div className="mx-auto max-w-[700px]">
+        <div className="w-full">
           <UserFormSkeleton />
         </div>
       ) : (
@@ -66,6 +67,6 @@ export default function Edit() {
           data={user as any}
         />
       )}
-    </div>
+    </Card>
   );
 }
