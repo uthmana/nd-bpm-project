@@ -18,6 +18,7 @@ export async function POST(req: Request) {
       where: { email, status: 'ACTIVE' },
     });
 
+    console.log({ user });
     if (user) {
       const passwordMatch = await compare(password, user.password);
 
