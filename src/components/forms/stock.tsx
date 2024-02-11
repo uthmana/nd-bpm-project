@@ -82,10 +82,7 @@ export default function Stock(props: {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="mx-auto w-full max-w-[780px] rounded-[20px] bg-white p-5 dark:bg-opacity-10"
-    >
+    <form onSubmit={handleSubmit} className="w-full">
       <NextLink
         href="/admin/stock"
         className="flex items-center gap-2 text-sm dark:text-white"
@@ -97,7 +94,7 @@ export default function Stock(props: {
       </NextLink>
 
       {title ? (
-        <h1 className="my-5 text-center text-[24px] font-bold dark:text-white">
+        <h1 className="dark:white mb-8 text-center text-2xl font-bold md:text-4xl">
           {title}
         </h1>
       ) : null}

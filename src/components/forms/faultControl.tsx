@@ -118,7 +118,7 @@ export default function EntryControlForm({
           </span>
           Ürün Girişe
         </NextLink>
-        <h1 className="mb-8 text-center text-2xl font-bold md:text-4xl">
+        <h1 className="dark:white mb-8 text-center text-2xl font-bold md:text-4xl">
           {title}
         </h1>
         <div className="mb-10 grid w-full grid-cols-1 gap-2  sm:grid-cols-2 md:grid-cols-3">

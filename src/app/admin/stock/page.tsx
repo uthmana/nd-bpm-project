@@ -42,7 +42,7 @@ const Stock = () => {
   };
 
   const onEdit = (val) => {
-    router.push(`/admin/stock/${val}`);
+    router.push(`/admin/stock/create/${val}`);
   };
 
   const onComfirm = async (val) => {

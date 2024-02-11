@@ -34,7 +34,7 @@ const Select = ({
           {required ? <span className="!text-red-400">*</span> : null}
         </label>
         <select
-          className={`flex h-[40px] w-full items-center justify-center rounded-xl border bg-white/0 px-1  text-sm outline-none dark:text-white`}
+          className={`flex h-[40px] w-full items-center justify-center rounded-xl border bg-white/0 px-1 text-sm outline-none  dark:border-[#283357] dark:text-white dark:focus:!border-[#ffffff]`}
           name={name}
           onChange={onChange}
         >

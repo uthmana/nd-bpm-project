@@ -65,7 +65,7 @@ export default function Edit() {
   };
 
   return (
-    <Card extra="mt-12 mx-auto mt-4 max-w-[800px] rounded-2xl px-8 py-10 bg-white dark:bg-[#111c44] dark:text-white">
+    <Card extra="mt-12 mx-auto mt-4 max-w-[780px] rounded-2xl px-8 py-10 bg-white dark:bg-[#111c44] dark:text-white">
       <InvoiceForm
         key={customers[0]}
         info={customers}
