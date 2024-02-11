@@ -8,24 +8,26 @@ const db_url_prod =
 const db_directUrl =
   'postgres://default:x0aI3JEXFvzl@ep-royal-queen-a4scbpug.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require';
 
+const db_dev = {
+  datasources: {
+    db: { url: db_url },
+  },
+};
+
+const db_prod = {
+  datasources: {
+    db: { url: db_url_prod, directUrl: db_directUrl },
+  },
+};
+
 const prismaClientSingleton = () => {
-  const db_dev = {
-    datasources: {
-      db: { url: db_url },
-    },
-  };
+  // if (process.env.NODE_ENV !== 'production') {
+  //   return new PrismaClient(db_dev);
+  // }
 
-  const db_prod = {
-    datasources: {
-      db: { url: db_url_prod, directUrl: db_directUrl },
-    },
-  };
+  // return new PrismaClient(db_prod);
 
-  if (process.env.NODE_ENV !== 'production') {
-    return new PrismaClient(db_dev);
-  }
-
-  return new PrismaClient(db_prod);
+  return new PrismaClient();
 };
 
 declare global {
