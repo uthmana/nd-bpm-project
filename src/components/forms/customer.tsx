@@ -8,69 +8,75 @@ import Select from 'components/select/page';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import TextArea from 'components/fields/textArea';
 import { log } from 'utils';
-
-type data = {
-  username: string;
-  email: string;
-  password: string;
-  role: string;
-  status: string;
-};
-
-type CustomerObj = {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  address: string;
-  postal_code: string;
-  edit: string;
-  delete: string;
-};
+import { CustomerObj } from '../../app/localTypes/table-types';
 
 type userForm = {
   onSubmit: (e: any) => void;
   data?: CustomerObj;
   title?: string;
+  loading?: boolean;
 };
 
-export default function Customer({ onSubmit, data, title }: userForm) {
+export default function Customer({ onSubmit, data, title, loading }: userForm) {
   const initialValues = data
     ? data
     : {
-        id: '',
-        first_name: '',
-        last_name: '',
+        rep_name: '',
         email: '',
-        phone: '',
+        email_2: '',
         address: '',
-        postal_code: '',
-        edit: '',
-        delete: '',
+        postalCode: '',
+        company_name: '',
+        phoneNumber: '',
+        phoneNumber2: '',
+        code: '',
+        definition: '',
+        taxNo: '',
+        tax_Office: '',
+        taxOfficeCode: '',
+        country_code: '',
+        province_code: '',
+        district_code: '',
+        currency: 'TL',
+        cardType: 'ALICI_SATICI',
       };
   const [values, setValues] = useState(initialValues);
+  const cardTypes = ['ALICI_SATICI', 'ALICI', 'SATICI'];
+  const currencies = ['TL', 'USD'];
+  const [error, setError] = useState(false);
 
-  //TODO: add input validation
   const handleValues = (event) => {
+    setError(false);
     const newVal = { [event.target?.name]: event.target?.value };
     setValues({ ...values, ...newVal });
-    log(values);
+  };
+
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    const { taxNo, tax_Office, taxOfficeCode } = values;
+
+    if (!taxNo || !tax_Office || !taxOfficeCode) {
+      //TODO: Add form validation
+      setError(true);
+      return;
+    }
+
+    onSubmit(values);
   };
 
   return (
     <form
-      onSubmit={onSubmit}
-      className="mx-auto w-full max-w-[400px] rounded-[20px] bg-white p-5 dark:bg-opacity-10"
+      onSubmit={handleSubmit}
+      className="mx-auto w-full max-w-[600px] rounded-[20px] bg-white p-5 dark:bg-opacity-10"
     >
       <NextLink
         href="/admin/customer"
-        className="flex items-center gap-2 text-sm"
+        className="flex items-center gap-2 text-sm dark:text-white"
       >
         <span>
           <MdOutlineArrowBack />
         </span>
-        Back to Customers
+        Müşteriler
       </NextLink>
 
       {title ? (
@@ -79,56 +85,143 @@ export default function Customer({ onSubmit, data, title }: userForm) {
         </h1>
       ) : null}
 
+      {error ? (
+        <p className="mb-3 w-full rounded-md bg-red-500 p-2 text-center text-sm  font-bold text-white">
+          Lütfen Vergi No., Vergi Ofisi ve Vergi Ofis kodu boş bırakılmamalıdır!
+        </p>
+      ) : null}
+
+      <div className="flex flex-col gap-4 sm:flex-row">
+        <InputField
+          label="Şirket İsmi"
+          onChange={handleValues}
+          type="text"
+          id="company_name"
+          name="company_name"
+          placeholder="Şirket İsmi"
+          extra="mb-2 !w-full"
+          value={values.company_name}
+        />
+        <InputField
+          label="Sorumlu"
+          onChange={handleValues}
+          type="text"
+          id="rep_name"
+          name="rep_name"
+          placeholder="Sorumlu"
+          extra="mb-2 w-full"
+          value={values.rep_name}
+        />
+      </div>
       <InputField
-        label="First Name"
-        onChange={handleValues}
-        type="text"
-        id="first_name"
-        name="first_name"
-        placeholder="First Name"
-        extra="mb-2"
-        value={values.first_name}
-      />
-      <InputField
-        label="Last Name"
-        onChange={handleValues}
-        type="text"
-        id="last_name"
-        name="last_name"
-        placeholder="Last Name"
-        extra="mb-2"
-        value={values.last_name}
-      />
-      <InputField
-        label="Email"
+        label="E-Posta"
         onChange={handleValues}
         type="text"
         id="email"
         name="email"
-        placeholder="Email"
+        placeholder="e-posta"
         extra="mb-2"
         value={values.email}
       />
+
       <InputField
-        label="Phone"
+        label="E-Posta 2"
         onChange={handleValues}
         type="text"
-        id="phone"
-        name="phone"
-        placeholder="Phone"
+        id="email_2"
+        name="email_2"
+        placeholder="e-posta"
         extra="mb-2"
-        value={values.phone}
+        value={values.email_2}
       />
-      <InputField
-        label="Postal Code"
-        onChange={handleValues}
-        type="text"
-        id="postal_code"
-        name="postal_code"
-        placeholder="Postal Code"
-        extra="mb-2"
-        value={values.postal_code}
-      />
+
+      <div className="flex flex-col gap-4 sm:flex-row">
+        <InputField
+          label="Telefon 1"
+          onChange={handleValues}
+          type="text"
+          id="phoneNumber"
+          name="phoneNumber"
+          placeholder="Telefon 1"
+          extra="mb-2"
+          value={values.phoneNumber}
+        />
+
+        <InputField
+          label="Telefon 2"
+          onChange={handleValues}
+          type="text"
+          id="phoneNumber2"
+          name="phoneNumber2"
+          placeholder="Telefon 2"
+          extra="mb-2"
+          value={values.phoneNumber2}
+        />
+      </div>
+      <div className="flex flex-col gap-4 sm:flex-row">
+        <InputField
+          label="Mştr kodu"
+          onChange={handleValues}
+          type="text"
+          id="code"
+          name="code"
+          placeholder="Mştr kodu"
+          extra="mb-2"
+          value={values.code}
+        />
+
+        <InputField
+          label="Postal Kodu"
+          onChange={handleValues}
+          type="text"
+          id="postalCode"
+          name="postalCode"
+          placeholder="Postal Kodu"
+          extra="mb-2"
+          value={values.postalCode}
+        />
+      </div>
+
+      <div className="flex flex-col gap-4 sm:flex-row">
+        <Select
+          extra="w-full mb-3"
+          label="Kart Türü"
+          onChange={handleValues}
+          name="cardType"
+        >
+          {cardTypes.map((item, idx) => {
+            return (
+              <option
+                value={item}
+                key={idx}
+                selected={data ? data?.cardType === item : idx === 0}
+              >
+                {item}
+              </option>
+            );
+          })}
+        </Select>
+
+        <Select
+          extra="w-full mb-3"
+          label="Para Birimi"
+          onChange={handleValues}
+          name="currency"
+        >
+          {currencies.map((item, idx) => {
+            return (
+              <option
+                value={item}
+                key={idx}
+                selected={data ? data?.currency === item : idx === 0}
+              >
+                {item}
+              </option>
+            );
+          })}
+        </Select>
+      </div>
+
       <TextArea
         label="Address"
         onChange={handleValues}
@@ -138,7 +231,84 @@ export default function Customer({ onSubmit, data, title }: userForm) {
         extra="mb-2"
         value={values.address}
       />
-      <Button extra="mt-4" text="SAVE" />
+
+      <div className="flex flex-col gap-4 sm:flex-row">
+        <InputField
+          label="Vergi No."
+          onChange={handleValues}
+          type="number"
+          id="taxNo"
+          name="taxNo"
+          placeholder="Vergi No."
+          extra="mb-2"
+          value={values.taxNo}
+        />
+        <InputField
+          label="Vergi Ofisi"
+          onChange={handleValues}
+          type="text"
+          id="tax_Office"
+          name="tax_Office"
+          placeholder="Vergi Ofis"
+          extra="mb-2"
+          value={values.tax_Office}
+        />
+        <InputField
+          label="Vergi Ofis kodu"
+          onChange={handleValues}
+          type="number"
+          id="taxOfficeCode"
+          name="taxOfficeCode"
+          placeholder="Vergi Ofis kodu"
+          extra="mb-2"
+          value={values.taxOfficeCode}
+        />
+      </div>
+
+      <div className="flex flex-col gap-4 sm:flex-row">
+        <InputField
+          label="Ülke Kodu"
+          onChange={handleValues}
+          type="text"
+          id="country_code"
+          name="country_code"
+          placeholder="Ülke Kodu"
+          extra="mb-2"
+          value={values.country_code}
+        />
+        <InputField
+          label="İl Kodu"
+          onChange={handleValues}
+          type="text"
+          id="province_code"
+          name="province_code"
+          placeholder="İl Kodu"
+          extra="mb-2"
+          value={values.province_code}
+        />
+        <InputField
+          label="İlçe Kodu"
+          onChange={handleValues}
+          type="text"
+          id="district_code"
+          name="district_code"
+          placeholder="İlçe Kodu"
+          extra="mb-2"
+          value={values.district_code}
+        />
+      </div>
+
+      <TextArea
+        label="Açıklama"
+        onChange={handleValues}
+        id="definition"
+        name="definition"
+        placeholder="Açıklama"
+        extra="mb-2"
+        value={values.definition}
+      />
+
+      <Button loading={loading} extra="mt-4" text="SAVE" />
     </form>
   );
 }

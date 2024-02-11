@@ -2,6 +2,7 @@
 const shimmer =
   'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent';
 
+//TODO: Add dark mode style
 export function CardSkeleton() {
   return (
     <div
@@ -64,8 +65,8 @@ export function LatestInvoicesSkeleton() {
     <div
       className={`${shimmer} relative flex w-full flex-col overflow-hidden md:col-span-4`}
     >
-      <div className="flex grow flex-col justify-between rounded-xl bg-gray-100 p-4">
-        <div className="bg-white px-6">
+      <div className="flex grow flex-col justify-between rounded-xl bg-gray-100">
+        <div className="bg-white px-6 dark:bg-navy-900">
           <InvoiceSkeleton />
           <InvoiceSkeleton />
           <InvoiceSkeleton />

@@ -16,12 +16,15 @@ const Users = () => {
   const [isShowPopUp, setIsShowPopUp] = useState(false);
   const [userId, setUserId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsloading] = useState(false);
 
   const getAllUsers = async () => {
+    setIsloading(true);
     const { status, data } = await getUsers();
     if (status === 200) {
       setUsers(data);
     }
+    setIsloading(false);
   };
 
   useEffect(() => {
@@ -40,7 +43,17 @@ const Users = () => {
 
   const onDelete = async () => {
     setIsSubmitting(true);
-    const { status, data } = await deleteUser(userId);
+    const resData: any = await deleteUser(userId);
+
+    const { status, response } = resData;
+    if (response?.error) {
+      const { message, detail } = response?.error;
+      toast.error('Kullanıcı silme işlemi başarısız' + message);
+      log(detail);
+      setIsSubmitting(false);
+      return;
+    }
+
     if (status === 200) {
       toast.success('Kullanıcı silme işlemi başarılı.');
       setIsSubmitting(false);
@@ -48,8 +61,6 @@ const Users = () => {
       setUsers([]);
       getAllUsers();
       return;
-    } else {
-      toast.error('Bir hata oluştu, tekrar deneyin !');
     }
   };
 
@@ -63,7 +74,7 @@ const Users = () => {
 
   return (
     <div className="mt-3 w-full">
-      {users.length === 0 ? (
+      {isLoading ? (
         <LatestInvoicesSkeleton />
       ) : (
         <MainTable

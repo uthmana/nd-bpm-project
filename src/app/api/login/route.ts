@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
-import prisma from 'app/lib/db1';
+import prisma from 'app/lib/db';
 import { compare } from 'bcryptjs';
+import { Prisma } from '@prisma/client';
 
 export async function POST(req: Request) {
   try {
-    const { email, password }: Partial<User> = await req.json();
+    const { email, password } = await req.json();
 
     if (!email || !password) {
       return NextResponse.json(
@@ -13,8 +14,9 @@ export async function POST(req: Request) {
       );
     }
 
-    const user = await prisma.user.findUnique({ where: { email } });
-
+    const user = await prisma.user.findUnique({
+      where: { email, status: 'ACTIVE' },
+    });
     if (user) {
       const passwordMatch = await compare(password, user.password);
 
@@ -35,11 +37,15 @@ export async function POST(req: Request) {
         { status: 401 },
       );
     }
-  } catch (error) {
-    console.error('Error during login:', error);
-    return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 },
-    );
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }

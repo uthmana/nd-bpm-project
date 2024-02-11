@@ -42,10 +42,16 @@ export default function User({ onSubmit, data, title, loading }: userForm) {
   const handleSubmit = (e) => {
     e.preventDefault();
     const { name, email, password } = values;
-    if (!name || !email || !password) {
+
+    if (!name || !email) {
       setError(true);
       return;
     }
+    if (!data && !password) {
+      setError(true);
+      return;
+    }
+
     onSubmit(values);
   };
 
@@ -54,7 +60,10 @@ export default function User({ onSubmit, data, title, loading }: userForm) {
       onSubmit={handleSubmit}
       className="mx-auto w-full max-w-[400px] rounded-[20px] bg-white p-5 dark:bg-opacity-10"
     >
-      <NextLink href="/admin/users" className="flex items-center gap-2 text-sm">
+      <NextLink
+        href="/admin/users"
+        className="flex items-center gap-2 text-sm dark:text-white"
+      >
         <span>
           <MdOutlineArrowBack />
         </span>

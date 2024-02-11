@@ -1,6 +1,8 @@
-import React, { useMemo } from 'react';
+'use client';
+import React, { useEffect, useMemo, useState } from 'react';
 import Card from 'components/card';
 import { MdModeEdit, MdOutlineDelete, MdAdd } from 'react-icons/md';
+import Barcode from 'react-jsbarcode';
 import {
   createColumnHelper,
   flexRender,
@@ -13,66 +15,31 @@ import {
 } from '@tanstack/react-table';
 import Search from 'components/search/search';
 import Button from 'components/button/button';
-import { IoMdArrowDown, IoMdArrowUp } from 'react-icons/io';
-
-type UserObj = {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  status: string;
-  createdAt: string;
-  edit: string;
-  delete: string;
-};
-
-type CustomerObj = {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  address: string;
-  postal_code: string;
-  edit: string;
-  delete: string;
-};
-
-type StockObj = {
-  id: string;
-  product_name: string;
-  stock_location: string;
-  quantity: string;
-  price: string;
-  description: string;
-  date: string;
-  vendor: string;
-  edit: string;
-  delete: string;
-};
-
-type MainTable = {
-  tableData: UserObj | CustomerObj | StockObj | any;
-  variant: string;
-  onEdit: (e: any) => void;
-  onDelete: (e: any) => void;
-  onAdd: (e: any) => void;
-};
+import { formatDateTime, useDrage } from 'utils';
+import FileViewer from 'components/fileViewer';
+import TablePagination from './tablePagination';
+import {
+  PrimaryTable,
+  StockObj,
+  CustomerObj,
+  UserObj,
+} from '../../../app/localTypes/table-types';
 
 function MainTable({
   tableData,
   onEdit,
   onDelete,
   onAdd,
+  onSearch,
   variant = 'user',
-}: MainTable) {
+}: PrimaryTable) {
+  let defaultData = tableData;
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState('');
-
-  let defaultData = tableData;
+  const { handleMouseDown, handleMouseLeave, handleMouseUp, handleMouseMove } =
+    useDrage();
 
   const columns = useMemo(() => {
-    //let columns: any;
     let col: any;
     switch (variant) {
       case 'customer':
@@ -80,8 +47,21 @@ function MainTable({
           columnHelper.accessor('id', {
             id: 'id',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                ID
+              <p className="min-w-[100px] text-sm font-bold text-gray-600 dark:text-white">
+                SİRA NO.
+              </p>
+            ),
+            cell: ({ row }) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {row.index + 1}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('company_name', {
+            id: 'company_name',
+            header: () => (
+              <p className="min-w-[200px] text-sm font-bold text-gray-600 dark:text-white">
+                ŞİRKET
               </p>
             ),
             cell: (info: any) => (
@@ -90,24 +70,12 @@ function MainTable({
               </p>
             ),
           }),
-          columnHelper.accessor('first_name', {
-            id: 'first_name',
+
+          columnHelper.accessor('rep_name', {
+            id: 'rep_name',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                FIRST NAME
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
-              </p>
-            ),
-          }),
-          columnHelper.accessor('last_name', {
-            id: 'last_name',
-            header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                LAST NAME
+              <p className="min-w-[100px] text-sm font-bold text-gray-600 dark:text-white">
+                SORUMLU
               </p>
             ),
             cell: (info: any) => (
@@ -120,7 +88,7 @@ function MainTable({
             id: 'email',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
-                EMAIL
+                E-POSTA
               </p>
             ),
             cell: (info: any) => (
@@ -129,24 +97,12 @@ function MainTable({
               </p>
             ),
           }),
-          columnHelper.accessor('phone', {
-            id: 'phone',
-            header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                PHONE
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
-              </p>
-            ),
-          }),
+
           columnHelper.accessor('address', {
             id: 'address',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                ADDRESS
+              <p className="min-w-[200px] text-sm font-bold text-gray-600 dark:text-white">
+                ADRES
               </p>
             ),
             cell: (info: any) => (
@@ -155,11 +111,11 @@ function MainTable({
               </p>
             ),
           }),
-          columnHelper.accessor('postal_code', {
-            id: 'postal_code',
+          columnHelper.accessor('phoneNumber', {
+            id: 'phoneNumber',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                POSTAL CODE
+              <p className="min-w-[120px] text-sm font-bold text-gray-600 dark:text-white">
+                TELEFON
               </p>
             ),
             cell: (info: any) => (
@@ -168,30 +124,180 @@ function MainTable({
               </p>
             ),
           }),
-          columnHelper.accessor('edit', {
-            id: 'edit',
+
+          columnHelper.accessor('postalCode', {
+            id: 'postalCode',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
-                EDIT
+                POSTAL KODU
               </p>
             ),
-            cell: (info) => (
-              <button onClick={() => onEdit(info.getValue())}>
-                <MdModeEdit className="h-5 w-5" />
-              </button>
+            cell: (info: any) => (
+              <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
             ),
           }),
-          columnHelper.accessor('delete', {
-            id: 'delete',
+
+          columnHelper.accessor('country_code', {
+            id: 'country_code',
             header: () => (
               <p className="text-sm font-bold text-gray-600 dark:text-white">
-                DELETE
+                ÜLKE KODU
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="min-w-[80px] text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('province_code', {
+            id: 'province_code',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                İL KODU
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="min-w-[80px] text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+
+          columnHelper.accessor('district_code', {
+            id: 'district_code',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                İLÇE KODU
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="min-w-[80px] text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+
+          columnHelper.accessor('code', {
+            id: 'code',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                MÜŞTERİ KODU
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="min-w-[120px] text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+
+          columnHelper.accessor('taxNo', {
+            id: 'taxNo',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                VERGİ NO.
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+
+          columnHelper.accessor('tax_Office', {
+            id: 'tax_Office',
+            header: () => (
+              <p className="min-w-[160px] text-sm font-bold text-gray-600 dark:text-white">
+                VERGİ OFİSİ
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('taxOfficeCode', {
+            id: 'taxOfficeCode',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                VERGİ OFİS KODU
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="min-w-[120px] text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+
+          columnHelper.accessor('cardType', {
+            id: 'cardType',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                KART TÜRÜ
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('currency', {
+            id: 'currency',
+            header: () => (
+              <p className="text-center text-sm font-bold text-gray-600 dark:text-white">
+                PARA BİRİMİ
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="min-w-[90px] text-center text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+
+          columnHelper.accessor('definition', {
+            id: 'definition',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                AÇIKLAMA
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+
+          columnHelper.accessor('id', {
+            id: 'id',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                DÜZENLE
               </p>
             ),
             cell: (info) => (
-              <button onClick={() => onDelete(info.getValue())}>
-                <MdOutlineDelete className="h-5 w-5" />
-              </button>
+              <div className="flex gap-2">
+                <button
+                  className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
+                  onClick={() => onEdit(info.getValue())}
+                >
+                  <MdModeEdit className="h-5 w-5 text-white" />
+                </button>
+                <button
+                  className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
+                  onClick={() => onDelete(info.getValue())}
+                >
+                  <MdOutlineDelete className="h-5 w-5 text-white" />
+                </button>
+              </div>
             ),
           }),
         ];
@@ -201,8 +307,51 @@ function MainTable({
           columnHelper.accessor('id', {
             id: 'id',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                ID
+              <p className="min-w-[50px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                Sira No.
+              </p>
+            ),
+            cell: ({ row }) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {row.index + 1}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('id', {
+            id: 'id',
+            header: () => (
+              <p className="min-w-[150px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                Barkodu
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                <Barcode
+                  className="h-full w-full"
+                  value={info.getValue()}
+                  options={{ format: 'code128' }}
+                />
+              </p>
+            ),
+          }),
+          columnHelper.accessor('customerName', {
+            id: 'customerName',
+            header: () => (
+              <p className=" min-w-[160px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                MÜŞTERİ
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('product_code', {
+            id: 'product_code',
+            header: () => (
+              <p className=" min-w-[90px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                Ürün Kodu
               </p>
             ),
             cell: (info: any) => (
@@ -214,8 +363,8 @@ function MainTable({
           columnHelper.accessor('product_name', {
             id: 'product_name',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                PRODUCT NAME
+              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                Ürün Adı
               </p>
             ),
             cell: (info: any) => (
@@ -224,11 +373,11 @@ function MainTable({
               </p>
             ),
           }),
-          columnHelper.accessor('stock_location', {
-            id: 'stock_location',
+          columnHelper.accessor('brand', {
+            id: 'brand',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                LOCATION
+              <p className="min-w-[100px] text-sm  font-bold uppercase text-gray-600 dark:text-white">
+                Marka
               </p>
             ),
             cell: (info: any) => (
@@ -237,30 +386,37 @@ function MainTable({
               </p>
             ),
           }),
-          columnHelper.accessor('quantity', {
-            id: 'quantity',
+          columnHelper.accessor('inventory', {
+            id: 'inventory',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                QUANTITY
+              <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+                Envanter
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('unit', {
+            id: 'unit',
+            header: () => (
+              <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                Birim
               </p>
             ),
             cell: (info: any) => (
               <p className="flex text-sm font-bold text-navy-700 dark:text-white">
                 {info.getValue()}
-
-                {info.getValue() < 5 ? (
-                  <IoMdArrowDown className="h-5 w-5 text-red-500" />
-                ) : (
-                  <IoMdArrowUp className="h-5 w-5 text-green-500" />
-                )}
               </p>
             ),
           }),
-          columnHelper.accessor('price', {
-            id: 'price',
+          columnHelper.accessor('current_price', {
+            id: 'current_price',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                PRICE
+              <p className="min-w-[80px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                Maliyet
               </p>
             ),
             cell: (info: any) => (
@@ -269,11 +425,50 @@ function MainTable({
               </p>
             ),
           }),
-          columnHelper.accessor('description', {
-            id: 'description',
+          columnHelper.accessor('curency', {
+            id: 'curency',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                DESCRIPTION
+              <p className="min-w-[90px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                Para Birimi
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('main_group', {
+            id: 'main_group',
+            header: () => (
+              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                Ana Grubu
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('group1', {
+            id: 'group1',
+            header: () => (
+              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                Grub 1
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('group2', {
+            id: 'group2',
+            header: () => (
+              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                Grub 2
               </p>
             ),
             cell: (info: any) => (
@@ -285,8 +480,34 @@ function MainTable({
           columnHelper.accessor('date', {
             id: 'date',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                DATE
+              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                Ekleme Tarihi
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {formatDateTime(info.getValue())}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('image', {
+            id: 'image',
+            header: () => (
+              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                İLGİLİ DOKÜMAN
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue() ? <FileViewer file={info.getValue()} /> : null}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('description', {
+            id: 'description',
+            header: () => (
+              <p className="min-w-[140px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                Açıklama
               </p>
             ),
             cell: (info: any) => (
@@ -295,49 +516,47 @@ function MainTable({
               </p>
             ),
           }),
-          columnHelper.accessor('vendor', {
-            id: 'vendor',
+          columnHelper.accessor('id', {
+            id: 'id',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                VENDOR
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
-              </p>
-            ),
-          }),
-          columnHelper.accessor('edit', {
-            id: 'edit',
-            header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                EDIT
+              <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+                DÜZENLE
               </p>
             ),
             cell: (info) => (
-              <button onClick={() => onEdit(info.getValue())}>
-                <MdModeEdit className="h-5 w-5" />
-              </button>
-            ),
-          }),
-          columnHelper.accessor('delete', {
-            id: 'delete',
-            header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                DELETE
-              </p>
-            ),
-            cell: (info) => (
-              <button onClick={() => onDelete(info.getValue())}>
-                <MdOutlineDelete className="h-5 w-5" />
-              </button>
+              <div className="flex gap-2">
+                <button
+                  className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
+                  onClick={() => onEdit(info.getValue())}
+                >
+                  <MdModeEdit className="h-5 w-5 text-white" />
+                </button>
+                <button
+                  className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
+                  onClick={() => onDelete(info.getValue())}
+                >
+                  <MdOutlineDelete className="h-5 w-5 text-white" />
+                </button>
+              </div>
             ),
           }),
         ];
         break;
       case 'user':
         col = [
+          columnHelper.accessor('id', {
+            id: 'id',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                Sira No.
+              </p>
+            ),
+            cell: ({ row }) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {row.index + 1}
+              </p>
+            ),
+          }),
           columnHelper.accessor('name', {
             id: 'name',
             header: () => (
@@ -399,7 +618,7 @@ function MainTable({
             ),
             cell: (info: any) => (
               <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
+                {formatDateTime(info.getValue())}
               </p>
             ),
           }),
@@ -411,22 +630,20 @@ function MainTable({
               </p>
             ),
             cell: (info) => (
-              <button onClick={() => onEdit(info.getValue())}>
-                <MdModeEdit className="h-5 w-5" />
-              </button>
-            ),
-          }),
-          columnHelper.accessor('id', {
-            id: 'id',
-            header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                SİL
-              </p>
-            ),
-            cell: (info) => (
-              <button onClick={() => onDelete(info.getValue())}>
-                <MdOutlineDelete className="h-5 w-5" />
-              </button>
+              <div className="flex gap-2">
+                <button
+                  className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
+                  onClick={() => onEdit(info.getValue())}
+                >
+                  <MdModeEdit className="h-5 w-5 text-white" />
+                </button>
+                <button
+                  className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
+                  onClick={() => onDelete(info.getValue())}
+                >
+                  <MdOutlineDelete className="h-5 w-5 text-white" />
+                </button>
+              </div>
             ),
           }),
         ];
@@ -434,13 +651,13 @@ function MainTable({
     return col;
   }, []);
 
-  const [data, setData] = React.useState(() => [...defaultData]);
+  const [data, setData] = useState(() => [...defaultData]);
   const table = useReactTable({
     data,
     columns,
     initialState: {
       pagination: {
-        pageSize: 20,
+        pageSize: 10,
       },
     },
     state: {
@@ -455,12 +672,13 @@ function MainTable({
     getPaginationRowModel: getPaginationRowModel(),
     debugTable: true,
   });
+
   return (
-    <Card extra={'w-full h-full sm:overflow-auto px-6'}>
-      <header className="relative flex items-center justify-between pt-6">
+    <Card extra={'w-full h-full sm:overflow-auto px-6 pb-3'}>
+      <header className="relative flex items-center justify-between gap-4 pt-6">
         <div className="text-md font-medium text-navy-700 dark:text-white">
           <Search
-            extra="!h-[38px] w-[300px] max-w-[300px]"
+            extra="!h-[38px] md:w-[300px] md:max-w-[300px]"
             onSubmit={(val) => setGlobalFilter(val)}
             onChange={(val) => setGlobalFilter(val)}
           />
@@ -468,13 +686,19 @@ function MainTable({
 
         <Button
           text="EKLE"
-          extra="!w-[100px] h-[38px] font-bold"
+          extra="!w-[140px] h-[38px] font-bold"
           onClick={onAdd}
-          icon={<MdAdd className="h-6 w-6" />}
+          icon={<MdAdd className="ml-1 h-6 w-6" />}
         />
       </header>
 
-      <div className="mt-8 overflow-x-scroll xl:overflow-x-hidden">
+      <div
+        className="custom-scrollbar--hidden mt-8 overflow-x-scroll"
+        onMouseDown={handleMouseDown}
+        onMouseLeave={handleMouseLeave}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+      >
         <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -485,7 +709,7 @@ function MainTable({
                       key={header.id}
                       colSpan={header.colSpan}
                       onClick={header.column.getToggleSortingHandler()}
-                      className="cursor-pointer border-b border-gray-200 pb-2 pr-4 pt-4 text-start dark:border-white/30"
+                      className="cursor-pointer border-b border-gray-400 px-1 text-start dark:border-white/30"
                     >
                       <div className="items-center justify-between text-xs text-gray-200">
                         {flexRender(
@@ -506,16 +730,16 @@ function MainTable({
           <tbody>
             {table
               .getRowModel()
-              .rows.slice(0, 5)
+              .rows.slice()
               .map((row) => {
                 return (
-                  <tr key={row.id} className="border-b">
+                  <tr
+                    key={row.id}
+                    className="border-b border-gray-100 hover:bg-lightPrimary dark:border-gray-900 dark:hover:bg-navy-700"
+                  >
                     {row.getVisibleCells().map((cell) => {
                       return (
-                        <td
-                          key={cell.id}
-                          className="min-w-[100px] border-white/0 py-3  pr-4"
-                        >
+                        <td key={cell.id} className="min-w-[70px] p-1">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),
@@ -528,68 +752,7 @@ function MainTable({
               })}
           </tbody>
         </table>
-        <div className="my-4 flex w-full items-center gap-2">
-          <button
-            className="w-7 rounded border p-1"
-            onClick={() => table.setPageIndex(0)}
-            disabled={!table.getCanPreviousPage()}
-          >
-            {'<<'}
-          </button>
-          <button
-            className="w-7 rounded border p-1"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            {'<'}
-          </button>
-          <button
-            className="w-7 rounded border p-1"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            {'>'}
-          </button>
-          <button
-            className="w-7 rounded border p-1"
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            disabled={!table.getCanNextPage()}
-          >
-            {'>>'}
-          </button>
-          <span className="flex items-center gap-1 text-[12px]">
-            <div>Sayfa</div>
-            <strong>
-              {table.getState().pagination.pageIndex + 1} of{' '}
-              {table.getPageCount()}
-            </strong>
-          </span>
-          <span className="ml-4 flex items-center gap-1 text-[12px]">
-            Sayfaya git:
-            <input
-              type="number"
-              defaultValue={table.getState().pagination.pageIndex + 1}
-              onChange={(e) => {
-                const page = e.target.value ? Number(e.target.value) - 1 : 0;
-                table.setPageIndex(page);
-              }}
-              className="w-16 rounded border p-1"
-            />
-          </span>
-          <select
-            className="text-[12px]"
-            value={table.getState().pagination.pageSize}
-            onChange={(e) => {
-              table.setPageSize(Number(e.target.value));
-            }}
-          >
-            {[10, 20, 30, 40, 50].map((pageSize) => (
-              <option key={pageSize} value={pageSize}>
-                Göster {pageSize}
-              </option>
-            ))}
-          </select>
-        </div>
+        <TablePagination table={table} />
       </div>
     </Card>
   );

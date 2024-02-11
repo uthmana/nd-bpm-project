@@ -1,13 +1,13 @@
 'use client';
 import dynamic from 'next/dynamic';
 // import Chart from 'react-apexcharts';
+
 const Chart = dynamic(() => import('react-apexcharts'), {
   ssr: false,
 });
 
 const BarChart = (props) => {
   const { chartData, chartOptions } = props;
-
   return (
     // @ts-expect-error
     <Chart

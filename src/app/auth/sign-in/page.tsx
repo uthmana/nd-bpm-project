@@ -62,9 +62,9 @@ function SignInDefault() {
     }).then((res) => {
       if (res && res.ok) {
         router.push('/admin');
-      } else {
-        setError(true);
+        return;
       }
+      setError(true);
       setSubmitting(false);
     });
   };

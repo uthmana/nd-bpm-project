@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,27 +6,352 @@ datasource db {
   provider  = "postgresql"
   url       = env("POSTGRES_PRISMA_URL")
   directUrl = env("POSTGRES_URL_NON_POOLING")
+  // url      = env("DATABASE_URL")
 }
 
-
-
-
-
-
 model User {
-  id          String       @id @default(uuid())
-  name        String
-  email       String?      @unique
-  password    String
-  role        String       @default("NORMAL")
-  token       String?
-  status      String       @default("ACTIVE")
-  address     Address? // Added address field
-  contactInfo ContactInfo? // Added contactInfo field
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id              String       @id @default(cuid())
+  name            String
+  email           String?      @unique
+  password        String?
+  role            UserRole     @default(NORMAL)
+  status          UserStatus   @default(ACTIVE)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime?    @updatedAt
+  createdBy       String?
+  updatedBy       String?
+  token           String?      @unique
+  tokenExpiryDate DateTime?
+  address         Address?
+  contactInfo     ContactInfo?
 
   @@map("users")
+}
+
+model Address {
+  id      String  @id @default(cuid())
+  street  String
+  city    String
+  state   String
+  zipCode String
+  userId  String? @unique @default(cuid())
+  user    User?   @relation(fields: [userId], references: [id])
+}
+
+model ContactInfo {
+  id     String @id @default(cuid())
+  phone  String
+  email  String
+  userId String @unique @default(cuid())
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+model Customer {
+  id            String    @id @default(cuid())
+  code          String?
+  cardType      CardType? @default(ALICI_SATICI)
+  taxNo         String?
+  company_name  String?
+  address       String?
+  postalCode    String?
+  phoneNumber   String?
+  phoneNumber2  String?
+  tax_Office    String?
+  taxOfficeCode String?
+  email         String?
+  email_2       String?
+  rep_name      String
+  currency      Currency? @default(TL)
+  country_code  String
+  province_code String
+  district_code String
+  definition    String?
+  Offers        Offer[]
+  Fault         Fault[]
+  Stock         Stock[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt
+  createdBy     String?
+  updatedBy     String?
+  Invoice       Invoice[]
+
+  @@map("customers")
+}
+
+model Stock {
+  id              String    @id @default(cuid())
+  product_code    String
+  product_name    String
+  product_barcode String?
+  description     String?
+  main_group      String?
+  group1          String?
+  group2          String?
+  inventory       Int?
+  unit            String?
+  current_price   String
+  curency         String
+  brand           String?
+  date            DateTime? @default(now())
+  updatedAt       DateTime? @updatedAt
+  createdBy       String?
+  updatedBy       String?
+  image           String?
+  customerId      String?
+  customer        Customer? @relation(fields: [customerId], references: [id])
+  faultId         String?   @unique
+}
+
+model Fault {
+  id                         String         @id @default(cuid())
+  customerName               String?
+  arrivalDate                DateTime?      @default(now())
+  invoiceDate                DateTime?
+  product                    String?
+  quantity                   Int?
+  productCode                String?
+  productBatchNumber         String?
+  application                String?
+  standard                   String?
+  color                      String?
+  faultDescription           String?
+  status                     FaultStatus    @default(PENDING)
+  technicalDrawingAttachment String?
+  faultControl               FaultControl[]
+  customerId                 String?
+  Customer                   Customer?      @relation(fields: [customerId], references: [id])
+  faultControlId             String?        @unique
+  createdAt                  DateTime       @default(now())
+  updatedAt                  DateTime?      @updatedAt
+  createdBy                  String?
+  updatedBy                  String?
+  stockId                    String?        @unique
+}
+
+model FaultControl {
+  id                    String    @id @default(cuid())
+  faultId               String    @unique
+  customerName          String?
+  traceabilityCode      String?
+  arrivalDate           DateTime?
+  invoiceDate           DateTime?
+  product               String?
+  quantity              Int?
+  productCode           String?
+  productBatchNumber    String?
+  plating               String?
+  controlDate           DateTime? @default(now())
+  image                 String?
+  productDimension      String?
+  dimensionConfirmation Boolean?
+  quantityConfirmation  Boolean?
+  dirtyThreads          Boolean?  @default(false)
+  processFrequency      String? //yazilsin-yazilmasin
+  remarks               String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime? @updatedAt
+  createdBy             String?
+  updatedBy             String?
+
+  result FaultControlResult
+
+  Fault Fault @relation(fields: [faultId], references: [id], onDelete: Cascade)
+}
+
+model Process {
+  id                         String               @id @default(cuid())
+  faultId                    String?              @unique
+  customerName               String?
+  customerId                 String?
+  product                    String?
+  quantity                   Int?
+  productCode                String?
+  application                String?
+  standard                   String?
+  color                      String?
+  frequency                  String?
+  price                      Float?
+  technicalDrawingAttachment String?
+  machineName                String?
+  machineId                  String?
+  createdAt                  DateTime             @default(now())
+  updatedAt                  DateTime             @updatedAt
+  createdBy                  String?
+  updatedBy                  String?
+  status                     ProcessStatus        @default(PENDING)
+  technicalParams            TechnicalParameter[]
+  finalControl               FinalControl[]
+  Invoice                    Invoice?             @relation(fields: [invoiceId], references: [id])
+  invoiceId                  String?
+}
+
+model FinalControl {
+  id                    String             @id @default(cuid())
+  faultId               String             @unique
+  olcu_Kontrol          FinalItemStatus?
+  gorunum_kontrol       FinalItemStatus?
+  tork_Kontrol          FinalItemStatus?
+  paketleme             String?
+  kontrol_edilen_miktar Int?
+  hatali_miktar         Int?
+  makliye_miktar        Int?
+  image                 String?
+  remarks               String?
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime?          @updatedAt
+  createdBy             String?
+  updatedBy             String?
+  result                FaultControlResult
+  Process               Process?           @relation(fields: [processId], references: [id], onDelete: Cascade)
+  processId             String?
+}
+
+enum FinalItemStatus {
+  OK
+  NOT_OK
+}
+
+model Machine {
+  id            String          @id @default(cuid())
+  machine_Name  String
+  machineParams MachineParams[]
+}
+
+model MachineParams {
+  id           String  @id @default(cuid())
+  param_name   String?
+  display_name String?
+
+  Machine   Machine? @relation(fields: [machineId], references: [id])
+  machineId String?
+}
+
+model TechnicalParameter {
+  id                     String    @id @default(cuid())
+  viskozite              String?
+  besleme_Tipi           String?
+  besleme_Hizi           String?
+  makine_Hizi            String?
+  hava_Basinci           String?
+  firin_Bant_Hizi        String?
+  induksiyon_kW          String?
+  induksiyon_Volts       String?
+  induksiyon_kHz         String?
+  patch_Vibrasyon_hizi   String?
+  patch_Hava_Basinci     String?
+  patch_Toz_yukleme_Hizi String?
+  teach_Ayari            String?
+  delay_Ayari            String?
+  purge_Ayari            String?
+  testere_secimi         String?
+  kesim_Mesafesi         String?
+  yuva_Boyutu            String?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime? @updatedAt
+  createdBy              String?
+  updatedBy              String?
+  machineId              String
+  saat                   String?
+
+  Process   Process? @relation(fields: [processId], references: [id], onDelete: Cascade)
+  processId String?
+}
+
+model Invoice {
+  id          String        @id @default(cuid())
+  barcode     String?
+  invoiceDate DateTime
+  currency    Currency?     @default(TL)
+  amount      Float?
+  vat         Float?
+  totalAmount Float?
+  address     String?
+  description String?
+  rep_name    String?
+  tax_Office  String?
+  taxNo       String?
+  status      InvoiceStatus @default(PENDING)
+  process     Process[]
+  customer    Customer      @relation(fields: [customerId], references: [id])
+  customerId  String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime?     @updatedAt
+  createdBy   String?
+  updatedBy   String?
+}
+
+//TODO: add stock relation 
+model Offer {
+  id         String      @id @default(cuid())
+  name       String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime?   @updatedAt
+  createdBy  String?
+  updatedBy  String?
+  status     OfferStatus @default(PENDING)
+  customerId String
+  Customer   Customer    @relation(fields: [customerId], references: [id])
+}
+
+enum InvoiceStatus {
+  PENDING
+  ACTIVE
+  PAID
+  NOT_PAID
+}
+
+model Notification {
+  id          String        @id @default(cuid())
+  title       String?
+  description String?
+  image       String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime?     @updatedAt
+  receiver    NotifReceiver @default(NORMAL)
+  link        String?
+  status      NotifStatus   @default(NOT_READ)
+}
+
+enum NotifStatus {
+  READ
+  NOT_READ
+}
+
+enum NotifReceiver {
+  SUPER
+  NORMAL
+  TECH
+  OTHER
+}
+
+enum FaultControlResult {
+  ACCEPT
+  ACCEPTANCE_WITH_CONDITION
+  PRE_PROCESS
+  REJECT
+}
+
+enum FaultStatus {
+  PENDING
+  ACCEPT
+  ACCEPTANCE_WITH_CONDITION
+  PRE_PROCESS
+  REJECT
+}
+
+model Applications {
+  id   String @id @default(cuid())
+  name String
+}
+
+model Colors {
+  id   String @id @default(cuid())
+  name String
+}
+
+model Standards {
+  id   String @id @default(cuid())
+  name String
 }
 
 enum UserRole {
@@ -44,49 +366,6 @@ enum UserStatus {
   PASSIVE
 }
 
-model Address {
-  id      String  @id @default(cuid())
-  street  String
-  city    String
-  state   String
-  zipCode String
-  user    User?   @relation(fields: [userId], references: [id])
-  userId  String? @unique @default(cuid())
-}
-
-model ContactInfo {
-  id     String @id @default(cuid())
-  phone  String
-  email  String
-  user   User   @relation(fields: [userId], references: [id])
-  userId String @unique @default(cuid())
-}
-
-model Customer {
-  id           String    @id @default(uuid())
-  name         String
-  email        String?   @unique
-  password     String?
-  PostalCode   String?
-  address      String?
-  phoneNumber  String?
-  phoneNumber2 String?
-  code         String?
-  definition   String?
-  taxNo        String?
-  tax_Office   String?
-  currency     Currency? @default(TL)
-  cardType     CardType? @default(ALICI_SATICI)
-}
-
-model Offer {
-  id         String      @id @default(uuid())
-  name       String
-  createdAt  DateTime    @default(now())
-  status     OfferStatus @default(PENDING)
-  customerId String
-}
-
 enum OfferStatus {
   SENT
   PENDING
@@ -97,10 +376,17 @@ enum OfferStatus {
 enum Currency {
   TL
   USD
+  EUR
 }
 
 enum CardType {
   ALICI_SATICI
   ALICI
   SATICI
+}
+
+enum ProcessStatus {
+  PENDING
+  PROCESSING
+  FINISHED
 }

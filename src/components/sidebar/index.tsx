@@ -3,8 +3,6 @@
 import { HiX } from 'react-icons/hi';
 import Links from './components/Links';
 import { IRoute } from 'types/navigation';
-import { useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
 import nd_logo from '/public/img/auth/nd_logo.webp';
 
 function SidebarHorizon(props: { routes: IRoute[]; [x: string]: any }) {
@@ -12,7 +10,7 @@ function SidebarHorizon(props: { routes: IRoute[]; [x: string]: any }) {
 
   return (
     <div
-      className={`sm:none duration-175 linear fixed !z-50 flex min-h-full flex-col  bg-white pb-10 shadow-2xl shadow-white/5 transition-all dark:!bg-navy-800 dark:text-white md:!z-50 lg:!z-50 xl:!z-0 ${
+      className={`duration-175 linear sm:none fixed !z-50 flex min-h-full flex-col  bg-white pb-10 shadow-2xl shadow-white/5 transition-all dark:!bg-navy-800 dark:text-white md:!z-50 lg:!z-50 xl:!z-0 ${
         open ? 'translate-x-0' : '-translate-x-96'
       }`}
     >
@@ -46,7 +44,7 @@ function SidebarHorizon(props: { routes: IRoute[]; [x: string]: any }) {
       {/* Nav item */}
 
       <ul className="mb-auto w-full pt-1">
-        <Links routes={routes} />
+        <Links onClick={() => setOpen(false)} routes={routes} />
       </ul>
 
       {/* Nav item end */}

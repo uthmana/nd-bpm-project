@@ -14,8 +14,9 @@ function InputField(props: {
   type?: string;
   name: string;
   onChange?: any;
-  value?: string;
+  value?: number | string | any;
   length?: number;
+  min?: number;
 }) {
   const {
     label,
@@ -31,6 +32,7 @@ function InputField(props: {
     required,
     value,
     length,
+    min = 0,
   } = props;
 
   const inputElem = useRef(null);
@@ -44,14 +46,14 @@ function InputField(props: {
   };
 
   return (
-    <div className={`relative`}>
+    <div className={`relative w-full`}>
       <label
         htmlFor={id}
         className={`text-sm text-navy-700 dark:text-white ${
           variant === 'auth' ? 'ml-1.5 font-medium' : 'ml-3 font-bold'
         }`}
       >
-        {label}
+        {label} {required ? <span className="text-red-400">*</span> : null}
       </label>
       <input
         ref={inputElem}
@@ -63,7 +65,7 @@ function InputField(props: {
         name={name}
         required={required}
         placeholder={placeholder}
-        min="0"
+        min={min}
         maxLength={length}
         className={`text-bold mt-1 flex h-10 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${
           disabled === true

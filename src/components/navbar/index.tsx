@@ -25,6 +25,18 @@ const Navbar = (props: {
     }
   }, [session, status]);
 
+  const handleTheme = () => {
+    if (darkmode) {
+      document.body.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+      setDarkmode(false);
+    } else {
+      document.body.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+      setDarkmode(true);
+    }
+  };
+
   const [darkmode, setDarkmode] = React.useState(
     document.body.classList.contains('dark'),
   );
@@ -42,18 +54,7 @@ const Navbar = (props: {
 
         <div className="relative mt-2 flex h-[48px] w-[180px] items-center justify-around gap-2 rounded-full bg-white px-2 py-2 shadow-xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none">
           <Notification user={user} />
-          <div
-            className="cursor-pointer text-gray-600"
-            onClick={() => {
-              if (darkmode) {
-                document.body.classList.remove('dark');
-                setDarkmode(false);
-              } else {
-                document.body.classList.add('dark');
-                setDarkmode(true);
-              }
-            }}
-          >
+          <div className="cursor-pointer text-gray-600" onClick={handleTheme}>
             {darkmode ? (
               <RiSunFill className="h-6 w-6 text-gray-600 dark:text-white" />
             ) : (

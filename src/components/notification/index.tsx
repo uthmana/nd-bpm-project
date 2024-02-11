@@ -1,20 +1,75 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Dropdown from 'components/dropdown';
 import { IoMdNotificationsOutline } from 'react-icons/io';
 import { BsArrowBarUp } from 'react-icons/bs';
+import NotificationItem from './item';
+import { useRouter } from 'next/navigation';
+import {
+  getNotifications,
+  updateNotificStatus,
+  markAllNotifAsRead,
+} from 'app/lib/apiRequest';
 
 export default function Notification({ user }) {
+  const [notifications, setNotifications] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+
+  const getMyNotification = async () => {
+    const { data, status } = await getNotifications();
+    if (status === 200) {
+      setNotifications(data);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.role) {
+      getMyNotification();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      getMyNotification();
+    }, 20000);
+
+    () => {
+      clearInterval(timer);
+    };
+  }, []);
+
+  const handleNotifClick = async ({ id, link }) => {
+    setIsOpen(false);
+    const { status, data } = await updateNotificStatus({ id });
+    if (status === 200) {
+      getMyNotification();
+      router.push(link);
+    }
+  };
+
+  const handleMarkAllRead = async () => {
+    const notifIds = notifications.map((item) => item.id);
+    const { status } = await markAllNotifAsRead(notifIds);
+    if (status === 200) {
+      getMyNotification();
+    }
+  };
+
   return (
     <Dropdown
+      open={isOpen}
       button={
         <>
           <p className="cursor-pointer">
             <IoMdNotificationsOutline className="h-6 w-6 text-gray-600 dark:text-white" />
           </p>
-          <span className="absolute -right-2 -top-3 min-h-fit min-w-fit cursor-pointer rounded-full bg-red-500 px-[4px] py-[2px] text-[12px] font-bold text-white">
-            25
-          </span>
+
+          {notifications.length > 0 ? (
+            <span className="absolute -right-2 -top-3 flex h-[20px] min-h-fit w-[20px] min-w-fit cursor-pointer items-center justify-center rounded-full bg-red-500 p-[2px] text-[12px] font-bold text-white">
+              {notifications.length}
+            </span>
+          ) : null}
         </>
       }
       animation="origin-[65%_0%] md:origin-top-right transition-all duration-300 ease-in-out"
@@ -25,32 +80,32 @@ export default function Notification({ user }) {
           <p className="text-base font-bold text-navy-700  dark:text-white">
             BİLDİRİMLER
           </p>
+          {notifications.length > 0 ? (
+            <button
+              className="text-xs font-bold capitalize underline opacity-70 hover:opacity-100"
+              onClick={handleMarkAllRead}
+            >
+              Tümünü okunmuş olarak işaretle
+            </button>
+          ) : null}
         </div>
-
-        {/*TODO: Create Notification item component*/}
-        <button className="flex w-full items-center ">
-          <div className="ml-2 flex h-full w-full flex-col justify-center rounded-lg px-1 text-sm">
-            <p className="mb-1 justify-start text-left  font-bold text-gray-900 dark:text-white">
-              New Update for {user?.name}
-            </p>
-            <p className="font-base text-left text-xs text-gray-900 dark:text-white">
-              A new update for your downloaded item is available!
-            </p>
+        {notifications.length === 0 ? (
+          <div className="w-full p-4 text-center capitalize opacity-70">
+            Okunmamış bildirim yok
           </div>
-          <div className="flex h-[12px] w-[12px] items-center justify-center rounded-xl bg-gradient-to-b from-brandLinear to-brand-500 text-2xl text-white"></div>
-        </button>
-
-        <button className="flex w-full items-center">
-          <div className="ml-2 flex h-full w-full flex-col justify-center rounded-lg px-1 text-sm">
-            <p className="mb-1 justify-start text-left  font-bold text-gray-900 dark:text-white">
-              New Update for {user?.name}
-            </p>
-            <p className="font-base text-left text-xs text-gray-900 dark:text-white">
-              A new update for your downloaded item is available!
-            </p>
+        ) : (
+          <div className="!md:max-h-[800px] max-h-[400px] overflow-y-auto pr-3">
+            {notifications?.map((item, idx) => {
+              return (
+                <NotificationItem
+                  {...item}
+                  onClick={(val) => handleNotifClick(val)}
+                  key={idx}
+                />
+              );
+            })}
           </div>
-          <div className="flex h-[12px] w-[12px] items-center justify-center rounded-xl bg-gradient-to-b from-brandLinear to-brand-500 text-2xl text-white"></div>
-        </button>
+        )}
       </div>
     </Dropdown>
   );

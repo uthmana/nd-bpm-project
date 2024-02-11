@@ -1,62 +1,46 @@
 import { NextResponse } from 'next/server';
 import { hash } from 'bcryptjs';
-import prisma from 'app/lib/db1';
-
-
-const secretKey = process.env.CHANGE_PASSWORD_SECRET;
-const validityMinutes = process.env.CHANGE_PASSWORD_SESSION_TIME;
-
-/*function decryptWithTimestamp(encryptedData: string, key: Buffer): string {
-  const [encrypted, ivHex] = encryptedData.split(':');
-  const iv = Buffer.from(ivHex, 'hex');
-
-  const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
-  let decrypted = decipher.update(encrypted, 'hex', 'utf-8');
-  decrypted += decipher.final('utf-8');
-  const decryptedObject = JSON.parse(decrypted);
-  
-  // Verify timestamp or expiration time
-  const currentTimestamp = Date.now();
-  if (
-    decryptedObject.expirationTime &&
-    currentTimestamp > decryptedObject.expirationTime
-  ) {
-    throw new Error('Time expired has expired');
-  }
-
-  return decryptedObject.text;
-}*/
+import { Prisma } from '@prisma/client';
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const { encryptedToken, newPassword } = body;
+  const { token, newPassword } = body;
+
+  if (!token || !newPassword) {
+    return NextResponse.json({ message: 'Bad request.' }, { status: 404 });
+  }
 
   try {
-    const decryptedText = 'dfsgdgftrweywytryt'; //TODO: crypto error need to be fixed
-      
-      
-   //   decryptWithTimestamp(
-   //  encryptedToken,
-   //  Buffer.from(secretKey, 'hex'),
-   // );
+    const user = await prisma.user.findUnique({
+      where: { token: token },
+    });
 
-    //encrypt new password and insert into database
-    const TobeUpdatedpassword = await hash(newPassword, 12);
+    if (!user) {
+      return NextResponse.json({ message: 'Invalid token.' }, { status: 404 });
+    }
 
-    //update password of user with the token decrypted
+    const today = new Date();
+    if (today > user.tokenExpiryDate) {
+      return NextResponse.json({ message: 'Token expired.' }, { status: 404 });
+    }
+    const password = await hash(newPassword, 12);
     await prisma.user.update({
-      where: { email: decryptedText },
-      data: { password: TobeUpdatedpassword },
+      where: { token: token },
+      data: { password: password, token: null, tokenExpiryDate: null },
     });
     return NextResponse.json(
       { message: 'Password Changed :)' },
       { status: 200 },
     );
-  } catch (error) {
-    console.error('Decryption Error:', error.message);
-    return NextResponse.json(
-      { error: 'Decryption failed or data has expired' },
-      { status: 401 },
-    );
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }

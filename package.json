@@ -16,18 +16,18 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^25.2.3",
-    "@types/node": "^12.20.55",
-    "@types/react": "^18.0.15",
-    "@types/react-dom": "^18.0.6",
     "apexcharts": "3.35.5",
     "axios": "^1.6.2",
     "bcryptjs": "^2.4.3",
-    "crypto": "^1.0.1",
+    "bwip-js": "^4.2.0",
+    "csv-parse": "^5.5.3",
+    "csv-parser": "^3.0.0",
     "framer-motion": "^7.10.2",
+    "fs": "^0.0.1-security",
     "next": "^13.3.2",
     "next-auth": "^4.24.5",
     "next-transpile-modules": "^9.0.0",
+    "node-forge": "^1.3.1",
     "prisma": "^5.7.1",
     "react": "^18.2.0",
     "react-apexcharts": "1.4.0",
@@ -35,6 +35,7 @@
     "react-custom-scrollbars-2": "^4.2.1",
     "react-dom": "^18.2.0",
     "react-icons": "^4.4.0",
+    "react-jsbarcode": "^0.4.2",
     "react-no-ssr": "^1.1.0",
     "react-router-dom": "^6.4.0",
     "react-scripts": "5.0.1",
@@ -47,7 +48,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npx prisma generate && npx prisma migrate deploy && next build",
     "start": "next start",
     "export": "next export",
     "lint": "next lint",
@@ -57,7 +58,7 @@
     "dev1": "cross-env NODE_OPTIONS='--inspect' next dev"
   },
   "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "seed": "tsx seeds/seedDB.ts"
   },
   "eslintConfig": {
     "extends": [
@@ -83,8 +84,8 @@
   },
   "devDependencies": {
     "@types/jest": "^25.2.3",
-    "@types/node": "^18.7.6",
-    "@types/react": "18.2.0",
+    "@types/node": "^20.11.17",
+    "@types/react": "^18.2.55",
     "@types/react-calendar": "^3.5.2",
     "@types/react-dom": "^18.2.1",
     "@types/react-no-ssr": "^1.1.3",
@@ -103,6 +104,6 @@
   "resolutions": {
     "@types/react": "18.0.31",
     "@types/react-dom": "18.0.11",
-    "react-error-overlay": "6.0.9"
+    "react-error-overlay": "6.0.11"
   }
 }

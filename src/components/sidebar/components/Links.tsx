@@ -15,7 +15,7 @@ type user = {
 
 // chakra imports
 
-export const SidebarLinks = ({ routes }): JSX.Element => {
+export const SidebarLinks = ({ routes, onClick }): JSX.Element => {
   const { data: session, status } = useSession();
   const [user, setUser] = useState(null);
 
@@ -50,13 +50,18 @@ export const SidebarLinks = ({ routes }): JSX.Element => {
 
       return (
         <NavLink
-          className="w-full"
+          className="block w-full"
           key={index}
           href={route.layout + '/' + route.path}
         >
-          <div className="relative mb-3 flex w-full hover:cursor-pointer">
+          <div className="relative flex w-full hover:cursor-pointer">
             <li
-              className="group my-[3px] flex w-full cursor-pointer items-center px-8"
+              onClick={onClick}
+              className={`group flex w-full cursor-pointer items-center px-8 py-[9px] hover:bg-lightPrimary dark:hover:bg-gray-900 ${
+                activeRoute(route.path) === true
+                  ? 'bg-lightPrimary dark:bg-gray-900'
+                  : ''
+              }`}
               key={index}
             >
               <span
@@ -79,7 +84,7 @@ export const SidebarLinks = ({ routes }): JSX.Element => {
               </p>
             </li>
             {activeRoute(route.path) ? (
-              <div className="absolute right-0 top-px h-9 w-1 rounded-lg bg-brand-500 dark:bg-brand-400" />
+              <div className="absolute right-0 top-0 h-[42px] w-1 rounded-lg bg-brand-500 dark:bg-brand-400" />
             ) : null}
           </div>
         </NavLink>

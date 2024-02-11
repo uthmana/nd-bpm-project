@@ -1,85 +1,96 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '../../lib/db1';
+import prisma from 'app/lib/db';
+import { Prisma } from '@prisma/client';
+import { validateCustomerSchema } from 'utils/validate';
+import { checkUserRole } from 'utils/auth';
 
-export async function POST(req: Request) {
-  // try {
-  //   const { name, email, password, roleId, PostalCode, adress, phoneNumber } =
-  //     await req.json();
-  //   if (
-  //     !name ||
-  //     !roleId ||
-  //     !email ||
-  //     !password ||
-  //     !PostalCode ||
-  //     !adress ||
-  //     !phoneNumber
-  //   ) {
-  //     return NextResponse.json({ message: 'You are missing a required data' });
-  //   }
-  //   const newCustomer = await prisma.customer.create({
-  //     data: {
-  //       name: name,
-  //       email: email,
-  //       password: password,
-  //       roleId: roleId,
-  //       PostalCode: PostalCode,
-  //       phoneNumber: phoneNumber,
-  //     },
-  //   });
-
-  //   return NextResponse.json({ message: `Created ${name} customer` });
-  // } catch (error) {
-  //   console.error('Error creating customer:', error);
-  //   return NextResponse.json({ error: 'Internal Server Error' });
-  // }
-
-  return NextResponse.json({ message: 'development' });
-}
-
+//All customers
 export async function GET(req: NextRequest) {
-  // try {
-  //   const customerdata = await prisma.customer.findMany();
-  //   return NextResponse.json(customerdata);
-  // } catch (error) {
-  //   console.error('Error fetching users:', error);
-  //   return NextResponse.json({ error: 'Internal Server Error' });
-  // }
-  return NextResponse.json({ message: 'development' });
+  try {
+    const allowedRoles = ['SUPER', 'ADMIN', 'NORMAL', 'TECH'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
+    }
+    const searchParams = req.nextUrl.searchParams;
+    const stock = searchParams.get('stock');
+    if (stock && stock === 'true') {
+      const customers = await prisma.customer.findMany({
+        where: {
+          Stock: {
+            some: {
+              inventory: {
+                gt: 0,
+              },
+            },
+          },
+        },
+        include: { Stock: true },
+      });
+      return NextResponse.json(customers, { status: 200 });
+    }
+
+    const customers = await prisma.customer.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+    return NextResponse.json(customers, { status: 200 });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
+  }
 }
 
-export async function DELETE(req: Request) {
-  // const { id }: Partial<customer> = await req.json();
-
-  // if (!id) return NextResponse.json({ message: 'customer id required' });
-
-  // const res = await prisma.customer.delete({ where: { id } });
-  // return NextResponse.json({ message: `customer ${id} deleted` });
-
-  return NextResponse.json({ message: 'development' });
-}
-
+// Create Customer
 export async function PUT(req: Request) {
-  // try {
-  //   const result: User = await req.json();
-  //   if (!result.name || !result.roleId || !result.email || !result.password) {
-  //     return NextResponse.json({ message: 'You are missing a required data' });
-  //   }
-  //   const { name, email, password, roleId, id } = result;
-  //   const newUser = await prisma.user.update({
-  //     where: {
-  //       id: id,
-  //     },
-  //     data: {
-  //       name,
-  //       email,
-  //       password,
-  //     },
-  //   });
+  try {
+    const allowedRoles = ['SUPER', 'ADMIN'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
+    }
+    const result: Prisma.CustomerCreateInput = await req.json();
+    // Validate the fields against the customer schema
+    const validationErrors = await validateCustomerSchema(result);
+    if (validationErrors.length > 0) {
+      return NextResponse.json({
+        error: 'Invalid data format',
+        details: validationErrors,
+      });
+    }
+    // Exclude email and password from direct inclusion in the data object
+    const { email, ...data } = result;
 
-  //   return NextResponse.json({ message: `Updated ${name} customer ` });
-  // } catch (error) {
-  //   console.error('Error updating user', error);
-  //   return NextResponse.json({ error: 'Internal Server Error' });
-  // }
-  return NextResponse.json({ message: 'development' });
+    // Include other properties using the spread operator
+    const customer = await prisma.customer.create({
+      data: {
+        ...data,
+        email: email?.toLocaleLowerCase() ?? '',
+      },
+    });
+
+    return NextResponse.json(customer, { status: 200 });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
+  }
 }

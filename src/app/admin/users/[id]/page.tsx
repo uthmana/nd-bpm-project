@@ -12,15 +12,16 @@ export default function Edit() {
   const router = useRouter();
   const queryParams = useParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsloading] = useState(false);
   const [user, setUser] = useState([]);
 
   useEffect(() => {
     const getSingleUser = async () => {
-      setIsSubmitting(true);
+      setIsloading(true);
       const { status, data } = await getUserById(queryParams.id);
       if (status === 200) {
         setUser(data);
-        setIsSubmitting(false);
+        setIsloading(false);
         return;
       }
       setIsSubmitting(false);
@@ -34,21 +35,27 @@ export default function Edit() {
   const handleSubmit = async (val) => {
     setIsSubmitting(true);
     if (!val) return;
-    const { status, data } = await updateUser({ ...val, id: queryParams?.id });
+    const resData: any = await updateUser({ ...val, id: queryParams?.id });
+    const { status, response } = resData;
+    if (response?.error) {
+      const { message, detail } = response?.error;
+      toast.error('Kullanıcı güncelleme başarısız.' + message);
+      log(detail);
+      setIsSubmitting(false);
+      return;
+    }
     if (status === 200) {
       toast.success('Kullanıcı güncelleme başarılı.');
       router.push('/admin/users');
-      setIsSubmitting(true);
+      setIsSubmitting(false);
       return;
     }
-    setIsSubmitting(true);
-    toast.error('Kullanıcı güncelleme başarısız.');
   };
 
   return (
     <div className="mt-12">
-      {user.length === 0 ? (
-        <div className="mx-auto max-w-[400px]">
+      {isLoading ? (
+        <div className="mx-auto max-w-[700px]">
           <UserFormSkeleton />
         </div>
       ) : (

@@ -6,10 +6,17 @@ type Search = {
   onChange?: (e: any) => void;
   onSubmit?: (e: any) => void;
   debounce?: number;
+  value?: string;
 };
 
-const Search = ({ extra, onSubmit, onChange, debounce = 500 }: Search) => {
-  const [searchText, setSearchText] = useState('');
+const Search = ({
+  extra,
+  onSubmit,
+  onChange,
+  debounce = 500,
+  value,
+}: Search) => {
+  const [searchText, setSearchText] = useState(value || '');
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -31,6 +38,7 @@ const Search = ({ extra, onSubmit, onChange, debounce = 500 }: Search) => {
         <FiSearch className="h-4 w-4 text-gray-400 dark:text-white" />
       </p>
       <input
+        value={searchText}
         type="text"
         onKeyUp={(e) => onChange(searchText)}
         onChange={(e) => setSearchText(e.target.value)}

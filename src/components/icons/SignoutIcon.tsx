@@ -3,7 +3,7 @@ const SignOut = () => {
     <svg
       stroke="currentColor"
       fill="currentColor"
-      stroke-width="0"
+      strokeWidth="0"
       viewBox="0 0 24 24"
       className="h-6 w-6"
       height="1em"

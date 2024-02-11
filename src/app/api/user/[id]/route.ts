@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '../../../lib/db1';
+import prisma from '../../../lib/db';
 import { hash } from 'bcryptjs';
 import { checkUserRole } from 'utils/auth';
+import { Prisma, User } from '@prisma/client';
 
 //Get single user
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
@@ -9,18 +10,27 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     const allowedRoles = ['ADMIN'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
     }
 
     const id = route.params.id;
     const user: Partial<User> = await prisma.user.findUnique({
       where: { id: id },
     });
-    if (!user.id) return NextResponse.json({ message: 'User not found' });
     return NextResponse.json({ ...user, password: '' });
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
   }
 }
 
@@ -30,16 +40,31 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     const allowedRoles = ['ADMIN'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
     }
 
     const id = route.params.id;
     const result: User = await req.json();
     const { name, email, password, role, status } = result;
-    if (!result.name || !result.email || !result.password) {
-      return NextResponse.json({ message: 'You are missing a required data' });
+
+    if (!name || !email) {
+      return NextResponse.json(
+        { message: 'You are missing a required data' },
+        { status: 401 },
+      );
     }
-    const pwd = await hash(password, 12);
+    const user: Partial<User> = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    let pwd = user.password;
+    if (password) {
+      pwd = await hash(password, 12);
+    }
+
     const updateUser = await prisma.user.update({
       where: {
         id: id,
@@ -53,12 +78,18 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         updatedAt: new Date(),
       },
     });
-    if (updateUser) {
-      return NextResponse.json({ updateUser }, { status: 200 });
+
+    return NextResponse.json({ updateUser }, { status: 200 });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
     }
-  } catch (error) {
-    console.error('Error updating user', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
+    return NextResponse.json(e, { status: 500 });
   }
 }
 
@@ -71,7 +102,10 @@ export async function DELETE(
     const allowedRoles = ['ADMIN'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
     }
 
     const id = route.params.id;
@@ -80,11 +114,17 @@ export async function DELETE(
         id: id,
       },
     });
-    if (deletedUser) {
-      return NextResponse.json({ deletedUser }, { status: 200 });
+
+    return NextResponse.json({ deletedUser }, { status: 200 });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
     }
-  } catch (error) {
-    console.error('Error updating user', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
+    return NextResponse.json(e, { status: 500 });
   }
 }
