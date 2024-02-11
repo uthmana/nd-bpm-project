@@ -56,7 +56,7 @@ export default function User({ onSubmit, data, title, loading }: userForm) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full">
+    <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4">
       <NextLink
         href="/admin/users"
         className="flex items-center gap-2 text-sm dark:text-white"
@@ -136,7 +136,7 @@ export default function User({ onSubmit, data, title, loading }: userForm) {
           );
         })}
       </Select>
-      <Button loading={loading} extra="mt-4" text="SAVE" />
+      <Button loading={loading} extra="mt-8" text="SAVE" />
     </form>
   );
 }
