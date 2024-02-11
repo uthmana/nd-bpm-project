@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { NextResponse, NextRequest } from 'next/server';
 import { checkUserRole } from 'utils/auth';
 import { Prisma } from '@prisma/client';
+import prisma from 'app/lib/db';
 
 //All colors
 export async function GET(req: NextRequest) {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '../../../../lib/db';
+import prisma from 'app/lib/db';
 import { Colors, Prisma } from '@prisma/client';
 import next from 'next';
 import { check } from 'prettier';
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     const Colors: Colors = await prisma.colors.findUnique({
       where: { id: id },
     });
-    
+
     if (!Colors) {
       throw new Error('Fault not found');
     }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '../../../../lib/db';
+import prisma from 'app/lib/db';
 import { Applications, Prisma } from '@prisma/client';
 import next from 'next';
 import { check } from 'prettier';

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '../../../../lib/db';
+import prisma from 'app/lib/db';
 import next from 'next';
 import { check } from 'prettier';
 import { checkUserRole } from 'utils/auth';
