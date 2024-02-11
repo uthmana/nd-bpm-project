@@ -56,10 +56,7 @@ export default function User({ onSubmit, data, title, loading }: userForm) {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="mx-auto w-full max-w-[400px] rounded-[20px] bg-white p-5 dark:bg-opacity-10"
-    >
+    <form onSubmit={handleSubmit} className="w-full">
       <NextLink
         href="/admin/users"
         className="flex items-center gap-2 text-sm dark:text-white"

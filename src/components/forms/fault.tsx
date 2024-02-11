@@ -180,7 +180,7 @@ export default function Fault(props: {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full rounded-[20px]">
+    <form onSubmit={handleSubmit} className="w-full">
       <NextLink
         href="/admin/entry"
         className="flex items-center gap-2 text-sm dark:text-white"
