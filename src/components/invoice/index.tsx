@@ -5,7 +5,7 @@ import Barcode from 'react-jsbarcode';
 
 export default function InvoiceDoc({ invoice }) {
   return (
-    <div className="min-h-[800px] w-full bg-white px-10  py-12 lg:w-[680px] lg:max-w-[680px] print:fixed print:top-0 print:z-[99999] print:h-screen print:w-screen">
+    <div className="min-h-[800px] w-full bg-white px-10  py-12 lg:w-[680px] lg:max-w-[680px] print:absolute  print:top-0 print:z-[99999] print:min-h-screen print:w-screen">
       <div className="mb-8 flex justify-between border-b-2">
         <div className="mb-2 max-w-[200px]">
           <div className="mb-3">
@@ -19,7 +19,7 @@ export default function InvoiceDoc({ invoice }) {
         <div className="flex flex-col gap-1">
           <h1 className="mb-1 text-right text-4xl">İrsaliye</h1>
           {/* <p className="font-bold">Banka Hesap No:</p>
-          <p className="text-sm">Şube Adı:</p>
+          <p className="text-sm">Şube Adı:</p> 
           <div className="text-xs font-bold">
             <span>34334</span> <span> TR-87384859696745</span>
           </div> */}
