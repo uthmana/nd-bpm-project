@@ -154,7 +154,9 @@ export default function Invoice() {
                 invoice.status === 'PAID' ? 'opacity-25' : ''
               }`}
               onClick={onInoviceComplete}
-              text="ÖDEME TAMAMLANDI"
+              text={`SEVKİYAT ${
+                invoice.status !== 'PAID' ? 'TAMAMLA' : 'TAMAMLANDI'
+              }`}
               icon={<MdOutlinePayment className="mr-1 h-5 w-5" />}
               disabled={invoice.status === 'PAID'}
               loading={isInvoiceSubmiting}

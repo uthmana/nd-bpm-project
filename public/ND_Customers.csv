@@ -1,4 +1,4 @@
-﻿id,code,cardType,taxNo,company_name,address,postalCode,phoneNumber,phoneNumber2,tax_Office,taxOfficeCode,email,email_2,rep_name,currency,country_code,province_code,district_code,definition,Offers
+﻿id,code,cardType,taxNo,company_name,address,postalCode,phoneNumber,phoneNumber_quality,tax_Office,taxOfficeCode,email,email_2,rep_name,currency,country_code,province_code,district_code,definition,Offers
 ,C001,ALICI-SATICI,2450006683,ÇETİN CİVATA A.Ş.,Muratbey Köy Yolu Taşocakları Mevkii Mah. Fabrikalar Cad. No:17,34545,0212 778 11 00,,MARMARA KURUMLAR VERGİ D. BŞK.,34232,olcay.ozgur@cetin.com.tr,ugur.dede@cetin.com.tr,Olcay Özgür,TL,TR,34,15,,
 ,C002,ALICI-SATICI,1950030906,CVT CİVATA-VİDA SAN. TİC. LTD. ŞTİ.,Topselvi Mah. D-100 Güney Yan Yol No:6/7 P.K. 34873 ,34873,0216 488 88 74,0542 520 50 08,KARTAL VERGİ DAİRESİ MÜDÜRLÜĞÜ,34285,muhasebe@cvtcivata.com,,Serkan Bey,TL,TR,34,25,,
 ,B001,ALICI-SATICI,4640039210,BOLT BAĞLANTI ELEMANLARI SAN.TİC.A.Ş.,Geyveli Cad. No:16,16235,0224 482 23 04,0541 614 27 41,ERTUĞRULGAZİ VERGİ DAİRESİ,16258,muhasebe@bolt.com.tr,Ridvan.Aydin@BOLT.COM.TR,Rıdvan Özel,TL,TR,16,12,,

@@ -10,10 +10,7 @@ import TextArea from 'components/fields/textArea';
 import Upload from 'components/upload';
 import { log, convertToISO8601, removeMillisecondsAndUTC } from 'utils';
 import { FaultObj } from '../../app/localTypes/table-types';
-import {
-  getCustomersWithStock,
-  getFaultSettings,
-} from '../../app/lib/apiRequest';
+import { getCustomers, getFaultSettings } from '../../app/lib/apiRequest';
 
 export default function Fault(props: {
   onSubmit: (e: any) => void;
@@ -38,7 +35,6 @@ export default function Fault(props: {
         faultDescription: '',
         customerId: '',
         product_name: '',
-        stockId: '',
       };
 
   const [values, setValues] = useState(initialValues);
@@ -61,41 +57,28 @@ export default function Fault(props: {
   };
 
   const [customers, setCustomers] = useState([]);
-  const [products, setProducts] = useState([]);
   const [faultSettings, setFaultSettings] = useState({} as Settings);
 
   const handleValues = (event) => {
     setError(false);
+    if (event.target?.name === 'company_name') {
+      const _customer = JSON.parse(event.target?.value);
+      const seletecCustomer = {
+        customerName: _customer.company_name,
+        customerId: _customer.id,
+      };
+      setValues({ ...values, ...seletecCustomer });
+      return;
+    }
     const newVal = { [event.target?.name]: event.target?.value };
     setValues({ ...values, ...newVal });
   };
 
   useEffect(() => {
     const getStock = async () => {
-      const { status, data } = await getCustomersWithStock();
+      const { status, data } = await getCustomers();
       if (status === 200) {
         setCustomers(data);
-        if (editData?.customerName) {
-          const editedStock = data?.filter((item) => {
-            return item.company_name === editData?.customerName;
-          });
-          if (editedStock.length > 0) {
-            const selectedStock = editedStock[0]?.Stock?.filter((item) => {
-              return item.product_code === editData?.productCode;
-            });
-
-            if (selectedStock.length > 0) {
-              setValues({
-                ...values,
-                product: selectedStock[0]?.product_name,
-                productCode: selectedStock[0]?.product_code,
-                quantity: selectedStock[0]?.inventory,
-                arrivalDate: removeMillisecondsAndUTC(selectedStock[0]?.date),
-              });
-            }
-            setProducts(editedStock[0]?.Stock);
-          }
-        }
       }
     };
 
@@ -129,53 +112,18 @@ export default function Fault(props: {
     }
 
     delete values.product_name;
-    onSubmit({
+    console.log({
       ...values,
       quantity: parseInt(values.quantity.toString()),
       technicalDrawingAttachment: file,
       arrivalDate: convertToISO8601(values.arrivalDate),
     });
-  };
 
-  const onCustomerSelect = (event) => {
-    if (!event.target?.value) return;
-    const customer = JSON.parse(event.target?.value);
-    const { company_name, id, Stock } = customer;
-
-    //Get only product that has no entry
-    const filteredStock = Stock?.filter((item) => {
-      return item.faultId === null;
-    });
-
-    setProducts(filteredStock);
-    setValues({
+    onSubmit({
       ...values,
-      customerName: company_name,
-      customerId: id,
-      product: filteredStock[0]?.product_name || '',
-      productCode: filteredStock[0]?.product_code || '',
-      quantity: filteredStock[0]?.inventory || 0,
-      stockId: filteredStock[0]?.id || '',
-      arrivalDate: removeMillisecondsAndUTC(filteredStock[0]?.date) || null,
-    });
-  };
-
-  const onProductSelect = (event) => {
-    if (!event.target?.value) return;
-    const stock = JSON.parse(event.target?.value);
-    //Get only product that has no entry
-    const filteredStock = stock?.filter((item) => {
-      return item.faultId === null;
-    });
-
-    const { product_code, product_name, inventory, date, id } = filteredStock;
-    setValues({
-      ...values,
-      product: product_name,
-      productCode: product_code,
-      quantity: inventory,
-      stockId: id,
-      arrivalDate: removeMillisecondsAndUTC(date),
+      quantity: parseInt(values.quantity.toString()),
+      technicalDrawingAttachment: file,
+      arrivalDate: convertToISO8601(values.arrivalDate),
     });
   };
 
@@ -208,7 +156,8 @@ export default function Fault(props: {
           required={true}
           extra="pt-1"
           label="Müşteri Adı"
-          onChange={onCustomerSelect}
+          name="company_name"
+          onChange={handleValues}
         >
           {customers?.map((item, idx) => {
             return (
@@ -223,30 +172,22 @@ export default function Fault(props: {
           })}
         </Select>
 
-        <Select
+        <InputField
+          label="Ürün Adı"
+          onChange={handleValues}
+          type="text"
+          id="product"
+          name="product"
+          placeholder="Ürün Adı"
+          extra="mb-2"
+          value={values.product}
           required={true}
-          extra="pt-1"
-          label="Ürün İsmi"
-          onChange={onProductSelect}
-          key={products && products[0]}
-        >
-          {products?.map((item, idx) => {
-            return (
-              <option
-                key={idx}
-                value={JSON.stringify(item)}
-                selected={values.product === item?.product_name}
-              >
-                {item?.product_name}
-              </option>
-            );
-          })}
-        </Select>
+        />
       </div>
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">
         <InputField
-          label="Ürün kodu"
+          label="Ürün kodu (Müşteri)"
           onChange={handleValues}
           type="text"
           id="productCode"

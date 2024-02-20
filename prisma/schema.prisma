@@ -47,33 +47,37 @@ model ContactInfo {
 }
 
 model Customer {
-  id            String    @id @default(cuid())
-  code          String?
-  cardType      CardType? @default(ALICI_SATICI)
-  taxNo         String?
-  company_name  String?
-  address       String?
-  postalCode    String?
-  phoneNumber   String?
-  phoneNumber2  String?
-  tax_Office    String?
-  taxOfficeCode String?
-  email         String?
-  email_2       String?
-  rep_name      String
-  currency      Currency? @default(TL)
-  country_code  String
-  province_code String
-  district_code String
-  definition    String?
-  Offers        Offer[]
-  Fault         Fault[]
-  Stock         Stock[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime? @updatedAt
-  createdBy     String?
-  updatedBy     String?
-  Invoice       Invoice[]
+  id                     String    @id @default(cuid())
+  code                   String?
+  cardType               CardType? @default(ALICI)
+  taxNo                  String?
+  company_name           String?
+  address                String?
+  postalCode             String?
+  phoneNumber            String?
+  phoneNumber_shipment   String?
+  phoneNumber_quality    String?
+  phoneNumber_accountant String?
+  email                  String?
+  email_quality          String?
+  email_offer            String?
+  email_accountant       String?
+  tax_Office             String?
+  taxOfficeCode          String?
+  rep_name               String
+  currency               Currency? @default(TL)
+  country_code           String
+  province_code          String
+  district_code          String
+  definition             String?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime? @updatedAt
+  createdBy              String?
+  updatedBy              String?
+  Offers                 Offer[]
+  Fault                  Fault[]
+  Stock                  Stock[]
+  Invoice                Invoice[]
 
   @@map("customers")
 }
@@ -100,6 +104,7 @@ model Stock {
   customerId      String?
   customer        Customer? @relation(fields: [customerId], references: [id])
   faultId         String?   @unique
+  fault           Fault?    @relation(fields: [faultId], references: [id], onDelete: Cascade)
 }
 
 model Fault {
@@ -119,13 +124,13 @@ model Fault {
   technicalDrawingAttachment String?
   faultControl               FaultControl[]
   customerId                 String?
-  Customer                   Customer?      @relation(fields: [customerId], references: [id])
+  customer                   Customer?      @relation(fields: [customerId], references: [id])
   faultControlId             String?        @unique
   createdAt                  DateTime       @default(now())
   updatedAt                  DateTime?      @updatedAt
   createdBy                  String?
   updatedBy                  String?
-  stockId                    String?        @unique
+  Stock                      Stock[]
 }
 
 model FaultControl {

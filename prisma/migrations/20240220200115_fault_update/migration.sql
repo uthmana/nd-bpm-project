@@ -78,17 +78,21 @@ CREATE TABLE "ContactInfo" (
 CREATE TABLE "customers" (
     "id" TEXT NOT NULL,
     "code" TEXT,
-    "cardType" "CardType" DEFAULT 'ALICI_SATICI',
+    "cardType" "CardType" DEFAULT 'ALICI',
     "taxNo" TEXT,
     "company_name" TEXT,
     "address" TEXT,
     "postalCode" TEXT,
     "phoneNumber" TEXT,
-    "phoneNumber2" TEXT,
+    "phoneNumber_shipment" TEXT,
+    "phoneNumber_quality" TEXT,
+    "phoneNumber_accountant" TEXT,
+    "email" TEXT,
+    "email_quality" TEXT,
+    "email_offer" TEXT,
+    "email_accountant" TEXT,
     "tax_Office" TEXT,
     "taxOfficeCode" TEXT,
-    "email" TEXT,
-    "email_2" TEXT,
     "rep_name" TEXT NOT NULL,
     "currency" "Currency" DEFAULT 'TL',
     "country_code" TEXT NOT NULL,
@@ -151,7 +155,6 @@ CREATE TABLE "Fault" (
     "updatedAt" TIMESTAMP(3),
     "createdBy" TEXT,
     "updatedBy" TEXT,
-    "stockId" TEXT,
 
     CONSTRAINT "Fault_pkey" PRIMARY KEY ("id")
 );
@@ -376,13 +379,7 @@ CREATE UNIQUE INDEX "Address_userId_key" ON "Address"("userId");
 CREATE UNIQUE INDEX "ContactInfo_userId_key" ON "ContactInfo"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Stock_faultId_key" ON "Stock"("faultId");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Fault_faultControlId_key" ON "Fault"("faultControlId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Fault_stockId_key" ON "Fault"("stockId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "FaultControl_faultId_key" ON "FaultControl"("faultId");
@@ -401,6 +398,9 @@ ALTER TABLE "ContactInfo" ADD CONSTRAINT "ContactInfo_userId_fkey" FOREIGN KEY (
 
 -- AddForeignKey
 ALTER TABLE "Stock" ADD CONSTRAINT "Stock_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Stock" ADD CONSTRAINT "Stock_faultId_fkey" FOREIGN KEY ("faultId") REFERENCES "Fault"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Fault" ADD CONSTRAINT "Fault_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE SET NULL ON UPDATE CASCADE;

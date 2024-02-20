@@ -95,6 +95,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       const process = await prisma.process.findUnique({
         where: { id: processId },
       });
+
       if (process.invoiceId) {
         const invoice = await prisma.invoice.findUnique({
           where: { id: process.invoiceId },
@@ -111,12 +112,13 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       }
 
       //Create invoice if not exit
-      const stock = await prisma.stock.findUnique({
-        where: { faultId },
+      const fault = await prisma.fault.findUnique({
+        where: { id: faultId },
         include: { customer: true },
       });
-      if (stock) {
-        const { customer } = stock;
+
+      if (fault) {
+        const { customer } = fault;
         const { id, tax_Office, taxNo, rep_name, address } = customer;
         const invoice = await prisma.invoice.create({
           data: {

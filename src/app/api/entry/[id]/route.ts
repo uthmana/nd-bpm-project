@@ -80,14 +80,14 @@ export async function DELETE(
     });
 
     //Tracking stock
-    if (deletedFault) {
-      const updateStock = await prisma.stock.update({
-        where: {
-          id: deletedFault.stockId,
-        },
-        data: { faultId: null },
-      });
-    }
+    // if (deletedFault) {
+    //   const updateStock = await prisma.stock.update({
+    //     where: {
+    //       id: deletedFault.stockId,
+    //     },
+    //     data: { faultId: null },
+    //   });
+    // }
 
     return NextResponse.json(deletedFault, { status: 200 });
   } catch (e) {

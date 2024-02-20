@@ -47,8 +47,8 @@ function InvoiceTable({
     const invoiceStatus = {
       PENDING: 'Beklemede',
       ACTIVE: 'Aktif',
-      PAID: 'Ödendi',
-      NOT_PAID: 'Ödenmedi',
+      PAID: 'Tamamlandı',
+      NOT_PAID: 'Tamamlanmadı',
     };
     const statusbgColor = (status: string) => {
       if (status === 'ACTIVE') {

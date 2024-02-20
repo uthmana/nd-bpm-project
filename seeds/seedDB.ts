@@ -123,7 +123,7 @@ async function Customers() {
             case 'cardType':
               data1[trimmedHeader] =
                 $Enums.CardType[row[trimmedHeader] as keyof $Enums.CardType] ||
-                $Enums.CardType.ALICI_SATICI;
+                $Enums.CardType.ALICI;
               break;
             case 'Offers':
               data1[trimmedHeader] = {}; // Assuming Offers is an object
