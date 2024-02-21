@@ -1,7 +1,12 @@
 'use client';
 import React, { useEffect, useMemo, useState } from 'react';
 import Card from 'components/card';
-import { MdModeEdit, MdOutlineDelete, MdAdd } from 'react-icons/md';
+import {
+  MdModeEdit,
+  MdOutlineDelete,
+  MdAdd,
+  MdOutlineKeyboardDoubleArrowDown,
+} from 'react-icons/md';
 import Barcode from 'react-jsbarcode';
 import {
   createColumnHelper,
@@ -47,8 +52,11 @@ function MainTable({
           columnHelper.accessor('id', {
             id: 'id',
             header: () => (
-              <p className="min-w-[100px] text-sm font-bold text-gray-600 dark:text-white">
+              <p className="group relative min-w-[70px] max-w-fit text-sm font-bold text-gray-600 dark:text-white">
                 SİRA NO.
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
               </p>
             ),
             cell: ({ row }) => (
@@ -60,8 +68,11 @@ function MainTable({
           columnHelper.accessor('company_name', {
             id: 'company_name',
             header: () => (
-              <p className="min-w-[200px] text-sm font-bold text-gray-600 dark:text-white">
+              <p className="group relative min-w-[200px] text-sm font-bold text-gray-600 dark:text-white">
                 ŞİRKET
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
               </p>
             ),
             cell: (info: any) => (
@@ -74,8 +85,11 @@ function MainTable({
           columnHelper.accessor('rep_name', {
             id: 'rep_name',
             header: () => (
-              <p className="min-w-[100px] text-sm font-bold text-gray-600 dark:text-white">
+              <p className="group relative min-w-[100px] text-sm font-bold text-gray-600 dark:text-white">
                 SORUMLU
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
               </p>
             ),
             cell: (info: any) => (
@@ -87,8 +101,11 @@ function MainTable({
           columnHelper.accessor('email', {
             id: 'email',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="group relative text-sm font-bold text-gray-600 dark:text-white">
                 E-POSTA
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
               </p>
             ),
             cell: (info: any) => (
@@ -101,8 +118,11 @@ function MainTable({
           columnHelper.accessor('address', {
             id: 'address',
             header: () => (
-              <p className="min-w-[200px] text-sm font-bold text-gray-600 dark:text-white">
+              <p className="group relative min-w-[200px] text-sm font-bold text-gray-600 dark:text-white">
                 ADRES
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
               </p>
             ),
             cell: (info: any) => (
@@ -114,8 +134,11 @@ function MainTable({
           columnHelper.accessor('phoneNumber', {
             id: 'phoneNumber',
             header: () => (
-              <p className="min-w-[120px] text-sm font-bold text-gray-600 dark:text-white">
+              <p className="group relative min-w-[120px] text-sm font-bold text-gray-600 dark:text-white">
                 TELEFON
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
               </p>
             ),
             cell: (info: any) => (
@@ -128,8 +151,11 @@ function MainTable({
           columnHelper.accessor('postalCode', {
             id: 'postalCode',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="group relative text-sm font-bold text-gray-600 dark:text-white">
                 POSTAL KODU
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
               </p>
             ),
             cell: (info: any) => (
@@ -142,8 +168,11 @@ function MainTable({
           columnHelper.accessor('country_code', {
             id: 'country_code',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="group relative text-sm font-bold text-gray-600 dark:text-white">
                 ÜLKE KODU
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
               </p>
             ),
             cell: (info: any) => (
@@ -155,8 +184,11 @@ function MainTable({
           columnHelper.accessor('province_code', {
             id: 'province_code',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="group relative text-sm font-bold text-gray-600 dark:text-white">
                 İL KODU
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
               </p>
             ),
             cell: (info: any) => (
@@ -169,8 +201,11 @@ function MainTable({
           columnHelper.accessor('district_code', {
             id: 'district_code',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="group relative text-sm font-bold text-gray-600 dark:text-white">
                 İLÇE KODU
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
               </p>
             ),
             cell: (info: any) => (
@@ -183,8 +218,11 @@ function MainTable({
           columnHelper.accessor('code', {
             id: 'code',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="group relative text-sm font-bold text-gray-600 dark:text-white">
                 MÜŞTERİ KODU
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
               </p>
             ),
             cell: (info: any) => (
@@ -197,8 +235,11 @@ function MainTable({
           columnHelper.accessor('taxNo', {
             id: 'taxNo',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="group relative text-sm font-bold text-gray-600 dark:text-white">
                 VERGİ NO.
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
               </p>
             ),
             cell: (info: any) => (
@@ -211,8 +252,11 @@ function MainTable({
           columnHelper.accessor('tax_Office', {
             id: 'tax_Office',
             header: () => (
-              <p className="min-w-[160px] text-sm font-bold text-gray-600 dark:text-white">
+              <p className="group relative min-w-[160px] text-sm font-bold text-gray-600 dark:text-white">
                 VERGİ OFİSİ
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
               </p>
             ),
             cell: (info: any) => (
@@ -224,8 +268,11 @@ function MainTable({
           columnHelper.accessor('taxOfficeCode', {
             id: 'taxOfficeCode',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="group relative text-sm font-bold text-gray-600 dark:text-white">
                 VERGİ OFİS KODU
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
               </p>
             ),
             cell: (info: any) => (
@@ -238,8 +285,11 @@ function MainTable({
           columnHelper.accessor('cardType', {
             id: 'cardType',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="group relative min-w-[80px] text-sm font-bold text-gray-600 dark:text-white">
                 KART TÜRÜ
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
               </p>
             ),
             cell: (info: any) => (
@@ -251,8 +301,11 @@ function MainTable({
           columnHelper.accessor('currency', {
             id: 'currency',
             header: () => (
-              <p className="text-center text-sm font-bold text-gray-600 dark:text-white">
+              <p className="group relative text-center text-sm font-bold text-gray-600 dark:text-white">
                 PARA BİRİMİ
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
               </p>
             ),
             cell: (info: any) => (
@@ -265,8 +318,11 @@ function MainTable({
           columnHelper.accessor('definition', {
             id: 'definition',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="group relative text-sm font-bold text-gray-600 dark:text-white">
                 AÇIKLAMA
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
               </p>
             ),
             cell: (info: any) => (
@@ -307,7 +363,7 @@ function MainTable({
           columnHelper.accessor('id', {
             id: 'id',
             header: () => (
-              <p className="min-w-[50px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+              <p className="min-w-[70px] text-sm font-bold uppercase text-gray-600 dark:text-white">
                 Sira No.
               </p>
             ),
@@ -317,15 +373,34 @@ function MainTable({
               </p>
             ),
           }),
-          columnHelper.accessor('id', {
-            id: 'id',
+          columnHelper.accessor('product_code', {
+            id: 'product_code',
             header: () => (
-              <p className="min-w-[150px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-                Barkodu
+              <p className="group relative min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                Ürün Kodu{' '}
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
               </p>
             ),
             cell: (info: any) => (
               <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('id', {
+            id: 'id',
+            header: () => (
+              <p className="group relative min-w-[150px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                Barkodu{' '}
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="max-w-[180px] text-sm font-bold  text-navy-700 dark:text-white">
                 <Barcode
                   className="h-full w-full"
                   value={info.getValue()}
@@ -337,25 +412,15 @@ function MainTable({
           columnHelper.accessor('customerName', {
             id: 'customerName',
             header: () => (
-              <p className=" min-w-[160px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+              <p className="group relative text-sm font-bold uppercase text-gray-600 dark:text-white">
                 MÜŞTERİ
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
               </p>
             ),
             cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
-              </p>
-            ),
-          }),
-          columnHelper.accessor('product_code', {
-            id: 'product_code',
-            header: () => (
-              <p className=" min-w-[90px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-                Ürün Kodu
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
+              <p className="min-w-[220px] max-w-[260px] text-sm font-bold text-navy-700 dark:text-white">
                 {info.getValue()}
               </p>
             ),
@@ -363,21 +428,11 @@ function MainTable({
           columnHelper.accessor('product_name', {
             id: 'product_name',
             header: () => (
-              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-                Ürün Adı
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
-              </p>
-            ),
-          }),
-          columnHelper.accessor('brand', {
-            id: 'brand',
-            header: () => (
-              <p className="min-w-[100px] text-sm  font-bold uppercase text-gray-600 dark:text-white">
-                Marka
+              <p className="group relative min-w-[160px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                Ürün Adı{' '}
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
               </p>
             ),
             cell: (info: any) => (
@@ -389,8 +444,11 @@ function MainTable({
           columnHelper.accessor('inventory', {
             id: 'inventory',
             header: () => (
-              <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-                Envanter
+              <p className="group relative text-sm font-bold uppercase text-gray-600 dark:text-white">
+                MİKTAR{' '}
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
               </p>
             ),
             cell: (info: any) => (
@@ -399,120 +457,155 @@ function MainTable({
               </p>
             ),
           }),
-          columnHelper.accessor('unit', {
-            id: 'unit',
-            header: () => (
-              <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-                Birim
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="flex text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
-              </p>
-            ),
-          }),
-          columnHelper.accessor('current_price', {
-            id: 'current_price',
-            header: () => (
-              <p className="min-w-[80px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-                Maliyet
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
-              </p>
-            ),
-          }),
-          columnHelper.accessor('curency', {
-            id: 'curency',
-            header: () => (
-              <p className="min-w-[90px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-                Para Birimi
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
-              </p>
-            ),
-          }),
-          columnHelper.accessor('main_group', {
-            id: 'main_group',
-            header: () => (
-              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-                Ana Grubu
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
-              </p>
-            ),
-          }),
-          columnHelper.accessor('group1', {
-            id: 'group1',
-            header: () => (
-              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-                Grub 1
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
-              </p>
-            ),
-          }),
-          columnHelper.accessor('group2', {
-            id: 'group2',
-            header: () => (
-              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-                Grub 2
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
-              </p>
-            ),
-          }),
+          // columnHelper.accessor('main_group', {
+          //   id: 'main_group',
+          //   header: () => (
+          //     <p className="group relative min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          //       STOCK YERİ{' '}
+          //       <span className="absolute right-0 top-0 hidden group-hover:block">
+          //         <MdOutlineKeyboardDoubleArrowDown />
+          //       </span>
+          //     </p>
+          //   ),
+          //   cell: (info: any) => (
+          //     <p className="text-sm font-bold text-navy-700 dark:text-white">
+          //       {info.getValue()}
+          //     </p>
+          //   ),
+          // }),
+          // columnHelper.accessor('id', {
+          //   id: 'id',
+          //   header: () => (
+          //     <p className="min-w-[50px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          //       Sira No.
+          //     </p>
+          //   ),
+          //   cell: ({ row }) => (
+          //     <p className="text-sm font-bold text-navy-700 dark:text-white">
+          //       {row.index + 1}
+          //     </p>
+          //   ),
+          // }),
+          // columnHelper.accessor('unit', {
+          //   id: 'unit',
+          //   header: () => (
+          //     <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          //       Birim
+          //     </p>
+          //   ),
+          //   cell: (info: any) => (
+          //     <p className="flex text-sm font-bold text-navy-700 dark:text-white">
+          //       {info.getValue()}
+          //     </p>
+          //   ),
+          // }),
+          // columnHelper.accessor('brand', {
+          //   id: 'brand',
+          //   header: () => (
+          //     <p className="min-w-[100px] text-sm  font-bold uppercase text-gray-600 dark:text-white">
+          //       Marka
+          //     </p>
+          //   ),
+          //   cell: (info: any) => (
+          //     <p className="text-sm font-bold text-navy-700 dark:text-white">
+          //       {info.getValue()}
+          //     </p>
+          //   ),
+          // }),
+          // columnHelper.accessor('current_price', {
+          //   id: 'current_price',
+          //   header: () => (
+          //     <p className="min-w-[80px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          //       Maliyet
+          //     </p>
+          //   ),
+          //   cell: (info: any) => (
+          //     <p className="text-sm font-bold text-navy-700 dark:text-white">
+          //       {info.getValue()}
+          //     </p>
+          //   ),
+          // }),
+          // columnHelper.accessor('curency', {
+          //   id: 'curency',
+          //   header: () => (
+          //     <p className="min-w-[90px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          //       Para Birimi
+          //     </p>
+          //   ),
+          //   cell: (info: any) => (
+          //     <p className="text-sm font-bold text-navy-700 dark:text-white">
+          //       {info.getValue()}
+          //     </p>
+          //   ),
+          // }),
+          // columnHelper.accessor('group1', {
+          //   id: 'group1',
+          //   header: () => (
+          //     <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          //       Grub 1
+          //     </p>
+          //   ),
+          //   cell: (info: any) => (
+          //     <p className="text-sm font-bold text-navy-700 dark:text-white">
+          //       {info.getValue()}
+          //     </p>
+          //   ),
+          // }),
+          // columnHelper.accessor('group2', {
+          //   id: 'group2',
+          //   header: () => (
+          //     <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          //       Grub 2
+          //     </p>
+          //   ),
+          //   cell: (info: any) => (
+          //     <p className="text-sm font-bold text-navy-700 dark:text-white">
+          //       {info.getValue()}
+          //     </p>
+          //   ),
+          // }),
+          // columnHelper.accessor('image', {
+          //   id: 'image',
+          //   header: () => (
+          //     <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          //       İLGİLİ DOKÜMAN
+          //     </p>
+          //   ),
+          //   cell: (info: any) => (
+          //     <p className="text-sm font-bold text-navy-700 dark:text-white">
+          //       {info.getValue() ? <FileViewer file={info.getValue()} /> : null}
+          //     </p>
+          //   ),
+          // }),
+          // columnHelper.accessor('description', {
+          //   id: 'description',
+          //   header: () => (
+          //     <p className="group relative min-w-[140px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          //       Açıklama{' '}
+          //       <span className="absolute right-0 top-0 hidden group-hover:block">
+          //         <MdOutlineKeyboardDoubleArrowDown />
+          //       </span>
+          //     </p>
+          //   ),
+          //   cell: (info: any) => (
+          //     <p className="text-sm font-bold text-navy-700 dark:text-white">
+          //       {info.getValue()}
+          //     </p>
+          //   ),
+          // }),
           columnHelper.accessor('date', {
             id: 'date',
             header: () => (
-              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-                Ekleme Tarihi
+              <p className="group relative min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                Tarih{' '}
+                <span className="absolute right-0 top-0 hidden group-hover:block">
+                  <MdOutlineKeyboardDoubleArrowDown />
+                </span>
               </p>
             ),
             cell: (info: any) => (
               <p className="text-sm font-bold text-navy-700 dark:text-white">
                 {formatDateTime(info.getValue())}
-              </p>
-            ),
-          }),
-          columnHelper.accessor('image', {
-            id: 'image',
-            header: () => (
-              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-                İLGİLİ DOKÜMAN
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue() ? <FileViewer file={info.getValue()} /> : null}
-              </p>
-            ),
-          }),
-          columnHelper.accessor('description', {
-            id: 'description',
-            header: () => (
-              <p className="min-w-[140px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-                Açıklama
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
               </p>
             ),
           }),

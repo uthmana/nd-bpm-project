@@ -11,6 +11,7 @@ import Upload from 'components/upload';
 import { log, convertToISO8601, removeMillisecondsAndUTC } from 'utils';
 import { FaultObj } from '../../app/localTypes/table-types';
 import { getCustomers, getFaultSettings } from '../../app/lib/apiRequest';
+import DataList from 'components/fields/dataList';
 
 export default function Fault(props: {
   onSubmit: (e: any) => void;
@@ -62,10 +63,12 @@ export default function Fault(props: {
   const handleValues = (event) => {
     setError(false);
     if (event.target?.name === 'company_name') {
-      const _customer = JSON.parse(event.target?.value);
+      const _customer = customers.filter(
+        (item) => item.company_name === event.target?.value,
+      )[0];
       const seletecCustomer = {
-        customerName: _customer.company_name,
-        customerId: _customer.id,
+        customerName: _customer?.company_name,
+        customerId: _customer?.id,
       };
       setValues({ ...values, ...seletecCustomer });
       return;
@@ -152,7 +155,7 @@ export default function Fault(props: {
       ) : null}
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">
-        <Select
+        {/* <Select
           required={true}
           extra="pt-1"
           label="Müşteri Adı"
@@ -170,7 +173,19 @@ export default function Fault(props: {
               </option>
             );
           })}
-        </Select>
+        </Select> */}
+
+        <DataList
+          placeholder="Müşteri Adı"
+          label="Müşteri Adı"
+          id="company_name"
+          name="company_name"
+          listId="company_name_list"
+          list={customers}
+          required={true}
+          value={values.customerName}
+          onChange={handleValues}
+        />
 
         <InputField
           label="Ürün Adı"

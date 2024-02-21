@@ -8,6 +8,7 @@ import {
   MdCancel,
   MdOutlineError,
   MdPreview,
+  MdOutlineKeyboardDoubleArrowDown,
 } from 'react-icons/md';
 import {
   createColumnHelper,
@@ -69,8 +70,11 @@ function EntryTable({
       columnHelper.accessor('id', {
         id: 'id',
         header: () => (
-          <p className="min-w-[65px]  text-sm font-bold text-gray-600 dark:text-white">
-            SİRA NO.
+          <p className="group relative  min-w-[65px] max-w-fit  text-sm font-bold text-gray-600 dark:text-white">
+            SİRA NO.{' '}
+            <span className="absolute right-0 top-0 hidden group-hover:block">
+              <MdOutlineKeyboardDoubleArrowDown />
+            </span>
           </p>
         ),
         cell: ({ row }) => (
@@ -82,8 +86,11 @@ function EntryTable({
       columnHelper.accessor('id', {
         id: 'id',
         header: () => (
-          <p className="min-w-[150px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            BARKOD
+          <p className="group relative min-w-[150px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+            BARKOD{' '}
+            <span className="absolute right-0 top-0 hidden group-hover:block">
+              <MdOutlineKeyboardDoubleArrowDown />
+            </span>
           </p>
         ),
         cell: (info: any) => (
@@ -96,11 +103,30 @@ function EntryTable({
           </p>
         ),
       }),
+      columnHelper.accessor('productCode', {
+        id: 'productCode',
+        header: () => (
+          <p className="group relative min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Ürün Kodu{' '}
+            <span className="absolute right-0 top-0 hidden group-hover:block">
+              <MdOutlineKeyboardDoubleArrowDown />
+            </span>
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
+          </p>
+        ),
+      }),
       columnHelper.accessor('customerName', {
         id: 'customerName',
         header: () => (
-          <p className="min-w-[200px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Müşteri
+          <p className="group relative min-w-[200px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Müşteri{' '}
+            <span className="absolute right-0 top-0 hidden group-hover:block">
+              <MdOutlineKeyboardDoubleArrowDown />
+            </span>
           </p>
         ),
         cell: (info: any) => (
@@ -112,8 +138,11 @@ function EntryTable({
       columnHelper.accessor('product', {
         id: 'product',
         header: () => (
-          <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Ürün İsmi
+          <p className="group relative min-w-[160px] max-w-[180px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Ürün İsmi{' '}
+            <span className="absolute right-0 top-0 hidden group-hover:block">
+              <MdOutlineKeyboardDoubleArrowDown />
+            </span>
           </p>
         ),
         cell: (info: any) => (
@@ -125,8 +154,11 @@ function EntryTable({
       columnHelper.accessor('quantity', {
         id: 'quantity',
         header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Miktar
+          <p className="group relative text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Miktar{' '}
+            <span className="absolute right-0 top-0 hidden group-hover:block">
+              <MdOutlineKeyboardDoubleArrowDown />
+            </span>
           </p>
         ),
         cell: (info: any) => (
@@ -135,24 +167,15 @@ function EntryTable({
           </p>
         ),
       }),
-      columnHelper.accessor('productCode', {
-        id: 'productCode',
-        header: () => (
-          <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Ürün Kodu
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
-          </p>
-        ),
-      }),
+
       columnHelper.accessor('arrivalDate', {
         id: 'arrivalDate',
         header: () => (
-          <p className="min-w-[120px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Variş Tarihi
+          <p className="group relative min-w-[120px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
+            GİRİŞ TARİHİ{' '}
+            <span className="absolute right-0 top-0 hidden group-hover:block">
+              <MdOutlineKeyboardDoubleArrowDown />
+            </span>
           </p>
         ),
         cell: (info: any) => (
@@ -161,24 +184,14 @@ function EntryTable({
           </p>
         ),
       }),
-      // columnHelper.accessor('invoiceDate', {
-      //   id: 'invoiceDate',
-      //   header: () => (
-      //     <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-      //       İrsalye Tarihi
-      //     </p>
-      //   ),
-      //   cell: (info: any) => (
-      //     <p className="text-sm font-bold text-navy-700 dark:text-white">
-      //       {formatDateTime(info.getValue())}
-      //     </p>
-      //   ),
-      // }),
       columnHelper.accessor('application', {
         id: 'application',
         header: () => (
-          <p className="min-w-[200px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Uygulama
+          <p className="group relative min-w-[200px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Uygulama{' '}
+            <span className="absolute right-0 top-0 hidden group-hover:block">
+              <MdOutlineKeyboardDoubleArrowDown />
+            </span>
           </p>
         ),
         cell: (info: any) => (
@@ -190,12 +203,15 @@ function EntryTable({
       columnHelper.accessor('standard', {
         id: 'standard',
         header: () => (
-          <p className="text-sm font-bold text-gray-600 dark:text-white">
-            STANDART
+          <p className="group relative text-sm font-bold text-gray-600 dark:text-white">
+            STANDART{' '}
+            <span className="absolute right-0 top-0 hidden group-hover:block">
+              <MdOutlineKeyboardDoubleArrowDown />
+            </span>
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -203,12 +219,15 @@ function EntryTable({
       columnHelper.accessor('color', {
         id: 'color',
         header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Renk
+          <p className="group relative text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Renk{' '}
+            <span className="absolute right-0 top-0 hidden group-hover:block">
+              <MdOutlineKeyboardDoubleArrowDown />
+            </span>
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p className="min-w-[80px] text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -216,12 +235,15 @@ function EntryTable({
       columnHelper.accessor('faultDescription', {
         id: 'faultDescription',
         header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Açıklama
+          <p className="group relative text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Açıklama{' '}
+            <span className="absolute right-0 top-0 hidden group-hover:block">
+              <MdOutlineKeyboardDoubleArrowDown />
+            </span>
           </p>
         ),
         cell: (info: any) => (
-          <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
+          <p className="min-w-[180px] text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),

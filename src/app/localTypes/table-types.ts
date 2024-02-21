@@ -101,12 +101,16 @@ export type CustomerObj = {
   id: string;
   rep_name: string;
   email: string;
-  email_2: string;
+  email_quality: string;
+  email_offer: string;
+  email_accountant: string;
   address: string;
   postalCode: string;
   company_name: string;
   phoneNumber: string;
-  phoneNumber2: string;
+  phoneNumber_shipment: string;
+  phoneNumber_quality: string;
+  phoneNumber_accountant: string;
   code: string;
   definition: string;
   taxNo: string;
