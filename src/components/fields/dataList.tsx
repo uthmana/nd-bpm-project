@@ -44,7 +44,7 @@ export default function DataList(props: {
         {list.map((item) => {
           return (
             <option key={item.id} value={item.company_name}>
-              {item.name}
+              {item.company_name}
             </option>
           );
         })}

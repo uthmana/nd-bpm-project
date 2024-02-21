@@ -249,7 +249,7 @@ export default function EntryControl() {
           <DetailHeader {...detailData} />
           <div className="flex flex-col gap-4">
             {/* Product Info */}
-            <Card extra="w-full px-4 pt-4 pb-8">
+            <Card extra="w-full px-8 pt-4 pb-8">
               <h2 className="my-5 text-2xl font-bold">Ürün Bilgileri</h2>
               <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
                 {Object.entries(process).map(([key, value], idx) => {
@@ -268,7 +268,7 @@ export default function EntryControl() {
             </Card>
 
             {/* Tecknical Params */}
-            <Card extra="w-full px-4 pt-4 pb-8">
+            <Card extra="w-full px-8 pt-4 pb-8">
               <div className="w-full">
                 <div className="my-5 flex justify-between">
                   <h2 className="text-2xl font-bold">Frekans Bilgileri</h2>
@@ -324,7 +324,7 @@ export default function EntryControl() {
             </Card>
 
             {/* Form  COntrol */}
-            <Card extra="w-full px-4 pt-4 pb-8">
+            <Card extra="w-full px-8 pt-4 pb-8">
               <div className="w-full">
                 <div className="my-5 flex justify-between">
                   <h2 className="text-2xl font-bold">

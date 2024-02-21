@@ -18,20 +18,34 @@ export default function Edit() {
   const [customers, setCustomers] = useState([]);
 
   useEffect(() => {
-    const getSingleStock = async () => {
+    const fetchData = async () => {
       setIsLoading(true);
-      const { status: stockStatus, data } = await getStockById(queryParams.id);
-      const { status, data: customerData } = await getCustomers();
-      if (stockStatus === 200 && status === 200) {
-        setStock(data);
-        setCustomers(customerData);
+      try {
+        // Use Promise.all to fetch both stock and customers simultaneously
+        const [stockResponse, customersResponse] = await Promise.all([
+          getStockById(queryParams.id),
+          getCustomers(),
+        ]);
+
+        const { status: stockStatus, data } = stockResponse;
+        const { status, data: customerData } = customersResponse;
+
+        if (stockStatus === 200 && status === 200) {
+          setStock({ ...data, company_name: data.customer?.company_name });
+          setCustomers(customerData);
+        } else {
+          setIsSubmitting(false);
+        }
+      } catch (error) {
+        // Handle errors if any
+        console.error('Error fetching data:', error);
+      } finally {
         setIsLoading(false);
-        return;
       }
-      setIsSubmitting(false);
     };
+
     if (queryParams.id) {
-      getSingleStock();
+      fetchData();
     }
   }, [queryParams?.id]);
 

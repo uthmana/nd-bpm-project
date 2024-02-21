@@ -12,6 +12,7 @@ import { log, convertToISO8601, removeMillisecondsAndUTC } from 'utils';
 import { FaultObj } from '../../app/localTypes/table-types';
 import { getCustomers, getFaultSettings } from '../../app/lib/apiRequest';
 import DataList from 'components/fields/dataList';
+import { toast } from 'react-toastify';
 
 export default function Fault(props: {
   onSubmit: (e: any) => void;
@@ -78,31 +79,29 @@ export default function Fault(props: {
   };
 
   useEffect(() => {
-    const getStock = async () => {
-      const { status, data } = await getCustomers();
-      if (status === 200) {
-        setCustomers(data);
-      }
-    };
-
-    const getAllFaultSettings = async () => {
-      const { status: faultSettingsStatus, data: faultSettingsData } =
-        await getFaultSettings();
-      if (faultSettingsStatus === 200) {
-        setFaultSettings(faultSettingsData);
+    const fetchData = async () => {
+      const [settingsResponse, customerResponse]: any = await Promise.all([
+        getFaultSettings(),
+        getCustomers(),
+      ]);
+      const { status: setStatus, data: setData } = settingsResponse;
+      const { status: custStatus, data: custData } = customerResponse;
+      if (setStatus === 200 && custStatus === 200) {
+        setCustomers(custData);
+        setFaultSettings(setData);
         if (!editData) {
           setValues({
             ...values,
-            application: faultSettingsData.applications[0].name,
-            standard: faultSettingsData.standards[0].name,
-            color: faultSettingsData.colors[0].name,
+            application: setData.applications[0].name,
+            standard: setData.standards[0].name,
+            color: setData.colors[0].name,
           });
         }
+        return;
       }
+      toast.error('Beklenmeyen bir hata oluştu!. Daha sonra tekrar deenyin!');
     };
-
-    getAllFaultSettings();
-    getStock();
+    fetchData();
   }, []);
 
   const handleSubmit = (e) => {
@@ -115,12 +114,6 @@ export default function Fault(props: {
     }
 
     delete values.product_name;
-    console.log({
-      ...values,
-      quantity: parseInt(values.quantity.toString()),
-      technicalDrawingAttachment: file,
-      arrivalDate: convertToISO8601(values.arrivalDate),
-    });
 
     onSubmit({
       ...values,
@@ -155,26 +148,6 @@ export default function Fault(props: {
       ) : null}
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">
-        {/* <Select
-          required={true}
-          extra="pt-1"
-          label="Müşteri Adı"
-          name="company_name"
-          onChange={handleValues}
-        >
-          {customers?.map((item, idx) => {
-            return (
-              <option
-                key={idx}
-                value={JSON.stringify(item)}
-                selected={values.customerName === item?.company_name}
-              >
-                {item?.company_name || item?.rep_name}
-              </option>
-            );
-          })}
-        </Select> */}
-
         <DataList
           placeholder="Müşteri Adı"
           label="Müşteri Adı"

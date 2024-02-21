@@ -6,9 +6,11 @@ import prisma from 'app/lib/db';
 
 export async function GET(request: Request) {
   try {
-    const applications = await prisma.applications.findMany();
-    const standards = await prisma.standards.findMany();
-    const color = await prisma.colors.findMany();
+    const [applications, standards, color] = await Promise.all([
+      prisma.applications.findMany(),
+      prisma.standards.findMany(),
+      prisma.colors.findMany(),
+    ]);
 
     return NextResponse.json(
       {

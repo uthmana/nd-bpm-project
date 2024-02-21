@@ -13,7 +13,6 @@ import Button from 'components/button/button';
 
 const Stock = () => {
   const router = useRouter();
-
   const [stocks, setStocks] = useState([]);
   const [isShowPopUp, setIsShowPopUp] = useState(false);
   const [stockId, setStockId] = useState('');
@@ -26,7 +25,7 @@ const Stock = () => {
     if (status === 200) {
       setStocks(
         data?.map((item) => {
-          return { ...item, customerName: item.customer.company_name };
+          return { ...item, customerName: item?.customer?.company_name };
         }),
       );
     }

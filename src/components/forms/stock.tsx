@@ -9,6 +9,7 @@ import { MdOutlineArrowBack } from 'react-icons/md';
 import TextArea from 'components/fields/textArea';
 import { log } from 'utils';
 import Upload from 'components/upload';
+import DataList from 'components/fields/dataList';
 
 type StockObj = {
   product_code: string;
@@ -25,6 +26,7 @@ type StockObj = {
   curency: string;
   image: string;
   customerId: string;
+  company_name: string;
 };
 
 export default function Stock(props: {
@@ -35,7 +37,7 @@ export default function Stock(props: {
   customerData?: any;
 }) {
   const { onSubmit, data, title, loading, customerData } = props;
-  const currency = ['TRY', 'USD'];
+  const currency = ['TL', 'USD', 'EUR'];
 
   const initialValues = data
     ? data
@@ -54,6 +56,7 @@ export default function Stock(props: {
         curency: 'TRY',
         image: '',
         customerId: '',
+        company_name: '',
       };
 
   const [values, setValues] = useState(initialValues);
@@ -64,16 +67,42 @@ export default function Stock(props: {
 
   const handleValues = (event) => {
     setError(false);
+    if (event.target?.name === 'company_name') {
+      const _customer = customerData.filter(
+        (item) => item.company_name === event.target?.value,
+      )[0];
+      const seletecCustomer = {
+        customerId: _customer?.id,
+        company_name: _customer?.company_name,
+      };
+      setValues({ ...values, ...seletecCustomer });
+      return;
+    }
+
     const newVal = { [event.target?.name]: event.target?.value };
     setValues({ ...values, ...newVal });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { product_name, product_code, current_price, customerId } = values;
-    if (!product_name || !product_code || !current_price || !customerId) {
+    const {
+      product_name,
+      product_code,
+      current_price,
+      customerId,
+      company_name,
+    } = values;
+    if (
+      !product_name ||
+      !product_code ||
+      !current_price ||
+      !customerId ||
+      !company_name
+    ) {
       setError(true);
     }
+
+    delete values.company_name;
     onSubmit({
       ...values,
       inventory: parseInt(values.inventory.toString()),
@@ -106,25 +135,19 @@ export default function Stock(props: {
         </p>
       ) : null}
 
-      <Select
-        extra="pt-1 mb-3"
-        label="Müşteri"
-        onChange={handleValues}
-        name="customerId"
-      >
-        <option value="">Müşteri Seç</option>
-        {customerData.map((item, idx) => {
-          return (
-            <option
-              value={item.id}
-              key={idx}
-              selected={data ? data?.customerId === item.id : null}
-            >
-              {item.company_name}
-            </option>
-          );
-        })}
-      </Select>
+      <div className="mb-8 flex flex-col gap-3 sm:flex-row">
+        <DataList
+          placeholder="Müşteri Adı"
+          label="Müşteri Adı"
+          id="company_name"
+          name="company_name"
+          listId="stock_company_name_list"
+          list={customerData}
+          required={true}
+          value={values.company_name}
+          onChange={handleValues}
+        />
+      </div>
 
       <div className="mb-2 flex flex-col gap-3 sm:flex-row">
         <InputField
@@ -193,7 +216,7 @@ export default function Stock(props: {
         />
       </div>
 
-      <div className="mb-2 flex flex-col gap-3 sm:flex-row">
+      <div className="mb-8 flex flex-col gap-3 sm:flex-row">
         <InputField
           label="Marka"
           onChange={handleValues}
@@ -228,7 +251,7 @@ export default function Stock(props: {
         />
       </div>
 
-      <div className="mb-2 flex flex-col gap-3 sm:flex-row">
+      <div className="mb-8 flex flex-col gap-3 sm:flex-row">
         <InputField
           label="Anlık Maliyet Fiyatı"
           onChange={handleValues}
@@ -259,7 +282,7 @@ export default function Stock(props: {
         </Select>
       </div>
 
-      <div className="my-3">
+      <div className="my-3 mb-8">
         <Upload
           onChange={(val) => setFile(val)}
           fileType="all"
