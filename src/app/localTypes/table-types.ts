@@ -17,6 +17,7 @@ export type FaultObj = {
   controlInfo: string;
   faultControl?: any;
   product_name?: string;
+  product_barcode?: string;
 };
 
 export type InvoiceObj = {

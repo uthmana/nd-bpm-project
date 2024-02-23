@@ -83,8 +83,8 @@ function EntryTable({
           </p>
         ),
       }),
-      columnHelper.accessor('id', {
-        id: 'id',
+      columnHelper.accessor('product_barcode', {
+        id: 'product_barcode',
         header: () => (
           <p className="group relative min-w-[150px] text-sm font-bold uppercase text-gray-600 dark:text-white">
             BARKOD{' '}
@@ -94,12 +94,8 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            <Barcode
-              className="h-full w-full"
-              value={info.getValue()}
-              options={{ format: 'code128' }}
-            />
+          <p className="min-w-[180px]  text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
           </p>
         ),
       }),
@@ -114,7 +110,7 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
+          <p className="min-w-[180px] text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),

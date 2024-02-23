@@ -1,6 +1,5 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import FaultForm from 'components/forms/fault';
 import { useParams, useRouter } from 'next/navigation';
 import { log } from 'utils';
 import { toast } from 'react-toastify';
@@ -16,9 +15,10 @@ import {
   faultControlTranslate,
 } from 'utils';
 import Button from 'components/button/button';
-import { MdAdd } from 'react-icons/md';
+import { MdAdd, MdPrint } from 'react-icons/md';
 import FileViewer from 'components/fileViewer';
 import DetailHeader from 'components/detailHeader';
+import Barcode from 'react-jsbarcode';
 
 export default function Edit() {
   const router = useRouter();
@@ -55,6 +55,29 @@ export default function Edit() {
 
   const handlefaultControl = () => {
     router.push(`/admin/entry/control/${queryParams?.id}`);
+  };
+  const renderProductInfo = (key, val) => {
+    if (key === 'arrivalDate') {
+      return <p className="font-bold"> {formatDateTime(val)} </p>;
+    }
+    if (key === 'technicalDrawingAttachment') {
+      return <FileViewer file={val} />;
+    }
+    if (key === 'arrivalDate') {
+      return <p className="font-bold"> {formatDateTime(val)} </p>;
+    }
+    if (key === 'product_barcode') {
+      return (
+        <div id="product_barcode" className="max-w-[200px]">
+          <Barcode
+            className="h-full w-full"
+            value={val}
+            options={{ format: 'code128' }}
+          />
+        </div>
+      );
+    }
+    return <p className="font-bold"> {val} </p>;
   };
 
   const renderValues = (key, val) => {
@@ -100,6 +123,26 @@ export default function Edit() {
     return <p className="font-bold"> {val} </p>;
   };
 
+  const handleBarcodePrint = () => {
+    const product_barcode =
+      document.getElementById('product_barcode').innerHTML;
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write('<html><head><title>Print</title></head><body>');
+    printWindow.document.write(
+      '<div style="page-break-before: always;"></div>',
+    );
+    printWindow.document.write(
+      '<div style="page-break-before: always;"></div>',
+    );
+    printWindow.document.write(
+      '<div style="page-break-before: always;"></div>',
+    );
+    printWindow.document.write(product_barcode);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
+  };
+
   return (
     <div className="w-full">
       {isLoading ? (
@@ -108,7 +151,15 @@ export default function Edit() {
         <>
           <DetailHeader {...detailData} />
           <Card extra="my-4 mx-auto mt-4 w-full rounded-2xl px-8 pt-10 bg-white dark:bg-[#111c44] dark:text-white">
-            <h2 className="mb-4 text-2xl font-bold">Ürün Bilgileri</h2>
+            <div className="mb-4 flex w-full justify-between">
+              <h2 className="mb-4 text-2xl font-bold">Ürün Bilgileri</h2>
+              <Button
+                extra={`px-4 h-[40px] max-w-[200px]`}
+                onClick={handleBarcodePrint}
+                text="BARKODU YAZDIR"
+                icon={<MdPrint className="mr-1 h-5 w-5" />}
+              />
+            </div>
             <div className="mb-10 grid w-full grid-cols-2 gap-2  md:grid-cols-3 lg:grid-cols-4">
               {fault && fault.id
                 ? Object.entries(fault).map(([key, val]: any, index) => {
@@ -119,13 +170,7 @@ export default function Edit() {
                           className="mb-5 flex flex-col flex-nowrap"
                         >
                           <h4 className="mx-1 italic">{infoTranslate[key]}</h4>
-                          {key === 'arrivalDate' ? (
-                            <p className="font-bold"> {formatDateTime(val)} </p>
-                          ) : key === 'technicalDrawingAttachment' ? (
-                            <FileViewer file={val} />
-                          ) : (
-                            <p className="font-bold"> {val} </p>
-                          )}
+                          {renderProductInfo(key, val)}
                         </div>
                       );
                     }

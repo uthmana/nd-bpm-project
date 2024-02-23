@@ -8,7 +8,12 @@ import Select from 'components/select/page';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import TextArea from 'components/fields/textArea';
 import Upload from 'components/upload';
-import { log, convertToISO8601, removeMillisecondsAndUTC } from 'utils';
+import {
+  log,
+  convertToISO8601,
+  removeMillisecondsAndUTC,
+  generateSKU,
+} from 'utils';
 import { FaultObj } from '../../app/localTypes/table-types';
 import { getCustomers, getFaultSettings } from '../../app/lib/apiRequest';
 import DataList from 'components/fields/dataList';
@@ -106,17 +111,27 @@ export default function Fault(props: {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { customerName, productCode, quantity, application } = values;
-    if (!customerName || !productCode || !quantity || !application) {
+    const { customerName, productCode, quantity, application, product } =
+      values;
+    if (
+      !customerName ||
+      !productCode ||
+      !quantity ||
+      !application ||
+      !product
+    ) {
       window.scroll(0, 0);
       setError(true);
       return;
     }
 
+    const product_barcode = generateSKU(customerName, product, quantity);
+
     delete values.product_name;
 
     onSubmit({
       ...values,
+      product_barcode,
       quantity: parseInt(values.quantity.toString()),
       technicalDrawingAttachment: file,
       arrivalDate: convertToISO8601(values.arrivalDate),

@@ -84,20 +84,16 @@ function InvoiceTable({
           </p>
         ),
       }),
-      columnHelper.accessor('id', {
-        id: 'id',
+      columnHelper.accessor('barcode', {
+        id: 'barcode',
         header: () => (
           <p className="min-w-[150px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            BARKOD
+            BARKODU
           </p>
         ),
         cell: (info: any) => (
           <p className="text-sm font-bold text-navy-700 dark:text-white">
-            <Barcode
-              className="h-full w-full"
-              value={info.getValue()}
-              options={{ format: 'code128' }}
-            />
+            {info.getValue()}
           </p>
         ),
       }),
@@ -118,7 +114,7 @@ function InvoiceTable({
         id: 'products',
         header: () => (
           <p className="min-w-[200px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            ÜRÜNLERİ
+            ÜRÜN
           </p>
         ),
         cell: (info: any) => (
@@ -180,48 +176,6 @@ function InvoiceTable({
           </p>
         ),
       }),
-
-      columnHelper.accessor('amount', {
-        id: 'amount',
-        header: () => (
-          <p className="min-w-[60px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
-            TUTAR
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
-          </p>
-        ),
-      }),
-      columnHelper.accessor('vat', {
-        id: 'vat',
-        header: () => (
-          <p className="min-w-[60px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
-            KDV%
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
-          </p>
-        ),
-      }),
-
-      columnHelper.accessor('totalAmount', {
-        id: 'totalAmount',
-        header: () => (
-          <p className="min-w-[60px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Toplam
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
-          </p>
-        ),
-      }),
-
       columnHelper.accessor('description', {
         id: 'description',
         header: () => (

@@ -78,20 +78,33 @@ function ProcessTable({
           </p>
         ),
       }),
-      columnHelper.accessor('faultId', {
-        id: 'faultId',
+      // columnHelper.accessor('faultId', {
+      //   id: 'faultId',
+      //   header: () => (
+      //     <p className="min-w-[150px] text-sm font-bold text-gray-600 dark:text-white">
+      //       BARKOD
+      //     </p>
+      //   ),
+      //   cell: (info: any) => (
+      //     <p className="text-sm font-bold text-navy-700 dark:text-white">
+      //       <Barcode
+      //         className="h-full w-full"
+      //         value={info.getValue()}
+      //         options={{ format: 'code128' }}
+      //       />
+      //     </p>
+      //   ),
+      // }),
+      columnHelper.accessor('productCode', {
+        id: 'productCode',
         header: () => (
-          <p className="min-w-[150px] text-sm font-bold text-gray-600 dark:text-white">
-            BARKOD
+          <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Ürün Kodu
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            <Barcode
-              className="h-full w-full"
-              value={info.getValue()}
-              options={{ format: 'code128' }}
-            />
+          <p className="min-w-[150px] text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
           </p>
         ),
       }),
@@ -111,7 +124,7 @@ function ProcessTable({
       columnHelper.accessor('product', {
         id: 'product',
         header: () => (
-          <p className="min-w-[130px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[130px] text-sm font-bold uppercase text-gray-600 dark:text-white">
             Ürün İsmi
           </p>
         ),
@@ -135,19 +148,7 @@ function ProcessTable({
           </p>
         ),
       }),
-      columnHelper.accessor('productCode', {
-        id: 'productCode',
-        header: () => (
-          <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Ürün Kodu
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
-          </p>
-        ),
-      }),
+
       columnHelper.accessor('application', {
         id: 'application',
         header: () => (
@@ -187,21 +188,6 @@ function ProcessTable({
           </p>
         ),
       }),
-
-      columnHelper.accessor('technicalDrawingAttachment', {
-        id: 'technicalDrawingAttachment',
-        header: () => (
-          <p className="min-w-[110px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            İLGİLİ DOKÜMAN
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue() ? <FileViewer file={info.getValue()} /> : null}
-          </p>
-        ),
-      }),
-
       columnHelper.accessor('machineName', {
         id: 'machineName',
         header: () => (
@@ -215,7 +201,19 @@ function ProcessTable({
           </p>
         ),
       }),
-
+      columnHelper.accessor('technicalDrawingAttachment', {
+        id: 'technicalDrawingAttachment',
+        header: () => (
+          <p className="min-w-[110px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+            İLGİLİ DOKÜMAN
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue() ? <FileViewer file={info.getValue()} /> : null}
+          </p>
+        ),
+      }),
       columnHelper.accessor('status', {
         id: 'status',
         header: () => (

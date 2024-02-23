@@ -44,9 +44,9 @@ export async function PUT(req: Request) {
     }
     const result: Fault = await req.json();
 
-    const { customerName, productCode, application } = result;
+    const { customerName, productCode, application, product_barcode } = result;
 
-    if (!customerName || !productCode || !application) {
+    if (!customerName || !productCode || !application || !product_barcode) {
       return NextResponse.json(
         { message: 'You are missing a required data' },
         { status: 401 },
@@ -76,6 +76,7 @@ export async function PUT(req: Request) {
           image: technicalDrawingAttachment,
           customerId: customerId,
           faultId: fault.id,
+          product_barcode,
         },
       });
     }

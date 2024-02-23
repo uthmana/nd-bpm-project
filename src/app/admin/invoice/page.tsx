@@ -31,7 +31,7 @@ const Invoice = () => {
         const customerName = item?.customer?.company_name;
         const products = item?.process
           ?.map((item, idx) => {
-            return `${idx + 1}. ${item.product}`;
+            return `${item.product}`;
           })
           ?.join('');
 

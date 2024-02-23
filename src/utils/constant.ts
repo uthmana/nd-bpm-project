@@ -108,7 +108,7 @@ export const results = [
 ];
 
 export const faultInfo = [
-  'id',
+  'product_barcode',
   'customerName',
   'product',
   'quantity',
@@ -123,7 +123,7 @@ export const faultInfo = [
 ];
 
 export const infoTranslate = {
-  id: 'Takıp Kodu',
+  product_barcode: 'Barkodu',
   customerName: 'Müşteri',
   product: 'Ürün Tanımı',
   quantity: 'Miktar',

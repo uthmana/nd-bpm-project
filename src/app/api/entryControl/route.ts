@@ -69,6 +69,7 @@ export async function PUT(req: Request) {
           product,
           quantity,
           productCode,
+          product_barcode,
           application,
           standard,
           color,
@@ -87,6 +88,7 @@ export async function PUT(req: Request) {
             technicalDrawingAttachment,
             frequency: processFrequency,
             faultId: id,
+            product_barcode,
           },
         });
       }

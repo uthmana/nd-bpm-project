@@ -71,7 +71,7 @@ export default function Edit() {
         info={customers}
         editData={invoice}
         isSubmitting={isSubmitting}
-        title="İrsaliye Oluşturma"
+        title="İrsaliye Düzenleme"
         onSubmit={(...val) => handleSubmit(val)}
       />
     </Card>

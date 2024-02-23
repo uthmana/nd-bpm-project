@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
 import { FinalControl, Prisma } from '@prisma/client';
 import { checkUserRole } from 'utils/auth';
+import { generateSKU } from 'utils';
 
 //All Final Control
 export async function GET(req: NextRequest) {
@@ -63,7 +64,13 @@ export async function PUT(req: Request) {
 
       if (fault) {
         const { customer } = fault;
-        const { id, tax_Office, taxNo, rep_name, address } = customer;
+        const { id, tax_Office, taxNo, rep_name, address, company_name } =
+          customer;
+        const barcode = generateSKU(
+          'IRSA',
+          company_name,
+          Math.floor(Math.random() * 1000),
+        );
         const invoice = await prisma.invoice.create({
           data: {
             invoiceDate: new Date(),
@@ -72,6 +79,7 @@ export async function PUT(req: Request) {
             taxNo,
             rep_name,
             address,
+            barcode,
           },
         });
 

@@ -35,7 +35,7 @@ export default function EntryControl() {
   const { data: session } = useSession();
 
   const productInfo = [
-    'faultId',
+    'product_barcode',
     'customerName',
     'product',
     'quantity',
@@ -59,7 +59,7 @@ export default function EntryControl() {
     standard: 'Standart',
     color: 'Renk',
     machineName: 'Makine',
-    faultId: 'Takıp Kodu',
+    product_barcode: 'Barkodu',
   };
 
   const getSingleProcess = async () => {
@@ -178,7 +178,7 @@ export default function EntryControl() {
   };
 
   const processInfo = [
-    'faultId',
+    'product_barcode',
     'olcu_Kontrol',
     'gorunum_kontrol',
     'tork_Kontrol',
@@ -196,7 +196,7 @@ export default function EntryControl() {
   ];
 
   const infoProcessTranslate = {
-    faultId: 'Takıp Kodu',
+    product_barcode: 'Barkodu',
     olcu_Kontrol: 'Ölçü',
     gorunum_kontrol: 'Görünüm',
     tork_Kontrol: 'Tork',

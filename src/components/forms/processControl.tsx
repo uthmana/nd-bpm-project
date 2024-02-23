@@ -35,6 +35,7 @@ export default function ProcessControlForm({
     'createdBy',
     'arrivalDate',
     'machineName',
+    'product_barcode',
   ];
 
   const infoTranslate = {
@@ -48,6 +49,7 @@ export default function ProcessControlForm({
     createdBy: 'Personel',
     arrivalDate: 'Giriş Tarihi',
     machineName: 'Makine',
+    product_barcode: 'Barkodu',
   };
 
   const [values, setValues] = useState(

@@ -113,6 +113,7 @@ model Fault {
   arrivalDate                DateTime?      @default(now())
   invoiceDate                DateTime?
   product                    String?
+  product_barcode            String?
   quantity                   Int?
   productCode                String?
   productBatchNumber         String?
@@ -173,6 +174,7 @@ model Process {
   productCode                String?
   application                String?
   standard                   String?
+  product_barcode            String?
   color                      String?
   frequency                  String?
   price                      Float?

@@ -140,6 +140,7 @@ CREATE TABLE "Fault" (
     "arrivalDate" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "invoiceDate" TIMESTAMP(3),
     "product" TEXT,
+    "product_barcode" TEXT,
     "quantity" INTEGER,
     "productCode" TEXT,
     "productBatchNumber" TEXT,
@@ -200,6 +201,7 @@ CREATE TABLE "Process" (
     "productCode" TEXT,
     "application" TEXT,
     "standard" TEXT,
+    "product_barcode" TEXT,
     "color" TEXT,
     "frequency" TEXT,
     "price" DOUBLE PRECISION,
@@ -377,6 +379,9 @@ CREATE UNIQUE INDEX "Address_userId_key" ON "Address"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ContactInfo_userId_key" ON "ContactInfo"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Stock_faultId_key" ON "Stock"("faultId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Fault_faultControlId_key" ON "Fault"("faultControlId");

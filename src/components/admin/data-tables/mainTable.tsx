@@ -384,15 +384,15 @@ function MainTable({
               </p>
             ),
             cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
+              <p className="min-w-[180px] text-sm font-bold text-navy-700 dark:text-white">
                 {info.getValue()}
               </p>
             ),
           }),
-          columnHelper.accessor('id', {
-            id: 'id',
+          columnHelper.accessor('product_barcode', {
+            id: 'product_barcode',
             header: () => (
-              <p className="group relative min-w-[150px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+              <p className="group relative min-w-[180px] text-sm font-bold uppercase text-gray-600 dark:text-white">
                 Barkodu{' '}
                 <span className="absolute right-0 top-0 hidden group-hover:block">
                   <MdOutlineKeyboardDoubleArrowDown />
@@ -401,11 +401,7 @@ function MainTable({
             ),
             cell: (info: any) => (
               <p className="max-w-[180px] text-sm font-bold  text-navy-700 dark:text-white">
-                <Barcode
-                  className="h-full w-full"
-                  value={info.getValue()}
-                  options={{ format: 'code128' }}
-                />
+                {info.getValue()}
               </p>
             ),
           }),
