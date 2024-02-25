@@ -42,24 +42,22 @@ export type InvoiceObj = {
   customerName: string;
 };
 
-export type InvoiceTable = {
-  tableData: InvoiceObj[];
-  variant: string;
-  onEdit: (e: any) => void;
-  onDelete: (e: any) => void;
-  onAdd: (e: any) => void;
-  onControl: (e: any) => void;
-  searchValue: string;
-};
-
-export type MainTable = {
-  tableData: FaultObj[];
-  variant: string;
-  onEdit: (e: any) => void;
-  onDelete: (e: any) => void;
-  onAdd: (e: any) => void;
-  onControl: (e: any) => void;
-  searchValue: string;
+export type OfferObj = {
+  id: string;
+  barcode: string;
+  OfferType: string;
+  startDate: string;
+  endDate: string;
+  currency: string;
+  totalAmount: number;
+  products: string;
+  address: string;
+  description: string;
+  phoneNumber: string;
+  email: string;
+  customerName: string;
+  createdBy: string;
+  status: string;
 };
 
 export type ProcessObj = {
@@ -75,27 +73,6 @@ export type ProcessObj = {
   technicalDrawingAttachment: string;
   status: string;
   faultId: string;
-};
-
-export type ProcessTable = {
-  tableData: ProcessObj[];
-  variant: string;
-  onEdit?: (e: any) => void;
-  onDelete?: (e: any) => void;
-  onAdd?: (e: any) => void;
-  onControl?: (e: any) => void;
-  searchValue?: string;
-};
-
-export type UserObj = {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  status: string;
-  createdAt: string;
-  edit: string;
-  delete: string;
 };
 
 export type CustomerObj = {
@@ -149,4 +126,55 @@ export type PrimaryTable = {
   onDelete: (e: any) => void;
   onAdd: (e: any) => void;
   onSearch?: (e: any) => void;
+};
+
+export type ProcessTable = {
+  tableData: ProcessObj[];
+  variant: string;
+  onEdit?: (e: any) => void;
+  onDelete?: (e: any) => void;
+  onAdd?: (e: any) => void;
+  onControl?: (e: any) => void;
+  searchValue?: string;
+};
+
+export type UserObj = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+  createdAt: string;
+  edit: string;
+  delete: string;
+};
+
+export type OfferTable = {
+  tableData: OfferObj[];
+  variant: string;
+  onEdit: (e: any) => void;
+  onDelete: (e: any) => void;
+  onAdd: (e: any) => void;
+  onControl: (e: any) => void;
+  searchValue: string;
+};
+
+export type InvoiceTable = {
+  tableData: InvoiceObj[];
+  variant: string;
+  onEdit: (e: any) => void;
+  onDelete: (e: any) => void;
+  onAdd: (e: any) => void;
+  onControl: (e: any) => void;
+  searchValue: string;
+};
+
+export type MainTable = {
+  tableData: FaultObj[];
+  variant: string;
+  onEdit: (e: any) => void;
+  onDelete: (e: any) => void;
+  onAdd: (e: any) => void;
+  onControl: (e: any) => void;
+  searchValue: string;
 };

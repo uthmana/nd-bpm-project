@@ -1,7 +1,7 @@
 'use client';
-import OfferDoc from 'components/offer';
+
 import { LatestInvoicesSkeleton } from 'components/skeleton';
-import InvoiceTable from 'components/admin/data-tables/invoiceTable';
+import OfferTable from 'components/admin/data-tables/offerTable';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { log } from 'utils';
 import { useEffect, useState } from 'react';
@@ -15,7 +15,7 @@ const Offer = () => {
   const router = useRouter();
   const [offers, setOffers] = useState([]);
   const [isShowPopUp, setIsShowPopUp] = useState(false);
-  const [faultId, setFaultId] = useState('');
+  const [offerId, setOfferId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
@@ -27,43 +27,55 @@ const Offer = () => {
     setIsLoading(true);
     const { status, data } = await getOffer();
     if (status === 200) {
-      setOffers(data);
+      const formatedData = data.map((item) => {
+        return {
+          ...item,
+          customerName: item?.Customer?.company_name,
+          products: item?.product?.length,
+        };
+      });
+
+      setOffers(formatedData);
     }
     setIsLoading(false);
   };
 
+  useEffect(() => {
+    getAllOffer();
+  }, []);
+
   const onAdd = () => {
-    router.push('/admin/invoice/create');
+    router.push('/admin/offer/create');
   };
 
   const onEdit = (val) => {
-    router.push(`/admin/invoice/create/${val}`);
+    router.push(`/admin/offer/create/${val}`);
   };
 
   const onControl = (val) => {
-    router.push(`/admin/invoice/${val}`);
+    router.push(`/admin/offer/${val}`);
   };
 
   const onComfirm = async (val) => {
-    setFaultId(val);
+    setOfferId(val);
     setIsShowPopUp(true);
   };
 
   const onDelete = async () => {
     setIsSubmitting(true);
-    const resInvoice: any = await deleteOffer(faultId);
+    const resInvoice: any = await deleteOffer(offerId);
 
     const { status, response } = resInvoice;
     if (response?.error) {
       const { message, detail } = response?.error;
-      toast.error('Ürün silmeişlemi başarısız.' + message);
+      toast.error('Teklif silme işlemi başarısız.' + message);
       log(detail);
       setIsSubmitting(false);
       return;
     }
 
     if (status === 200) {
-      toast.success('Ürün silme işlemi başarılı.');
+      toast.success('Teklif silme işlemi başarılı.');
       setIsSubmitting(false);
       setIsShowPopUp(false);
       setOffers([]);
@@ -76,16 +88,12 @@ const Offer = () => {
     setIsShowPopUp(false);
   };
 
-  useEffect(() => {
-    getAllOffer();
-  }, []);
-
   return (
     <div className="mt-3 w-full">
       {isLoading ? (
         <LatestInvoicesSkeleton />
       ) : (
-        <InvoiceTable
+        <OfferTable
           onAdd={onAdd}
           onDelete={onComfirm}
           onEdit={onEdit}
@@ -100,7 +108,7 @@ const Offer = () => {
       <Popup show={isShowPopUp} extra="flex flex-col gap-3 py-6 px-8">
         <h1 className="text-3xl">Ürün Silme</h1>
         <p className="mb-2 text-lg">
-          Bu İrsaliye'yi Silmek istediğini Emin misin ?
+          Bu Teklifi Silmek istediğini Emin misin ?
         </p>
         <div className="flex gap-4">
           <Button

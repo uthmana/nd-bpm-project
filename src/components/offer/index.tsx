@@ -19,9 +19,9 @@ export default function OfferDoc({ offer }) {
             <p>
               <b>Tel: </b>0212 549 05 45
             </p>
-            <p>
+            {/* <p>
               <b> Whatsapp:</b> 0542 696 37 69
-            </p>
+            </p> */}
             <p>
               <b>E-Posta:</b> info@ndindustries.com.tr
             </p>
@@ -53,7 +53,7 @@ export default function OfferDoc({ offer }) {
         </div>
       </div>
 
-      <div className="mb-8">
+      <div className="mb-8 max-w-[300px]">
         <h2 className="mb-3 text-lg font-bold">Müşteri Bilgileri</h2>
         <div className="flex flex-col gap-3 px-4 text-sm">
           <p>{offer?.rep_name}</p>

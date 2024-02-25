@@ -80,14 +80,14 @@ const Invoice = () => {
     const { status, response } = resInvoice;
     if (response?.error) {
       const { message, detail } = response?.error;
-      toast.error('Ürün silmeişlemi başarısız.' + message);
+      toast.error('İrsalye silme işlemi başarısız.' + message);
       log(detail);
       setIsSubmitting(false);
       return;
     }
 
     if (status === 200) {
-      toast.success('Ürün silme işlemi başarılı.');
+      toast.success('İrsalye silme işlemi başarılı.');
       setIsSubmitting(false);
       setIsShowPopUp(false);
       setInvoices([]);

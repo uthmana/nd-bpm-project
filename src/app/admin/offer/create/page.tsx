@@ -5,11 +5,13 @@ import DetailHeader from 'components/detailHeader';
 import OfferForm from 'components/forms/offer';
 import { getCustomers, addOffer } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 export default function Create() {
   const [customers, setCustomers] = useState([]);
   const [offerData, setOfferData] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const getAllCustomer = async () => {
@@ -28,6 +30,7 @@ export default function Create() {
     const { status, data } = await addOffer(val);
     if (status === 200) {
       toast.success('Teklif oluşturma işlemi başarılı.');
+      router.push('/admin/offer');
     }
     setIsSubmitting(false);
     console.log(val);

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkUserRole } from 'utils/auth';
-import { Offer, Prisma } from '@prisma/client';
+import { Offer, OfferItem, Prisma } from '@prisma/client';
 
 //Get single offer
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
@@ -20,7 +20,7 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
       include: { product: true, Customer: true },
     });
 
-    return NextResponse.json(offer, { status: 200 });
+    return NextResponse.json({ ...offer });
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
@@ -37,36 +37,16 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
 //Update offer
 export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
-    const allowedRoles = ['ADMIN'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json(
-        { message: 'Access forbidden' },
-        { status: 403 },
-      );
-    }
-
     const id = route.params.id;
-    const result: Offer = await req.json();
-    const { ...data } = result;
-
-    const offer: Partial<Offer> = await prisma.offer.findUnique({
+    const result: OfferItem = await req.json();
+    const offerItem = await prisma.offerItem.findUnique({
       where: { id },
     });
-
-    if (offer) {
-      const updateOffer = await prisma.offer.update({
-        where: {
-          id: id,
-        },
-        data: {
-          ...data,
-        },
-      });
-      if (updateOffer) {
-        return NextResponse.json(updateOffer, { status: 200 });
-      }
-    }
+    const updatedOfferItem = await prisma.offerItem.update({
+      where: { id },
+      data: result,
+    });
+    return NextResponse.json(updatedOfferItem, { status: 200 });
   } catch (e) {
     console.log(e);
     if (
@@ -87,24 +67,13 @@ export async function DELETE(
   route: { params: { id: string } },
 ) {
   try {
-    const allowedRoles = ['ADMIN'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json(
-        { message: 'Access forbidden' },
-        { status: 403 },
-      );
-    }
-
     const id = route.params.id;
-    const deletedOffer = await prisma.offer.delete({
+    const deletedOfferItem = await prisma.offerItem.delete({
       where: {
         id: id,
       },
     });
-    if (deletedOffer) {
-      return NextResponse.json({ deletedOffer }, { status: 200 });
-    }
+    return NextResponse.json(deletedOfferItem, { status: 200 });
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||

@@ -241,6 +241,23 @@ export async function getOffer() {
 export async function deleteOffer(id) {
   return fetchAPI(`offer/${id}`, 'delete');
 }
+
 export async function addOffer(payload) {
   return fetchAPI('offer', 'put', payload);
+}
+
+export async function getOfferById(id) {
+  return fetchAPI(`offer/${id}`);
+}
+export async function updateOffer(payload) {
+  return fetchAPI(`offer/${payload.id}`, 'put', payload);
+}
+
+// OfferItem
+export async function addOfferItem(payload) {
+  return fetchAPI('offerItem', 'put', payload);
+}
+
+export async function deleteOfferItem(id) {
+  return fetchAPI(`offerItem/${id}`, 'delete');
 }

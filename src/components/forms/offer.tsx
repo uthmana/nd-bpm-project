@@ -13,6 +13,8 @@ import { MdOutlineArrowBack } from 'react-icons/md';
 import NextLink from 'next/link';
 import InputField from 'components/fields/InputField';
 import DataList from 'components/fields/dataList';
+import { addOfferItem, deleteOfferItem } from 'app/lib/apiRequest';
+import { useSession } from 'next-auth/react';
 
 export default function OfferForm(props: {
   onSubmit: (e: any, d: any) => void;
@@ -22,12 +24,13 @@ export default function OfferForm(props: {
   isSubmitting?: boolean;
   onChange?: (e: any) => void;
 }) {
-  const { info, editData, title, onSubmit, isSubmitting, onChange } = props;
+  const { info, editData, onSubmit, isSubmitting, onChange } = props;
   const isUpdate = editData && editData?.id ? true : false;
   const [error, setError] = useState(false);
   const [formTouch, setFormTouch] = useState(isUpdate);
   const [customers, setCustomers] = useState(info || []);
-  const [products, setProducts] = useState(isUpdate ? editData?.process : []);
+  const [products, setProducts] = useState(isUpdate ? editData?.product : []);
+  const { data: session } = useSession();
 
   const [values, setValues] = useState(
     isUpdate
@@ -92,28 +95,12 @@ export default function OfferForm(props: {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    console.log({
-      ...values,
-      totalAmount: parseFloat(values.totalAmount),
-      startDate: convertToISO8601(values.startDate),
-      endDate: convertToISO8601(values.endDate),
-      product: products,
-    });
-
-    // const { invoiceDate, customerId, tax_Office, taxNo } = values;
-
-    // if (
-    //   (isUpdate === false && selectedProduct.length === 0) ||
-    //   !customerId ||
-    //   !invoiceDate ||
-    //   !tax_Office ||
-    //   !taxNo
-    // ) {
-    //   setError(true);
-    //   window.scroll(100, 0);
-    //   return;
-    // }
+    const { startDate, endDate, customerId } = values;
+    if (!startDate || !endDate || !customerId || products?.length === 0) {
+      setError(true);
+      window.scroll(100, 0);
+      return;
+    }
 
     onSubmit(
       {
@@ -127,40 +114,43 @@ export default function OfferForm(props: {
     );
   };
 
-  const onCustomerSelect = (event) => {
-    if (!event.target?.value) return;
-    const processed = JSON.parse(event.target?.value);
-    const { process, customer } = processed;
-    setProducts(process);
-    setValues({
-      ...values,
-      customerId: customer?.id,
-      rep_name: customer?.rep_name,
-      tax_Office: customer?.tax_Office,
-      taxNo: customer?.taxNo,
-      address: customer?.address,
-    });
-  };
-
   const handleProductValues = (event) => {
+    setError(false);
     const newVal = { [event.target?.name]: event.target?.value };
     setOffer({ ...offer, ...newVal });
   };
 
-  const addProduct = (e) => {
+  const addProduct = async (e) => {
     e.preventDefault();
     const { name, application, standard, quantity, price } = offer;
     if (!name || !application || !standard || !quantity || !price) {
       return;
     }
+
+    let updatedOfferItem = offer;
+    if (isUpdate) {
+      const { status, data } = await addOfferItem({
+        ...offer,
+        quantity: parseFloat(quantity),
+        price: parseFloat(price),
+        offerId: editData?.id,
+        createdBy: session?.user?.name,
+        currency: values.currency,
+      });
+      if (status === 200) {
+        updatedOfferItem = data;
+      }
+    }
+
     const newVal = [...products];
     newVal.push({
-      ...offer,
+      ...updatedOfferItem,
       quantity: parseFloat(quantity),
       price: parseFloat(price),
     });
 
     setProducts(newVal);
+
     const totalPrice = newVal.reduce(
       (a, b) => parseInt(a) + parseInt(b.price),
       0,
@@ -176,10 +166,25 @@ export default function OfferForm(props: {
     });
   };
 
-  const removeProduct = (e, idx) => {
+  const removeProduct = async (e, idx) => {
     e.preventDefault();
     e.stopPropagation();
     const newProd = [...products].filter((item, index) => index !== idx);
+
+    if (isUpdate) {
+      const filteredProd = [...products].filter(
+        (item, index) => index === idx,
+      )[0];
+      if (filteredProd && filteredProd?.id) {
+        const { status, data } = await deleteOfferItem(filteredProd?.id);
+        if (status !== 200) {
+          console.log('deleteOfferItem beklenmeyen bir hata oluştu.!');
+        }
+      } else {
+        return;
+      }
+    }
+
     setProducts(newProd);
     const totalPrice = newProd.reduce(
       (a, b) => parseInt(a) + parseInt(b.price),
@@ -330,7 +335,7 @@ export default function OfferForm(props: {
                 <div>Fiyat {`(${values.currency})`}</div>
               </div>
 
-              {products.length > 0 ? (
+              {products?.length > 0 ? (
                 products.map((item, idx) => {
                   return (
                     <label className="flex items-center" key={idx}>
