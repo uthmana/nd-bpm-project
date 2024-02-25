@@ -11,7 +11,7 @@ export default function RootHead() {
         href={process.env.NEXT_PUBLIC_BASE_PATH || '' + '/favicon.ico'}
       />
 
-      <title>ND Project NextJS</title>
+      <title>ND INDUSTRIES TR</title>
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta name="theme-color" content="#000000" />
     </>

@@ -198,6 +198,7 @@ CREATE TABLE "Process" (
     "customerId" TEXT,
     "product" TEXT,
     "quantity" INTEGER,
+    "shipmentQty" INTEGER,
     "productCode" TEXT,
     "application" TEXT,
     "standard" TEXT,
@@ -228,7 +229,7 @@ CREATE TABLE "FinalControl" (
     "paketleme" TEXT,
     "kontrol_edilen_miktar" INTEGER,
     "hatali_miktar" INTEGER,
-    "makliye_miktar" INTEGER,
+    "nakliye_miktar" INTEGER,
     "image" TEXT,
     "remarks" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -318,15 +319,48 @@ CREATE TABLE "Invoice" (
 -- CreateTable
 CREATE TABLE "Offer" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "OfferType" TEXT NOT NULL DEFAULT 'Fiyat Teklifi',
+    "barcode" TEXT,
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3) NOT NULL,
+    "currency" "Currency" DEFAULT 'TL',
+    "amount" DOUBLE PRECISION,
+    "vat" DOUBLE PRECISION,
+    "totalAmount" DOUBLE PRECISION,
+    "address" TEXT,
+    "description" TEXT,
+    "phoneNumber" TEXT,
+    "email" TEXT,
+    "creatorTitle" TEXT,
+    "rep_name" TEXT,
+    "tax_Office" TEXT,
+    "taxNo" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
     "createdBy" TEXT,
     "updatedBy" TEXT,
     "status" "OfferStatus" NOT NULL DEFAULT 'PENDING',
-    "customerId" TEXT NOT NULL,
+    "customerId" TEXT,
 
     CONSTRAINT "Offer_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "OfferItem" (
+    "id" TEXT NOT NULL,
+    "name" TEXT,
+    "application" TEXT,
+    "standard" TEXT,
+    "currency" "Currency" DEFAULT 'TL',
+    "quantity" INTEGER,
+    "price" DOUBLE PRECISION,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "offerId" TEXT,
+
+    CONSTRAINT "OfferItem_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -429,4 +463,7 @@ ALTER TABLE "TechnicalParameter" ADD CONSTRAINT "TechnicalParameter_processId_fk
 ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Offer" ADD CONSTRAINT "Offer_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Offer" ADD CONSTRAINT "Offer_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OfferItem" ADD CONSTRAINT "OfferItem_offerId_fkey" FOREIGN KEY ("offerId") REFERENCES "Offer"("id") ON DELETE SET NULL ON UPDATE CASCADE;

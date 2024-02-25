@@ -232,3 +232,15 @@ export async function getInvoiceById(id) {
 export async function getTrackingInfo(id) {
   return fetchAPI(`tracking/${id}`);
 }
+
+// Offer
+export async function getOffer() {
+  return fetchAPI('offer');
+}
+
+export async function deleteOffer(id) {
+  return fetchAPI(`offer/${id}`, 'delete');
+}
+export async function addOffer(payload) {
+  return fetchAPI('offer', 'put', payload);
+}

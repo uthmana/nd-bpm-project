@@ -32,7 +32,7 @@ export default function Edit() {
   const detailData = {
     title: 'Ürün Detayi',
     seeAllLink: '/admin/entry',
-    seeAllText: 'Tün Ürünler',
+    seeAllText: 'Tüm Ürünler',
     actionLink: '/admin/entry/create/' + queryParams?.id,
   };
 

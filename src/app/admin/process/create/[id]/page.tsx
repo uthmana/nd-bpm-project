@@ -67,7 +67,7 @@ export default function EntryControl() {
   const detailData = {
     title: 'Proses Detayi',
     seeAllLink: '/admin/process',
-    seeAllText: 'Tün Proses',
+    seeAllText: 'Tüm Proses',
   };
 
   const getSingleProcess = async () => {

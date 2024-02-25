@@ -84,7 +84,7 @@ export default function Invoice() {
   const detailData = {
     title: 'İrsaliye Detayi',
     seeAllLink: '/admin/invoice',
-    seeAllText: 'Tün İrsaliye',
+    seeAllText: 'Tüm İrsaliye',
     actionLink: '/admin/invoice/create/' + queryParams?.id,
   };
 

@@ -171,6 +171,7 @@ model Process {
   customerId                 String?
   product                    String?
   quantity                   Int?
+  shipmentQty                Int?
   productCode                String?
   application                String?
   standard                   String?
@@ -201,7 +202,7 @@ model FinalControl {
   paketleme             String?
   kontrol_edilen_miktar Int?
   hatali_miktar         Int?
-  makliye_miktar        Int?
+  nakliye_miktar        Int?
   image                 String?
   remarks               String?
   createdAt             DateTime           @default(now())
@@ -287,17 +288,48 @@ model Invoice {
   updatedBy   String?
 }
 
-//TODO: add stock relation 
 model Offer {
-  id         String      @id @default(cuid())
-  name       String
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime?   @updatedAt
-  createdBy  String?
-  updatedBy  String?
-  status     OfferStatus @default(PENDING)
-  customerId String
-  Customer   Customer    @relation(fields: [customerId], references: [id])
+  id           String      @id @default(cuid())
+  OfferType    String      @default("Fiyat Teklifi")
+  barcode      String?
+  startDate    DateTime
+  endDate      DateTime
+  currency     Currency?   @default(TL)
+  amount       Float?
+  vat          Float?
+  totalAmount  Float?
+  address      String?
+  description  String?
+  phoneNumber  String?
+  email        String?
+  creatorTitle String?
+  rep_name     String?
+  tax_Office   String?
+  taxNo        String?
+  product      OfferItem[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime?   @updatedAt
+  createdBy    String?
+  updatedBy    String?
+  status       OfferStatus @default(PENDING)
+  customerId   String?
+  Customer     Customer?   @relation(fields: [customerId], references: [id])
+}
+
+model OfferItem {
+  id          String    @id @default(cuid())
+  name        String?
+  application String?
+  standard    String?
+  currency    Currency? @default(TL)
+  quantity    Int?
+  price       Float?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  createdBy   String?
+  updatedBy   String?
+  Offer       Offer?    @relation(fields: [offerId], references: [id])
+  offerId     String?
 }
 
 enum InvoiceStatus {

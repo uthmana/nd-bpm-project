@@ -48,7 +48,7 @@ export default function EntryControl() {
   const detailData = {
     title: 'Proses Detayi',
     seeAllLink: '/admin/process',
-    seeAllText: 'Tün Proses',
+    seeAllText: 'Tüm Proses',
   };
 
   const infoTranslate = {
@@ -185,7 +185,7 @@ export default function EntryControl() {
     'paketleme',
     'kontrol_edilen_miktar',
     'hatali_miktar',
-    'makliye_miktar',
+    'nakliye_miktar',
     'remarks',
     'image',
     'createdAt',
@@ -203,7 +203,7 @@ export default function EntryControl() {
     paketleme: 'Paketleme',
     kontrol_edilen_miktar: 'Kontrol edilen miktari',
     hatali_miktar: 'Hatali Miktari',
-    makliye_miktar: 'Nakliye Miktari',
+    nakliye_miktar: 'Nakliye Miktari',
     remarks: 'Açıklama',
     createdAt: 'Oluşturma Tarihi',
     updatedAt: 'Güncellenme Tarihi',

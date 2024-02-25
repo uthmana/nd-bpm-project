@@ -103,7 +103,7 @@ export default function InvoiceDoc({ invoice }) {
                   <div>{item?.application}</div>
                   <div>{item?.standard}</div>
                   <div>{item?.color}</div>
-                  <div>{item?.quantity}</div>
+                  <div>{item?.shipmentQty}</div>
                 </div>
               );
             })}

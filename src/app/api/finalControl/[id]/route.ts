@@ -135,7 +135,10 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
             where: {
               id: processId,
             },
-            data: { invoiceId: invoice.id },
+            data: {
+              invoiceId: invoice.id,
+              shipmentQty: finalControl.nakliye_miktar,
+            },
           });
         }
         return NextResponse.json(updateFinalControl, { status: 200 });

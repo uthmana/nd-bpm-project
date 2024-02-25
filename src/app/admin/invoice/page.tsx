@@ -38,7 +38,7 @@ const Invoice = () => {
         item.products = products;
         item.customerName = customerName;
         item.address = item?.customer?.address;
-        item.tolalQty = item?.process.reduce((a, b) => a + b.quantity, 0);
+        item.tolalQty = item?.process.reduce((a, b) => a + b.shipmentQty, 0);
 
         return item;
       });

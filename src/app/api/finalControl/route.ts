@@ -71,6 +71,7 @@ export async function PUT(req: Request) {
           company_name,
           Math.floor(Math.random() * 1000),
         );
+
         const invoice = await prisma.invoice.create({
           data: {
             invoiceDate: new Date(),
@@ -88,7 +89,10 @@ export async function PUT(req: Request) {
             where: {
               id: processId,
             },
-            data: { invoiceId: invoice.id },
+            data: {
+              invoiceId: invoice.id,
+              shipmentQty: finalControl.nakliye_miktar,
+            },
           });
         }
       }
@@ -106,6 +110,7 @@ export async function PUT(req: Request) {
 
     return NextResponse.json(finalControl, { status: 200 });
   } catch (e) {
+    console.log(e);
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
       e instanceof Prisma.PrismaClientUnknownRequestError ||
