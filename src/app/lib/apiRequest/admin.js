@@ -261,3 +261,12 @@ export async function addOfferItem(payload) {
 export async function deleteOfferItem(id) {
   return fetchAPI(`offerItem/${id}`, 'delete');
 }
+
+export async function sendOffer(payload) {
+  return fetchAPI('send', 'post', payload);
+}
+
+// Dashboard
+export async function getDashboard() {
+  return fetchAPI('dashboard');
+}

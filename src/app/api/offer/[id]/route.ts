@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkUserRole } from 'utils/auth';
 import { Offer, Prisma } from '@prisma/client';
+import { sendOffer } from 'app/lib/apiRequest';
 
 //Get single offer
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
@@ -48,20 +49,41 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
 
     const id = route.params.id;
     const result: Offer = await req.json();
-    const { ...data } = result;
-
     const offer: Partial<Offer> = await prisma.offer.findUnique({
       where: { id },
     });
 
     if (offer) {
+      const offerData: any = result;
+      if (offer.status === 'SENT') {
+        const { status, response }: any = await sendOffer({
+          type: 'offer',
+          email: offerData.email,
+          subject: 'Fiyat Teklifi',
+          data: offerData,
+        });
+        if (status === 200) {
+          const updateOffer = await prisma.offer.update({
+            where: {
+              id: id,
+            },
+            data: { status: offer.status },
+          });
+          return NextResponse.json(updateOffer, { status: 200 });
+        }
+        return NextResponse.json(
+          { message: response?.error?.message },
+          { status: response?.status },
+        );
+      }
+
+      delete offerData?.product;
+      delete offerData?.Customer;
       const updateOffer = await prisma.offer.update({
         where: {
           id: id,
         },
-        data: {
-          ...data,
-        },
+        data: offerData,
       });
       if (updateOffer) {
         return NextResponse.json(updateOffer, { status: 200 });

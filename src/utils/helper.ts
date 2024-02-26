@@ -56,7 +56,6 @@ export const removeMillisecondsAndUTC = (iso8601Date) => {
   return trimmedDate;
 };
 
-
 export const generateSKU = (
   customerName: string,
   productName: string,
@@ -104,4 +103,29 @@ export const replaceTurkishCharacters = (
   mapping: { [key: string]: string },
 ) => {
   return str.replace(/[çÇğĞıİöÖşŞüÜ]/g, (match) => mapping[match]);
+};
+
+export const getMonthAndWeekDates = (date = new Date()) => {
+  const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+  const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+  const startOfWeek = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate() - date.getDay(),
+  );
+
+  const endOfWeek = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate() + (6 - date.getDay()),
+  );
+
+  return {
+    currentDate: date,
+    startOfMonth,
+    endOfMonth,
+    startOfWeek,
+    endOfWeek,
+  };
 };

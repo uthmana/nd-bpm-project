@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../lib/db';
 import { OfferItem, Prisma } from '@prisma/client';
 import { checkUserRole } from 'utils/auth';
+import { sendOffer } from 'app/lib/apiRequest';
 
 //All offers
 export async function GET(req: NextRequest) {
@@ -42,6 +43,16 @@ export async function PUT(req: NextRequest) {
         }),
       );
     }
+
+    if (offer) {
+      const offerRes: any = await sendOffer({
+        type: 'offer',
+        email: offerData.email,
+        subject: 'Fiyat Teklifi',
+        data: offerTemp,
+      });
+    }
+
     return NextResponse.json(offer, { status: 200 });
   } catch (e) {
     console.log(e);

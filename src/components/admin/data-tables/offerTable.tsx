@@ -99,7 +99,7 @@ function OfferTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p className="line-clamp-2 text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -107,14 +107,15 @@ function OfferTable({
       columnHelper.accessor('products', {
         id: 'products',
         header: () => (
-          <p className="min-w-[90px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            ÜRÜN SAYISI
+          <p className="min-w-[180px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+            UYGULAMA
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
-          </p>
+          <p
+            className="line-clamp-4 text-sm font-bold text-navy-700 dark:text-white"
+            dangerouslySetInnerHTML={{ __html: info.getValue() }}
+          ></p>
         ),
       }),
       columnHelper.accessor('startDate', {

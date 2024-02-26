@@ -31,9 +31,9 @@ export async function PUT(req: Request) {
   try {
     const result: Stock = await req.json();
 
-    const { product_name, product_code, current_price, curency } = result;
+    const { product_name, product_code } = result;
 
-    if (!product_name || !product_code || !current_price || !curency) {
+    if (!product_name || !product_code) {
       return NextResponse.json(
         { message: 'You are missing a required data' },
         { status: 401 },

@@ -3,9 +3,14 @@ import MiniCalendar from 'components/calendar/MiniCalendar';
 import WeeklyRevenue from 'components/admin/default/WeeklyRevenue';
 import TotalSpent from 'components/admin/default/TotalSpent';
 import PieChartCard from 'components/admin/default/PieChartCard';
-import { IoMdHome } from 'react-icons/io';
-import { IoDocuments } from 'react-icons/io5';
-import { MdBarChart, MdDashboard } from 'react-icons/md';
+import {
+  MdGroupWork,
+  MdLocalOffer,
+  MdOutlineBusiness,
+  MdOutlineGroups3,
+  MdOutlineMultilineChart,
+  MdTaskAlt,
+} from 'react-icons/md';
 
 import Widget from 'components/widget/Widget';
 import CheckTable from 'components/admin/default/CheckTable';
@@ -15,24 +20,31 @@ import TaskCard from 'components/admin/default/TaskCard';
 import tableDataCheck from 'variables/data-tables/tableDataCheck';
 import tableDataComplex from 'variables/data-tables/tableDataComplex';
 
-import { getUsers } from '../../lib/apiRequest';
+import { getDashboard } from '../../lib/apiRequest';
 import { Suspense, useEffect, useState } from 'react';
 import Loading from 'app/loading';
 import { log } from 'utils';
 
 const Dashboard = () => {
   const [isLoading, setIsloading] = useState(true);
+  const [widgetData, setWidgetData] = useState({} as any);
+  const [weeklyData, setWeeklyData] = useState([]);
+  const [monthlyData, setMonthlyData] = useState([]);
 
   useEffect(() => {
-    const users = async () => {
+    const fetchData = async () => {
       setIsloading(true);
-      const { data, status } = await getUsers();
-      setTimeout(() => {
+      const { data, status } = await getDashboard();
+      if (status === 200) {
+        setWidgetData(data?.widget);
+        setWeeklyData(data?.weeklyEntry);
+        setMonthlyData(data?.monthlyEntry);
         setIsloading(false);
-      }, 3000);
+        return;
+      }
       log(data, status);
     };
-    users();
+    fetchData();
   }, []);
 
   return (
@@ -41,37 +53,37 @@ const Dashboard = () => {
       <Suspense fallback={<Loading />}>
         <div className="mt-3 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 3xl:grid-cols-6">
           <Widget
-            icon={<MdBarChart className="h-7 w-7" />}
-            title={'Günün Ürün Girişi'}
-            subtitle={'$340.5'}
+            icon={<MdOutlineGroups3 className="h-7 w-7" />}
+            title={'Müşteri Sayısı'}
+            subtitle={widgetData?.customer}
           />
           <Widget
-            icon={<IoDocuments className="h-6 w-6" />}
-            title={'Aylık Process'}
-            subtitle={'642'}
+            icon={<MdOutlineMultilineChart className="h-6 w-6" />}
+            title={'Stok Sayısı'}
+            subtitle={widgetData?.stock}
           />
           <Widget
-            icon={<MdBarChart className="h-7 w-7" />}
-            title={'Toplam Irsaliye'}
-            subtitle={'574'}
+            icon={<MdOutlineBusiness className="h-7 w-7" />}
+            title={'Aylık Ürün Girişi'}
+            subtitle={widgetData?.entry}
           />
           <Widget
-            icon={<MdDashboard className="h-6 w-6" />}
-            title={'Kontrol Bekleyen'}
-            subtitle={'1,000'}
+            icon={<MdGroupWork className="h-6 w-6" />}
+            title={'Aylık Proses'}
+            subtitle={widgetData?.process}
           />
           <Widget
-            icon={<MdBarChart className="h-7 w-7" />}
+            icon={<MdTaskAlt className="h-7 w-7" />}
             title={'Toplam İrsaliye'}
-            subtitle={'145'}
+            subtitle={widgetData?.invoice}
           />
           <Widget
-            icon={<IoMdHome className="h-6 w-6" />}
+            icon={<MdLocalOffer className="h-6 w-6" />}
             title={'Gönderilen Teklifler'}
-            subtitle={'2433'}
+            subtitle={widgetData?.offer}
           />
         </div>
-        {isLoading}
+
         {/* Charts */}
 
         <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">

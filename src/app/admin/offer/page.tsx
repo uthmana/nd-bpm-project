@@ -31,10 +31,15 @@ const Offer = () => {
         return {
           ...item,
           customerName: item?.Customer?.company_name,
-          products: item?.product?.length,
+          products: item?.product
+            ?.map((prod, idx) => {
+              return `<div className='w-full flex gap-1'><span>${
+                idx + 1
+              }. </span> <span>${prod.application}</span></div>`;
+            })
+            .join(''),
         };
       });
-
       setOffers(formatedData);
     }
     setIsLoading(false);

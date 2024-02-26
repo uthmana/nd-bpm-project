@@ -4,6 +4,7 @@ import ResetPassword from 'components/emails/resetPassword';
 import prisma from 'app/lib/db';
 import crypto from 'crypto';
 import InvoiceDoc from 'components/invoice';
+import OfferDoc from 'components/offer';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -17,10 +18,13 @@ export async function POST(request: Request) {
   };
 
   if (formData.type === 'offer') {
-    emailBody.html = `<p>${formData.message}</p>`;
+    emailBody.react = OfferDoc({ offer: formData.data });
     const { data, error }: any = await resend.emails.send(emailBody);
     if (error) {
-      return NextResponse.json({ error }, { status: 404 });
+      return NextResponse.json(
+        { message: error.message },
+        { status: error.statusCode },
+      );
     }
     return NextResponse.json({ data }, { status: 200 });
   }

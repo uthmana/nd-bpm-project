@@ -76,7 +76,7 @@ function MainTable({
               </p>
             ),
             cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
+              <p className="line-clamp-2 text-sm font-bold text-navy-700 dark:text-white">
                 {info.getValue()}
               </p>
             ),
@@ -126,7 +126,7 @@ function MainTable({
               </p>
             ),
             cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
+              <p className="line-clamp-2 text-sm font-bold text-navy-700 dark:text-white">
                 {info.getValue()}
               </p>
             ),
@@ -416,7 +416,7 @@ function MainTable({
               </p>
             ),
             cell: (info: any) => (
-              <p className="min-w-[220px] max-w-[260px] text-sm font-bold text-navy-700 dark:text-white">
+              <p className="line-clamp-2 min-w-[220px] max-w-[260px] text-sm font-bold text-navy-700 dark:text-white">
                 {info.getValue()}
               </p>
             ),

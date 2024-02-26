@@ -251,7 +251,11 @@ export default function OfferForm(props: {
               >
                 {currency.map((item, idx) => {
                   return (
-                    <option value={item} key={idx} selected={idx === 0}>
+                    <option
+                      value={item}
+                      key={idx}
+                      selected={values.currency === item || idx == 0}
+                    >
                       {item}
                     </option>
                   );
@@ -327,7 +331,7 @@ export default function OfferForm(props: {
           <div className="mb-12 min-w-full pl-2">
             <div className="mb-6 grid w-full grid-cols-1">
               <div className="grid w-full grid-cols-6 gap-1 border-b font-bold">
-                <div>No</div>
+                <div className="col-span-1">No</div>
                 <div>Ürün</div>
                 <div>Uygulama</div>
                 <div>Standart</div>

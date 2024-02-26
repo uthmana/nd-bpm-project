@@ -100,12 +100,12 @@ function InvoiceTable({
       columnHelper.accessor('customerName', {
         id: 'customerName',
         header: () => (
-          <p className="min-w-[200px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[200px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
             Müşteri
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p className="line-clamp-2 text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -115,6 +115,19 @@ function InvoiceTable({
         header: () => (
           <p className="min-w-[200px] text-sm font-bold uppercase text-gray-600 dark:text-white">
             ÜRÜN
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
+          </p>
+        ),
+      }),
+      columnHelper.accessor('tolalQty', {
+        id: 'tolalQty',
+        header: () => (
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Miktar
           </p>
         ),
         cell: (info: any) => (
@@ -157,21 +170,7 @@ function InvoiceTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
-          </p>
-        ),
-      }),
-
-      columnHelper.accessor('tolalQty', {
-        id: 'tolalQty',
-        header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Miktar
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p className="line-clamp-2 text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
