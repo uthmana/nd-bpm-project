@@ -95,7 +95,7 @@ export default function Create() {
             onClick={onOfferComplete}
             text={`${offerData.status !== 'SENT' ? 'GÖNDER' : 'GÖNDERİLDİ'}`}
             icon={<MdOutlinePayment className="mr-1 h-5 w-5" />}
-            // disabled={offerData.status === 'SENT'}
+            disabled={offerData.status === 'SENT'}
             loading={isSubmitting}
           />
         </div>
