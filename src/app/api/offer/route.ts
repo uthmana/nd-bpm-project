@@ -19,6 +19,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(offers, { status: 200 });
 }
 
+// Create Offer
 export async function PUT(req: NextRequest) {
   try {
     const offerTemp: Prisma.OfferCreateInput = await req.json();
@@ -35,24 +36,31 @@ export async function PUT(req: NextRequest) {
 
     if (offer) {
       const offerItemData: any = product;
-      const offerItems = await Promise.all(
-        offerItemData.map(async (item) => {
-          const offerItem = await prisma.offerItem.create({
-            data: { ...item, offerId: offer.id },
-          });
-        }),
-      );
+      if (offerItemData.length > 0) {
+        const offerItems = await Promise.all(
+          offerItemData.map(async (item) => {
+            const offerItem = await prisma.offerItem.create({
+              data: { ...item, offerId: offer.id },
+            });
+          }),
+        );
+      }
     }
 
     if (offer) {
-      const offerRes: any = await sendOffer({
+      const { status, response }: any = await sendOffer({
         type: 'offer',
         email: offerData.email,
         subject: 'Fiyat Teklifi',
         data: offerTemp,
       });
+      if (status !== 200) {
+        return NextResponse.json(
+          { message: response.error.message },
+          { status: response.error.statusCode },
+        );
+      }
     }
-
     return NextResponse.json(offer, { status: 200 });
   } catch (e) {
     console.log(e);

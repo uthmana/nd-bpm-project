@@ -3,11 +3,16 @@ import React, { useEffect, useState } from 'react';
 import OfferDoc from 'components/offer';
 import DetailHeader from 'components/detailHeader';
 import OfferForm from 'components/forms/offer';
-import { getCustomers, updateOffer, getOfferById } from 'app/lib/apiRequest';
+import {
+  getCustomers,
+  updateOffer,
+  getOfferById,
+  addOffer,
+} from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import { useParams } from 'next/navigation';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
-import { removeMillisecondsAndUTC } from 'utils';
+import { log, removeMillisecondsAndUTC } from 'utils';
 import { useRouter } from 'next/navigation';
 
 export default function Create() {
@@ -43,19 +48,55 @@ export default function Create() {
     fetchData();
   }, [queryParams?.id]);
 
-  const handleSubmit = async (val) => {
+  const handleSubmit = async ([val, isEdit]) => {
     delete val.company_name;
     delete val.companyName;
     delete val.customerName;
-
     delete val.Customer;
+
     setIsSubmitting(true);
-    const { status, data } = await updateOffer(val);
+    if (isEdit) {
+      const updateOfferResponse: any = await updateOffer(val);
+      const { status, data, response } = updateOfferResponse;
+      if (response?.error) {
+        const { message, detail } = response?.error;
+        toast.error('Hata oluştu!.' + message);
+        log(detail);
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (status === 200) {
+        toast.success('Teklif düzenleme işlemi başarılı.');
+        router.push('/admin/offer');
+      }
+      setIsSubmitting(false);
+      return;
+    }
+
+    //Create new offer from old data
+    delete val.id;
+    delete val.status;
+    const product = val.product?.map((item) => {
+      const { name, application, standard, quantity, price } = item;
+      return { name, application, standard, quantity, price };
+    });
+
+    const addOfferResponse: any = await addOffer({ ...val, product });
+    const { status, data, response } = addOfferResponse;
+    if (response?.error) {
+      const { message, detail } = response?.error;
+      toast.error('Hata oluştu!.' + message);
+      log(detail);
+      setIsSubmitting(false);
+      return;
+    }
     if (status === 200) {
-      toast.success('Teklif düzenleme işlemi başarılı.');
+      toast.success('Teklif oluşturma işlemi başarılı.');
       router.push('/admin/offer');
     }
     setIsSubmitting(false);
+    return;
   };
 
   const handleChange = (val) => {
@@ -89,7 +130,7 @@ export default function Create() {
                 info={customers}
                 editData={offerData}
                 onChange={handleChange}
-                onSubmit={(val) => handleSubmit(val)}
+                onSubmit={(...val) => handleSubmit(val)}
                 isSubmitting={isSubmitting}
               />
             </div>

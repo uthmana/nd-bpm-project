@@ -95,13 +95,23 @@ export default function OfferForm(props: {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { startDate, endDate, customerId } = values;
-    if (!startDate || !endDate || !customerId || products?.length === 0) {
+    const { startDate, endDate, customerId, email } = values;
+    if (
+      !startDate ||
+      !endDate ||
+      !customerId ||
+      !email ||
+      products?.length === 0
+    ) {
       setError(true);
       window.scroll(100, 0);
       return;
     }
 
+    let isEdit = isUpdate;
+    if (editData && editData?.Customer?.company_name !== values.company_name) {
+      isEdit = false;
+    }
     onSubmit(
       {
         ...values,
@@ -110,7 +120,7 @@ export default function OfferForm(props: {
         endDate: convertToISO8601(values.endDate),
         product: products,
       },
-      isUpdate,
+      isEdit,
     );
   };
 

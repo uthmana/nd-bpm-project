@@ -6,6 +6,7 @@ import OfferForm from 'components/forms/offer';
 import { getCustomers, addOffer } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
+import { log } from 'utils';
 
 export default function Create() {
   const [customers, setCustomers] = useState([]);
@@ -27,13 +28,21 @@ export default function Create() {
     delete val.company_name;
     delete val.companyName;
     setIsSubmitting(true);
-    const { status, data } = await addOffer(val);
+    const addOfferResponse: any = await addOffer(val);
+    const { status, data, response } = addOfferResponse;
+    if (response?.error) {
+      const { message, detail } = response?.error;
+      toast.error('Hata oluştu!.' + message);
+      log(detail);
+      setIsSubmitting(false);
+      return;
+    }
+
     if (status === 200) {
       toast.success('Teklif oluşturma işlemi başarılı.');
       router.push('/admin/offer');
     }
     setIsSubmitting(false);
-    console.log(val);
   };
 
   const handleChange = (val) => {
