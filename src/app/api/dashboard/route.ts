@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
 import { Prisma } from '@prisma/client';
-import { getMonthAndWeekDates } from 'utils';
+import { getMonthlySum } from 'utils';
 
 export async function GET(req: NextRequest) {
   try {
-    const { startOfMonth, endOfMonth, startOfWeek, endOfWeek } =
-      getMonthAndWeekDates();
     const trackings = await prisma.$transaction(async (query) => {
       const [
         customer,
@@ -15,10 +13,12 @@ export async function GET(req: NextRequest) {
         process,
         invoice,
         offer,
-        weeklyFault,
-        weeklyProcess,
-        monthlyFault,
+
         monthlyProcess,
+        monthlyInvoice,
+
+        recentProcess,
+        recentCustomer,
       ] = await Promise.all([
         query.customer.count(),
         query.stock.count({
@@ -49,84 +49,33 @@ export async function GET(req: NextRequest) {
           },
         }),
 
-        query.fault.findMany({
-          where: {
-            createdAt: {
-              gte: startOfWeek,
-              lte: endOfWeek,
-            },
-            status: 'ACCEPT',
-          },
-        }),
         query.process.findMany({
           where: {
-            createdAt: {
-              gte: startOfWeek,
-              lte: endOfWeek,
-            },
             status: 'FINISHED',
           },
         }),
-        query.fault.findMany({
+        query.invoice.findMany({
           where: {
-            createdAt: {
-              gte: startOfMonth,
-              lte: endOfMonth,
-            },
-            status: 'ACCEPT',
+            status: 'PAID',
           },
         }),
+
         query.process.findMany({
+          take: 5,
+          orderBy: {
+            createdAt: 'desc',
+          },
           where: {
-            createdAt: {
-              gte: startOfMonth,
-              lte: endOfMonth,
-            },
             status: 'FINISHED',
+          },
+        }),
+        query.customer.findMany({
+          take: 5,
+          orderBy: {
+            createdAt: 'desc',
           },
         }),
       ]);
-
-      //   const weeklyFault = await prisma.fault.findMany({
-      //     where: {
-      //       createdAt: {
-      //         gte: startOfWeek,
-      //         lte: endOfWeek,
-      //       },
-      //       status: 'ACCEPT',
-      //     },
-      //   });
-
-      //   const weeklyProcess = await prisma.process.findMany({
-      //     where: {
-      //       createdAt: {
-      //         gte: startOfWeek,
-      //         lte: endOfWeek,
-      //       },
-      //       status: 'FINISHED',
-      //     },
-      //   });
-
-      //   const monthlyFault = await prisma.fault.findMany({
-      //     where: {
-      //       createdAt: {
-      //         gte: startOfMonth,
-      //         lte: endOfMonth,
-      //       },
-      //       status: 'ACCEPT',
-      //     },
-      //   });
-
-      //   const monthlyProcess = await prisma.process.findMany({
-      //     where: {
-      //       createdAt: {
-      //         gte: startOfMonth,
-      //         lte: endOfMonth,
-      //       },
-      //       status: 'FINISHED',
-      //     },
-      //   });
-
       return {
         widget: {
           customer: customer,
@@ -136,14 +85,12 @@ export async function GET(req: NextRequest) {
           invoice: invoice,
           offer: offer,
         },
-        weeklyEntry: {
-          entry: weeklyFault,
-          process: weeklyProcess,
-        },
         monthlyEntry: {
-          entry: monthlyFault,
-          process: monthlyProcess,
+          process: getMonthlySum(monthlyProcess, 'createdAt'),
+          invoice: getMonthlySum(monthlyInvoice, 'createdAt'),
         },
+        recentProcess: recentProcess,
+        recentCustomer: recentCustomer,
       };
     });
 

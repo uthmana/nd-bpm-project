@@ -128,3 +128,16 @@ export const getMonthAndWeekDates = (date = new Date()) => {
     endOfWeek,
   };
 };
+
+export const getMonthlySum = (arr, dateName) => {
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
+
+  const result = Array.from(
+    { length: currentMonth + 1 },
+    (_, month) =>
+      arr.filter((item) => new Date(item[dateName]).getMonth() === month)
+        .length,
+  );
+  return result;
+};

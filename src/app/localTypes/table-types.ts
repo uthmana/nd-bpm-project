@@ -121,21 +121,23 @@ export type StockObj = {
 
 export type PrimaryTable = {
   tableData: UserObj | CustomerObj | StockObj | any;
-  variant: string;
-  onEdit: (e: any) => void;
-  onDelete: (e: any) => void;
-  onAdd: (e: any) => void;
+  variant?: string;
+  onEdit?: (e: any) => void;
+  onDelete?: (e: any) => void;
+  onAdd?: (e: any) => void;
   onSearch?: (e: any) => void;
+  title?: string;
 };
 
 export type ProcessTable = {
   tableData: ProcessObj[];
-  variant: string;
+  variant?: string;
   onEdit?: (e: any) => void;
   onDelete?: (e: any) => void;
   onAdd?: (e: any) => void;
   onControl?: (e: any) => void;
   searchValue?: string;
+  title?: string;
 };
 
 export type UserObj = {
