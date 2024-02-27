@@ -5,6 +5,7 @@ import {
   formatDateTime,
   removeMillisecondsAndUTC,
   convertToISO8601,
+  generateSKU,
 } from 'utils';
 import TextArea from 'components/fields/textArea';
 import Button from 'components/button/button';
@@ -119,6 +120,7 @@ export default function OfferForm(props: {
         startDate: convertToISO8601(values.startDate),
         endDate: convertToISO8601(values.endDate),
         product: products,
+        barcode: generateSKU('TEK', values.company_name, values.totalAmount),
       },
       isEdit,
     );

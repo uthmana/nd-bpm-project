@@ -91,10 +91,9 @@ export const generateSKU = (
     turkishToEnglishMapping,
   );
 
-  const sku = `${cleanCustomerName.toUpperCase().slice(0, 2)}-${cleanProductName
+  const sku = `${cleanCustomerName.toUpperCase().slice(0, 3)}-${cleanProductName
     .toUpperCase()
     .slice(0, 2)}-${formattedQuantity}-${formattedDate.replaceAll('/', '')}`;
-
   return sku;
 };
 

@@ -50,10 +50,10 @@ export async function PUT(req: NextRequest) {
           subject: 'Fiyat Teklifi',
           data: offerTemp,
         });
-        if (status === 403) {
+        if (response?.error || status !== 200) {
           return NextResponse.json(
             { message: response?.error?.message },
-            { status: response.status },
+            { status: response.status || status },
           );
         }
         const updateOffer = await prisma.offer.update({

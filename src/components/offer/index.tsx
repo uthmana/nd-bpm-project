@@ -116,7 +116,7 @@ export default function OfferDoc({ offer }) {
         <h2 className="text-lg font-bold"> Teklifi Hazırlayan:</h2>
         <p>{offer.createdBy}</p>
         <p>{offer.creatorTitle}</p>
-        {/* <div className="max-w-[200px]">
+        <div className="max-w-[200px]">
           {offer?.serverSide ? (
             <>
               <img
@@ -133,7 +133,7 @@ export default function OfferDoc({ offer }) {
               options={{ format: 'code128' }}
             />
           )}
-        </div> */}
+        </div>
       </div>
     </div>
   );

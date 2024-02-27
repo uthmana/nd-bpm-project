@@ -62,7 +62,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
           subject: 'Fiyat Teklifi',
           data: offerData,
         });
-        if (status === 403) {
+        if (response?.error || status !== 200) {
           return NextResponse.json(
             { message: response?.error?.message },
             { status: response.status },
