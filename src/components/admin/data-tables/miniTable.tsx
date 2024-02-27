@@ -69,6 +69,19 @@ function MiniTable({
               </p>
             ),
           }),
+          columnHelper.accessor('code', {
+            id: 'code',
+            header: () => (
+              <p className="group relative text-sm font-bold text-gray-600 dark:text-white">
+                MÜŞTERİ KODU
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="min-w-[120px] text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
           columnHelper.accessor('company_name', {
             id: 'company_name',
             header: () => (
@@ -92,6 +105,19 @@ function MiniTable({
             ),
             cell: (info: any) => (
               <p className="line-clamp-1 min-w-[120px] text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('country_code', {
+            id: 'country_code',
+            header: () => (
+              <p className="group relative min-w-[80px] text-sm font-bold text-gray-600 dark:text-white">
+                ÜLKE KODU
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="min-w-[90px] text-sm font-bold text-navy-700 dark:text-white">
                 {info.getValue()}
               </p>
             ),
@@ -135,19 +161,6 @@ function MiniTable({
               </p>
             ),
           }),
-          columnHelper.accessor('country_code', {
-            id: 'country_code',
-            header: () => (
-              <p className="group relative min-w-[80px] text-sm font-bold text-gray-600 dark:text-white">
-                ÜLKE KODU
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="min-w-[90px] text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
-              </p>
-            ),
-          }),
           columnHelper.accessor('province_code', {
             id: 'province_code',
             header: () => (
@@ -157,19 +170,6 @@ function MiniTable({
             ),
             cell: (info: any) => (
               <p className="min-w-[80px] text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
-              </p>
-            ),
-          }),
-          columnHelper.accessor('code', {
-            id: 'code',
-            header: () => (
-              <p className="group relative text-sm font-bold text-gray-600 dark:text-white">
-                MÜŞTERİ KODU
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="min-w-[120px] text-sm font-bold text-navy-700 dark:text-white">
                 {info.getValue()}
               </p>
             ),
@@ -204,20 +204,6 @@ function MiniTable({
               </p>
             ),
           }),
-          columnHelper.accessor('quantity', {
-            id: 'quantity',
-            header: () => (
-              <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-                Miktar
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
-              </p>
-            ),
-          }),
-
           columnHelper.accessor('application', {
             id: 'application',
             header: () => (
@@ -257,19 +243,6 @@ function MiniTable({
               </p>
             ),
           }),
-          columnHelper.accessor('machineName', {
-            id: 'machineName',
-            header: () => (
-              <p className="min-w-[160px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-                Makine
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
-              </p>
-            ),
-          }),
           columnHelper.accessor('status', {
             id: 'status',
             header: () => (
@@ -284,6 +257,33 @@ function MiniTable({
                   {entryStatus[info.getValue()]}
                 </p>
               </div>
+            ),
+          }),
+          columnHelper.accessor('quantity', {
+            id: 'quantity',
+            header: () => (
+              <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+                Miktar
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+
+          columnHelper.accessor('machineName', {
+            id: 'machineName',
+            header: () => (
+              <p className="min-w-[160px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+                Makine
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
             ),
           }),
         ];
