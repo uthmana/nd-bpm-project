@@ -79,7 +79,7 @@ export default function OfferDoc({ offer }) {
           <div>Uygulama</div>
           <div>Standart</div>
           <div>Miktar</div>
-          <div>{`Fiyat (${offer.currency})`}</div>
+          <div>{`Fiyat (${offer?.currency ? offer?.currency : ''})`}</div>
         </div>
 
         {offer?.product?.length > 0 ? (

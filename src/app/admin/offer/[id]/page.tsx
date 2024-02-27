@@ -49,10 +49,9 @@ export default function Create() {
       setIsSubmitting(false);
       return;
     }
-    if (status === 200) {
-      toast.success('Teklif gönderme işlemi başarılı');
-      getSingleOffer(data?.id);
-    }
+    toast.success('Teklif gönderme işlemi başarılı');
+    getSingleOffer(data?.id);
+    return;
   };
 
   let detailData = {

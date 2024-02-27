@@ -66,10 +66,8 @@ export default function Create() {
         return;
       }
 
-      if (status === 200) {
-        toast.success('Teklif düzenleme işlemi başarılı.');
-        router.push('/admin/offer');
-      }
+      toast.success('Teklif düzenleme işlemi başarılı.');
+      router.push('/admin/offer');
       setIsSubmitting(false);
       return;
     }

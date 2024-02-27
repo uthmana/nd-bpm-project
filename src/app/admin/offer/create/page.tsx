@@ -32,9 +32,12 @@ export default function Create() {
     const { status, data, response } = addOfferResponse;
     if (response?.error) {
       const { message, detail } = response?.error;
-      toast.error('Hata oluştu!.' + message);
+      toast.error('Teklif oluştu, E-posta gönderimde hata oluştu!.' + message);
       log(detail);
-      setIsSubmitting(false);
+      setTimeout(() => {
+        router.push('/admin/offer');
+        setIsSubmitting(false);
+      }, 4000);
       return;
     }
 

@@ -44,21 +44,22 @@ export async function PUT(req: NextRequest) {
             });
           }),
         );
-      }
-    }
-
-    if (offer) {
-      const { status, response }: any = await sendOffer({
-        type: 'offer',
-        email: offerData.email,
-        subject: 'Fiyat Teklifi',
-        data: offerTemp,
-      });
-      if (status !== 200) {
-        return NextResponse.json(
-          { message: response.error.message },
-          { status: response.error.statusCode },
-        );
+        const { status, response }: any = await sendOffer({
+          type: 'offer',
+          email: offerData.email,
+          subject: 'Fiyat Teklifi',
+          data: offerTemp,
+        });
+        if (status === 403) {
+          return NextResponse.json(
+            { message: response?.error?.message },
+            { status: response.status },
+          );
+        }
+        const updateOffer = await prisma.offer.update({
+          where: { id: offer.id },
+          data: { status: 'SENT' },
+        });
       }
     }
     return NextResponse.json(offer, { status: 200 });

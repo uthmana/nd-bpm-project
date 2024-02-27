@@ -55,26 +55,26 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
 
     if (offer) {
       const offerData: any = result;
-      if (offer.status === 'SENT') {
+      if (offerData.status === 'SENT') {
         const { status, response }: any = await sendOffer({
           type: 'offer',
           email: offerData.email,
           subject: 'Fiyat Teklifi',
           data: offerData,
         });
-        if (status === 200) {
-          const updateOffer = await prisma.offer.update({
-            where: {
-              id: id,
-            },
-            data: { status: offer.status },
-          });
-          return NextResponse.json(updateOffer, { status: 200 });
+        if (status === 403) {
+          return NextResponse.json(
+            { message: response?.error?.message },
+            { status: response.status },
+          );
         }
-        return NextResponse.json(
-          { message: response?.error?.message },
-          { status: response?.status },
-        );
+        const updateOffer = await prisma.offer.update({
+          where: {
+            id: id,
+          },
+          data: { status: offer.status },
+        });
+        return NextResponse.json(updateOffer, { status: 200 });
       }
 
       delete offerData?.product;
@@ -85,9 +85,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         },
         data: offerData,
       });
-      if (updateOffer) {
-        return NextResponse.json(updateOffer, { status: 200 });
-      }
+      return NextResponse.json(updateOffer, { status: 200 });
     }
   } catch (e) {
     console.log(e);
