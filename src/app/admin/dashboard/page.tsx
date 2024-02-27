@@ -104,7 +104,7 @@ const Dashboard = () => {
             variant="process"
             title="Yeni Proces"
             tableData={recentProcess}
-            key={1}
+            key={recentProcess.length}
           />
         </Suspense>
       </div>
@@ -115,7 +115,7 @@ const Dashboard = () => {
               variant="customer"
               title="Yeni Müşteri"
               tableData={recentCustomer}
-              key={2}
+              key={recentCustomer.length}
             />
           </Suspense>
         </div>

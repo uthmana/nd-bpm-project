@@ -48,7 +48,6 @@ export async function GET(req: NextRequest) {
             status: 'SENT',
           },
         }),
-
         query.process.findMany({
           where: {
             status: 'FINISHED',
@@ -59,14 +58,10 @@ export async function GET(req: NextRequest) {
             status: 'PAID',
           },
         }),
-
         query.process.findMany({
           take: 5,
           orderBy: {
             createdAt: 'desc',
-          },
-          where: {
-            status: 'FINISHED',
           },
         }),
         query.customer.findMany({
