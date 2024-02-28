@@ -1,23 +1,62 @@
 'use client';
 
-import Button from 'components/button/button';
+import { useState } from 'react';
+import AppItem from './appItem';
+import {
+  addStandard,
+  updateStandard,
+  deleteStandard,
+  getStandard,
+} from 'app/lib/apiRequest';
 
-import { MdAdd } from 'react-icons/md';
+const StandardList = ({ data }) => {
+  const [standards, setStandards] = useState(data || ([] as any));
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-const StandardList = () => {
+  const getStandards = async () => {
+    const { status, data } = await getStandard();
+    if (status === 200) {
+      setStandards(data);
+    }
+  };
+
+  const handleAdd = async (val) => {
+    setIsSubmitting(true);
+    const { status } = await addStandard(val);
+    if (status === 200) {
+      getStandards();
+    }
+    setIsSubmitting(false);
+  };
+
+  const handleEdit = async (val) => {
+    setIsSubmitting(true);
+    const { status } = await updateStandard(val);
+    if (status === 200) {
+      getStandards();
+    }
+    setIsSubmitting(false);
+  };
+
+  const handleDelete = async (val) => {
+    setIsSubmitting(true);
+    const { status } = await deleteStandard(val);
+    if (status === 200) {
+      getStandards();
+    }
+    setIsSubmitting(false);
+  };
   return (
     <div className="full">
-      <div className="mb-4 mt-2 flex w-full justify-between">
-        <h2 className="px-2 text-xl font-bold text-navy-700 dark:text-white">
-          Standart Yönetimi
-        </h2>
-        <Button
-          onClick={() => console.log('test')}
-          extra="!w-fit px-3 h-[38px]"
-          text=""
-          icon={<MdAdd className="ml-1 h-6 w-6" />}
-        />
-      </div>
+      <AppItem
+        key={standards?.length}
+        title="Standart Yönetimi"
+        data={standards}
+        onAdd={(v) => handleAdd(v)}
+        onEdit={(v) => handleEdit(v)}
+        onDelete={(v) => handleDelete(v)}
+        isSubmitting={isSubmitting}
+      />
     </div>
   );
 };

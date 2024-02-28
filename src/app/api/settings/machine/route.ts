@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
-import { hash } from 'bcryptjs';
 import { checkUserRole } from 'utils/auth';
-import { Machine, MachineParams, Prisma, Process, User } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 //All  machine
 export async function GET(req: NextRequest) {
@@ -10,9 +9,7 @@ export async function GET(req: NextRequest) {
     const machine = await prisma.machine.findMany({
       include: { machineParams: true },
     });
-    if (!machine) {
-      throw new Error('User not found');
-    }
+
     return NextResponse.json(machine, { status: 200 });
   } catch (e) {
     if (
@@ -45,10 +42,6 @@ export async function PUT(req: Request) {
     const machine = await prisma.machine.create({
       data: machineData,
     });
-
-    if (!machine) {
-      throw new Error('machine not found');
-    }
 
     const machineParamsData = params.map((item) => {
       return { machineId: machine.id, param_name: item.param_name };

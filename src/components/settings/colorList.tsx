@@ -1,22 +1,62 @@
 'use client';
-import Button from 'components/button/button';
 
-import { MdAdd } from 'react-icons/md';
+import {
+  addColor,
+  deleteColor,
+  getColor,
+  updateColor,
+} from 'app/lib/apiRequest';
+import { useState } from 'react';
+import AppItem from './appItem';
 
-const ColorList = () => {
+const ColorList = ({ data }) => {
+  const [colors, setColors] = useState(data || ([] as any));
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const getColors = async () => {
+    const { status, data } = await getColor();
+    if (status === 200) {
+      setColors(data);
+    }
+  };
+
+  const handleAdd = async (val) => {
+    setIsSubmitting(true);
+    const { status, data } = await addColor(val);
+    if (status === 200) {
+      getColors();
+    }
+    setIsSubmitting(false);
+  };
+
+  const handleEdit = async (val) => {
+    setIsSubmitting(true);
+    const { status, data } = await updateColor(val);
+    if (status === 200) {
+      getColors();
+    }
+    setIsSubmitting(false);
+  };
+
+  const handleDelete = async (val) => {
+    setIsSubmitting(true);
+    const { status, data } = await deleteColor(val);
+    if (status === 200) {
+      getColors();
+    }
+    setIsSubmitting(false);
+  };
   return (
     <div className="full">
-      <div className="mb-4 mt-2 flex w-full justify-between">
-        <h2 className="px-2 text-xl font-bold text-navy-700 dark:text-white">
-          Renk Yönetimi
-        </h2>
-        <Button
-          onClick={() => console.log('test')}
-          extra="!w-fit px-3 h-[38px]"
-          text=""
-          icon={<MdAdd className="ml-1 h-6 w-6" />}
-        />
-      </div>
+      <AppItem
+        key={colors?.length}
+        title="Renk Yönetimi"
+        data={colors}
+        onAdd={(v) => handleAdd(v)}
+        onEdit={(v) => handleEdit(v)}
+        onDelete={(v) => handleDelete(v)}
+        isSubmitting={isSubmitting}
+      />
     </div>
   );
 };

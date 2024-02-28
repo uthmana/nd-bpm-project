@@ -1,28 +1,63 @@
 'use client';
 
-import Button from 'components/button/button';
-import { useState } from 'react';
 import {
-  MdAdd,
-  MdArrowDropDown,
-  MdOutlineArrowDownward,
-  MdOutlineKeyboardArrowDown,
-} from 'react-icons/md';
+  addApplication,
+  deleteApplication,
+  getApplication,
+  updateApplication,
+} from 'app/lib/apiRequest';
+import { useState } from 'react';
+import AppItem from './appItem';
 
-const ApplicationList = () => {
+const ApplicationList = ({ data }) => {
+  const [apps, setApps] = useState(data || ([] as any));
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const getApplications = async () => {
+    const { status, data } = await getApplication();
+    if (status === 200) {
+      setApps(data);
+    }
+  };
+
+  const handleAdd = async (val) => {
+    setIsSubmitting(true);
+    const { status, data } = await addApplication(val);
+    if (status === 200) {
+      getApplications();
+    }
+    setIsSubmitting(false);
+  };
+
+  const handleEdit = async (val) => {
+    setIsSubmitting(true);
+    const { status, data } = await updateApplication(val);
+    if (status === 200) {
+      getApplications();
+    }
+    setIsSubmitting(false);
+  };
+
+  const handleDelete = async (val) => {
+    setIsSubmitting(true);
+    const { status, data } = await deleteApplication(val);
+    if (status === 200) {
+      getApplications();
+    }
+    setIsSubmitting(false);
+  };
+
   return (
     <div className="full">
-      <div className="mb-4 mt-2 flex w-full justify-between">
-        <h2 className="px-2 text-xl font-bold text-navy-700 dark:text-white">
-          Uygulama Yönetimi
-        </h2>
-        <Button
-          onClick={() => console.log('test')}
-          extra="!w-fit px-3 h-[38px]"
-          text=""
-          icon={<MdAdd className="ml-1 h-6 w-6" />}
-        />
-      </div>
+      <AppItem
+        key={apps?.length}
+        title="Uygulama Yönetimi"
+        data={apps}
+        onAdd={(v) => handleAdd(v)}
+        onEdit={(v) => handleEdit(v)}
+        onDelete={(v) => handleDelete(v)}
+        isSubmitting={isSubmitting}
+      />
     </div>
   );
 };
