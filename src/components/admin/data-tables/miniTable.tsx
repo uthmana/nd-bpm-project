@@ -6,7 +6,7 @@ import {
   ProcessTable,
   PrimaryTable,
   CustomerObj,
-} from '../../../app/localTypes/table-types';
+} from 'app/localTypes/table-types';
 
 import { MdCheckCircle, MdCancel, MdOutlineError } from 'react-icons/md';
 import {
@@ -59,7 +59,7 @@ function MiniTable({
           columnHelper.accessor('id', {
             id: 'id',
             header: () => (
-              <p className="group relative min-w-[60px] max-w-fit text-sm font-bold text-gray-600 dark:text-white">
+              <p className="group  relative min-w-[60px] max-w-fit whitespace-nowrap break-keep text-sm font-bold text-gray-600 dark:text-white">
                 SİRA NO.
               </p>
             ),
@@ -72,7 +72,7 @@ function MiniTable({
           columnHelper.accessor('code', {
             id: 'code',
             header: () => (
-              <p className="group relative text-sm font-bold text-gray-600 dark:text-white">
+              <p className="group  relative whitespace-nowrap break-keep text-sm font-bold text-gray-600 dark:text-white">
                 MÜŞTERİ KODU
               </p>
             ),
@@ -90,7 +90,10 @@ function MiniTable({
               </p>
             ),
             cell: (info: any) => (
-              <p className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white">
+              <p
+                title={info.getValue()}
+                className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white"
+              >
                 {info.getValue()}
               </p>
             ),
@@ -104,7 +107,10 @@ function MiniTable({
               </p>
             ),
             cell: (info: any) => (
-              <p className="line-clamp-1 min-w-[120px] text-sm font-bold text-navy-700 dark:text-white">
+              <p
+                title={info.getValue()}
+                className="line-clamp-1 min-w-[120px] text-sm font-bold text-navy-700 dark:text-white"
+              >
                 {info.getValue()}
               </p>
             ),
@@ -112,7 +118,7 @@ function MiniTable({
           columnHelper.accessor('country_code', {
             id: 'country_code',
             header: () => (
-              <p className="group relative min-w-[80px] text-sm font-bold text-gray-600 dark:text-white">
+              <p className="group  relative min-w-[80px] whitespace-nowrap break-keep text-sm font-bold text-gray-600 dark:text-white">
                 ÜLKE KODU
               </p>
             ),
@@ -125,7 +131,7 @@ function MiniTable({
           columnHelper.accessor('email', {
             id: 'email',
             header: () => (
-              <p className="group relative text-sm font-bold text-gray-600 dark:text-white">
+              <p className="group  relative  whitespace-nowrap break-keep text-sm font-bold text-gray-600 dark:text-white">
                 E-POSTA
               </p>
             ),
@@ -143,7 +149,10 @@ function MiniTable({
               </p>
             ),
             cell: (info: any) => (
-              <p className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white">
+              <p
+                title={info.getValue()}
+                className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white"
+              >
                 {info.getValue()}
               </p>
             ),
@@ -156,7 +165,7 @@ function MiniTable({
               </p>
             ),
             cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
+              <p className="whitespace-nowrap  break-keep text-sm font-bold text-navy-700 dark:text-white">
                 {info.getValue()}
               </p>
             ),
@@ -164,7 +173,7 @@ function MiniTable({
           columnHelper.accessor('province_code', {
             id: 'province_code',
             header: () => (
-              <p className="group relative text-sm font-bold text-gray-600 dark:text-white">
+              <p className="group  relative whitespace-nowrap break-keep text-sm font-bold text-gray-600 dark:text-white">
                 İL KODU
               </p>
             ),
@@ -181,7 +190,7 @@ function MiniTable({
           columnHelper.accessor('id', {
             id: 'id',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className="whitespace-nowrap  break-keep text-sm font-bold text-gray-600 dark:text-white">
                 SİRA NO.
               </p>
             ),
@@ -194,12 +203,15 @@ function MiniTable({
           columnHelper.accessor('product', {
             id: 'product',
             header: () => (
-              <p className="min-w-[130px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+              <p className="min-w-[130px]  whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
                 Ürün İsmi
               </p>
             ),
             cell: (info: any) => (
-              <p className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white">
+              <p
+                title={info.getValue()}
+                className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white"
+              >
                 {info.getValue()}
               </p>
             ),
@@ -212,7 +224,10 @@ function MiniTable({
               </p>
             ),
             cell: (info: any) => (
-              <p className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white">
+              <p
+                title={info.getValue()}
+                className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white"
+              >
                 {info.getValue()}
               </p>
             ),
@@ -246,7 +261,7 @@ function MiniTable({
           columnHelper.accessor('status', {
             id: 'status',
             header: () => (
-              <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+              <p className="min-w-[120px]  whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
                 PROSES DURUMU
               </p>
             ),
@@ -281,7 +296,10 @@ function MiniTable({
               </p>
             ),
             cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
+              <p
+                title={info.getValue()}
+                className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white"
+              >
                 {info.getValue()}
               </p>
             ),
@@ -367,7 +385,7 @@ function MiniTable({
                   >
                     {row.getVisibleCells().map((cell) => {
                       return (
-                        <td key={cell.id} className="min-w-[80px] px-1 py-3">
+                        <td key={cell.id} className="p-2">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),

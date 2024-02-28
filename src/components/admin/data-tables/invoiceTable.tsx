@@ -1,10 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import Card from 'components/card';
-import Barcode from 'react-jsbarcode';
 import {
   MdModeEdit,
   MdOutlineDelete,
-  MdAdd,
   MdCheckCircle,
   MdCancel,
   MdOutlineError,
@@ -21,10 +19,8 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import Search from 'components/search/search';
-import Button from 'components/button/button';
 import { formatDateTime, useDrage } from 'utils';
-import FileViewer from 'components/fileViewer';
-import { InvoiceObj, InvoiceTable } from '../../../app/localTypes/table-types';
+import { InvoiceObj, InvoiceTable } from 'app/localTypes/table-types';
 import TablePagination from './tablePagination';
 
 function InvoiceTable({
@@ -74,7 +70,7 @@ function InvoiceTable({
       columnHelper.accessor('id', {
         id: 'id',
         header: () => (
-          <p className="min-w-[60px] text-sm font-bold text-gray-600 dark:text-white">
+          <p className="min-w-[60px] whitespace-nowrap break-keep text-sm font-bold text-gray-600 dark:text-white">
             SİRA NO.
           </p>
         ),
@@ -105,7 +101,10 @@ function InvoiceTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="line-clamp-2 text-sm font-bold text-navy-700 dark:text-white">
+          <p
+            title={info.getValue()}
+            className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white"
+          >
             {info.getValue()}
           </p>
         ),
@@ -113,12 +112,15 @@ function InvoiceTable({
       columnHelper.accessor('products', {
         id: 'products',
         header: () => (
-          <p className="min-w-[200px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
             ÜRÜN
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p
+            title={info.getValue()}
+            className="line-clamp-1 min-w-[150px] text-sm font-bold text-navy-700 dark:text-white"
+          >
             {info.getValue()}
           </p>
         ),
@@ -139,7 +141,7 @@ function InvoiceTable({
       columnHelper.accessor('createdAt', {
         id: 'createdAt',
         header: () => (
-          <p className="min-w-[130px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[130px] whitespace-nowrap break-keep  text-sm font-bold uppercase text-gray-600 dark:text-white">
             Oluşturma Tarihi
           </p>
         ),
@@ -152,7 +154,7 @@ function InvoiceTable({
       columnHelper.accessor('invoiceDate', {
         id: 'invoiceDate',
         header: () => (
-          <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[120px] whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
             İrsalye Tarihi
           </p>
         ),
@@ -170,7 +172,10 @@ function InvoiceTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="line-clamp-2 text-sm font-bold text-navy-700 dark:text-white">
+          <p
+            title={info.getValue()}
+            className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white"
+          >
             {info.getValue()}
           </p>
         ),
@@ -178,12 +183,15 @@ function InvoiceTable({
       columnHelper.accessor('description', {
         id: 'description',
         header: () => (
-          <p className="min-w-[200px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
             Açıklama
           </p>
         ),
         cell: (info: any) => (
-          <p className="line-clamp-2 text-sm font-bold text-navy-700 dark:text-white">
+          <p
+            title={info.getValue()}
+            className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white"
+          >
             {info.getValue()}
           </p>
         ),
@@ -214,7 +222,7 @@ function InvoiceTable({
         cell: (info: any) => {
           const isAccept = info.row.original.status === 'PAID';
           return (
-            <div className="flex gap-2">
+            <div className="flex gap-1">
               <button
                 className="rounded-md bg-blue-600 px-2 py-1 hover:bg-blue-700"
                 onClick={() => onControl(info.getValue())}
@@ -300,10 +308,10 @@ function InvoiceTable({
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} className="!border-px !border-gray-400">
-                {headerGroup.headers.map((header) => {
+                {headerGroup.headers.map((header, idx) => {
                   return (
                     <th
-                      key={header.id}
+                      key={header.id + idx}
                       colSpan={header.colSpan}
                       onClick={header.column.getToggleSortingHandler()}
                       className="cursor-pointer border-b border-gray-400 pb-2 pr-4 pt-4 text-start dark:border-white/30"
@@ -334,9 +342,9 @@ function InvoiceTable({
                     key={row.id}
                     className="border-b border-gray-100 hover:bg-lightPrimary dark:border-gray-900 dark:hover:bg-navy-700"
                   >
-                    {row.getVisibleCells().map((cell) => {
+                    {row.getVisibleCells().map((cell, idx) => {
                       return (
-                        <td key={cell.id} className="min-w-[80px] p-1">
+                        <td key={cell.id + idx} className="p-2">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),

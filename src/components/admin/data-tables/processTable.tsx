@@ -1,12 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import Card from 'components/card';
 import Search from 'components/search/search';
-import Button from 'components/button/button';
 import FileViewer from 'components/fileViewer';
 import { useDrage } from 'utils';
-import { ProcessObj, ProcessTable } from '../../../app/localTypes/table-types';
+import { ProcessObj, ProcessTable } from 'app/localTypes/table-types';
 import TablePagination from './tablePagination';
-import Barcode from 'react-jsbarcode';
+
 import {
   MdOutlineDelete,
   MdCheckCircle,
@@ -68,7 +67,7 @@ function ProcessTable({
       columnHelper.accessor('id', {
         id: 'id',
         header: () => (
-          <p className="text-sm font-bold text-gray-600 dark:text-white">
+          <p className="whitespace-nowrap  break-keep text-sm font-bold text-gray-600 dark:text-white">
             SİRA NO.
           </p>
         ),
@@ -98,12 +97,12 @@ function ProcessTable({
       columnHelper.accessor('productCode', {
         id: 'productCode',
         header: () => (
-          <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[100px]  whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
             Ürün Kodu
           </p>
         ),
         cell: (info: any) => (
-          <p className="min-w-[150px] text-sm font-bold text-navy-700 dark:text-white">
+          <p className="min-w-[150px]  whitespace-nowrap break-keep text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -116,7 +115,10 @@ function ProcessTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="line-clamp-2 text-sm font-bold text-navy-700 dark:text-white">
+          <p
+            title={info.getValue()}
+            className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white"
+          >
             {info.getValue()}
           </p>
         ),
@@ -124,12 +126,12 @@ function ProcessTable({
       columnHelper.accessor('product', {
         id: 'product',
         header: () => (
-          <p className="min-w-[130px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[130px]  whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
             Ürün İsmi
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p className="whitespace-nowrap  break-keep text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -157,7 +159,10 @@ function ProcessTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p
+            title={info.getValue()}
+            className="whitespace-nowrap  break-keep  text-sm font-bold text-navy-700 dark:text-white"
+          >
             {info.getValue()}
           </p>
         ),
@@ -165,12 +170,12 @@ function ProcessTable({
       columnHelper.accessor('standard', {
         id: 'standard',
         header: () => (
-          <p className="min-w-[110px] text-sm font-bold text-gray-600 dark:text-white">
+          <p className="text-sm font-bold text-gray-600 dark:text-white">
             STANDART
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p className="whitespace-nowrap  break-keep text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -191,12 +196,15 @@ function ProcessTable({
       columnHelper.accessor('machineName', {
         id: 'machineName',
         header: () => (
-          <p className="min-w-[160px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
             Makine
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p
+            title={info.getValue()}
+            className="whitespace-nowrap  break-keep text-sm font-bold text-navy-700 dark:text-white"
+          >
             {info.getValue()}
           </p>
         ),
@@ -204,7 +212,7 @@ function ProcessTable({
       columnHelper.accessor('technicalDrawingAttachment', {
         id: 'technicalDrawingAttachment',
         header: () => (
-          <p className="min-w-[110px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[110px]  whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
             İLGİLİ DOKÜMAN
           </p>
         ),
@@ -217,14 +225,14 @@ function ProcessTable({
       columnHelper.accessor('status', {
         id: 'status',
         header: () => (
-          <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            PROSES DURUMU
+          <p className="whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
+            DURUM
           </p>
         ),
         cell: (info: any) => (
           <div className="flex min-w-[100px] items-center">
             {statusbgColor(info.getValue())}
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
+            <p className="whitespace-nowrap  break-keep  text-sm font-bold text-navy-700 dark:text-white">
               {entryStatus[info.getValue()]}
             </p>
           </div>
@@ -238,7 +246,7 @@ function ProcessTable({
           </p>
         ),
         cell: (info) => (
-          <div className="flex gap-2">
+          <div className="flex gap-1">
             <button
               className="rounded-md bg-blue-600  px-2 py-1 hover:bg-blue-700"
               onClick={() => onControl(info.getValue())}
@@ -347,7 +355,7 @@ function ProcessTable({
                   >
                     {row.getVisibleCells().map((cell) => {
                       return (
-                        <td key={cell.id} className="min-w-[80px] p-1">
+                        <td key={cell.id} className="p-2">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),

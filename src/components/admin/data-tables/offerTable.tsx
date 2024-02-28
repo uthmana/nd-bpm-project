@@ -22,8 +22,7 @@ import {
 import Search from 'components/search/search';
 import Button from 'components/button/button';
 import { formatDateTime, useDrage } from 'utils';
-import FileViewer from 'components/fileViewer';
-import { OfferObj, OfferTable } from '../../../app/localTypes/table-types';
+import { OfferObj, OfferTable } from 'app/localTypes/table-types';
 import TablePagination from './tablePagination';
 
 function OfferTable({
@@ -99,7 +98,10 @@ function OfferTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="line-clamp-2 text-sm font-bold text-navy-700 dark:text-white">
+          <p
+            title={info.getValue()}
+            className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white"
+          >
             {info.getValue()}
           </p>
         ),
@@ -113,7 +115,7 @@ function OfferTable({
         ),
         cell: (info: any) => (
           <p
-            className="line-clamp-4 text-sm font-bold text-navy-700 dark:text-white"
+            className="text-sm font-bold text-navy-700 dark:text-white"
             dangerouslySetInnerHTML={{ __html: info.getValue() }}
           ></p>
         ),
@@ -121,12 +123,12 @@ function OfferTable({
       columnHelper.accessor('startDate', {
         id: 'startDate',
         header: () => (
-          <p className="min-w-[110px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
             BAŞLANGIÇ
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p className="whitespace-nowrap  break-keep text-sm font-bold text-navy-700 dark:text-white">
             {formatDateTime(info.getValue())}
           </p>
         ),
@@ -134,12 +136,12 @@ function OfferTable({
       columnHelper.accessor('endDate', {
         id: 'endDate',
         header: () => (
-          <p className="min-w-[110px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
             BİTİŞ
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p className="whitespace-nowrap  break-keep text-sm font-bold text-navy-700 dark:text-white">
             {formatDateTime(info.getValue())}
           </p>
         ),
@@ -160,7 +162,7 @@ function OfferTable({
       columnHelper.accessor('currency', {
         id: 'currency',
         header: () => (
-          <p className="min-w-[80px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[80px]  whitespace-nowrap break-keep  text-sm font-bold uppercase text-gray-600 dark:text-white">
             PARA BIRIMI
           </p>
         ),
@@ -173,7 +175,7 @@ function OfferTable({
       columnHelper.accessor('email', {
         id: 'email',
         header: () => (
-          <p className="min-w-[170px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[170px]  whitespace-nowrap break-keep  text-sm font-bold uppercase text-gray-600 dark:text-white">
             E-POSTA
           </p>
         ),
@@ -209,7 +211,7 @@ function OfferTable({
         cell: (info: any) => {
           const isAccept = info.row.original.status === 'PAID';
           return (
-            <div className="flex gap-2">
+            <div className="flex gap-1">
               <button
                 className="rounded-md bg-blue-600 px-2 py-1 hover:bg-blue-700"
                 onClick={() => onControl(info.getValue())}
@@ -293,10 +295,10 @@ function OfferTable({
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} className="!border-px !border-gray-400">
-                {headerGroup.headers.map((header) => {
+                {headerGroup.headers.map((header, idx) => {
                   return (
                     <th
-                      key={header.id}
+                      key={header.id + idx}
                       colSpan={header.colSpan}
                       onClick={header.column.getToggleSortingHandler()}
                       className="cursor-pointer border-b border-gray-400 pb-2 pr-4 pt-4 text-start dark:border-white/30"
@@ -327,9 +329,9 @@ function OfferTable({
                     key={row.id}
                     className="border-b border-gray-100 hover:bg-lightPrimary dark:border-gray-900 dark:hover:bg-navy-700"
                   >
-                    {row.getVisibleCells().map((cell) => {
+                    {row.getVisibleCells().map((cell, idx) => {
                       return (
-                        <td key={cell.id} className="min-w-[80px] p-1">
+                        <td key={cell.id + idx} className="p-2">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),

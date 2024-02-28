@@ -24,9 +24,8 @@ import Search from 'components/search/search';
 import Button from 'components/button/button';
 import { formatDateTime, useDrage } from 'utils';
 import FileViewer from 'components/fileViewer';
-import { FaultObj, MainTable } from '../../../app/localTypes/table-types';
+import { FaultObj, MainTable } from 'app/localTypes/table-types';
 import TablePagination from './tablePagination';
-import Barcode from 'react-jsbarcode';
 
 function EntryTable({
   tableData,
@@ -70,7 +69,7 @@ function EntryTable({
       columnHelper.accessor('id', {
         id: 'id',
         header: () => (
-          <p className="group relative  min-w-[65px] max-w-fit  text-sm font-bold text-gray-600 dark:text-white">
+          <p className="group relative min-w-[65px] max-w-fit  whitespace-nowrap break-keep  text-sm font-bold text-gray-600 dark:text-white">
             SİRA NO.{' '}
             <span className="absolute right-0 top-0 hidden group-hover:block">
               <MdOutlineKeyboardDoubleArrowDown />
@@ -102,7 +101,7 @@ function EntryTable({
       columnHelper.accessor('productCode', {
         id: 'productCode',
         header: () => (
-          <p className="group relative min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="group relative min-w-[100px] whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
             Ürün Kodu{' '}
             <span className="absolute right-0 top-0 hidden group-hover:block">
               <MdOutlineKeyboardDoubleArrowDown />
@@ -126,7 +125,10 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="line-clamp-2 text-sm font-bold text-navy-700 dark:text-white">
+          <p
+            title={info.getValue()}
+            className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white"
+          >
             {info.getValue()}
           </p>
         ),
@@ -134,7 +136,7 @@ function EntryTable({
       columnHelper.accessor('product', {
         id: 'product',
         header: () => (
-          <p className="group relative min-w-[160px] max-w-[180px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="group relative min-w-[160px] max-w-[180px] whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
             Ürün İsmi{' '}
             <span className="absolute right-0 top-0 hidden group-hover:block">
               <MdOutlineKeyboardDoubleArrowDown />
@@ -142,7 +144,10 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p
+            title={info.getValue()}
+            className="clamp-1 text-sm font-bold text-navy-700 dark:text-white"
+          >
             {info.getValue()}
           </p>
         ),
@@ -167,7 +172,7 @@ function EntryTable({
       columnHelper.accessor('arrivalDate', {
         id: 'arrivalDate',
         header: () => (
-          <p className="group relative min-w-[120px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="group relative min-w-[120px] whitespace-nowrap break-keep  text-sm font-bold uppercase text-gray-600 dark:text-white">
             GİRİŞ TARİHİ{' '}
             <span className="absolute right-0 top-0 hidden group-hover:block">
               <MdOutlineKeyboardDoubleArrowDown />
@@ -175,7 +180,10 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p
+            title={formatDateTime(info.getValue())}
+            className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white"
+          >
             {formatDateTime(info.getValue())}
           </p>
         ),
@@ -191,7 +199,10 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p
+            title={info.getValue()}
+            className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white"
+          >
             {info.getValue()}
           </p>
         ),
@@ -207,7 +218,10 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="min-w-[100px] text-sm font-bold text-navy-700 dark:text-white">
+          <p
+            title={info.getValue()}
+            className="line-clamp-1 min-w-[100px] text-sm font-bold text-navy-700 dark:text-white"
+          >
             {info.getValue()}
           </p>
         ),
@@ -239,7 +253,10 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="min-w-[180px] text-sm font-bold text-navy-700 dark:text-white">
+          <p
+            title={info.getValue()}
+            className="line-clamp-1 min-w-[180px] text-sm font-bold text-navy-700 dark:text-white"
+          >
             {info.getValue()}
           </p>
         ),
@@ -247,7 +264,7 @@ function EntryTable({
       columnHelper.accessor('technicalDrawingAttachment', {
         id: 'technicalDrawingAttachment',
         header: () => (
-          <p className="min-w-[110px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[110px] whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
             İlgi Doküman
           </p>
         ),
@@ -260,7 +277,7 @@ function EntryTable({
       columnHelper.accessor('status', {
         id: 'status',
         header: () => (
-          <p className="min-w-[130px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[130px] whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
             KONTROL DURUMU
           </p>
         ),
@@ -285,7 +302,7 @@ function EntryTable({
             info.row.original.status === 'ACCEPT' ||
             info.row.original.status === 'ACCEPTANCE_WITH_CONDITION';
           return (
-            <div className="flex gap-2">
+            <div className="flex gap-1">
               <button
                 className="rounded-md bg-blue-600 px-2 py-1 hover:bg-blue-700"
                 onClick={() => onControl(info.getValue())}
@@ -371,10 +388,10 @@ function EntryTable({
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} className="!border-px !border-gray-400">
-                {headerGroup.headers.map((header) => {
+                {headerGroup.headers.map((header, idx) => {
                   return (
                     <th
-                      key={header.id}
+                      key={header.id + idx}
                       colSpan={header.colSpan}
                       onClick={header.column.getToggleSortingHandler()}
                       className="cursor-pointer border-b border-gray-400 pb-2 pr-4 pt-4 text-start dark:border-white/30"
@@ -405,9 +422,9 @@ function EntryTable({
                     key={row.id}
                     className="border-b border-gray-100 hover:bg-lightPrimary dark:border-gray-900 dark:hover:bg-navy-700"
                   >
-                    {row.getVisibleCells().map((cell) => {
+                    {row.getVisibleCells().map((cell, idx) => {
                       return (
-                        <td key={cell.id} className="min-w-[80px] p-1">
+                        <td key={cell.id + idx} className="p-2">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),
