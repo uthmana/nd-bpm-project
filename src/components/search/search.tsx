@@ -32,10 +32,10 @@ const Search = ({
         e.preventDefault();
         onSubmit(searchText);
       }}
-      className={`flex h-[48px] items-center rounded-full bg-lightPrimary text-navy-700 dark:bg-navy-900 dark:text-white xl:w-[225px] ${extra}`}
+      className={`flex h-[48px] w-full items-center rounded-full bg-lightPrimary text-navy-700 dark:bg-navy-900 dark:text-white ${extra}`}
     >
       <p className="pl-3 pr-2 text-xl">
-        <FiSearch className="h-4 w-4 text-gray-400 dark:text-white" />
+        <FiSearch className="h-4 w-4 text-gray-600 dark:text-white" />
       </p>
       <input
         value={searchText}
@@ -43,7 +43,7 @@ const Search = ({
         onKeyUp={(e) => onChange(searchText)}
         onChange={(e) => setSearchText(e.target.value)}
         placeholder="Arama..."
-        className="block h-full w-full rounded-full bg-lightPrimary text-sm font-medium text-navy-700 outline-none placeholder:!text-gray-400 dark:bg-navy-900 dark:text-white dark:placeholder:!text-white sm:w-fit"
+        className="h-full w-full rounded-full bg-lightPrimary text-base font-medium text-navy-700 outline-none placeholder:!text-gray-400 dark:bg-navy-900 dark:text-white dark:placeholder:!text-white"
       />
     </form>
   );

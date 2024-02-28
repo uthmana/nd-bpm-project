@@ -300,7 +300,7 @@ export default function Stock(props: {
           onChange={handleValues}
           id="description"
           name="description"
-          placeholder="Description"
+          placeholder="Açıklama"
           extra="mb-8"
           value={values.description}
         />

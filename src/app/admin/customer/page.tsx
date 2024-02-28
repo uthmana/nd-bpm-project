@@ -9,7 +9,7 @@ import { deleteCustomer, getCustomers } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import Popup from 'components/popup';
 import Button from 'components/button/button';
-import { LatestInvoicesSkeleton } from 'components/skeleton';
+import { TableSkeleton } from 'components/skeleton';
 
 const Customers = () => {
   const router = useRouter();
@@ -68,7 +68,7 @@ const Customers = () => {
   return (
     <div className="mt-3 w-full">
       {isLoading ? (
-        <LatestInvoicesSkeleton />
+        <TableSkeleton />
       ) : (
         <MainTable
           onAdd={onAdd}

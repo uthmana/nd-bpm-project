@@ -1,6 +1,6 @@
 'use client';
 
-import { LatestInvoicesSkeleton } from 'components/skeleton';
+import { TableSkeleton } from 'components/skeleton';
 import OfferTable from 'components/admin/data-tables/offerTable';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { log } from 'utils';
@@ -96,7 +96,7 @@ const Offer = () => {
   return (
     <div className="mt-3 w-full">
       {isLoading ? (
-        <LatestInvoicesSkeleton />
+        <TableSkeleton />
       ) : (
         <OfferTable
           onAdd={onAdd}

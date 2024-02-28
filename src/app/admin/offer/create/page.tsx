@@ -7,6 +7,7 @@ import { getCustomers, addOffer } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { log } from 'utils';
+import Card from 'components/card';
 
 export default function Create() {
   const [customers, setCustomers] = useState([]);
@@ -68,7 +69,7 @@ export default function Create() {
         <div className="w-full">
           <OfferDoc offer={offerData} />
         </div>
-        <div className="w-full bg-white px-4 py-8">
+        <Card extra="w-full bg-white px-4 py-8">
           <OfferForm
             key={customers.length}
             info={customers}
@@ -76,7 +77,7 @@ export default function Create() {
             onSubmit={(val) => handleSubmit(val)}
             isSubmitting={isSubmitting}
           />
-        </div>
+        </Card>
       </div>
     </>
   );

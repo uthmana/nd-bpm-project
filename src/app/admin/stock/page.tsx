@@ -1,12 +1,11 @@
 'use client';
 
 import MainTable from 'components/admin/data-tables/mainTable';
-import { stockTableData } from 'variables/data-tables/tableDataMain';
 import { useRouter } from 'next/navigation';
 import { log } from 'utils';
 import { useEffect, useState } from 'react';
 import { deleteStock, getStocks } from 'app/lib/apiRequest';
-import { LatestInvoicesSkeleton } from 'components/skeleton';
+import { TableSkeleton } from 'components/skeleton';
 import { toast } from 'react-toastify';
 import Popup from 'components/popup';
 import Button from 'components/button/button';
@@ -79,7 +78,7 @@ const Stock = () => {
   return (
     <div className="mt-3 w-full">
       {isLoading ? (
-        <LatestInvoicesSkeleton />
+        <TableSkeleton />
       ) : (
         <MainTable
           onAdd={onAdd}

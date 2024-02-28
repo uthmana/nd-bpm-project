@@ -16,6 +16,7 @@ import InputField from 'components/fields/InputField';
 import DataList from 'components/fields/dataList';
 import { addOfferItem, deleteOfferItem } from 'app/lib/apiRequest';
 import { useSession } from 'next-auth/react';
+import Card from 'components/card';
 
 export default function OfferForm(props: {
   onSubmit: (e: any, d: any) => void;
@@ -392,7 +393,7 @@ export default function OfferForm(props: {
                 />
               </div>
 
-              <div className="mt-10 grid w-full grid-cols-2 gap-2 rounded-lg bg-lightPrimary px-3 py-4 sm:grid-cols-3">
+              <Card extra="mt-10 grid w-full grid-cols-2 gap-2 rounded-lg bg-lightPrimary px-3 py-4 sm:grid-cols-3">
                 <InputField
                   label="Ürün"
                   onChange={handleProductValues}
@@ -450,7 +451,7 @@ export default function OfferForm(props: {
                   extra="mt-7 h-[36px]"
                   text="EKLE"
                 />
-              </div>
+              </Card>
             </div>
           </div>
 

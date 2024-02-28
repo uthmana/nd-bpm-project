@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { log } from 'utils';
 import { useEffect, useState } from 'react';
 import { deleteFault, getFaults } from 'app/lib/apiRequest';
-import { LatestInvoicesSkeleton } from 'components/skeleton';
+import { TableSkeleton } from 'components/skeleton';
 import { toast } from 'react-toastify';
 import Popup from 'components/popup';
 import Button from 'components/button/button';
@@ -87,7 +87,7 @@ const Entry = () => {
   return (
     <div className="mt-3 w-full">
       {isLoading ? (
-        <LatestInvoicesSkeleton />
+        <TableSkeleton />
       ) : (
         <EntryTable
           onAdd={onAdd}

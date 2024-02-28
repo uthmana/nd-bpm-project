@@ -356,90 +356,93 @@ function EntryTable({
     debugTable: true,
   });
   return (
-    <Card extra={'w-full h-full sm:overflow-auto px-6 pb-3'}>
-      <header className="relative flex items-center justify-between gap-4 pt-6">
-        <div className="text-md font-medium text-navy-700 dark:text-white">
+    <>
+      <header className="relative mb-7 flex items-center justify-between gap-4 border-b">
+        <div className="text-md w-[60%] font-medium text-navy-700 dark:text-white">
           <Search
-            extra="!h-[38px] md:w-[300px] md:max-w-[300px]"
+            extra="w-full"
             onSubmit={(val) => setGlobalFilter(val)}
             onChange={(val) => setGlobalFilter(val)}
-            value={search}
           />
         </div>
-
         {variant === 'NORMAL' || variant === 'ADMIN' ? (
           <Button
             text="EKLE"
-            extra="!w-[140px] h-[38px] font-bold"
+            extra="!w-[140px] h-[38px] font-bold mb-3"
             onClick={onAdd}
             icon={<MdAdd className="ml-1 h-6 w-6" />}
           />
         ) : null}
       </header>
 
-      <div
-        className="custom-scrollbar--hidden mt-8 overflow-x-scroll"
-        onMouseDown={handleMouseDown}
-        onMouseLeave={handleMouseLeave}
-        onMouseUp={handleMouseUp}
-        onMouseMove={handleMouseMove}
-      >
-        <table className="w-full">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="!border-px !border-gray-400">
-                {headerGroup.headers.map((header, idx) => {
+      <Card extra={'w-full h-full sm:overflow-auto px-6 pb-3'}>
+        <div
+          className="custom-scrollbar--hidden mt-8 overflow-x-scroll"
+          onMouseDown={handleMouseDown}
+          onMouseLeave={handleMouseLeave}
+          onMouseUp={handleMouseUp}
+          onMouseMove={handleMouseMove}
+        >
+          <table className="w-full">
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr
+                  key={headerGroup.id}
+                  className="!border-px !border-gray-400"
+                >
+                  {headerGroup.headers.map((header, idx) => {
+                    return (
+                      <th
+                        key={header.id + idx}
+                        colSpan={header.colSpan}
+                        onClick={header.column.getToggleSortingHandler()}
+                        className="cursor-pointer border-b border-gray-400 pb-2 pr-4 pt-4 text-start dark:border-white/30"
+                      >
+                        <div className="items-center justify-between text-xs text-gray-200">
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                          {{
+                            asc: '',
+                            desc: '',
+                          }[header.column.getIsSorted() as string] ?? null}
+                        </div>
+                      </th>
+                    );
+                  })}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {table
+                .getRowModel()
+                .rows.slice()
+                .map((row) => {
                   return (
-                    <th
-                      key={header.id + idx}
-                      colSpan={header.colSpan}
-                      onClick={header.column.getToggleSortingHandler()}
-                      className="cursor-pointer border-b border-gray-400 pb-2 pr-4 pt-4 text-start dark:border-white/30"
+                    <tr
+                      key={row.id}
+                      className="border-b border-gray-100 hover:bg-lightPrimary dark:border-gray-900 dark:hover:bg-navy-700"
                     >
-                      <div className="items-center justify-between text-xs text-gray-200">
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                        {{
-                          asc: '',
-                          desc: '',
-                        }[header.column.getIsSorted() as string] ?? null}
-                      </div>
-                    </th>
+                      {row.getVisibleCells().map((cell, idx) => {
+                        return (
+                          <td key={cell.id + idx} className="p-2">
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
                   );
                 })}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table
-              .getRowModel()
-              .rows.slice()
-              .map((row) => {
-                return (
-                  <tr
-                    key={row.id}
-                    className="border-b border-gray-100 hover:bg-lightPrimary dark:border-gray-900 dark:hover:bg-navy-700"
-                  >
-                    {row.getVisibleCells().map((cell, idx) => {
-                      return (
-                        <td key={cell.id + idx} className="p-2">
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
-          </tbody>
-        </table>
-        <TablePagination table={table} />
-      </div>
-    </Card>
+            </tbody>
+          </table>
+          <TablePagination table={table} />
+        </div>
+      </Card>
+    </>
   );
 }
 
