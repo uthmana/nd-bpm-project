@@ -1,7 +1,6 @@
 'use client';
 
 import MainTable from 'components/admin/data-tables/mainTable';
-import { customerTableData } from 'variables/data-tables/tableDataMain';
 import { useRouter } from 'next/navigation';
 import { log } from 'utils';
 import { useEffect, useState } from 'react';
