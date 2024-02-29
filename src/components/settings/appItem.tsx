@@ -88,12 +88,12 @@ const AppItem = ({ title, data, onAdd, onEdit, onDelete, isSubmitting }) => {
               id="name"
               name="name"
               placeholder=""
-              extra="mb-2 font-medium -mt-[25px] h-[30px]"
+              extra="mb-2 font-medium -mt-[26px] h-[30px]"
               value={value.name}
             />
             <Button
               onClick={handleAdd}
-              extra="absolute right-[1px] top-0 h-7 rounded-tl-none rounded-bl-none rounded-tr-md rounded-br-md !w-[40px]"
+              extra="absolute right-[1px] -top-[1px] h-7 rounded-tl-none rounded-bl-none rounded-tr-md rounded-br-md !w-[40px]"
               text=""
               icon={<MdAdd className="ml-1 h-6 w-6" />}
               disabled={isSubmitting}

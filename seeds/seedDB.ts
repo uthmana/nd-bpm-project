@@ -31,19 +31,23 @@ async function Users() {
 async function Machines() {
   for (const machineData of machines) {
     try {
-      await prisma.machine.create({
-        data: machineData,
+      const createdMachine = await prisma.machine.create({
+        data: {
+          machine_Name: machineData.machine_Name,
+          machineParams: {
+            create: machineData.machineParams.map((param) => ({
+              param_name: param.param_name,
+              display_name: param.display_name,
+            })),
+          },
+        },
       });
-      // console.log(`Machine "${machineData.machine_Name}" seeded successfully.`);
+      console.log(`Created machine with ID: ${createdMachine.id}`);
     } catch (error) {
-      console.error(
-        `Error seeding Machine "${machineData.machine_Name}": ${error.message}`,
-      );
+      console.error(`Error creating machine: ${error.message}`);
     }
   }
-  console.log('Machines Data seeded successfully.');
 }
-
 // Seeding of Standards
 async function Standards() {
   for (const standardData of standards) {

@@ -77,7 +77,7 @@ function MiniTable({
               </p>
             ),
             cell: (info: any) => (
-              <p className="min-w-[120px] text-sm font-bold text-navy-700 dark:text-white">
+              <p className="min-w-[120px] whitespace-nowrap break-keep text-sm font-bold text-navy-700 dark:text-white">
                 {info.getValue()}
               </p>
             ),
@@ -123,7 +123,7 @@ function MiniTable({
               </p>
             ),
             cell: (info: any) => (
-              <p className="min-w-[90px] text-sm font-bold text-navy-700 dark:text-white">
+              <p className="min-w-[90px] whitespace-nowrap break-keep text-sm font-bold text-navy-700 dark:text-white">
                 {info.getValue()}
               </p>
             ),
@@ -178,7 +178,7 @@ function MiniTable({
               </p>
             ),
             cell: (info: any) => (
-              <p className="min-w-[80px] text-sm font-bold text-navy-700 dark:text-white">
+              <p className="min-w-[80px] whitespace-nowrap break-keep text-sm font-bold text-navy-700 dark:text-white">
                 {info.getValue()}
               </p>
             ),

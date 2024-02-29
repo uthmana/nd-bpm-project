@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(fault, { status: 200 });
   } catch (e) {
+    console.log({ e });
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
       e instanceof Prisma.PrismaClientUnknownRequestError ||
