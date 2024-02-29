@@ -12,7 +12,6 @@ import { TableSkeleton } from 'components/skeleton';
 
 const Customers = () => {
   const router = useRouter();
-
   const [customers, setCustomers] = useState([]);
   const [isShowPopUp, setIsShowPopUp] = useState(false);
   const [customerId, setCustomerId] = useState('');
