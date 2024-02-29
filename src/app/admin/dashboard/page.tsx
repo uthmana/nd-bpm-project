@@ -55,7 +55,7 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div>
+    <div className="w-full">
       <Suspense fallback={<Loading />}>
         <div className="mt-3 grid grid-cols-1 gap-5  sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 2xl:grid-cols-3 3xl:grid-cols-6">
           <Widget
@@ -89,38 +89,30 @@ const Dashboard = () => {
             subtitle={widgetData?.offer}
           />
         </div>
-      </Suspense>
-      <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
-        <Suspense fallback={<Loading />}>
+        <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
           <TotalSpent chartData={monthlyProcess} />
-        </Suspense>
-        <Suspense fallback={<Loading />}>
           <WeeklyRevenue chartData={monthlyInvoice} />
-        </Suspense>
-      </div>
-      <div className="mt-5 grid grid-cols-1 gap-5">
-        <Suspense fallback={<Loading />}>
+        </div>
+        <div className="mt-5 grid grid-cols-1 gap-5">
           <MiniTable
             variant="process"
             title="Yeni Proces"
             tableData={recentProcess}
             key={recentProcess.length}
           />
-        </Suspense>
-      </div>
-      <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
-        <div className="col-span-2">
-          <Suspense fallback={<Loading />}>
+        </div>
+        <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
+          <div className="col-span-2">
             <MiniTable
               variant="customer"
               title="Yeni Müşteri"
               tableData={recentCustomer}
               key={recentCustomer.length}
             />
-          </Suspense>
+          </div>
+          <MiniCalendar className="p-4 dark:!bg-[#111c44]" />
         </div>
-        <MiniCalendar className="p-4 dark:!bg-[#111c44]" />
-      </div>
+      </Suspense>
     </div>
   );
 };

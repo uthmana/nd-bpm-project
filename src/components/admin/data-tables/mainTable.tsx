@@ -665,7 +665,7 @@ function MainTable({
       </header>
       <Card extra={'w-full h-full sm:overflow-auto px-6 pb-3'}>
         <div
-          className="custom-scrollbar--hidden mt-8 overflow-x-scroll"
+          className="custom-scrollbar--hidden mt-9 overflow-x-scroll"
           onMouseDown={handleMouseDown}
           onMouseLeave={handleMouseLeave}
           onMouseUp={handleMouseUp}

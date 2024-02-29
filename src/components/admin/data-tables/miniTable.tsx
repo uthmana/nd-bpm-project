@@ -333,7 +333,7 @@ function MiniTable({
     debugTable: true,
   });
   return (
-    <Card extra={'w-full min-h-[300px] sm:overflow-auto px-6 pt-7 pb-10'}>
+    <Card extra={'w-full min-h-[320px] sm:overflow-auto px-6 pt-7 pb-10'}>
       <h2 className="text-lg font-bold text-navy-700 dark:text-white">
         {title}
       </h2>
@@ -385,7 +385,7 @@ function MiniTable({
                   >
                     {row.getVisibleCells().map((cell) => {
                       return (
-                        <td key={cell.id} className="p-2">
+                        <td key={cell.id} className="p-3">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),
