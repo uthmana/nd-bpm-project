@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { getProcessById, updateProcess } from 'app/lib/apiRequest';
 import { useParams, useRouter } from 'next/navigation';
-import { LatestInvoicesSkeleton } from 'components/skeleton';
+import { DetailSkeleton } from 'components/skeleton';
 import Card from 'components/card';
 import TechParamsTable from 'components/admin/data-tables/techParamsTable';
 import {
@@ -17,7 +17,6 @@ import Popup from 'components/popup';
 import { formatDateTime, log } from 'utils';
 import { useSession } from 'next-auth/react';
 import { MdAdd } from 'react-icons/md';
-
 import FileViewer from 'components/fileViewer';
 import DetailHeader from 'components/detailHeader';
 
@@ -243,7 +242,7 @@ export default function EntryControl() {
   return (
     <div className="mx-auto mt-4 max-w-full rounded-2xl px-2">
       {isLoading ? (
-        <LatestInvoicesSkeleton />
+        <DetailSkeleton />
       ) : (
         <>
           <DetailHeader {...detailData} />

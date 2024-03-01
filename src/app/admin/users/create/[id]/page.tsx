@@ -6,7 +6,7 @@ import { log } from 'utils';
 import { useParams } from 'next/navigation';
 import { getUserById, updateUser } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
-import { UserFormSkeleton } from 'components/skeleton';
+import { FormSkeleton } from 'components/skeleton';
 import Card from 'components/card';
 
 export default function Edit() {
@@ -57,7 +57,7 @@ export default function Edit() {
     <Card extra="mt-12 mx-auto mt-4 max-w-[780px] rounded-2xl px-8 py-10 bg-white dark:bg-[#111c44] dark:text-white">
       {isLoading ? (
         <div className="w-full">
-          <UserFormSkeleton />
+          <FormSkeleton />
         </div>
       ) : (
         <UserForm

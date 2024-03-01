@@ -350,3 +350,112 @@ export function LargeBoxSkeleton() {
     </div>
   );
 }
+
+export function DetailSkeleton() {
+  return (
+    <>
+      <div className="mb-5 w-full animate-pulse rounded-md">
+        <div className="mb-4 flex items-center justify-between gap-2 rounded-md bg-white p-7 dark:bg-navy-600">
+          <div className="h-4 w-20 rounded-md bg-gray-200" />
+          <div className="h-2 w-16 rounded-md bg-gray-200" />
+        </div>
+
+        <div className="bg-white  p-7  dark:bg-navy-600">
+          <div className="mb-10 flex w-full  flex-col gap-2 ">
+            <div className="flex w-full items-center justify-between">
+              <div className="h-4 w-24 rounded-md bg-gray-200" />
+              <div className="h-7 w-32 rounded-md bg-gray-200" />
+            </div>
+          </div>
+          <div className="mb-4 grid w-full grid-cols-3 items-center gap-12 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, idx) => {
+              return (
+                <div key={idx} className="flex w-full flex-col gap-2">
+                  <div className="h-2 w-32 rounded-md bg-gray-200" />
+                  <div className="h-2 w-16 rounded-md bg-gray-200" />
+                  <div className="h-2 w-12 rounded-md bg-gray-200" />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+      <div className="bg-white  p-7  dark:bg-navy-600">
+        <div className="mb-10 flex w-full  flex-col gap-2 ">
+          <div className="flex w-full items-center justify-between">
+            <div className="h-4 w-24 rounded-md bg-gray-200" />
+            <div className="h-7 w-32 rounded-md bg-gray-200" />
+          </div>
+        </div>
+        <div className="mb-4 grid w-full grid-cols-3 items-center gap-12 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, idx) => {
+            return (
+              <div key={idx} className="flex w-full flex-col gap-2">
+                <div className="h-2 w-32 rounded-md bg-gray-200" />
+                <div className="h-2 w-16 rounded-md bg-gray-200" />
+                <div className="h-2 w-12 rounded-md bg-gray-200" />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </>
+  );
+}
+
+export function FormSkeleton() {
+  return (
+    <div className="mb-10  w-full animate-pulse rounded-md  bg-white p-7 dark:bg-navy-600">
+      <div className="mb-4 flex flex-col items-center justify-center gap-2 rounded-md bg-white p-7 dark:bg-navy-600">
+        <div className="h-2 w-64 rounded-md bg-gray-200" />
+        <div className="h-2 w-32 rounded-md bg-gray-200" />
+      </div>
+
+      <div className="mb-7 bg-white dark:bg-navy-600">
+        <div className="mb-4 grid w-full grid-cols-1 gap-12 sm:grid-cols-2">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((item, idx) => {
+            return (
+              <div className="flex flex-col gap-2">
+                <div className="h-2 w-32 rounded-md bg-gray-200" />
+                <div className="h-8 w-full rounded-md bg-gray-200" />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="mb-8 flex flex-col gap-2">
+        <div className="h-2 w-32 rounded-md bg-gray-200" />
+        <div className="h-20 w-full rounded-md bg-gray-200" />
+      </div>
+
+      <div className="h-10 w-full rounded-md bg-gray-200" />
+    </div>
+  );
+}
+
+export function SettingsSkeleton() {
+  return (
+    <div className="mb-10 w-full animate-pulse rounded-md bg-white  p-7 pt-10 dark:bg-navy-600">
+      <div
+        className="mb-16 flex  items-center justify-between
+       gap-2 rounded-md bg-white dark:bg-navy-600"
+      >
+        <div className="h-8 w-64 rounded-md bg-gray-200" />
+        <div className="h-8 w-32 rounded-md bg-gray-200" />
+      </div>
+      <div className="mb-7 bg-white dark:bg-navy-600">
+        <div
+          className="mb-4 grid w-full grid-cols-2 gap-12 sm:grid-cols-3
+        md:grid-cols-4"
+        >
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, idx) => {
+            return (
+              <div key={idx} className="h-32 w-full rounded-md bg-gray-200" />
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { log } from 'utils';
 import { toast } from 'react-toastify';
 import { getFaultById, updateFault } from 'app/lib/apiRequest';
-import { UserFormSkeleton } from 'components/skeleton';
+import { DetailSkeleton } from 'components/skeleton';
 import { useSession } from 'next-auth/react';
 import Card from 'components/card';
 import {
@@ -146,7 +146,7 @@ export default function Edit() {
   return (
     <div className="w-full">
       {isLoading ? (
-        <UserFormSkeleton />
+        <DetailSkeleton />
       ) : (
         <>
           <DetailHeader {...detailData} />

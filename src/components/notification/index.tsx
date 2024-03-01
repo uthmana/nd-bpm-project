@@ -40,11 +40,11 @@ export default function Notification({ user }) {
   }, []);
 
   const handleNotifClick = async ({ id, link }) => {
-    setIsOpen(false);
     const { status, data } = await updateNotificStatus({ id });
     if (status === 200) {
       getMyNotification();
       router.push(link);
+      setIsOpen(false);
     }
   };
 

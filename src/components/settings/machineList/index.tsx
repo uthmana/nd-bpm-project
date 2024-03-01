@@ -84,7 +84,7 @@ const MachineList = () => {
   return (
     <div className="w-full">
       <div className="w-full">
-        <div className="mb-4 mt-2 flex w-full justify-between">
+        <div className="mb-8 mt-2 flex w-full justify-between">
           <h2 className="px-2 text-xl font-bold text-navy-700 dark:text-white">
             Makine Yönetimi
           </h2>

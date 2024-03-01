@@ -7,41 +7,53 @@ import StandardList from 'components/settings/standardList';
 import ColorList from 'components/settings/colorList';
 import { useEffect, useState } from 'react';
 import { getFaultSettings } from 'app/lib/apiRequest';
+import { SettingsSkeleton } from 'components/skeleton';
 
 const Setting = () => {
   const [apps, setApps] = useState([] as any);
-
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       const { status, data } = await getFaultSettings();
       if (status === 200) {
         setApps(data);
       }
+      setIsLoading(false);
     };
     fetchData();
   }, []);
 
   return (
-    <div className="flex w-full flex-col gap-5 lg:gap-5">
-      <div className="w-full">
-        <Card extra={'w-full h-full py-7 px-4'}>
-          <MachineList />
-        </Card>
-      </div>
-      <div className="grid w-full grid-cols-1 items-start gap-4 sm:grid-cols-2 md:grid-cols-3">
-        <Card extra="w-full py-7 px-4">
-          <ApplicationList
-            key={apps?.applications?.length}
-            data={apps?.applications}
-          />
-        </Card>
-        <Card extra="w-full py-7 px-4">
-          <StandardList key={apps?.standards?.length} data={apps?.standards} />
-        </Card>
-        <Card extra="w-full py-7 px-4">
-          <ColorList key={apps?.colors?.length} data={apps?.colors} />
-        </Card>
-      </div>
+    <div>
+      {isLoading ? (
+        <SettingsSkeleton />
+      ) : (
+        <div className="flex w-full flex-col gap-5 lg:gap-5">
+          <div className="w-full">
+            <Card extra={'w-full h-full py-7 px-4'}>
+              <MachineList />
+            </Card>
+          </div>
+          <div className="grid w-full grid-cols-1 items-start gap-4 sm:grid-cols-2 md:grid-cols-3">
+            <Card extra="w-full py-7 px-4">
+              <ApplicationList
+                key={apps?.applications?.length}
+                data={apps?.applications}
+              />
+            </Card>
+            <Card extra="w-full py-7 px-4">
+              <StandardList
+                key={apps?.standards?.length}
+                data={apps?.standards}
+              />
+            </Card>
+            <Card extra="w-full py-7 px-4">
+              <ColorList key={apps?.colors?.length} data={apps?.colors} />
+            </Card>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

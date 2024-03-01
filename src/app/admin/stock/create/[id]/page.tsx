@@ -1,16 +1,16 @@
 'use client';
+
 import React, { useEffect, useState } from 'react';
 import StockForm from 'components/forms/stock';
 import { useParams, useRouter } from 'next/navigation';
 import { log } from 'utils';
 import { toast } from 'react-toastify';
 import { getCustomers, getStockById, updateStock } from 'app/lib/apiRequest';
-import { UserFormSkeleton } from 'components/skeleton';
+import { FormSkeleton, UserFormSkeleton } from 'components/skeleton';
 import Card from 'components/card';
 
 export default function Edit() {
   const router = useRouter();
-
   const queryParams = useParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [stock, setStock] = useState([]);
@@ -21,7 +21,6 @@ export default function Edit() {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        // Use Promise.all to fetch both stock and customers simultaneously
         const [stockResponse, customersResponse] = await Promise.all([
           getStockById(queryParams.id),
           getCustomers(),
@@ -37,7 +36,6 @@ export default function Edit() {
           setIsSubmitting(false);
         }
       } catch (error) {
-        // Handle errors if any
         console.error('Error fetching data:', error);
       } finally {
         setIsLoading(false);
@@ -74,7 +72,7 @@ export default function Edit() {
     <Card extra="mt-12 mx-auto mt-4 max-w-[780px] rounded-2xl px-8 py-10 bg-white dark:bg-[#111c44] dark:text-white">
       {isLoading ? (
         <div className="w-full">
-          <UserFormSkeleton />
+          <FormSkeleton />
         </div>
       ) : (
         <StockForm

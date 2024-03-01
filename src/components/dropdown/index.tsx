@@ -33,6 +33,12 @@ const Dropdown = (props: {
   const [openWrapper, setOpenWrapper] = React.useState(open || false);
   useOutsideAlerter(wrapperRef, setOpenWrapper);
 
+  const handleClick = () => {
+    if (open !== undefined) {
+      setOpenWrapper(open);
+    }
+  };
+
   return (
     <div ref={wrapperRef} className="relative flex">
       <div className="flex" onMouseDown={() => setOpenWrapper(!openWrapper)}>
@@ -45,7 +51,7 @@ const Dropdown = (props: {
             : 'origin-top-right transition-all duration-300 ease-in-out'
         } ${openWrapper ? 'scale-100' : 'scale-0'}`}
       >
-        {children}
+        <div onClick={handleClick}>{children}</div>
       </div>
     </div>
   );

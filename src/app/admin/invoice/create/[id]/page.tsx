@@ -7,6 +7,7 @@ import { getInvoiceById, updateInvoice } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
 import Card from 'components/card';
+import { FormSkeleton } from 'components/skeleton';
 
 export default function Edit() {
   const router = useRouter();
@@ -66,14 +67,18 @@ export default function Edit() {
 
   return (
     <Card extra="mt-12 mx-auto mt-4 max-w-[780px] rounded-2xl px-8 py-10 bg-white dark:bg-[#111c44] dark:text-white">
-      <InvoiceForm
-        key={customers[0]}
-        info={customers}
-        editData={invoice}
-        isSubmitting={isSubmitting}
-        title="İrsaliye Düzenleme"
-        onSubmit={(...val) => handleSubmit(val)}
-      />
+      {isLoading ? (
+        <FormSkeleton />
+      ) : (
+        <InvoiceForm
+          key={customers[0]}
+          info={customers}
+          editData={invoice}
+          isSubmitting={isSubmitting}
+          title="İrsaliye Düzenleme"
+          onSubmit={(...val) => handleSubmit(val)}
+        />
+      )}
     </Card>
   );
 }
