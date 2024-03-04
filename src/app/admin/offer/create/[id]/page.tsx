@@ -109,20 +109,20 @@ export default function Create() {
 
   return (
     <>
-      <div className="mx-auto max-w-[1200px]">
+      <div className="mx-auto max-w-[1320px]">
         <DetailHeader {...detailData} />
       </div>
 
-      <div className="mx-auto flex w-full max-w-[1200px] flex-col-reverse gap-2 lg:flex-row">
+      <div className="mx-auto flex w-full max-w-[1320px] flex-col-reverse justify-center gap-2 xl:flex-row">
         {isLoading ? (
           <LatestInvoicesSkeleton />
         ) : (
           <>
             {' '}
-            <div className="w-full">
+            <div className="mx-auto w-full max-w-[700px]">
               <OfferDoc offer={offerData} />
             </div>
-            <div className="w-full bg-white px-4 py-8">
+            <div className="mx-auto w-full max-w-[700px] bg-white px-4 py-8">
               <OfferForm
                 key={customers.length}
                 info={customers}

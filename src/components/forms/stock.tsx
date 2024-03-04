@@ -129,9 +129,8 @@ export default function Stock(props: {
       ) : null}
 
       {error ? (
-        <p className="mb-3 w-full rounded-md bg-red-500 p-2 text-center text-sm  font-bold text-white">
-          Lütfen <b> Müşteri </b>, <b> Ürün adi</b>,<b> Ürün kodu</b>,{' '}
-          <b>Fiyatı</b> ve Para birimi alanları boş bırakılmamalı !
+        <p className="mb-3 w-full rounded-md bg-red-300 p-2 text-center text-sm  font-bold text-white">
+          Lütfen <b> kırmızı ile işaretlenmiş alanaları doldurunuz !</b>
         </p>
       ) : null}
 
@@ -159,6 +158,7 @@ export default function Stock(props: {
           placeholder="Product Name"
           extra="mb-2"
           value={values.product_name}
+          required={true}
         />
         <InputField
           label="Ürün kodu"
@@ -169,6 +169,7 @@ export default function Stock(props: {
           placeholder="Ürün kodu"
           extra="mb-2"
           value={values.product_code}
+          required={true}
         />
 
         <InputField
@@ -238,6 +239,7 @@ export default function Stock(props: {
           extra="mb-2"
           min={1}
           value={values.inventory}
+          required={true}
         />
         <InputField
           label="Birim"
@@ -261,12 +263,14 @@ export default function Stock(props: {
           placeholder="22.99"
           extra="mb-2"
           value={values.current_price}
+          required={true}
         />
         <Select
           extra="pt-1"
           label="Para Birimi"
           onChange={handleValues}
           name="curency"
+          required={true}
         >
           {currency.map((item, idx) => {
             return (

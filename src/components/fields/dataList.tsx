@@ -28,7 +28,16 @@ export default function DataList(props: {
         className="ml-3 text-sm font-bold text-navy-700 dark:text-white"
         htmlFor={id}
       >
-        {label} {required ? <span className="text-red-400">*</span> : null}
+        {label}
+        {required !== undefined ? (
+          <span
+            className={`${
+              required && value ? 'text-green-600' : 'text-red-400'
+            }`}
+          >
+            *
+          </span>
+        ) : null}
       </label>
       <input
         type="text"

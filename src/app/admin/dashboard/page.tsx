@@ -15,8 +15,8 @@ import Widget from 'components/widget/Widget';
 import MiniTable from 'components/admin/data-tables/miniTable';
 import { getDashboard } from '../../lib/apiRequest';
 import { Suspense, useEffect, useState } from 'react';
-import Loading from 'app/loading';
 import { log } from 'utils';
+import { NewDashboardSkeleton } from 'components/skeleton';
 
 const Dashboard = () => {
   const [widgetData, setWidgetData] = useState({} as any);
@@ -56,7 +56,7 @@ const Dashboard = () => {
 
   return (
     <div className="w-full">
-      <Suspense fallback={<Loading />}>
+      <Suspense fallback={<NewDashboardSkeleton />}>
         <div className="mt-3 grid grid-cols-1 gap-5  sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 2xl:grid-cols-3 3xl:grid-cols-6">
           <Widget
             icon={<MdOutlineGroups3 className="h-7 w-7" />}

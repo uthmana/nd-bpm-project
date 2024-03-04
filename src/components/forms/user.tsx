@@ -74,7 +74,7 @@ export default function User({ onSubmit, data, title, loading }: userForm) {
       ) : null}
 
       {error ? (
-        <p className="mb-3 w-full rounded-md bg-red-500 p-2 text-center text-sm  font-bold text-white">
+        <p className="mb-3 w-full rounded-md bg-red-300 p-2 text-center text-sm  font-bold text-white">
           Lütfen boş alanları doldurun !
         </p>
       ) : null}
@@ -88,6 +88,7 @@ export default function User({ onSubmit, data, title, loading }: userForm) {
         placeholder="Ad Soyad"
         extra="mb-2"
         value={values.name}
+        required={true}
       />
       <InputField
         label="E-posta"
@@ -98,6 +99,7 @@ export default function User({ onSubmit, data, title, loading }: userForm) {
         placeholder="Email"
         extra="mb-2"
         value={values.email}
+        required={true}
       />
       <InputField
         label="Şifre"
@@ -108,6 +110,7 @@ export default function User({ onSubmit, data, title, loading }: userForm) {
         placeholder="Şifre"
         extra="mb-2"
         value={values.password}
+        required={true}
       />
       <Select extra="mb-2" label="Rol" onChange={handleValues} name="role">
         {role.map((item, idx) => {

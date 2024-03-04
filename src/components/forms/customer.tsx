@@ -87,8 +87,8 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
       ) : null}
 
       {error ? (
-        <p className="mb-3 w-full rounded-md bg-red-500 p-2 text-center text-sm  font-bold text-white">
-          Lütfen Vergi No., Vergi Ofisi ve Vergi Ofis kodu boş bırakılmamalıdır!
+        <p className="mb-3 w-full rounded-md bg-red-300 p-2 text-center text-sm  font-bold text-white">
+          Lütfen <b> kırmızı ile işaretlenmiş alanaları doldurunuz !</b>
         </p>
       ) : null}
 
@@ -102,6 +102,7 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
           placeholder="Şirket İsmi"
           extra="mb-2 !w-full"
           value={values.company_name}
+          required={true}
         />
         <InputField
           label="Sorumlu"
@@ -112,6 +113,7 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
           placeholder="Sorumlu"
           extra="mb-2 w-full"
           value={values.rep_name}
+          required={true}
         />
       </div>
 
@@ -125,6 +127,7 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
           placeholder="example@mail.com"
           extra="mb-2"
           value={values.email}
+          required={true}
         />
 
         <InputField
@@ -173,6 +176,7 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
           placeholder="0224 XXX XXXX"
           extra="mb-2"
           value={values.phoneNumber}
+          required={true}
         />
 
         <InputField
@@ -221,6 +225,7 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
           placeholder="CRA10001"
           extra="mb-2"
           value={values.code}
+          required={true}
         />
 
         <InputField
@@ -232,6 +237,7 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
           placeholder="Postal Kodu"
           extra="mb-2"
           value={values.postalCode}
+          required={true}
         />
       </div>
 
@@ -295,6 +301,7 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
           placeholder="Vergi No."
           extra="mb-2"
           value={values.taxNo}
+          required={true}
         />
         <InputField
           label="Vergi Ofisi"
@@ -305,6 +312,7 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
           placeholder="Vergi Ofis"
           extra="mb-2"
           value={values.tax_Office}
+          required={true}
         />
         <InputField
           label="Vergi Ofis kodu"
@@ -315,6 +323,7 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
           placeholder="Vergi Ofis kodu"
           extra="mb-2"
           value={values.taxOfficeCode}
+          required={true}
         />
       </div>
 

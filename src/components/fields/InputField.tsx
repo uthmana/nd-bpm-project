@@ -53,7 +53,16 @@ function InputField(props: {
           variant === 'auth' ? 'ml-1.5 font-medium' : 'ml-3 font-bold'
         }`}
       >
-        {label} {required ? <span className="text-red-400">*</span> : null}
+        {label}{' '}
+        {required !== undefined ? (
+          <span
+            className={`${
+              required && value ? 'text-green-600' : 'text-red-400'
+            }`}
+          >
+            *
+          </span>
+        ) : null}
       </label>
       <input
         ref={inputElem}

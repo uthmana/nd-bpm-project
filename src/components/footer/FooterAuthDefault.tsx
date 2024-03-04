@@ -11,7 +11,7 @@ export default function Footer() {
         <li>
           <a
             target="blank"
-            href="#"
+            href="https://www.ndindustries.com.tr/iletisim/"
             className="text-sm text-gray-600 hover:text-gray-600 md:text-base lg:text-white lg:hover:text-white"
           >
             Yardım Merkezi

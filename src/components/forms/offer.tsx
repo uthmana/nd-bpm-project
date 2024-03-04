@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   formatDateTime,
   removeMillisecondsAndUTC,
@@ -14,7 +14,11 @@ import { MdOutlineArrowBack } from 'react-icons/md';
 import NextLink from 'next/link';
 import InputField from 'components/fields/InputField';
 import DataList from 'components/fields/dataList';
-import { addOfferItem, deleteOfferItem } from 'app/lib/apiRequest';
+import {
+  addOfferItem,
+  deleteOfferItem,
+  getFaultSettings,
+} from 'app/lib/apiRequest';
 import { useSession } from 'next-auth/react';
 import Card from 'components/card';
 
@@ -32,8 +36,11 @@ export default function OfferForm(props: {
   const [formTouch, setFormTouch] = useState(isUpdate);
   const [customers, setCustomers] = useState(info || []);
   const [products, setProducts] = useState(isUpdate ? editData?.product : []);
-  const { data: session } = useSession();
+  const [application, setApplication] = useState([]);
+  const [standard, setStandard] = useState([]);
 
+  const { data: session } = useSession();
+  const currency = ['TL', 'USD', 'EUR'];
   const [values, setValues] = useState(
     isUpdate
       ? editData
@@ -56,7 +63,6 @@ export default function OfferForm(props: {
         },
   );
 
-  const currency = ['TL', 'USD', 'EUR'];
   const [offer, setOffer] = useState({
     name: '',
     application: '',
@@ -64,6 +70,19 @@ export default function OfferForm(props: {
     quantity: '',
     price: '',
   });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data, status } = await getFaultSettings();
+      if (status === 200) {
+        const { applications, standards } = data;
+        setApplication(applications);
+        setStandard(standards);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleValues = (event) => {
     setError(false);
@@ -172,8 +191,8 @@ export default function OfferForm(props: {
     onChange({ ...values, totalAmount: totalPrice, product: newVal });
     setOffer({
       name: '',
-      application: '',
-      standard: '',
+      application: offer.application,
+      standard: offer.standard,
       quantity: '',
       price: '',
     });
@@ -343,21 +362,23 @@ export default function OfferForm(props: {
 
           <div className="mb-12 min-w-full pl-2">
             <div className="mb-6 grid w-full grid-cols-1">
-              <div className="grid w-full grid-cols-6 gap-1 border-b font-bold">
+              <div className="grid w-full grid-cols-10 gap-1 border-b text-sm font-bold">
                 <div className="col-span-1">No</div>
-                <div>Ürün</div>
-                <div>Uygulama</div>
-                <div>Standart</div>
-                <div>Miktar</div>
-                <div>Fiyat {`(${values.currency})`}</div>
+                <div className="col-span-2">Ürün</div>
+                <div className="col-span-2">Uygulama</div>
+                <div className="col-span-2">Standart</div>
+                <div className="col-span-1">Miktar</div>
+                <div className="col-span-2 whitespace-nowrap break-keep">
+                  Fiyat {`(${values.currency})`}
+                </div>
               </div>
 
               {products?.length > 0 ? (
                 products.map((item, idx) => {
                   return (
                     <label className="flex items-center" key={idx}>
-                      <div className="group grid w-full grid-cols-6 items-center gap-2 border-b py-1 text-sm font-bold text-navy-700 dark:text-white">
-                        <div className="flex gap-2 py-1">
+                      <div className="group grid w-full grid-cols-10 items-center gap-2 border-b py-1 text-sm font-bold text-navy-700 dark:text-white">
+                        <div className="col-span-1 flex gap-2 py-1">
                           <div
                             className="flex h-[24px] w-[24px] items-center justify-center rounded-full border p-2 hover:bg-red-400 hover:text-white"
                             onClick={(e) => removeProduct(e, idx)}
@@ -366,11 +387,11 @@ export default function OfferForm(props: {
                           </div>{' '}
                           {idx + 1}
                         </div>
-                        <div>{item?.name}</div>
-                        <div>{item?.application}</div>
-                        <div>{item?.standard}</div>
-                        <div>{item?.quantity}</div>
-                        <div>{item?.price}</div>
+                        <div className="col-span-2">{item?.name}</div>
+                        <div className="col-span-2">{item?.application}</div>
+                        <div className="col-span-2">{item?.standard}</div>
+                        <div className="col-span-1">{item?.quantity}</div>
+                        <div className="col-span-2">{item?.price}</div>
                       </div>
                     </label>
                   );
@@ -405,26 +426,36 @@ export default function OfferForm(props: {
                   value={offer.name}
                 />
 
-                <InputField
+                <Select
+                  extra="pt-1"
                   label="Uygulama"
                   onChange={handleProductValues}
-                  type="text"
-                  id="application"
                   name="application"
-                  placeholder=""
-                  extra="!h-[36px]"
-                  value={offer.application}
-                />
-                <InputField
-                  label="Standart"
+                >
+                  {application.map((item, idx) => {
+                    return (
+                      <option value={item.name} key={idx} selected={idx === 0}>
+                        {item.name}
+                      </option>
+                    );
+                  })}
+                </Select>
+
+                <Select
+                  extra="pt-1"
+                  label="standart"
                   onChange={handleProductValues}
-                  type="text"
-                  id="standard"
                   name="standard"
-                  placeholder=""
-                  extra="!h-[36px]"
-                  value={offer.standard}
-                />
+                >
+                  {standard.map((item, idx) => {
+                    return (
+                      <option value={item.name} key={idx} selected={idx === 0}>
+                        {item.name}
+                      </option>
+                    );
+                  })}
+                </Select>
+
                 <InputField
                   label="Miktar"
                   onChange={handleProductValues}

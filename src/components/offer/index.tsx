@@ -5,7 +5,7 @@ import Barcode from 'react-jsbarcode';
 
 export default function OfferDoc({ offer }) {
   return (
-    <div className="min-h-[800px] w-full bg-white px-10  py-8 lg:w-[680px] lg:max-w-[680px] print:absolute  print:top-0 print:z-[99999] print:min-h-screen print:w-screen">
+    <div className="min-h-[800px] w-full bg-white px-10  py-8 lg:w-[700px] lg:max-w-[700px] print:absolute  print:top-0 print:z-[99999] print:min-h-screen print:w-screen">
       <div className="mb-4 flex items-center justify-between border-b-2 pb-2">
         <div className="flex max-w-[200px] flex-col gap-2 text-xs">
           <div className="mb-3">
@@ -73,13 +73,15 @@ export default function OfferDoc({ offer }) {
       </p>
 
       <div className="mb-12 w-full" key={offer?.product?.length}>
-        <div className="grid w-full grid-cols-6 gap-1 border-b font-bold">
-          <div>No</div>
-          <div>Ürün</div>
-          <div>Uygulama</div>
-          <div>Standart</div>
-          <div>Miktar</div>
-          <div>{`Fiyat (${offer?.currency ? offer?.currency : ''})`}</div>
+        <div className="grid w-full grid-cols-10 gap-1 border-b text-sm font-bold">
+          <div className="col-span-1">No</div>
+          <div className="col-span-2">Ürün</div>
+          <div className="col-span-2">Uygulama</div>
+          <div className="col-span-2">Standart</div>
+          <div className="col-span-1">Miktar</div>
+          <div className="col-span-2 whitespace-nowrap break-keep">{`Fiyat (${
+            offer?.currency ? offer?.currency : ''
+          })`}</div>
         </div>
 
         {offer?.product?.length > 0 ? (
@@ -88,14 +90,14 @@ export default function OfferDoc({ offer }) {
               return (
                 <div
                   key={idx}
-                  className="grid w-full grid-cols-6 items-center gap-1 border-b py-2 text-sm font-bold text-navy-700 dark:text-white"
+                  className="grid w-full grid-cols-10 items-center gap-1 border-b py-2 text-sm font-bold text-navy-700 dark:text-white"
                 >
-                  <div>{idx + 1}</div>
-                  <div>{item?.name}</div>
-                  <div>{item?.application}</div>
-                  <div>{item?.standard}</div>
-                  <div>{item?.quantity}</div>
-                  <div>{item?.price}</div>
+                  <div className="col-span-1">{idx + 1}</div>
+                  <div className="col-span-2">{item?.name}</div>
+                  <div className="col-span-2">{item?.application}</div>
+                  <div className="col-span-2">{item?.standard}</div>
+                  <div className="col-span-1">{item?.quantity}</div>
+                  <div className="col-span-2">{item?.price}</div>
                 </div>
               );
             })}
