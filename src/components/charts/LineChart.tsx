@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable no-use-before-define */
 import dynamic from 'next/dynamic';
 const Chart = dynamic(() => import('react-apexcharts'), {
   ssr: false,
@@ -6,9 +7,8 @@ const Chart = dynamic(() => import('react-apexcharts'), {
 
 const LineChart = (props) => {
   const { chartData, chartOptions } = props;
-
   return (
-    // @ts-expect-error
+    // @ts-expect-error:
     <Chart
       options={chartOptions}
       type="line"

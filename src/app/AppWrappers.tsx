@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable no-use-before-define */
 import React, { ReactNode } from 'react';
 import 'styles/App.css';
 import 'styles/Contact.css';
@@ -16,6 +17,6 @@ const NoSSR = dynamic(() => Promise.resolve(_NoSSR), {
 });
 
 export default function AppWrappers({ children }: { children: ReactNode }) {
-  // @ts-expect-error
+  // @ts-expect-error:
   return <NoSSR>{children}</NoSSR>;
 }
