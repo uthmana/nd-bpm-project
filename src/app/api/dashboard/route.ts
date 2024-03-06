@@ -14,10 +14,8 @@ export async function GET(req: NextRequest) {
         process,
         invoice,
         offer,
-
         monthlyProcess,
         monthlyInvoice,
-
         recentProcess,
         recentCustomer,
       ] = await Promise.all([
