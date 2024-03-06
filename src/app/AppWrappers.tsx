@@ -17,6 +17,5 @@ const NoSSR = dynamic(() => Promise.resolve(_NoSSR), {
 });
 
 export default function AppWrappers({ children }: { children: ReactNode }) {
-  // @ts-expect-error:
   return <NoSSR>{children}</NoSSR>;
 }
