@@ -1,5 +1,4 @@
 'use client';
-/* eslint-disable no-use-before-define */
 import React, { ReactNode } from 'react';
 import 'styles/App.css';
 import 'styles/Contact.css';
