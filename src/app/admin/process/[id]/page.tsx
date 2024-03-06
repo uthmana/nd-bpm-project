@@ -16,9 +16,10 @@ import Button from 'components/button/button';
 import Popup from 'components/popup';
 import { formatDateTime, log } from 'utils';
 import { useSession } from 'next-auth/react';
-import { MdAdd } from 'react-icons/md';
+import { MdAdd, MdPrint } from 'react-icons/md';
 import FileViewer from 'components/fileViewer';
 import DetailHeader from 'components/detailHeader';
+import Barcode from 'react-jsbarcode';
 
 export default function EntryControl() {
   const router = useRouter();
@@ -239,6 +240,26 @@ export default function EntryControl() {
     return <p className="font-bold"> {val} </p>;
   };
 
+  const handleBarcodePrint = () => {
+    const product_barcode =
+      document.getElementById('product_barcode').innerHTML;
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write('<html><head><title>Print</title></head><body>');
+    printWindow.document.write(
+      '<div style="page-break-before: always;"></div>',
+    );
+    printWindow.document.write(
+      '<div style="page-break-before: always;"></div>',
+    );
+    printWindow.document.write(
+      '<div style="page-break-before: always;"></div>',
+    );
+    printWindow.document.write(product_barcode);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
+  };
+
   return (
     <div className="mx-auto mt-4 max-w-full rounded-2xl px-2">
       {isLoading ? (
@@ -249,10 +270,37 @@ export default function EntryControl() {
           <div className="flex flex-col gap-4">
             {/* Product Info */}
             <Card extra="w-full px-8 pt-4 pb-8">
-              <h2 className="my-5 text-2xl font-bold">Ürün Bilgileri</h2>
+              <div className="mb-4 flex w-full justify-between">
+                <h2 className="mb-4 text-2xl font-bold">Ürün Bilgileri</h2>
+                <Button
+                  extra={`px-4 h-[40px] max-w-[200px]`}
+                  onClick={handleBarcodePrint}
+                  text="BARKODU YAZDIR"
+                  icon={<MdPrint className="mr-1 h-5 w-5" />}
+                />
+              </div>
               <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
                 {Object.entries(process).map(([key, value], idx) => {
                   if (productInfo.includes(key)) {
+                    if (key === 'product_barcode') {
+                      return (
+                        <div
+                          id="product_barcode"
+                          className="max-w-[200px]"
+                          key={idx}
+                        >
+                          <h2 className="mb-0 font-bold capitalize italic">
+                            {infoTranslate[key]}
+                          </h2>
+                          <Barcode
+                            className="h-full w-full"
+                            value={value.toString()}
+                            options={{ format: 'code128' }}
+                          />
+                        </div>
+                      );
+                    }
+
                     return (
                       <div className="" key={idx}>
                         <h2 className="font-bold capitalize italic">

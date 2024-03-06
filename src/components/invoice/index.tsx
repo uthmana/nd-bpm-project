@@ -5,7 +5,7 @@ import Barcode from 'react-jsbarcode';
 
 export default function InvoiceDoc({ invoice }) {
   return (
-    <div className="min-h-[800px] w-full bg-white px-10  py-12 lg:w-[680px] lg:max-w-[680px] print:absolute  print:top-0 print:z-[99999] print:min-h-screen print:w-screen">
+    <div className="page-break min-h-[800px]  w-full bg-white px-10  py-12 lg:w-[680px] lg:max-w-[680px] print:absolute  print:top-0 print:z-[99999] print:min-h-screen print:w-full print:pl-0 print:pr-8">
       <div className="mb-8 flex justify-between border-b-2">
         <div className="mb-2 max-w-[200px]">
           <div className="mb-3">
@@ -81,13 +81,13 @@ export default function InvoiceDoc({ invoice }) {
       ) : null}
 
       <div className="mb-12 w-full">
-        <div className="grid w-full grid-cols-6 gap-1 border-b font-bold">
-          <div>No</div>
-          <div>Ürün</div>
-          <div>Uygulama</div>
-          <div>Standart</div>
-          <div>Renk</div>
-          <div>Miktar</div>
+        <div className="grid w-full grid-cols-10 gap-1 border-b font-bold">
+          <div className="col-span-1">No</div>
+          <div className="col-span-2">Ürün</div>
+          <div className="col-span-3">Uygulama</div>
+          <div className="col-span-2">Standart</div>
+          <div className="col-span-1">Renk</div>
+          <div className="col-span-1">Miktar</div>
         </div>
 
         {invoice?.process?.length > 0 ? (
@@ -96,14 +96,14 @@ export default function InvoiceDoc({ invoice }) {
               return (
                 <div
                   key={idx}
-                  className="grid w-full grid-cols-6 items-center gap-1 border-b py-2 text-sm font-bold text-navy-700 dark:text-white"
+                  className="grid w-full grid-cols-10 items-center gap-1 border-b py-2 text-sm font-bold text-navy-700 dark:text-white"
                 >
-                  <div>{idx + 1}</div>
-                  <div>{item?.product}</div>
-                  <div>{item?.application}</div>
-                  <div>{item?.standard}</div>
-                  <div>{item?.color}</div>
-                  <div>{item?.shipmentQty}</div>
+                  <div className="col-span-1">{idx + 1}</div>
+                  <div className="col-span-2">{item?.product}</div>
+                  <div className="col-span-3">{item?.application}</div>
+                  <div className="col-span-2">{item?.standard}</div>
+                  <div className="col-span-1">{item?.color}</div>
+                  <div className="col-span-1">{item?.shipmentQty}</div>
                 </div>
               );
             })}

@@ -5,7 +5,7 @@ import Barcode from 'react-jsbarcode';
 
 export default function OfferDoc({ offer }) {
   return (
-    <div className="min-h-[800px] w-full bg-white px-10  py-8 lg:w-[700px] lg:max-w-[700px] print:absolute  print:top-0 print:z-[99999] print:min-h-screen print:w-screen">
+    <div className="page-break min-h-[800px] w-full bg-white px-10  py-8 lg:w-[700px] lg:max-w-[700px] print:absolute  print:top-0 print:z-[99999] print:min-h-screen print:w-full print:pl-0 print:pr-8">
       <div className="mb-4 flex items-center justify-between border-b-2 pb-2">
         <div className="flex max-w-[200px] flex-col gap-2 text-xs">
           <div className="mb-3">

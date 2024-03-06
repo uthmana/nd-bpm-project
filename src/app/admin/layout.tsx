@@ -67,17 +67,21 @@ export default function Admin({ children }: { children: React.ReactNode }) {
               secondary={getActiveNavbar(routes, pathname)}
             />
             <Breadcrump brandText={getActiveRoute(routes, pathname)} />
-            <div className="mx-auto min-h-screen p-2 !pt-[10px] md:p-2">
+            <div className="print:left-0: mx-auto min-h-screen p-2 !pt-[10px] md:p-2 print:absolute print:top-0 print:h-full print:w-full">
               {children}
             </div>
 
-            <div className="p-3">
+            <div className="p-3 print:hidden">
               <Footer />
             </div>
           </div>
         </main>
       </div>
-      <ToastContainer position="bottom-right" theme="colored" />
+      <ToastContainer
+        className="print:hidden"
+        position="bottom-right"
+        theme="colored"
+      />
     </div>
   );
 }

@@ -236,33 +236,34 @@ model MachineParams {
 
 model TechnicalParameter {
   id                     String    @id @default(cuid())
-  viskozite              String?
-  besleme_Tipi           String?
-  besleme_Hizi           String?
-  makine_Hizi            String?
-  hava_Basinci           String?
-  firin_Bant_Hizi        String?
-  induksiyon_kW          String?
-  induksiyon_Volts       String?
-  induksiyon_kHz         String?
-  patch_Vibrasyon_hizi   String?
-  patch_Hava_Basinci     String?
-  patch_Toz_yukleme_Hizi String?
-  teach_Ayari            String?
-  delay_Ayari            String?
-  purge_Ayari            String?
-  testere_secimi         String?
-  kesim_Mesafesi         String?
-  yuva_Boyutu            String?
+  Ort_Uretim_saat        String?
+  Makine_secimi          String?
+  Viskozite              String?
+  Besleme_Tipi           String?
+  Besleme_Hizi           String?
+  Makine_Hizi            String?
+  Hava_Basinci           String?
+  Firin_Bant_Hizi        String?
+  Firin_Sicakligi        String?
+  Induksiyon_kW          String?
+  Induksiyon_Volts       String?
+  Induksiyon_kHz         String?
+  Patch_Vibrasyon_hizi   String?
+  Patch_Hava_Basinci     String?
+  Patch_Toz_yukleme_Hizi String?
+  Teach_Ayari            String?
+  Delay_Ayari            String?
+  Purge_Ayari            String?
+  Testere_secimi         String?
+  Kesim_Mesafesi         String?
+  Yuva_Boyutu            String?
   createdAt              DateTime  @default(now())
   updatedAt              DateTime? @updatedAt
   createdBy              String?
   updatedBy              String?
   machineId              String
-  saat                   String?
-
-  Process   Process? @relation(fields: [processId], references: [id], onDelete: Cascade)
-  processId String?
+  Process                Process?  @relation(fields: [processId], references: [id], onDelete: Cascade)
+  processId              String?
 }
 
 model Invoice {

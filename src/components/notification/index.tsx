@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import Dropdown from 'components/dropdown';
 import { IoMdNotificationsOutline } from 'react-icons/io';
-import { BsArrowBarUp } from 'react-icons/bs';
 import NotificationItem from './item';
 import { useRouter } from 'next/navigation';
 import {
@@ -17,9 +16,13 @@ export default function Notification({ user }) {
   const router = useRouter();
 
   const getMyNotification = async () => {
-    const { data, status } = await getNotifications();
-    if (status === 200) {
-      setNotifications(data);
+    try {
+      const { data, status } = await getNotifications();
+      if (status === 200) {
+        setNotifications(data);
+      }
+    } catch (err) {
+      console.log('getMyNotification', err);
     }
   };
 

@@ -385,7 +385,6 @@ export default function OfferForm(props: {
                           >
                             X
                           </div>{' '}
-                          {idx + 1}
                         </div>
                         <div className="col-span-2">{item?.name}</div>
                         <div className="col-span-2">{item?.application}</div>
