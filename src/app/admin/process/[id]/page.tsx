@@ -273,7 +273,7 @@ export default function EntryControl() {
               <div className="mb-4 flex w-full justify-between">
                 <h2 className="mb-4 text-2xl font-bold">Ürün Bilgileri</h2>
                 <Button
-                  extra={`px-4 h-[40px] max-w-[200px]`}
+                  extra={`px-4 h-[40px] max-w-fit`}
                   onClick={handleBarcodePrint}
                   text="BARKODU YAZDIR"
                   icon={<MdPrint className="mr-1 h-5 w-5" />}
@@ -289,7 +289,7 @@ export default function EntryControl() {
                           className="max-w-[200px]"
                           key={idx}
                         >
-                          <h2 className="mb-0 font-bold capitalize italic">
+                          <h2 className="mb-0 font-bold capitalize italic print:hidden">
                             {infoTranslate[key]}
                           </h2>
                           <Barcode
