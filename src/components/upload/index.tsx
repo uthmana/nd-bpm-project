@@ -85,7 +85,7 @@ const Upload = (props: {
         >
           <MdFileUpload className="text-[80px] text-brand-500 dark:text-white" />
           <h4 className="text-xl font-bold text-brand-500 dark:text-white">
-            Dosya Ükle
+            Dosya Yükle
           </h4>
           <p className="mt-2 text-sm font-medium text-gray-600">
             PNG, JPG and pdf dosyları destekleniyor

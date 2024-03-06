@@ -5,7 +5,7 @@ import Barcode from 'react-jsbarcode';
 
 export default function InvoiceDoc({ invoice }) {
   return (
-    <div className="min-h-[800px] w-full bg-white px-10  py-12 lg:w-[680px] lg:max-w-[680px] print:fixed print:top-0 print:z-[99999] print:h-screen print:w-screen">
+    <div className="page-break min-h-[800px]  w-full bg-white px-10  py-12 lg:w-[680px] lg:max-w-[680px] print:absolute  print:top-0 print:z-[99999] print:min-h-screen print:w-full print:pl-0 print:pr-8">
       <div className="mb-8 flex justify-between border-b-2">
         <div className="mb-2 max-w-[200px]">
           <div className="mb-3">
@@ -19,12 +19,12 @@ export default function InvoiceDoc({ invoice }) {
         <div className="flex flex-col gap-1">
           <h1 className="mb-1 text-right text-4xl">İrsaliye</h1>
           {/* <p className="font-bold">Banka Hesap No:</p>
-          <p className="text-sm">Şube Adı:</p>
+          <p className="text-sm">Şube Adı:</p> 
           <div className="text-xs font-bold">
             <span>34334</span> <span> TR-87384859696745</span>
           </div> */}
 
-          <div className="h-32 w-[300px] text-xs font-bold">
+          <div className="flex h-32 w-[200px] flex-col items-center text-xs font-bold">
             {invoice?.serverSide ? (
               <>
                 <img
@@ -37,7 +37,7 @@ export default function InvoiceDoc({ invoice }) {
             ) : (
               <Barcode
                 className="h-full w-full"
-                value={invoice.id}
+                value={invoice.barcode}
                 options={{ format: 'code128' }}
               />
             )}
@@ -81,11 +81,13 @@ export default function InvoiceDoc({ invoice }) {
       ) : null}
 
       <div className="mb-12 w-full">
-        <div className="grid w-full grid-cols-4 gap-1 border-b font-bold">
-          <div className="w-12">No</div>
-          <div>Ürün</div>
-          <div>Miktar</div>
-          <div>Tutar {invoice?.currency}</div>
+        <div className="grid w-full grid-cols-10 gap-1 border-b font-bold">
+          <div className="col-span-1">No</div>
+          <div className="col-span-2">Ürün</div>
+          <div className="col-span-3">Uygulama</div>
+          <div className="col-span-2">Standart</div>
+          <div className="col-span-1">Renk</div>
+          <div className="col-span-1">Miktar</div>
         </div>
 
         {invoice?.process?.length > 0 ? (
@@ -93,15 +95,15 @@ export default function InvoiceDoc({ invoice }) {
             {invoice.process.map((item, idx) => {
               return (
                 <div
-                  key={item.id}
-                  className="grid w-full grid-cols-4 gap-1 border-b py-2"
+                  key={idx}
+                  className="grid w-full grid-cols-10 items-center gap-1 border-b py-2 text-sm font-bold text-navy-700 dark:text-white"
                 >
-                  <div className="w-12">{idx + 1}</div>
-                  <div>{item.product}</div>
-                  <div>{item.quantity}</div>
-                  <div>
-                    {invoice?.amount || 0} {invoice?.currency}
-                  </div>
+                  <div className="col-span-1">{idx + 1}</div>
+                  <div className="col-span-2">{item?.product}</div>
+                  <div className="col-span-3">{item?.application}</div>
+                  <div className="col-span-2">{item?.standard}</div>
+                  <div className="col-span-1">{item?.color}</div>
+                  <div className="col-span-1">{item?.shipmentQty}</div>
                 </div>
               );
             })}
@@ -109,22 +111,22 @@ export default function InvoiceDoc({ invoice }) {
         ) : null}
       </div>
 
-      <div className="text-md ml-auto flex max-w-[300px] flex-col">
-        <div className="flex justify-between bg-[#f5f4f4] px-3 py-4">
-          <h2 className="font-bold">Toplam</h2>
-          <p>
-            {invoice?.amount || 0} {invoice?.currency}
-          </p>
+      <div className="ml-auto flex max-w-[300px] flex-col text-sm">
+        <div className="flex justify-between bg-[#f5f4f4] p-3">
+          <h2 className="font-bold"> Tel:</h2>
+          <p>0212 549 05 45</p>
         </div>
-        <div className="flex justify-between px-3 py-4">
-          <h2 className="font-bold">KDV%</h2>
-          <p>{invoice?.vat || 0}</p>
+        <div className="flex justify-between p-3">
+          <h2 className="font-bold">Fax:</h2>
+          <p>0212 549 05 90</p>
         </div>
-        <div className="flex justify-between bg-[#f5f4f4] px-3 py-4">
-          <h2 className="font-bold">Genel Toplam</h2>
-          <p>
-            {invoice?.totalAmount || 0} {invoice?.currency}
-          </p>
+        <div className="flex justify-between bg-[#f5f4f4] p-3">
+          <h2 className="font-bold">Whatsapp:</h2>
+          <p>0542 696 37 69</p>
+        </div>
+        <div className="flex justify-between p-3">
+          <h2 className="font-bold">E-Posta</h2>
+          <p>info@ndindustries.com.tr</p>
         </div>
       </div>
     </div>

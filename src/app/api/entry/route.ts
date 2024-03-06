@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
-import { Fault, Prisma } from '@prisma/client';
+import { Fault, Prisma, Stock } from '@prisma/client';
 import { checkUserRole } from 'utils/auth';
 
 //All Faults
@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(fault, { status: 200 });
   } catch (e) {
+    console.log({ e });
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
       e instanceof Prisma.PrismaClientUnknownRequestError ||
@@ -43,10 +44,10 @@ export async function PUT(req: Request) {
       );
     }
     const result: Fault = await req.json();
-    const { customerName, productCode, quantity, application, stockId } =
-      result;
 
-    if (!customerName || !productCode || !application || !stockId) {
+    const { customerName, productCode, application, product_barcode } = result;
+
+    if (!customerName || !productCode || !application || !product_barcode) {
       return NextResponse.json(
         { message: 'You are missing a required data' },
         { status: 401 },
@@ -57,10 +58,29 @@ export async function PUT(req: Request) {
       data: result,
     });
 
-    const stock = await prisma.stock.update({
-      where: { id: stockId },
-      data: { faultId: fault.id },
-    });
+    //TODO create stock
+    if (fault) {
+      const {
+        customerId,
+        productCode,
+        quantity,
+        product,
+        technicalDrawingAttachment,
+      } = fault;
+      const stock: Stock = await prisma.stock.create({
+        data: {
+          product_code: productCode,
+          product_name: product,
+          inventory: quantity,
+          current_price: '',
+          curency: '',
+          image: technicalDrawingAttachment,
+          customerId: customerId,
+          faultId: fault.id,
+          product_barcode,
+        },
+      });
+    }
 
     //Create Notification
     const notification = await prisma.notification.create({

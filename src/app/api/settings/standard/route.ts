@@ -1,5 +1,3 @@
-import { authOptions } from '../../../lib/authOptions';
-import { getServerSession } from 'next-auth';
 import { NextResponse, NextRequest } from 'next/server';
 import { checkUserRole } from 'utils/auth';
 import { Prisma } from '@prisma/client';
@@ -11,12 +9,9 @@ export async function GET(req: NextRequest) {
     const allowedRoles = ['ADMIN'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json({ message: 'Access forbidden', status: 403 });
     }
     const standardss = await prisma.standards.findMany();
-    if (!standardss) {
-      throw new Error('No standards found');
-    }
     return NextResponse.json(standardss, { status: 200 });
   } catch (e) {
     if (
@@ -38,16 +33,12 @@ export async function PUT(req: Request) {
     const allowedRoles = ['ADMIN'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json({ message: 'Access forbidden', status: 403 });
     }
     const regData = await req.json();
     const createdstandards = await prisma.standards.create({
       data: regData,
     });
-
-    if (!createdstandards) {
-      throw new Error('No standards found');
-    }
 
     return NextResponse.json({ createdstandards }, { status: 200 });
   } catch (e) {

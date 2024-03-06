@@ -58,17 +58,28 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         });
 
         if (invoiceData.process && invoiceData.process.length > 0) {
-          const faultIds = invoiceData.process.map((item) => {
-            return item.faultId;
-          });
+          const stockUpdate = await Promise.all(
+            invoiceData.process.map(async (item) => {
+              let updatedQty = item.quantity;
+              if (item.shipmentQty > item.quantity) {
+                updatedQty = 0;
+              } else {
+                updatedQty = item.quantity - item.shipmentQty;
+              }
+              const stock = await prisma.stock.update({
+                where: { faultId: item.faultId },
+                data: { inventory: updatedQty },
+              });
+            }),
+          );
 
-          await prisma.stock.deleteMany({
-            where: {
-              faultId: {
-                in: faultIds,
-              },
-            },
-          });
+          // await prisma.stock.deleteMany({
+          //   where: {
+          //     faultId: {
+          //       in: faultIds,
+          //     },
+          //   },
+          // });
         }
         return NextResponse.json(invoice, { status: 200 });
       }

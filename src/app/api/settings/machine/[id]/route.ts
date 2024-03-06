@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
-import { Machine, MachineParams, Prisma } from '@prisma/client';
+import { Machine, Prisma } from '@prisma/client';
 
 //Get single  machine
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
@@ -51,31 +51,6 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       },
       data: { machine_Name },
     });
-
-    //delete and create machine params
-    // const machineParams: any = await prisma.machineParams.findMany({
-    //   where: { machineId: id },
-    // });
-
-    // if (machineParams && machineParams?.length > 0) {
-    //   const machineParamsIds = machineParams.map((item) => item.id);
-    //   const machineParamsDeleted: any = await prisma.machineParams.deleteMany({
-    //     where: {
-    //       id: {
-    //         in: machineParamsIds,
-    //       },
-    //     },
-    //   });
-
-    //   if (machineParamsDeleted) {
-    //     const machineParamsData = params.map((item) => {
-    //       return { machineId: machine.id, param_name: item.param_name };
-    //     });
-    //     const machineParams = await prisma.machineParams.createMany({
-    //       data: machineParamsData,
-    //     });
-    //   }
-    // }
 
     return NextResponse.json(updatedMachine, { status: 200 });
   } catch (e) {

@@ -8,12 +8,16 @@ import Select from 'components/select/page';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import TextArea from 'components/fields/textArea';
 import Upload from 'components/upload';
-import { log, convertToISO8601, removeMillisecondsAndUTC } from 'utils';
-import { FaultObj } from '../../app/localTypes/table-types';
 import {
-  getCustomersWithStock,
-  getFaultSettings,
-} from '../../app/lib/apiRequest';
+  log,
+  convertToISO8601,
+  removeMillisecondsAndUTC,
+  generateSKU,
+} from 'utils';
+import { FaultObj } from '../../app/localTypes/table-types';
+import { getCustomers, getFaultSettings } from '../../app/lib/apiRequest';
+import DataList from 'components/fields/dataList';
+import { toast } from 'react-toastify';
 
 export default function Fault(props: {
   onSubmit: (e: any) => void;
@@ -38,7 +42,6 @@ export default function Fault(props: {
         faultDescription: '',
         customerId: '',
         product_name: '',
-        stockId: '',
       };
 
   const [values, setValues] = useState(initialValues);
@@ -61,121 +64,77 @@ export default function Fault(props: {
   };
 
   const [customers, setCustomers] = useState([]);
-  const [products, setProducts] = useState([]);
   const [faultSettings, setFaultSettings] = useState({} as Settings);
 
   const handleValues = (event) => {
     setError(false);
+    if (event.target?.name === 'company_name') {
+      const _customer = customers.filter(
+        (item) => item.company_name === event.target?.value,
+      )[0];
+      const seletecCustomer = {
+        customerName: _customer?.company_name,
+        customerId: _customer?.id,
+      };
+      setValues({ ...values, ...seletecCustomer });
+      return;
+    }
     const newVal = { [event.target?.name]: event.target?.value };
     setValues({ ...values, ...newVal });
   };
 
   useEffect(() => {
-    const getStock = async () => {
-      const { status, data } = await getCustomersWithStock();
-      if (status === 200) {
-        setCustomers(data);
-        if (editData?.customerName) {
-          const editedStock = data?.filter((item) => {
-            return item.company_name === editData?.customerName;
-          });
-          if (editedStock.length > 0) {
-            const selectedStock = editedStock[0]?.Stock?.filter((item) => {
-              return item.product_code === editData?.productCode;
-            });
-
-            if (selectedStock.length > 0) {
-              setValues({
-                ...values,
-                product: selectedStock[0]?.product_name,
-                productCode: selectedStock[0]?.product_code,
-                quantity: selectedStock[0]?.inventory,
-                arrivalDate: removeMillisecondsAndUTC(selectedStock[0]?.date),
-              });
-            }
-            setProducts(editedStock[0]?.Stock);
-          }
-        }
-      }
-    };
-
-    const getAllFaultSettings = async () => {
-      const { status: faultSettingsStatus, data: faultSettingsData } =
-        await getFaultSettings();
-      if (faultSettingsStatus === 200) {
-        setFaultSettings(faultSettingsData);
+    const fetchData = async () => {
+      const [settingsResponse, customerResponse]: any = await Promise.all([
+        getFaultSettings(),
+        getCustomers(),
+      ]);
+      const { status: setStatus, data: setData } = settingsResponse;
+      const { status: custStatus, data: custData } = customerResponse;
+      if (setStatus === 200 && custStatus === 200) {
+        setCustomers(custData);
+        setFaultSettings(setData);
         if (!editData) {
           setValues({
             ...values,
-            application: faultSettingsData.applications[0].name,
-            standard: faultSettingsData.standards[0].name,
-            color: faultSettingsData.colors[0].name,
+            application: setData.applications[0].name,
+            standard: setData.standards[0].name,
+            color: setData.colors[0].name,
           });
         }
+        return;
       }
+      toast.error('Beklenmeyen bir hata oluştu!. Daha sonra tekrar deenyin!');
     };
-
-    getAllFaultSettings();
-    getStock();
+    fetchData();
   }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { customerName, productCode, quantity, application } = values;
-    if (!customerName || !productCode || !quantity || !application) {
+    const { customerName, productCode, quantity, application, product } =
+      values;
+    if (
+      !customerName ||
+      !productCode ||
+      !quantity ||
+      !application ||
+      !product
+    ) {
       window.scroll(0, 0);
       setError(true);
       return;
     }
 
+    const product_barcode = generateSKU(customerName, product, quantity);
+
     delete values.product_name;
+
     onSubmit({
       ...values,
+      product_barcode,
       quantity: parseInt(values.quantity.toString()),
       technicalDrawingAttachment: file,
       arrivalDate: convertToISO8601(values.arrivalDate),
-    });
-  };
-
-  const onCustomerSelect = (event) => {
-    if (!event.target?.value) return;
-    const customer = JSON.parse(event.target?.value);
-    const { company_name, id, Stock } = customer;
-
-    //Get only product that has no entry
-    const filteredStock = Stock?.filter((item) => {
-      return item.faultId === null;
-    });
-
-    setProducts(filteredStock);
-    setValues({
-      ...values,
-      customerName: company_name,
-      customerId: id,
-      product: filteredStock[0]?.product_name || '',
-      productCode: filteredStock[0]?.product_code || '',
-      quantity: filteredStock[0]?.inventory || 0,
-      stockId: filteredStock[0]?.id || '',
-      arrivalDate: removeMillisecondsAndUTC(filteredStock[0]?.date) || null,
-    });
-  };
-
-  const onProductSelect = (event) => {
-    if (!event.target?.value) return;
-    const stock = JSON.parse(event.target?.value);
-    //Get only product that has no entry
-    const filteredStock = stock?.filter((item) => {
-      return item.faultId === null;
-    });
-
-    const { product_code, product_name, inventory, date, id } = filteredStock;
-    setValues({
-      ...values,
-      product: product_name,
-      productCode: product_code,
-      quantity: inventory,
-      stockId: id,
-      arrivalDate: removeMillisecondsAndUTC(date),
     });
   };
 
@@ -204,49 +163,34 @@ export default function Fault(props: {
       ) : null}
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">
-        <Select
-          required={true}
-          extra="pt-1"
+        <DataList
+          placeholder="Müşteri Adı"
           label="Müşteri Adı"
-          onChange={onCustomerSelect}
-        >
-          {customers?.map((item, idx) => {
-            return (
-              <option
-                key={idx}
-                value={JSON.stringify(item)}
-                selected={values.customerName === item?.company_name}
-              >
-                {item?.company_name || item?.rep_name}
-              </option>
-            );
-          })}
-        </Select>
-
-        <Select
+          id="company_name"
+          name="company_name"
+          listId="company_name_list"
+          list={customers}
           required={true}
-          extra="pt-1"
-          label="Ürün İsmi"
-          onChange={onProductSelect}
-          key={products && products[0]}
-        >
-          {products?.map((item, idx) => {
-            return (
-              <option
-                key={idx}
-                value={JSON.stringify(item)}
-                selected={values.product === item?.product_name}
-              >
-                {item?.product_name}
-              </option>
-            );
-          })}
-        </Select>
+          value={values.customerName}
+          onChange={handleValues}
+        />
+
+        <InputField
+          label="Ürün Adı"
+          onChange={handleValues}
+          type="text"
+          id="product"
+          name="product"
+          placeholder="Ürün Adı"
+          extra="mb-2"
+          value={values.product}
+          required={true}
+        />
       </div>
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">
         <InputField
-          label="Ürün kodu"
+          label="Ürün kodu (Müşteri)"
           onChange={handleValues}
           type="text"
           id="productCode"
@@ -377,7 +321,7 @@ export default function Fault(props: {
         />
       </div>
 
-      <Button loading={loading} extra="mt-4" text="SAVE" />
+      <Button loading={loading} extra="mt-4" text="KAYDET" />
     </form>
   );
 }

@@ -1,6 +1,6 @@
 const Footer = () => {
   return (
-    <div className="flex w-full flex-col items-center justify-between px-1 pb-8 pt-3 lg:px-8 xl:flex-row">
+    <div className="flex w-full flex-col items-center justify-between px-1 pb-8 pt-3 lg:px-8 xl:flex-row print:hidden">
       <p className="mb-4 text-center text-sm font-medium text-gray-600 sm:!mb-0 md:text-lg">
         <span className="mb-4 text-center text-sm text-gray-600 sm:!mb-0 md:text-base">
           ©{new Date().getFullYear()} ND Türkiye Proces. Tüm Hakkları Saklıdır.
@@ -11,7 +11,7 @@ const Footer = () => {
           <li>
             <a
               target="blank"
-              href="#"
+              href="https://www.ndindustries.com.tr/iletisim"
               className="text-base font-medium text-gray-600 hover:text-gray-600"
             >
               Yardım Merkezi
@@ -20,7 +20,7 @@ const Footer = () => {
           <li>
             <a
               target="blank"
-              href="#"
+              href="https://www.ndindustries.com/legal-documents"
               className="text-base font-medium text-gray-600 hover:text-gray-600"
             >
               Lisans
@@ -29,7 +29,7 @@ const Footer = () => {
           <li>
             <a
               target="blank"
-              href="#"
+              href="https://www.ndindustries.com/terms-and-conditions"
               className="text-base font-medium text-gray-600 hover:text-gray-600"
             >
               Kullanım Şartları
@@ -38,7 +38,7 @@ const Footer = () => {
           <li>
             <a
               target="blank"
-              href="#"
+              href="https://www.ndindustries.com/privacy-policy"
               className="text-base font-medium text-gray-600 hover:text-gray-600"
             >
               Gizlilik

@@ -9,7 +9,7 @@ import {
   getMachines,
 } from 'app/lib/apiRequest';
 import { useParams, useRouter } from 'next/navigation';
-import { LatestInvoicesSkeleton } from 'components/skeleton';
+import { DetailSkeleton } from 'components/skeleton';
 import Card from 'components/card';
 import TechParamsTable from 'components/admin/data-tables/techParamsTable';
 import {
@@ -67,7 +67,7 @@ export default function EntryControl() {
   const detailData = {
     title: 'Proses Detayi',
     seeAllLink: '/admin/process',
-    seeAllText: 'Tün Proses',
+    seeAllText: 'Tüm Proses',
   };
 
   const getSingleProcess = async () => {
@@ -222,11 +222,10 @@ export default function EntryControl() {
   return (
     <div className="mx-auto mt-4 max-w-full rounded-2xl px-2">
       {isLoading ? (
-        <LatestInvoicesSkeleton />
+        <DetailSkeleton />
       ) : (
         <div className="flex flex-col gap-4">
           <DetailHeader {...detailData} />
-
           <Card extra="w-full px-4 pt-4 pb-8">
             <h2 className="my-5 text-2xl font-bold">Ürün Bilgileri</h2>
             <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">

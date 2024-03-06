@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { log } from 'utils';
 import { useEffect, useState } from 'react';
 import { deleteInvoice, getInvoice } from 'app/lib/apiRequest';
-import { LatestInvoicesSkeleton } from 'components/skeleton';
+import { TableSkeleton } from 'components/skeleton';
 import { toast } from 'react-toastify';
 import Popup from 'components/popup';
 import Button from 'components/button/button';
@@ -31,14 +31,14 @@ const Invoice = () => {
         const customerName = item?.customer?.company_name;
         const products = item?.process
           ?.map((item, idx) => {
-            return `${idx + 1}. ${item.product}`;
+            return `${item.product}`;
           })
           ?.join('');
 
         item.products = products;
         item.customerName = customerName;
         item.address = item?.customer?.address;
-        item.tolalQty = item?.process.reduce((a, b) => a + b.quantity, 0);
+        item.tolalQty = item?.process.reduce((a, b) => a + b.shipmentQty, 0);
 
         return item;
       });
@@ -80,14 +80,14 @@ const Invoice = () => {
     const { status, response } = resInvoice;
     if (response?.error) {
       const { message, detail } = response?.error;
-      toast.error('Ürün silmeişlemi başarısız.' + message);
+      toast.error('İrsalye silme işlemi başarısız.' + message);
       log(detail);
       setIsSubmitting(false);
       return;
     }
 
     if (status === 200) {
-      toast.success('Ürün silme işlemi başarılı.');
+      toast.success('İrsalye silme işlemi başarılı.');
       setIsSubmitting(false);
       setIsShowPopUp(false);
       setInvoices([]);
@@ -103,7 +103,7 @@ const Invoice = () => {
   return (
     <div className="mt-3 w-full">
       {isLoading ? (
-        <LatestInvoicesSkeleton />
+        <TableSkeleton />
       ) : (
         <InvoiceTable
           onAdd={onAdd}

@@ -185,6 +185,63 @@ export async function deleteMachineParam(payload) {
   return fetchAPI(`settings/machineParams/${payload.id}`, 'delete');
 }
 
+// Application
+export async function getApplication() {
+  return fetchAPI('settings/application');
+}
+export async function deleteApplication(id) {
+  return fetchAPI(`settings/application/${id}`, 'delete');
+}
+
+export async function addApplication(payload) {
+  return fetchAPI('settings/application', 'put', payload);
+}
+export async function getApplicationById(id) {
+  return fetchAPI(`settings/application/${id}`);
+}
+
+export async function updateApplication(payload) {
+  return fetchAPI(`settings/application/${payload.id}`, 'put', payload);
+}
+
+// Colors
+export async function getColor() {
+  return fetchAPI('settings/color');
+}
+export async function deleteColor(id) {
+  return fetchAPI(`settings/color/${id}`, 'delete');
+}
+
+export async function addColor(payload) {
+  return fetchAPI('settings/color', 'put', payload);
+}
+export async function getColorById(id) {
+  return fetchAPI(`settings/color/${id}`);
+}
+
+export async function updateColor(payload) {
+  return fetchAPI(`settings/color/${payload.id}`, 'put', payload);
+}
+
+// Standards
+export async function getStandard() {
+  return fetchAPI('settings/standard');
+}
+export async function deleteStandard(id) {
+  return fetchAPI(`settings/standard/${id}`, 'delete');
+}
+
+export async function addStandard(payload) {
+  return fetchAPI('settings/standard', 'put', payload);
+}
+export async function getStandardById(id) {
+  return fetchAPI(`settings/standard/${id}`);
+}
+
+export async function updateStandard(payload) {
+  return fetchAPI(`settings/standard/${payload.id}`, 'put', payload);
+}
+
 // Fault Settings
 export async function getFaultSettings() {
   return fetchAPI('settings');
@@ -231,4 +288,42 @@ export async function getInvoiceById(id) {
 
 export async function getTrackingInfo(id) {
   return fetchAPI(`tracking/${id}`);
+}
+
+// Offer
+export async function getOffer() {
+  return fetchAPI('offer');
+}
+
+export async function deleteOffer(id) {
+  return fetchAPI(`offer/${id}`, 'delete');
+}
+
+export async function addOffer(payload) {
+  return fetchAPI('offer', 'put', payload);
+}
+
+export async function getOfferById(id) {
+  return fetchAPI(`offer/${id}`);
+}
+export async function updateOffer(payload) {
+  return fetchAPI(`offer/${payload.id}`, 'put', payload);
+}
+
+// OfferItem
+export async function addOfferItem(payload) {
+  return fetchAPI('offerItem', 'put', payload);
+}
+
+export async function deleteOfferItem(id) {
+  return fetchAPI(`offerItem/${id}`, 'delete');
+}
+
+export async function sendOffer(payload) {
+  return fetchAPI('send', 'post', payload);
+}
+
+// Dashboard
+export async function getDashboard() {
+  return fetchAPI('dashboard');
 }

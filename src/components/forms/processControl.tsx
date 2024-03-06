@@ -35,6 +35,7 @@ export default function ProcessControlForm({
     'createdBy',
     'arrivalDate',
     'machineName',
+    'product_barcode',
   ];
 
   const infoTranslate = {
@@ -48,6 +49,7 @@ export default function ProcessControlForm({
     createdBy: 'Personel',
     arrivalDate: 'Giriş Tarihi',
     machineName: 'Makine',
+    product_barcode: 'Barkodu',
   };
 
   const [values, setValues] = useState(
@@ -61,7 +63,7 @@ export default function ProcessControlForm({
           paketleme: '',
           kontrol_edilen_miktar: 0,
           hatali_miktar: 0,
-          makliye_miktar: 0,
+          nakliye_miktar: 0,
           remarks: '',
           image: '',
           createdBy: '',
@@ -102,7 +104,7 @@ export default function ProcessControlForm({
         image: file,
         kontrol_edilen_miktar: parseInt(values.kontrol_edilen_miktar),
         hatali_miktar: parseInt(values.hatali_miktar),
-        makliye_miktar: parseInt(values.makliye_miktar),
+        nakliye_miktar: parseInt(values.nakliye_miktar),
       },
       isUpdate,
     );
@@ -243,12 +245,12 @@ export default function ProcessControlForm({
               label="Nakliye Miktarı"
               onChange={handleValues}
               type="number"
-              id="makliye_miktar"
-              name="makliye_miktar"
+              id="nakliye_miktar"
+              name="nakliye_miktar"
               placeholder="Nakliye Miktarı"
               extra="mb-2"
               min={0}
-              value={values.makliye_miktar}
+              value={values.nakliye_miktar}
             />
           </div>
 

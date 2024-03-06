@@ -1,12 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import Card from 'components/card';
 import Search from 'components/search/search';
-import Button from 'components/button/button';
 import FileViewer from 'components/fileViewer';
 import { useDrage } from 'utils';
-import { ProcessObj, ProcessTable } from '../../../app/localTypes/table-types';
+import { ProcessObj, ProcessTable } from 'app/localTypes/table-types';
 import TablePagination from './tablePagination';
-import Barcode from 'react-jsbarcode';
+
 import {
   MdOutlineDelete,
   MdCheckCircle,
@@ -68,7 +67,7 @@ function ProcessTable({
       columnHelper.accessor('id', {
         id: 'id',
         header: () => (
-          <p className="text-sm font-bold text-gray-600 dark:text-white">
+          <p className="whitespace-nowrap  break-keep text-sm font-bold text-gray-600 dark:text-white">
             SİRA NO.
           </p>
         ),
@@ -78,20 +77,33 @@ function ProcessTable({
           </p>
         ),
       }),
-      columnHelper.accessor('faultId', {
-        id: 'faultId',
+      // columnHelper.accessor('faultId', {
+      //   id: 'faultId',
+      //   header: () => (
+      //     <p className="min-w-[150px] text-sm font-bold text-gray-600 dark:text-white">
+      //       BARKOD
+      //     </p>
+      //   ),
+      //   cell: (info: any) => (
+      //     <p className="text-sm font-bold text-navy-700 dark:text-white">
+      //       <Barcode
+      //         className="h-full w-full"
+      //         value={info.getValue()}
+      //         options={{ format: 'code128' }}
+      //       />
+      //     </p>
+      //   ),
+      // }),
+      columnHelper.accessor('productCode', {
+        id: 'productCode',
         header: () => (
-          <p className="min-w-[150px] text-sm font-bold text-gray-600 dark:text-white">
-            BARKOD
+          <p className="min-w-[100px]  whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Ürün Kodu
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            <Barcode
-              className="h-full w-full"
-              value={info.getValue()}
-              options={{ format: 'code128' }}
-            />
+          <p className="min-w-[150px]  whitespace-nowrap break-keep text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
           </p>
         ),
       }),
@@ -103,7 +115,10 @@ function ProcessTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className=" text-sm font-bold text-navy-700 dark:text-white">
+          <p
+            title={info.getValue()}
+            className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white"
+          >
             {info.getValue()}
           </p>
         ),
@@ -111,12 +126,12 @@ function ProcessTable({
       columnHelper.accessor('product', {
         id: 'product',
         header: () => (
-          <p className="min-w-[130px]  text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[130px]  whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
             Ürün İsmi
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p className="whitespace-nowrap  break-keep text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -135,19 +150,7 @@ function ProcessTable({
           </p>
         ),
       }),
-      columnHelper.accessor('productCode', {
-        id: 'productCode',
-        header: () => (
-          <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Ürün Kodu
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
-          </p>
-        ),
-      }),
+
       columnHelper.accessor('application', {
         id: 'application',
         header: () => (
@@ -156,7 +159,10 @@ function ProcessTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p
+            title={info.getValue()}
+            className="whitespace-nowrap  break-keep  text-sm font-bold text-navy-700 dark:text-white"
+          >
             {info.getValue()}
           </p>
         ),
@@ -164,12 +170,12 @@ function ProcessTable({
       columnHelper.accessor('standard', {
         id: 'standard',
         header: () => (
-          <p className="min-w-[110px] text-sm font-bold text-gray-600 dark:text-white">
+          <p className="text-sm font-bold text-gray-600 dark:text-white">
             STANDART
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p className="whitespace-nowrap  break-keep text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -187,11 +193,26 @@ function ProcessTable({
           </p>
         ),
       }),
-
+      columnHelper.accessor('machineName', {
+        id: 'machineName',
+        header: () => (
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Makine
+          </p>
+        ),
+        cell: (info: any) => (
+          <p
+            title={info.getValue()}
+            className="whitespace-nowrap  break-keep text-sm font-bold text-navy-700 dark:text-white"
+          >
+            {info.getValue()}
+          </p>
+        ),
+      }),
       columnHelper.accessor('technicalDrawingAttachment', {
         id: 'technicalDrawingAttachment',
         header: () => (
-          <p className="min-w-[110px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-[110px]  whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
             İLGİLİ DOKÜMAN
           </p>
         ),
@@ -201,32 +222,17 @@ function ProcessTable({
           </p>
         ),
       }),
-
-      columnHelper.accessor('machineName', {
-        id: 'machineName',
-        header: () => (
-          <p className="min-w-[160px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Makine
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
-          </p>
-        ),
-      }),
-
       columnHelper.accessor('status', {
         id: 'status',
         header: () => (
-          <p className="min-w-[120px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            PROSES DURUMU
+          <p className="whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
+            DURUM
           </p>
         ),
         cell: (info: any) => (
           <div className="flex min-w-[100px] items-center">
             {statusbgColor(info.getValue())}
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
+            <p className="whitespace-nowrap  break-keep  text-sm font-bold text-navy-700 dark:text-white">
               {entryStatus[info.getValue()]}
             </p>
           </div>
@@ -240,7 +246,7 @@ function ProcessTable({
           </p>
         ),
         cell: (info) => (
-          <div className="flex gap-2">
+          <div className="flex gap-1">
             <button
               className="rounded-md bg-blue-600  px-2 py-1 hover:bg-blue-700"
               onClick={() => onControl(info.getValue())}
@@ -283,88 +289,85 @@ function ProcessTable({
     debugTable: true,
   });
   return (
-    <Card extra={'w-full h-full sm:overflow-auto px-6 pb-3'}>
-      <header className="relative flex items-center justify-between gap-4 pt-6">
-        <div className="text-md font-medium text-navy-700 dark:text-white">
+    <>
+      <header className="relative mb-7 flex items-center justify-between gap-4 border-b">
+        <div className="text-md w-[60%] font-medium text-navy-700 dark:text-white">
           <Search
-            extra="!h-[38px] md:w-[300px] md:max-w-[300px]"
+            extra="w-full"
             onSubmit={(val) => setGlobalFilter(val)}
             onChange={(val) => setGlobalFilter(val)}
-            value={search}
           />
         </div>
-
-        {/* <Button
-            text="EKLE"
-            extra="!w-[140px] h-[38px] font-bold"
-            onClick={onAdd}
-            icon={<MdAdd className="ml-1 h-6 w-6" />}
-          /> */}
       </header>
 
-      <div
-        className="custom-scrollbar--hidden mt-8 overflow-x-scroll"
-        onMouseDown={handleMouseDown}
-        onMouseLeave={handleMouseLeave}
-        onMouseUp={handleMouseUp}
-        onMouseMove={handleMouseMove}
-      >
-        <table className="w-full">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="!border-px !border-gray-400">
-                {headerGroup.headers.map((header) => {
+      <Card extra={'w-full h-full sm:overflow-auto px-6 pb-3'}>
+        <div
+          className="custom-scrollbar--hidden mt-9 overflow-x-scroll"
+          onMouseDown={handleMouseDown}
+          onMouseLeave={handleMouseLeave}
+          onMouseUp={handleMouseUp}
+          onMouseMove={handleMouseMove}
+        >
+          <table className="w-full">
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr
+                  key={headerGroup.id}
+                  className="!border-px !border-gray-400"
+                >
+                  {headerGroup.headers.map((header, idx) => {
+                    return (
+                      <th
+                        key={header.id + idx}
+                        colSpan={header.colSpan}
+                        onClick={header.column.getToggleSortingHandler()}
+                        className="cursor-pointer border-b border-gray-400 pb-2 pr-4 pt-4 text-start dark:border-white/30"
+                      >
+                        <div className="items-center justify-between text-xs text-gray-200">
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                          {{
+                            asc: '',
+                            desc: '',
+                          }[header.column.getIsSorted() as string] ?? null}
+                        </div>
+                      </th>
+                    );
+                  })}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {table
+                .getRowModel()
+                .rows.slice()
+                .map((row) => {
                   return (
-                    <th
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      onClick={header.column.getToggleSortingHandler()}
-                      className="cursor-pointer border-b border-gray-400 pb-2 pr-4 pt-4 text-start dark:border-white/30"
+                    <tr
+                      key={row.id}
+                      className="border-b border-gray-100 hover:bg-lightPrimary dark:border-gray-900 dark:hover:bg-navy-700"
                     >
-                      <div className="items-center justify-between text-xs text-gray-200">
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                        {{
-                          asc: '',
-                          desc: '',
-                        }[header.column.getIsSorted() as string] ?? null}
-                      </div>
-                    </th>
+                      {row.getVisibleCells().map((cell, idx) => {
+                        return (
+                          <td key={cell.id + idx} className="p-2">
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
                   );
                 })}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table
-              .getRowModel()
-              .rows.slice()
-              .map((row) => {
-                return (
-                  <tr
-                    key={row.id}
-                    className="border-b border-gray-100 hover:bg-lightPrimary dark:border-gray-900 dark:hover:bg-navy-700"
-                  >
-                    {row.getVisibleCells().map((cell) => {
-                      return (
-                        <td key={cell.id} className="min-w-[80px] p-1">
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
-          </tbody>
-        </table>
-        <TablePagination table={table} />
-      </div>
-    </Card>
+            </tbody>
+          </table>
+          <TablePagination table={table} />
+        </div>
+      </Card>
+    </>
   );
 }
 

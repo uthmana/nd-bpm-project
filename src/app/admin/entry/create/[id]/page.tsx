@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { log } from 'utils';
 import { toast } from 'react-toastify';
 import { getFaultById, updateFault } from 'app/lib/apiRequest';
-import { UserFormSkeleton } from 'components/skeleton';
+import { FormSkeleton } from 'components/skeleton';
 import { useSession } from 'next-auth/react';
 import Card from 'components/card';
 
@@ -63,7 +63,7 @@ export default function Edit() {
   return (
     <Card extra="mt-12 mx-auto mt-4 max-w-[780px] rounded-2xl px-8 py-10 bg-white dark:bg-[#111c44] dark:text-white">
       {isLoading ? (
-        <UserFormSkeleton />
+        <FormSkeleton />
       ) : (
         <FaultForm
           title="Ürün Düzenle"

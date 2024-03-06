@@ -6,7 +6,6 @@ import {
   removeMillisecondsAndUTC,
   convertToISO8601,
 } from 'utils';
-import Checkbox from 'components/checkbox';
 import TextArea from 'components/fields/textArea';
 import Button from 'components/button/button';
 import Select from 'components/select/page';
@@ -57,57 +56,16 @@ export default function InvoiceForm(props: {
     setValues({ ...values, ...newVal });
   };
 
-  const handleProduct = (e) => {
-    setError(false);
-    setFormTouch(false);
-
-    const value = JSON.parse(e.target.value);
-
-    if (e.target.checked) {
-      const existedVal = [...selectedProduct].filter((item) => {
-        return item.id === value.id;
-      });
-
-      if (existedVal.length > 0) {
-        const filteredVal = [...selectedProduct].filter((item) => {
-          return item.id !== value.id;
-        });
-        setSelectedProduct(filteredVal);
-        return;
-      }
-      setSelectedProduct([...selectedProduct, value]);
-      return;
-    }
-    setSelectedProduct(
-      [...selectedProduct].filter((item) => {
-        return item.id !== value.id;
-      }),
-    );
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    const {
-      invoiceDate,
-      customerId,
-      tax_Office,
-      taxNo,
-      address,
-      amount,
-      totalAmount,
-      vat,
-    } = values;
+    const { invoiceDate, customerId, tax_Office, taxNo } = values;
 
     if (
       (isUpdate === false && selectedProduct.length === 0) ||
       !customerId ||
       !invoiceDate ||
       !tax_Office ||
-      !taxNo ||
-      !address ||
-      amount === 0 ||
-      totalAmount === 0 ||
-      vat === 0
+      !taxNo
     ) {
       setError(true);
       window.scroll(100, 0);
@@ -134,7 +92,7 @@ export default function InvoiceForm(props: {
         totalAmount: parseFloat(values.totalAmount),
         vat: parseFloat(values.vat),
         invoiceDate: convertToISO8601(values.invoiceDate),
-        process: mergedProduct,
+        process: selectedProduct,
       },
       isUpdate,
     );
@@ -153,35 +111,6 @@ export default function InvoiceForm(props: {
       taxNo: customer?.taxNo,
       address: customer?.address,
     });
-  };
-
-  const currencies = [
-    { label: 'TL', value: 'TL' },
-    { label: 'USD', value: 'USD' },
-    { label: 'EUR', value: 'EUR' },
-  ];
-
-  const handlePrice = (val: any, id: string) => {
-    const parsedVal = parseInt(val.target.value) || 0;
-    if (productPrice.length === 0) {
-      setProductPrice([{ id, price: parsedVal }]);
-      return;
-    }
-    const valExit = [...productPrice].filter((item) => {
-      return item.id === id;
-    });
-
-    if (valExit.length > 0) {
-      const oldVal = [...productPrice].filter((item) => {
-        return item.id !== id;
-      });
-      if (oldVal.length > 0) {
-        oldVal.push({ id, price: parsedVal });
-        setProductPrice(oldVal);
-      }
-      return;
-    }
-    setProductPrice([...productPrice, { id, price: parsedVal }]);
   };
 
   return (
@@ -249,14 +178,13 @@ export default function InvoiceForm(props: {
               Ürün <span className="text-red-400">*</span>
             </h2>
             <div className="mb-6 grid w-full grid-cols-1">
-              <div className="grid w-full grid-cols-7 gap-1 border-b font-bold">
+              <div className="grid w-full grid-cols-6 gap-1 border-b font-bold">
                 <div>No</div>
                 <div>Ürün</div>
                 <div>Uygulama</div>
                 <div>Standart</div>
                 <div>Renk</div>
                 <div>Miktar</div>
-                <div>Tutar</div>
               </div>
 
               {products.length > 0 ? (
@@ -266,32 +194,13 @@ export default function InvoiceForm(props: {
                       className="flex cursor-pointer items-center"
                       key={item.id}
                     >
-                      <div className="grid w-full grid-cols-7 items-center gap-1 border-b py-2 text-sm font-bold text-navy-700 dark:text-white">
-                        <div>
-                          <Checkbox
-                            name="product"
-                            colorscheme="brandScheme"
-                            checked={isUpdate}
-                            onChange={handleProduct}
-                            value={JSON.stringify(item)}
-                          />
-                        </div>
+                      <div className="grid w-full grid-cols-6 items-center gap-1 border-b py-2 text-sm font-bold text-navy-700 dark:text-white">
+                        <div>{idx + 1}</div>
                         <div>{item?.product}</div>
                         <div>{item?.application}</div>
                         <div>{item?.standard}</div>
                         <div>{item?.color}</div>
                         <div>{item?.quantity}</div>
-                        <div>
-                          <InputField
-                            label=""
-                            onChange={(e) => handlePrice(e, item.id)}
-                            type="number"
-                            id="price"
-                            name="price"
-                            placeholder="Tutar"
-                            extra="mb-2"
-                          />
-                        </div>
                       </div>
                     </label>
                   );
@@ -302,19 +211,6 @@ export default function InvoiceForm(props: {
                 </div>
               )}
             </div>
-          </div>
-
-          <div className="w-full">
-            <TextArea
-              label="Adres"
-              onChange={handleValues}
-              id="address"
-              name="address"
-              placeholder="Adres"
-              extra="mb-8"
-              value={values.address}
-              required={true}
-            />
           </div>
 
           <div className="mb-4 flex flex-col gap-3 sm:flex-row">
@@ -353,66 +249,18 @@ export default function InvoiceForm(props: {
               required={true}
             />
           </div>
-
-          <div className="mb-4 flex flex-col gap-3 sm:flex-row">
-            <InputField
-              label="Toplam Miktar"
+          <div className="w-full">
+            <TextArea
+              label="Adres"
               onChange={handleValues}
-              type="number"
-              id="amount"
-              name="amount"
-              placeholder="Toplam Miktar"
-              extra="mb-2"
-              value={values.amount}
-              required={true}
-            />
-
-            <InputField
-              label="KDV"
-              onChange={handleValues}
-              type="number"
-              id="vat"
-              name="vat"
-              placeholder="kdv"
-              extra="mb-2"
-              value={values.vat}
-              required={true}
-            />
-            <InputField
-              label="Genel Toplam"
-              onChange={handleValues}
-              type="number"
-              id="totalAmount"
-              name="totalAmount"
-              placeholder="Genel Toplam"
-              extra="mb-2"
-              value={values.totalAmount}
+              id="address"
+              name="address"
+              placeholder="Adres"
+              extra="mb-8 w-full"
+              value={values.address}
               required={true}
             />
           </div>
-
-          <div className="mb-4 flex flex-col gap-3 sm:flex-row">
-            <Select
-              required={true}
-              extra="pt-1 max-w-[200px]"
-              label="Para Birirmi"
-              onChange={handleValues}
-              name="currency"
-            >
-              {currencies.map((item, idx) => {
-                return (
-                  <option
-                    key={idx}
-                    selected={values.currency === item.value}
-                    value={item.value}
-                  >
-                    {item.label}
-                  </option>
-                );
-              })}
-            </Select>
-          </div>
-
           <div className="w-full">
             <TextArea
               label="Açıklama"
@@ -420,7 +268,7 @@ export default function InvoiceForm(props: {
               id="description"
               name="description"
               placeholder="Açıklama"
-              extra="mb-8"
+              extra="mb-8 w-full"
               value={values.description}
             />
           </div>

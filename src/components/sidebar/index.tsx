@@ -8,9 +8,17 @@ import nd_logo from '/public/img/auth/nd_logo.webp';
 function SidebarHorizon(props: { routes: IRoute[]; [x: string]: any }) {
   const { routes, open, setOpen, user } = props;
 
+  const handleOpen = () => {
+    if (window?.innerWidth < 1200) {
+      setTimeout(() => {
+        setOpen(false);
+      }, 500);
+    }
+  };
+
   return (
     <div
-      className={`duration-175 linear sm:none fixed !z-50 flex min-h-full flex-col  bg-white pb-10 shadow-2xl shadow-white/5 transition-all dark:!bg-navy-800 dark:text-white md:!z-50 lg:!z-50 xl:!z-0 ${
+      className={`duration-175 linear sm:none fixed !z-50 flex min-h-full flex-col bg-white  pb-10 shadow-2xl shadow-white/5 transition-all dark:!bg-navy-800 dark:text-white md:!z-50 lg:!z-50 xl:!z-0 print:hidden ${
         open ? 'translate-x-0' : '-translate-x-96'
       }`}
     >
@@ -44,7 +52,7 @@ function SidebarHorizon(props: { routes: IRoute[]; [x: string]: any }) {
       {/* Nav item */}
 
       <ul className="mb-auto w-full pt-1">
-        <Links onClick={() => setOpen(false)} routes={routes} />
+        <Links onClick={handleOpen} routes={routes} />
       </ul>
 
       {/* Nav item end */}

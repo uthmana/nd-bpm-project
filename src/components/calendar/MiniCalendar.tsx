@@ -13,6 +13,7 @@ const MiniCalendar = (props: { className?: string }) => {
     <div>
       <Card extra="flex w-full h-full flex-col px-3 py-3">
         <Calendar
+          locale="tr-TR"
           className={className}
           onChange={onChange}
           value={value}

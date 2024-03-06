@@ -12,13 +12,10 @@ export async function GET(req: NextRequest) {
     const allowedRoles = ['ADMIN'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json({ message: 'Access forbidden', status: 403 });
     }
-    const Colors = await prisma.colors.findMany();
-    if (!Colors) {
-      throw new Error('No Colors found');
-    }
-    return NextResponse.json(Colors, { status: 200 });
+    const colors = await prisma.colors.findMany();
+    return NextResponse.json(colors, { status: 200 });
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
@@ -39,18 +36,14 @@ export async function PUT(req: Request) {
     const allowedRoles = ['ADMIN'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json({ message: 'Access forbidden', status: 403 });
     }
     const regData = await req.json();
-    const Colors = await prisma.colors.create({
+    const colors = await prisma.colors.create({
       data: regData,
     });
 
-    if (!Colors) {
-      throw new Error('No Colors found');
-    }
-
-    return NextResponse.json({ Colors }, { status: 200 });
+    return NextResponse.json(colors, { status: 200 });
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||

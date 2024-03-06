@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { getProcessById, updateProcess } from 'app/lib/apiRequest';
 import { useParams, useRouter } from 'next/navigation';
-import { LatestInvoicesSkeleton } from 'components/skeleton';
+import { DetailSkeleton } from 'components/skeleton';
 import Card from 'components/card';
 import TechParamsTable from 'components/admin/data-tables/techParamsTable';
 import {
@@ -16,10 +16,10 @@ import Button from 'components/button/button';
 import Popup from 'components/popup';
 import { formatDateTime, log } from 'utils';
 import { useSession } from 'next-auth/react';
-import { MdAdd } from 'react-icons/md';
-
+import { MdAdd, MdPrint } from 'react-icons/md';
 import FileViewer from 'components/fileViewer';
 import DetailHeader from 'components/detailHeader';
+import Barcode from 'react-jsbarcode';
 
 export default function EntryControl() {
   const router = useRouter();
@@ -35,7 +35,7 @@ export default function EntryControl() {
   const { data: session } = useSession();
 
   const productInfo = [
-    'faultId',
+    'product_barcode',
     'customerName',
     'product',
     'quantity',
@@ -48,7 +48,7 @@ export default function EntryControl() {
   const detailData = {
     title: 'Proses Detayi',
     seeAllLink: '/admin/process',
-    seeAllText: 'Tün Proses',
+    seeAllText: 'Tüm Proses',
   };
 
   const infoTranslate = {
@@ -59,7 +59,7 @@ export default function EntryControl() {
     standard: 'Standart',
     color: 'Renk',
     machineName: 'Makine',
-    faultId: 'Takıp Kodu',
+    product_barcode: 'Barkodu',
   };
 
   const getSingleProcess = async () => {
@@ -178,14 +178,14 @@ export default function EntryControl() {
   };
 
   const processInfo = [
-    'faultId',
+    'product_barcode',
     'olcu_Kontrol',
     'gorunum_kontrol',
     'tork_Kontrol',
     'paketleme',
     'kontrol_edilen_miktar',
     'hatali_miktar',
-    'makliye_miktar',
+    'nakliye_miktar',
     'remarks',
     'image',
     'createdAt',
@@ -196,14 +196,14 @@ export default function EntryControl() {
   ];
 
   const infoProcessTranslate = {
-    faultId: 'Takıp Kodu',
+    product_barcode: 'Barkodu',
     olcu_Kontrol: 'Ölçü',
     gorunum_kontrol: 'Görünüm',
     tork_Kontrol: 'Tork',
     paketleme: 'Paketleme',
     kontrol_edilen_miktar: 'Kontrol edilen miktari',
     hatali_miktar: 'Hatali Miktari',
-    makliye_miktar: 'Nakliye Miktari',
+    nakliye_miktar: 'Nakliye Miktari',
     remarks: 'Açıklama',
     createdAt: 'Oluşturma Tarihi',
     updatedAt: 'Güncellenme Tarihi',
@@ -240,20 +240,67 @@ export default function EntryControl() {
     return <p className="font-bold"> {val} </p>;
   };
 
+  const handleBarcodePrint = () => {
+    const product_barcode =
+      document.getElementById('product_barcode').innerHTML;
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write('<html><head><title>Print</title></head><body>');
+    printWindow.document.write(
+      '<div style="page-break-before: always;"></div>',
+    );
+    printWindow.document.write(
+      '<div style="page-break-before: always;"></div>',
+    );
+    printWindow.document.write(
+      '<div style="page-break-before: always;"></div>',
+    );
+    printWindow.document.write(product_barcode);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
+  };
+
   return (
     <div className="mx-auto mt-4 max-w-full rounded-2xl px-2">
       {isLoading ? (
-        <LatestInvoicesSkeleton />
+        <DetailSkeleton />
       ) : (
         <>
           <DetailHeader {...detailData} />
           <div className="flex flex-col gap-4">
             {/* Product Info */}
-            <Card extra="w-full px-4 pt-4 pb-8">
-              <h2 className="my-5 text-2xl font-bold">Ürün Bilgileri</h2>
+            <Card extra="w-full px-8 pt-4 pb-8">
+              <div className="mb-4 flex w-full justify-between">
+                <h2 className="mb-4 text-2xl font-bold">Ürün Bilgileri</h2>
+                <Button
+                  extra={`px-4 h-[40px] max-w-[200px]`}
+                  onClick={handleBarcodePrint}
+                  text="BARKODU YAZDIR"
+                  icon={<MdPrint className="mr-1 h-5 w-5" />}
+                />
+              </div>
               <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
                 {Object.entries(process).map(([key, value], idx) => {
                   if (productInfo.includes(key)) {
+                    if (key === 'product_barcode') {
+                      return (
+                        <div
+                          id="product_barcode"
+                          className="max-w-[200px]"
+                          key={idx}
+                        >
+                          <h2 className="mb-0 font-bold capitalize italic">
+                            {infoTranslate[key]}
+                          </h2>
+                          <Barcode
+                            className="h-full w-full"
+                            value={value.toString()}
+                            options={{ format: 'code128' }}
+                          />
+                        </div>
+                      );
+                    }
+
                     return (
                       <div className="" key={idx}>
                         <h2 className="font-bold capitalize italic">
@@ -268,7 +315,7 @@ export default function EntryControl() {
             </Card>
 
             {/* Tecknical Params */}
-            <Card extra="w-full px-4 pt-4 pb-8">
+            <Card extra="w-full px-8 pt-4 pb-8">
               <div className="w-full">
                 <div className="my-5 flex justify-between">
                   <h2 className="text-2xl font-bold">Frekans Bilgileri</h2>
@@ -324,7 +371,7 @@ export default function EntryControl() {
             </Card>
 
             {/* Form  COntrol */}
-            <Card extra="w-full px-4 pt-4 pb-8">
+            <Card extra="w-full px-8 pt-4 pb-8">
               <div className="w-full">
                 <div className="my-5 flex justify-between">
                   <h2 className="text-2xl font-bold">

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { log } from 'utils';
 import { getUsers, deleteUser } from '../../lib/apiRequest';
 import { useEffect, useState } from 'react';
-import { LatestInvoicesSkeleton } from 'components/skeleton';
+import { TableSkeleton } from 'components/skeleton';
 import { toast } from 'react-toastify';
 import Popup from 'components/popup';
 import Button from 'components/button/button';
@@ -75,7 +75,7 @@ const Users = () => {
   return (
     <div className="mt-3 w-full">
       {isLoading ? (
-        <LatestInvoicesSkeleton />
+        <TableSkeleton />
       ) : (
         <MainTable
           onAdd={onAdd}

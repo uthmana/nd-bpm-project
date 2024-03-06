@@ -61,7 +61,7 @@ function SignInDefault() {
       redirect: false,
     }).then((res) => {
       if (res && res.ok) {
-        router.push('/admin');
+        router.push('/admin/dashboard');
         return;
       }
       setError(true);

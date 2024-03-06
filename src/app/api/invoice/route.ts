@@ -9,7 +9,10 @@ export async function GET(req: NextRequest) {
     const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
     }
     const invoice = await prisma.invoice.findMany({
       include: { customer: true, process: true },

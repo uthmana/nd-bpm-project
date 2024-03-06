@@ -189,7 +189,20 @@ export const barChartOptionsWeeklyRevenue = {
     },
   },
   xaxis: {
-    categories: ['17', '18', '19', '20', '21', '22', '23', '24', '25'],
+    categories: [
+      'OCA',
+      'ŞUB',
+      'MAR',
+      'NISAN',
+      'MAYIS',
+      'HAZIRAN',
+      'TEMMUZ',
+      'AĞUSTOS',
+      'EYLÜL',
+      'EKİM',
+      'KASIM',
+      'ARALIK',
+    ],
     show: false,
     labels: {
       show: true,
@@ -258,13 +271,8 @@ export const barChartOptionsWeeklyRevenue = {
 
 export const lineChartDataTotalSpent = [
   {
-    name: 'Revenue',
-    data: [50, 64, 48, 66, 49, 68],
-    color: '#4318FF',
-  },
-  {
     name: 'Profit',
-    data: [30, 40, 24, 46, 20, 46],
+    data: [0, 0, 24, 46, 20, 46, 70, 40, 90, 10, 11, 12],
     color: '#6AD2FF',
   },
 ];
@@ -322,7 +330,20 @@ export const lineChartOptionsTotalSpent = {
     },
     type: 'text',
     range: undefined,
-    categories: ['OCA', 'ŞUB', 'MAR', 'NISAN', 'MAYIS', 'HAZIRAN','TEMMUZ','AĞUSTOS', 'EYLÜL'],
+    categories: [
+      'OCA',
+      'ŞUB',
+      'MAR',
+      'NISAN',
+      'MAYIS',
+      'HAZIRAN',
+      'TEMMUZ',
+      'AĞUSTOS',
+      'EYLÜL',
+      'EKİM',
+      'KASIM',
+      'ARALIK',
+    ],
   },
 
   yaxis: {

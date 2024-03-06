@@ -1,5 +1,8 @@
 'use client';
 
+import { useState } from 'react';
+import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
+
 const MachineList = ({
   machines,
   handleDeleteMachine,
@@ -18,7 +21,7 @@ const MachineList = ({
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4 px-2">
+    <div className="grid grid-cols-1 items-start gap-4 px-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {machines.map((item, idx) => {
         return (
           <div
@@ -42,11 +45,22 @@ const MachineList = ({
               {item.machine_Name}
             </p>
             <div className="mb-2 h-[1px] w-full bg-gray-400" />
-            <div className="w-full">
-              <div className="mb-2 text-sm text-gray-800">
-                Teknikal Parametreleri
+            <div
+              className="group w-full"
+              onClick={(e) => {
+                e.currentTarget?.children[1].classList?.toggle('h-auto');
+              }}
+            >
+              <div
+                key={idx}
+                className="mb-2 flex justify-between text-sm text-gray-800"
+              >
+                <div>Teknikal Parametreleri</div>
+                <MdOutlineKeyboardArrowDown className="h-6 w-6" />
               </div>
-              <div className="flex flex-wrap items-center gap-3">
+              <div
+                className={`flex h-0 flex-wrap items-center gap-3 overflow-hidden transition-all`}
+              >
                 {item?.machineParams?.length > 0 ? (
                   <>
                     {item.machineParams.map((item, idx) => {

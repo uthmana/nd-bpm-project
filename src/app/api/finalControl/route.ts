@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
 import { FinalControl, Prisma } from '@prisma/client';
 import { checkUserRole } from 'utils/auth';
+import { generateSKU } from 'utils';
 
 //All Final Control
 export async function GET(req: NextRequest) {
@@ -56,14 +57,21 @@ export async function PUT(req: Request) {
     });
 
     if (result.result === 'ACCEPT') {
-      const stock = await prisma.stock.findUnique({
-        where: { faultId },
+      const fault = await prisma.fault.findUnique({
+        where: { id: faultId },
         include: { customer: true },
       });
 
-      if (stock) {
-        const { customer } = stock;
-        const { id, tax_Office, taxNo, rep_name, address } = customer;
+      if (fault) {
+        const { customer } = fault;
+        const { id, tax_Office, taxNo, rep_name, address, company_name } =
+          customer;
+        const barcode = generateSKU(
+          'IRSA',
+          company_name,
+          Math.floor(Math.random() * 1000),
+        );
+
         const invoice = await prisma.invoice.create({
           data: {
             invoiceDate: new Date(),
@@ -72,6 +80,7 @@ export async function PUT(req: Request) {
             taxNo,
             rep_name,
             address,
+            barcode,
           },
         });
 
@@ -80,7 +89,10 @@ export async function PUT(req: Request) {
             where: {
               id: processId,
             },
-            data: { invoiceId: invoice.id },
+            data: {
+              invoiceId: invoice.id,
+              shipmentQty: finalControl.nakliye_miktar,
+            },
           });
         }
       }
@@ -98,6 +110,7 @@ export async function PUT(req: Request) {
 
     return NextResponse.json(finalControl, { status: 200 });
   } catch (e) {
+    console.log(e);
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
       e instanceof Prisma.PrismaClientUnknownRequestError ||

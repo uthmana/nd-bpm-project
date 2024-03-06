@@ -10,7 +10,7 @@ import {
   updateProcess,
   getMachines,
 } from 'app/lib/apiRequest';
-import { LatestInvoicesSkeleton } from 'components/skeleton';
+import { TableSkeleton } from 'components/skeleton';
 import { toast } from 'react-toastify';
 import Popup from 'components/popup';
 import Button from 'components/button/button';
@@ -155,7 +155,7 @@ const Process = () => {
   return (
     <div className="mt-3 w-full">
       {isLoading ? (
-        <LatestInvoicesSkeleton />
+        <TableSkeleton />
       ) : (
         <ProcessTable
           onAdd={(val) => onAdd(val)}

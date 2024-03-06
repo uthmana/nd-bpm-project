@@ -1,6 +1,6 @@
 'use client';
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState, useRef, useEffect } from 'react';
 
 type Select = {
   name?: string;
@@ -21,6 +21,18 @@ const Select = ({
   onClick,
   required,
 }: Select) => {
+  const [selecedValue, setSelectedValue] = useState('');
+  const selectRef = useRef(null);
+
+  const handleOnChange = (e) => {
+    setSelectedValue(e.target.value);
+    onChange(e);
+  };
+
+  useEffect(() => {
+    setSelectedValue(selectRef.current?.value);
+  }, [selectRef.current?.value]);
+
   return (
     <div className={`relative w-full ${extra}`} onClick={onClick}>
       <div className="w-full">
@@ -31,16 +43,23 @@ const Select = ({
         `}
         >
           {label}
-          {required ? <span className="!text-red-400">*</span> : null}
+          {required !== undefined ? (
+            <span
+              className={`${
+                required && selecedValue ? 'text-green-600' : 'text-red-400'
+              }`}
+            >
+              *
+            </span>
+          ) : null}
         </label>
         <select
-          className={`flex h-[40px] w-full items-center justify-center rounded-xl border bg-white/0 px-1 text-sm outline-none  dark:border-[#283357] dark:text-white dark:focus:!border-[#ffffff]`}
+          ref={selectRef}
+          className={`flex h-[40px] w-full items-center justify-center rounded-xl border bg-white/0 px-1 text-sm outline-none first:!text-[#999]  dark:border-[#283357] dark:text-white dark:focus:!border-[#ffffff]`}
           name={name}
-          onChange={onChange}
+          onChange={handleOnChange}
         >
-          <option selected disabled defaultValue="">
-            {label}
-          </option>
+          <option selected disabled hidden defaultValue=" "></option>
           {children}
         </select>
       </div>

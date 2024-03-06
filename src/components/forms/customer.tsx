@@ -23,12 +23,16 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
     : {
         rep_name: '',
         email: '',
-        email_2: '',
+        email_quality: '',
+        email_offer: '',
+        email_accountant: '',
         address: '',
         postalCode: '',
         company_name: '',
         phoneNumber: '',
-        phoneNumber2: '',
+        phoneNumber_shipment: '',
+        phoneNumber_quality: '',
+        phoneNumber_accountant: '',
         code: '',
         definition: '',
         taxNo: '',
@@ -38,11 +42,11 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
         province_code: '',
         district_code: '',
         currency: 'TL',
-        cardType: 'ALICI_SATICI',
+        cardType: 'ALICI',
       };
   const [values, setValues] = useState(initialValues);
-  const cardTypes = ['ALICI_SATICI', 'ALICI', 'SATICI'];
-  const currencies = ['TL', 'USD'];
+  const cardTypes = ['ALICI', 'ALICI_SATICI', 'SATICI'];
+  const currencies = ['TL', 'USD', 'EUR'];
   const [error, setError] = useState(false);
 
   const handleValues = (event) => {
@@ -83,12 +87,12 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
       ) : null}
 
       {error ? (
-        <p className="mb-3 w-full rounded-md bg-red-500 p-2 text-center text-sm  font-bold text-white">
-          Lütfen Vergi No., Vergi Ofisi ve Vergi Ofis kodu boş bırakılmamalıdır!
+        <p className="mb-3 w-full rounded-md bg-red-300 p-2 text-center text-sm  font-bold text-white">
+          Lütfen <b> kırmızı ile işaretlenmiş alanaları doldurunuz !</b>
         </p>
       ) : null}
 
-      <div className="flex flex-col gap-4 sm:flex-row">
+      <div className="mb-10 flex flex-col gap-4 sm:flex-row">
         <InputField
           label="Şirket İsmi"
           onChange={handleValues}
@@ -98,6 +102,7 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
           placeholder="Şirket İsmi"
           extra="mb-2 !w-full"
           value={values.company_name}
+          required={true}
         />
         <InputField
           label="Sorumlu"
@@ -108,63 +113,119 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
           placeholder="Sorumlu"
           extra="mb-2 w-full"
           value={values.rep_name}
+          required={true}
         />
       </div>
-      <InputField
-        label="E-Posta"
-        onChange={handleValues}
-        type="text"
-        id="email"
-        name="email"
-        placeholder="e-posta"
-        extra="mb-2"
-        value={values.email}
-      />
-
-      <InputField
-        label="E-Posta 2"
-        onChange={handleValues}
-        type="text"
-        id="email_2"
-        name="email_2"
-        placeholder="e-posta"
-        extra="mb-2"
-        value={values.email_2}
-      />
 
       <div className="flex flex-col gap-4 sm:flex-row">
         <InputField
-          label="Telefon 1"
+          label="E-Posta"
+          onChange={handleValues}
+          type="text"
+          id="email"
+          name="email"
+          placeholder="example@mail.com"
+          extra="mb-2"
+          value={values.email}
+          required={true}
+        />
+
+        <InputField
+          label="E-Posta (Kalite)"
+          onChange={handleValues}
+          type="text"
+          id="email_quality"
+          name="email_quality"
+          placeholder="example@mail.com"
+          extra="mb-2"
+          value={values.email_quality}
+        />
+      </div>
+
+      <div className="mb-10 flex flex-col gap-4 sm:flex-row">
+        <InputField
+          label="E-Posta (Teklif)"
+          onChange={handleValues}
+          type="text"
+          id="email_offer"
+          name="email_offer"
+          placeholder="example@mail.com"
+          extra="mb-2"
+          value={values.email_offer}
+        />
+
+        <InputField
+          label="E-Posta (Muhasebe)"
+          onChange={handleValues}
+          type="text"
+          id="email_accountant"
+          name="email_accountant"
+          placeholder="example@mail.com"
+          extra="mb-2"
+          value={values.email_accountant}
+        />
+      </div>
+
+      <div className="flex flex-col gap-4 sm:flex-row">
+        <InputField
+          label="Telefon"
           onChange={handleValues}
           type="text"
           id="phoneNumber"
           name="phoneNumber"
-          placeholder="Telefon 1"
+          placeholder="0224 XXX XXXX"
           extra="mb-2"
           value={values.phoneNumber}
+          required={true}
+        />
+
+        <InputField
+          label="Telefon (Sevkiyat)"
+          onChange={handleValues}
+          type="text"
+          id="phoneNumber_shipment"
+          name="phoneNumber_shipment"
+          placeholder="0224 XXX XXXX"
+          extra="mb-2"
+          value={values.phoneNumber_shipment}
+        />
+      </div>
+
+      <div className="mb-10 flex flex-col gap-4 sm:flex-row">
+        <InputField
+          label="Telefon (Kalite)"
+          onChange={handleValues}
+          type="text"
+          id="phoneNumber_quality"
+          name="phoneNumber_quality"
+          placeholder="0224 XXX XXXX"
+          extra="mb-2"
+          value={values.phoneNumber_quality}
         />
 
         <InputField
           label="Telefon 2"
           onChange={handleValues}
           type="text"
-          id="phoneNumber2"
-          name="phoneNumber2"
-          placeholder="Telefon 2"
+          id="phoneNumber_accountant"
+          name="phoneNumber_accountant"
+          placeholder="0224 XXX XXXX"
           extra="mb-2"
-          value={values.phoneNumber2}
+          value={values.phoneNumber_accountant}
         />
       </div>
+
       <div className="flex flex-col gap-4 sm:flex-row">
         <InputField
-          label="Mştr kodu"
+          label="Müşteri kodu"
           onChange={handleValues}
           type="text"
           id="code"
           name="code"
-          placeholder="Mştr kodu"
+          placeholder="CRA10001"
           extra="mb-2"
           value={values.code}
+          required={true}
         />
 
         <InputField
@@ -176,10 +237,11 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
           placeholder="Postal Kodu"
           extra="mb-2"
           value={values.postalCode}
+          required={true}
         />
       </div>
 
-      <div className="flex flex-col gap-4 sm:flex-row">
+      <div className="mb-10 flex flex-col gap-4 sm:flex-row">
         <Select
           extra="w-full mb-3"
           label="Kart Türü"
@@ -225,7 +287,7 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
         id="address"
         name="address"
         placeholder="Address"
-        extra="mb-2"
+        extra="mb-10"
         value={values.address}
       />
 
@@ -239,6 +301,7 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
           placeholder="Vergi No."
           extra="mb-2"
           value={values.taxNo}
+          required={true}
         />
         <InputField
           label="Vergi Ofisi"
@@ -249,6 +312,7 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
           placeholder="Vergi Ofis"
           extra="mb-2"
           value={values.tax_Office}
+          required={true}
         />
         <InputField
           label="Vergi Ofis kodu"
@@ -259,10 +323,11 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
           placeholder="Vergi Ofis kodu"
           extra="mb-2"
           value={values.taxOfficeCode}
+          required={true}
         />
       </div>
 
-      <div className="flex flex-col gap-4 sm:flex-row">
+      <div className="mb-10 flex flex-col gap-4 sm:flex-row">
         <InputField
           label="Ülke Kodu"
           onChange={handleValues}
@@ -301,7 +366,7 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
         id="definition"
         name="definition"
         placeholder="Açıklama"
-        extra="mb-2"
+        extra="mb-8"
         value={values.definition}
       />
 

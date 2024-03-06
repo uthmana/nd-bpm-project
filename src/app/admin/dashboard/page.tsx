@@ -2,110 +2,115 @@
 import MiniCalendar from 'components/calendar/MiniCalendar';
 import WeeklyRevenue from 'components/admin/default/WeeklyRevenue';
 import TotalSpent from 'components/admin/default/TotalSpent';
-import PieChartCard from 'components/admin/default/PieChartCard';
-import { IoMdHome } from 'react-icons/io';
-import { IoDocuments } from 'react-icons/io5';
-import { MdBarChart, MdDashboard } from 'react-icons/md';
+import {
+  MdGroupWork,
+  MdLocalOffer,
+  MdOutlineBusiness,
+  MdOutlineGroups3,
+  MdOutlineMultilineChart,
+  MdTaskAlt,
+} from 'react-icons/md';
 
 import Widget from 'components/widget/Widget';
-import CheckTable from 'components/admin/default/CheckTable';
-import ComplexTable from 'components/admin/default/ComplexTable';
-import DailyTraffic from 'components/admin/default/DailyTraffic';
-import TaskCard from 'components/admin/default/TaskCard';
-import tableDataCheck from 'variables/data-tables/tableDataCheck';
-import tableDataComplex from 'variables/data-tables/tableDataComplex';
-
-import { getUsers } from '../../lib/apiRequest';
+import MiniTable from 'components/admin/data-tables/miniTable';
+import { getDashboard } from '../../lib/apiRequest';
 import { Suspense, useEffect, useState } from 'react';
-import Loading from 'app/loading';
 import { log } from 'utils';
+import { NewDashboardSkeleton } from 'components/skeleton';
 
 const Dashboard = () => {
-  const [isLoading, setIsloading] = useState(true);
+  const [widgetData, setWidgetData] = useState({} as any);
+  const [monthlyInvoice, setMonthlyInvoice] = useState([]);
+  const [monthlyProcess, setMonthlyProcess] = useState([] as any);
+  const [recentProcess, setRecentProcess] = useState([]);
+  const [recentCustomer, setRecentCustomer] = useState([]);
 
   useEffect(() => {
-    const users = async () => {
-      setIsloading(true);
-      const { data, status } = await getUsers();
-      setTimeout(() => {
-        setIsloading(false);
-      }, 3000);
+    const fetchData = async () => {
+      const { data, status } = await getDashboard();
+      if (status === 200) {
+        setWidgetData(data?.widget);
+        setMonthlyProcess([
+          {
+            name: 'Process',
+            data: data?.monthlyEntry?.process,
+            color: '#4318FF',
+            total: data?.monthlyEntry?.process.reduce((a, b) => b + a, 0),
+          },
+        ]);
+        setMonthlyInvoice([
+          {
+            name: 'invoice',
+            data: data?.monthlyEntry?.invoice,
+            color: '#6AD2Fa',
+          },
+        ]);
+        setRecentProcess(data?.recentProcess);
+        setRecentCustomer(data?.recentCustomer);
+        return;
+      }
       log(data, status);
     };
-    users();
+    fetchData();
   }, []);
 
   return (
-    <div>
-      {/* Card widget */}
-      <Suspense fallback={<Loading />}>
-        <div className="mt-3 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 3xl:grid-cols-6">
+    <div className="w-full">
+      <Suspense fallback={<NewDashboardSkeleton />}>
+        <div className="mt-3 grid grid-cols-1 gap-5  sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 2xl:grid-cols-3 3xl:grid-cols-6">
           <Widget
-            icon={<MdBarChart className="h-7 w-7" />}
-            title={'Günün Ürün Girişi'}
-            subtitle={'$340.5'}
+            icon={<MdOutlineGroups3 className="h-7 w-7" />}
+            title={'Müşteri Sayısı'}
+            subtitle={widgetData?.customer}
           />
           <Widget
-            icon={<IoDocuments className="h-6 w-6" />}
-            title={'Aylık Process'}
-            subtitle={'642'}
+            icon={<MdOutlineMultilineChart className="h-6 w-6" />}
+            title={'Stok Sayısı'}
+            subtitle={widgetData?.stock}
           />
           <Widget
-            icon={<MdBarChart className="h-7 w-7" />}
-            title={'Toplam Irsaliye'}
-            subtitle={'574'}
+            icon={<MdOutlineBusiness className="h-7 w-7" />}
+            title={'Aylık Ürün Girişi'}
+            subtitle={widgetData?.entry}
           />
           <Widget
-            icon={<MdDashboard className="h-6 w-6" />}
-            title={'Kontrol Bekleyen'}
-            subtitle={'1,000'}
+            icon={<MdGroupWork className="h-6 w-6" />}
+            title={'Aylık Proses'}
+            subtitle={widgetData?.process}
           />
           <Widget
-            icon={<MdBarChart className="h-7 w-7" />}
+            icon={<MdTaskAlt className="h-7 w-7" />}
             title={'Toplam İrsaliye'}
-            subtitle={'145'}
+            subtitle={widgetData?.invoice}
           />
           <Widget
-            icon={<IoMdHome className="h-6 w-6" />}
+            icon={<MdLocalOffer className="h-6 w-6" />}
             title={'Gönderilen Teklifler'}
-            subtitle={'2433'}
+            subtitle={widgetData?.offer}
           />
         </div>
-        {isLoading}
-        {/* Charts */}
-
         <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
-          <TotalSpent />
-          <WeeklyRevenue />
+          <TotalSpent chartData={monthlyProcess} />
+          <WeeklyRevenue chartData={monthlyInvoice} />
         </div>
-
-        {/* Tables & Charts */}
-
-        <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-2">
-          {/* Check Table */}
-          <div>
-            <CheckTable tableData={tableDataCheck} />
+        <div className="mt-5 grid grid-cols-1 gap-5">
+          <MiniTable
+            variant="process"
+            title="Yeni Proces"
+            tableData={recentProcess}
+            key={recentProcess.length}
+          />
+        </div>
+        <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
+          <div className="col-span-2">
+            <MiniTable
+              variant="customer"
+              title="Yeni Müşteri"
+              tableData={recentCustomer}
+              key={recentCustomer.length}
+            />
           </div>
-
-          {/* Traffic chart & Pie Chart */}
-
-          <div className="grid grid-cols-1 gap-5 rounded-[20px] md:grid-cols-2">
-            <DailyTraffic />
-            <PieChartCard />
-          </div>
-
-          {/* Complex Table , Task & Calendar */}
-
-          <ComplexTable tableData={tableDataComplex} />
-
-          {/* Task chart & Calendar */}
-
-          <div className="grid grid-cols-1 gap-5 rounded-[20px] md:grid-cols-2">
-            <TaskCard />
-            <div className="grid grid-cols-1 rounded-[20px]">
-              <MiniCalendar className="p-4 dark:!bg-[#111c44]" />
-            </div>
-          </div>
+          <MiniCalendar className="p-4 dark:!bg-[#111c44]" />
         </div>
       </Suspense>
     </div>

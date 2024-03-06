@@ -55,3 +55,89 @@ export const removeMillisecondsAndUTC = (iso8601Date) => {
   const trimmedDate = iso8601Date.slice(0, -5); // Remove milliseconds and 'Z'
   return trimmedDate;
 };
+
+export const generateSKU = (
+  customerName: string,
+  productName: string,
+  quantity: number,
+) => {
+  const currentDate = new Date();
+  const formattedDate = currentDate.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
+  });
+  const formattedQuantity = quantity.toString().padStart(4, '0');
+  const turkishToEnglishMapping: { [key: string]: string } = {
+    ç: 'c',
+    Ç: 'C',
+    ğ: 'g',
+    Ğ: 'G',
+    ı: 'i',
+    İ: 'I',
+    ö: 'o',
+    Ö: 'O',
+    ş: 's',
+    Ş: 'S',
+    ü: 'u',
+    Ü: 'U',
+  };
+  const cleanCustomerName = replaceTurkishCharacters(
+    customerName,
+    turkishToEnglishMapping,
+  );
+  const cleanProductName = replaceTurkishCharacters(
+    productName,
+    turkishToEnglishMapping,
+  );
+
+  const sku = `${cleanCustomerName.toUpperCase().slice(0, 3)}-${cleanProductName
+    .toUpperCase()
+    .slice(0, 2)}-${formattedQuantity}-${formattedDate.replaceAll('/', '')}`;
+  return sku;
+};
+
+export const replaceTurkishCharacters = (
+  str: string,
+  mapping: { [key: string]: string },
+) => {
+  return str.replace(/[çÇğĞıİöÖşŞüÜ]/g, (match) => mapping[match]);
+};
+
+export const getMonthAndWeekDates = (date = new Date()) => {
+  const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+  const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+  const startOfWeek = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate() - date.getDay(),
+  );
+
+  const endOfWeek = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate() + (6 - date.getDay()),
+  );
+
+  return {
+    currentDate: date,
+    startOfMonth,
+    endOfMonth,
+    startOfWeek,
+    endOfWeek,
+  };
+};
+
+export const getMonthlySum = (arr, dateName) => {
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
+
+  const result = Array.from(
+    { length: currentMonth + 1 },
+    (_, month) =>
+      arr.filter((item) => new Date(item[dateName]).getMonth() === month)
+        .length,
+  );
+  return result;
+};

@@ -1,19 +1,17 @@
 'use client';
 
 import MainTable from 'components/admin/data-tables/mainTable';
-import { stockTableData } from 'variables/data-tables/tableDataMain';
 import { useRouter } from 'next/navigation';
 import { log } from 'utils';
 import { useEffect, useState } from 'react';
 import { deleteStock, getStocks } from 'app/lib/apiRequest';
-import { LatestInvoicesSkeleton } from 'components/skeleton';
+import { TableSkeleton } from 'components/skeleton';
 import { toast } from 'react-toastify';
 import Popup from 'components/popup';
 import Button from 'components/button/button';
 
 const Stock = () => {
   const router = useRouter();
-
   const [stocks, setStocks] = useState([]);
   const [isShowPopUp, setIsShowPopUp] = useState(false);
   const [stockId, setStockId] = useState('');
@@ -26,7 +24,7 @@ const Stock = () => {
     if (status === 200) {
       setStocks(
         data?.map((item) => {
-          return { ...item, customerName: item.customer.company_name };
+          return { ...item, customerName: item?.customer?.company_name };
         }),
       );
     }
@@ -80,7 +78,7 @@ const Stock = () => {
   return (
     <div className="mt-3 w-full">
       {isLoading ? (
-        <LatestInvoicesSkeleton />
+        <TableSkeleton />
       ) : (
         <MainTable
           onAdd={onAdd}

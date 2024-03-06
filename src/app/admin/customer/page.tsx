@@ -1,7 +1,6 @@
 'use client';
 
 import MainTable from 'components/admin/data-tables/mainTable';
-import { customerTableData } from 'variables/data-tables/tableDataMain';
 import { useRouter } from 'next/navigation';
 import { log } from 'utils';
 import { useEffect, useState } from 'react';
@@ -9,11 +8,10 @@ import { deleteCustomer, getCustomers } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import Popup from 'components/popup';
 import Button from 'components/button/button';
-import { LatestInvoicesSkeleton } from 'components/skeleton';
+import { TableSkeleton } from 'components/skeleton';
 
 const Customers = () => {
   const router = useRouter();
-
   const [customers, setCustomers] = useState([]);
   const [isShowPopUp, setIsShowPopUp] = useState(false);
   const [customerId, setCustomerId] = useState('');
@@ -68,7 +66,7 @@ const Customers = () => {
   return (
     <div className="mt-3 w-full">
       {isLoading ? (
-        <LatestInvoicesSkeleton />
+        <TableSkeleton />
       ) : (
         <MainTable
           onAdd={onAdd}
