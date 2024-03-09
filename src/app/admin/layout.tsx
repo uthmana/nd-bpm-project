@@ -1,7 +1,7 @@
 'use client';
 // Layout components
 import { usePathname } from 'next/navigation';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import routes from 'routes';
 import {
   getActiveNavbar,
@@ -9,13 +9,14 @@ import {
   isWindowAvailable,
 } from 'utils/navigation';
 import React from 'react';
-import { Portal } from '@chakra-ui/portal';
 import Navbar from 'components/navbar';
 import Sidebar from 'components/sidebar';
 import Footer from 'components/footer/Footer';
 import Breadcrump from 'components/breadcrumb';
 import { useSession } from 'next-auth/react';
 import { ToastContainer } from 'react-toastify';
+
+export const revalidate = 1;
 
 export default function Admin({ children }: { children: React.ReactNode }) {
   // states and functions
