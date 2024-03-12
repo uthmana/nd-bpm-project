@@ -7,9 +7,7 @@ const Chart = dynamic(() => import('react-apexcharts'), {
 
 const LineChart = (props) => {
   const { chartData, chartOptions } = props;
-
   return (
-    // @ts-expect-error
     <Chart
       options={chartOptions}
       type="line"

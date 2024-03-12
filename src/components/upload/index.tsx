@@ -95,7 +95,11 @@ const Upload = (props: {
 
       <div
         className="h-[164px] w-full overflow-hidden rounded-xl bg-white bg-contain dark:!bg-navy-800"
-        style={{ backgroundImage: `url(${placeholderImage.src})` }}
+        style={{
+          backgroundImage: `url(${placeholderImage.src})`,
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'cover',
+        }}
       >
         {fileName.length > 0 ? (
           <div className="relative h-full w-full">

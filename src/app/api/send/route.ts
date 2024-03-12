@@ -1,6 +1,6 @@
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
-import ResetPassword from 'components/emails/resetPassword';
+import ResetPassword from '../../../emails/resetPassword';
 import prisma from 'app/lib/db';
 import crypto from 'crypto';
 import InvoiceDoc from 'components/invoice';
@@ -64,7 +64,10 @@ export async function POST(request: Request) {
       data: { token: resetPasswordToken, tokenExpiryDate },
     });
 
-    emailBody.react = ResetPassword({ token: resetPasswordToken });
+    emailBody.react = ResetPassword({
+      token: resetPasswordToken,
+      userName: user.name,
+    });
 
     const { data, error } = await resend.emails.send(emailBody);
 

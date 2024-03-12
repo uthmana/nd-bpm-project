@@ -7,6 +7,7 @@ import nd_logo from '/public/img/auth/nd_logo.webp';
 import { emailRegex } from 'utils';
 import NextLink from 'next/link';
 import { sendForgotEmail } from 'app/lib/apiRequest';
+import { MdKeyboardArrowLeft } from 'react-icons/md';
 
 function ForgotPassword() {
   const forgotForm = useRef(null);
@@ -68,9 +69,9 @@ function ForgotPassword() {
         >
           <NextLink
             href="/auth/sign-in"
-            className="mb-4 inline-block text-sm font-medium dark:text-white"
+            className="mb-4 inline-flex items-center text-sm font-medium dark:text-white"
           >
-            {'<'} Geri
+            <MdKeyboardArrowLeft className="h-6 w-6" /> Geri
           </NextLink>
           <img
             src={nd_logo.src}
@@ -93,7 +94,7 @@ function ForgotPassword() {
           <InputField
             variant="auth"
             extra="mb-8"
-            label="E-posta*"
+            label="E-posta"
             placeholder="E-posta"
             id="email"
             type="text"

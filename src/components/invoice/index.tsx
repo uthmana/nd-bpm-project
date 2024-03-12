@@ -96,7 +96,7 @@ export default function InvoiceDoc({ invoice }) {
               return (
                 <div
                   key={idx}
-                  className="grid w-full grid-cols-10 items-center gap-1 border-b py-2 text-sm font-bold text-navy-700 dark:text-white"
+                  className="grid w-full grid-cols-10 items-center gap-1 border-b py-2 text-sm font-bold text-navy-700"
                 >
                   <div className="col-span-1">{idx + 1}</div>
                   <div className="col-span-2">{item?.product}</div>
