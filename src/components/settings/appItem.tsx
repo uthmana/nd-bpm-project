@@ -59,16 +59,16 @@ const AppItem = ({ title, data, onAdd, onEdit, onDelete, isSubmitting }) => {
                 key={idx}
                 className="relative w-full rounded-md border px-2 py-2"
               >
-                <div className="absolute right-1 top-[43] flex gap-1">
+                <div className="absolute right-1 top-[42] flex gap-1">
                   <button
                     onClick={() => handleEdit(item.id, idx)}
-                    className="flex h-6  w-6 items-center justify-center rounded-full border bg-[#f4f7fe] text-lg hover:bg-green-500 hover:text-white"
+                    className="flex h-6  w-6 items-center justify-center rounded-full border bg-[#f4f7fe] text-lg hover:bg-green-500 hover:text-white dark:bg-green-500"
                   >
                     ✐
                   </button>
                   <button
                     onClick={() => handleDelete(item.id, idx)}
-                    className="flex h-6  w-6 items-center justify-center rounded-full border bg-[#f4f7fe] hover:bg-red-500 hover:text-white"
+                    className="flex h-6  w-6 items-center justify-center rounded-full border bg-[#f4f7fe] hover:bg-red-500 hover:text-white dark:bg-red-500"
                   >
                     X
                   </button>
@@ -79,8 +79,8 @@ const AppItem = ({ title, data, onAdd, onEdit, onDelete, isSubmitting }) => {
           })}
         </div>
 
-        <div className="sticky bottom-0 h-[30px] bg-white">
-          <div className="relative">
+        <div className="sticky bottom-[28px] h-[30px] bg-white dark:bg-navy-800">
+          <div className="relative bg-white dark:bg-navy-800">
             <InputField
               label=""
               onChange={handleValue}
@@ -88,12 +88,12 @@ const AppItem = ({ title, data, onAdd, onEdit, onDelete, isSubmitting }) => {
               id="name"
               name="name"
               placeholder=""
-              extra="mb-2 font-medium -mt-[26px] h-[30px]"
+              extra="mb-2 font-medium -mt-[26px] h-[30px] bg-white dark:bg-navy-800"
               value={value.name}
             />
             <Button
               onClick={handleAdd}
-              extra="absolute right-[1px] -top-[1px] h-7 rounded-tl-none rounded-bl-none rounded-tr-md rounded-br-md !w-[40px]"
+              extra="absolute right-[1px] top-[29px] h-7 rounded-tl-none rounded-bl-none rounded-tr-md rounded-br-md !w-[40px] dark:bg-brandcolor"
               text=""
               icon={<MdAdd className="ml-1 h-6 w-6" />}
               disabled={isSubmitting}

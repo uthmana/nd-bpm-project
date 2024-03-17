@@ -110,7 +110,7 @@ const MachinePopup = ({
   return (
     <Popup
       show={isShowPopUp}
-      extra="flex !min-w-[500px] !top-[50%] flex-col gap-3 py-6 px-8"
+      extra="flex !min-w-[500px] !top-[50%] flex-col gap-3 py-6 px-8 dark:bg-navy-800"
     >
       <h1 className="text-3xl ">Makine Ayarları</h1>
 
@@ -121,13 +121,13 @@ const MachinePopup = ({
         id="machine_Name"
         name="machine_Name"
         placeholder="Makine İsmi"
-        extra="mb-2"
+        extra="mb-2 font-bold text-md"
         value={values.machine_Name}
       />
 
       <div>
         <label className="ml-2">Parametreleri </label>
-        <div className="text-bold mt-1 flex min-h-[48px] w-full flex-wrap gap-3 rounded-xl border bg-white/0 p-3 text-sm outline-none">
+        <div className="text-bold mt-1 flex min-h-[80px] w-full flex-wrap items-start gap-3 rounded-xl border bg-white/0 p-3 text-sm dark:border-[#efefef]/20">
           {techParamSelected.length > 0 ? (
             <>
               {techParamSelected.map((item, idx) => {
@@ -135,7 +135,7 @@ const MachinePopup = ({
                   <button
                     key={idx}
                     onClick={() => handleRemoveTechParam(item)}
-                    className="rounded-md bg-green-600 px-2 py-1 text-sm font-bold text-white"
+                    className=" rounded-md bg-green-600 px-2 py-1 text-sm font-bold text-white"
                   >
                     {item.param_name} X
                   </button>
@@ -167,7 +167,7 @@ const MachinePopup = ({
       <div className="flex gap-4">
         <Button
           text="GERİ"
-          extra="w-[60px] h-[40px] bg-red-700"
+          extra="w-[60px] h-[40px] bg-red-700 dark:bg-red-700"
           onClick={handleClose}
         />
         <Button

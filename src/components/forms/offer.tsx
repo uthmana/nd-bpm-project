@@ -6,6 +6,7 @@ import {
   removeMillisecondsAndUTC,
   convertToISO8601,
   generateSKU,
+  currencySymbol,
 } from 'utils';
 import TextArea from 'components/fields/textArea';
 import Button from 'components/button/button';
@@ -21,6 +22,7 @@ import {
 } from 'app/lib/apiRequest';
 import { useSession } from 'next-auth/react';
 import Card from 'components/card';
+import Upload from 'components/upload';
 
 export default function OfferForm(props: {
   onSubmit: (e: any, d: any) => void;
@@ -38,6 +40,8 @@ export default function OfferForm(props: {
   const [products, setProducts] = useState(isUpdate ? editData?.product : []);
   const [application, setApplication] = useState([]);
   const [standard, setStandard] = useState([]);
+  const [file, setFile] = useState('');
+  const [resetFile, setResetFile] = useState(false);
 
   const { data: session } = useSession();
   const currency = ['TL', 'USD', 'EUR'];
@@ -69,6 +73,10 @@ export default function OfferForm(props: {
     standard: '',
     quantity: '',
     price: '',
+    unitPrice: '',
+    discountPrice: '',
+    description: '',
+    image: '',
   });
 
   useEffect(() => {
@@ -148,7 +156,18 @@ export default function OfferForm(props: {
 
   const handleProductValues = (event) => {
     setError(false);
-    const newVal = { [event.target?.name]: event.target?.value };
+    let newVal: any = { [event.target?.name]: event.target?.value };
+
+    if (
+      event.target?.name === 'quantity' ||
+      event.target?.name === 'discountPrice'
+    ) {
+      const price =
+        parseInt(newVal?.discountPrice || offer.discountPrice) *
+        parseInt(newVal.quantity || offer.quantity);
+      newVal = { ...newVal, price: price };
+    }
+
     setOffer({ ...offer, ...newVal });
   };
 
@@ -179,10 +198,11 @@ export default function OfferForm(props: {
       ...updatedOfferItem,
       quantity: parseFloat(quantity),
       price: parseFloat(price),
+      image: file,
     });
+    setResetFile(true);
 
     setProducts(newVal);
-
     const totalPrice = newVal.reduce(
       (a, b) => parseInt(a) + parseInt(b.price),
       0,
@@ -195,6 +215,10 @@ export default function OfferForm(props: {
       standard: offer.standard,
       quantity: '',
       price: '',
+      unitPrice: '',
+      discountPrice: '',
+      description: '',
+      image: '',
     });
   };
 
@@ -362,14 +386,13 @@ export default function OfferForm(props: {
 
           <div className="mb-12 min-w-full pl-2">
             <div className="mb-6 grid w-full grid-cols-1">
-              <div className="grid w-full grid-cols-10 gap-1 border-b text-sm font-bold">
-                <div className="col-span-1">No</div>
-                <div className="col-span-2">Ürün</div>
-                <div className="col-span-2">Uygulama</div>
-                <div className="col-span-2">Standart</div>
+              <div className="grid w-full grid-cols-11 gap-1 border-b text-sm font-bold">
+                <div className="col-span-1"></div>
+                <div className="col-span-6">Ürün</div>
                 <div className="col-span-1">Miktar</div>
-                <div className="col-span-2 whitespace-nowrap break-keep">
-                  Fiyat {`(${values.currency})`}
+                <div className="col-span-2">Birim Fiyat</div>
+                <div className="col-span-1 whitespace-nowrap break-keep">
+                  Tutar
                 </div>
               </div>
 
@@ -377,20 +400,71 @@ export default function OfferForm(props: {
                 products.map((item, idx) => {
                   return (
                     <label className="flex items-center" key={idx}>
-                      <div className="group grid w-full grid-cols-10 items-center gap-2 border-b py-1 text-sm font-bold text-navy-700 dark:text-white">
+                      <div className="group grid w-full grid-cols-11 items-start gap-2 border-b py-1 text-sm font-bold text-navy-700 dark:text-white">
                         <div className="col-span-1 flex gap-2 py-1">
                           <div
                             className="flex h-[24px] w-[24px] items-center justify-center rounded-full border p-2 hover:bg-red-400 hover:text-white"
                             onClick={(e) => removeProduct(e, idx)}
                           >
                             X
-                          </div>{' '}
+                          </div>
                         </div>
-                        <div className="col-span-2">{item?.name}</div>
-                        <div className="col-span-2">{item?.application}</div>
-                        <div className="col-span-2">{item?.standard}</div>
+                        <div className="col-span-6">
+                          <div className="grid grid-cols-5">
+                            {item?.image ? (
+                              <span className="col-span-1">
+                                <img
+                                  className="w-full"
+                                  src={`/uploads/${item.image}`}
+                                  alt={item?.name}
+                                />
+                              </span>
+                            ) : null}
+
+                            <div className="col-span-4">
+                              <div className="col-span-4 px-1">
+                                <div>{item?.name}</div>
+                                <div className="mb-1">
+                                  {item?.application} - {item?.standard}
+                                </div>
+                                <div className="text-xs font-normal">
+                                  {item?.description}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
                         <div className="col-span-1">{item?.quantity}</div>
-                        <div className="col-span-2">{item?.price}</div>
+                        <div className="col-span-2 flex flex-col text-[10px]">
+                          <div className="flex gap-1">
+                            <span className="line-through">
+                              {item?.unitPrice}
+                            </span>
+                            <span> {currencySymbol[values.currency]}</span>
+                          </div>
+                          <div className="flex gap-1">
+                            <span>{item?.discountPrice}</span>
+                            <span> {currencySymbol[values.currency]}</span>
+                          </div>
+
+                          <div className="flex gap-1">
+                            <span>
+                              {' '}
+                              {'('}%{' '}
+                              {Math.round(
+                                ((item?.unitPrice - item?.discountPrice) /
+                                  item?.unitPrice) *
+                                  100,
+                              )}{' '}
+                              indi.
+                              {')'}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="col-span-1">
+                          {item?.price} {currencySymbol[values.currency]}
+                        </div>
                       </div>
                     </label>
                   );
@@ -400,9 +474,10 @@ export default function OfferForm(props: {
                   Henüz İş Açıklaması Eklenmedi.
                 </div>
               )}
+
               <div className="mb-4 ml-auto mt-5 max-w-[200px]">
                 <InputField
-                  label={`Toplam (${values.currency})`}
+                  label={`Toplam ${currencySymbol[values.currency]}`}
                   onChange={handleValues}
                   type="text"
                   id="totalAmount"
@@ -413,75 +488,134 @@ export default function OfferForm(props: {
                 />
               </div>
 
-              <Card extra="mt-10 grid w-full grid-cols-2 gap-2 rounded-lg bg-lightPrimary px-3 py-4 sm:grid-cols-3">
-                <InputField
-                  label="Ürün"
-                  onChange={handleProductValues}
-                  type="text"
-                  id="name"
-                  name="name"
-                  placeholder=""
-                  extra="!h-[36px]"
-                  value={offer.name}
-                />
+              <div className="mt-10 min-h-[1px] w-full rounded-lg bg-lightPrimary px-3 py-4">
+                <h2 className="my-5 text-center text-lg font-bold">
+                  Teklif Ürünü Ekle
+                </h2>
+                <div className="mb-3 flex flex-col gap-3 sm:flex-row">
+                  <InputField
+                    label="Ürün"
+                    onChange={handleProductValues}
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder=""
+                    extra="!h-[36px]"
+                    value={offer.name}
+                  />
 
-                <Select
-                  extra="pt-1"
-                  label="Uygulama"
-                  onChange={handleProductValues}
-                  name="application"
-                >
-                  {application.map((item, idx) => {
-                    return (
-                      <option value={item.name} key={idx} selected={idx === 0}>
-                        {item.name}
-                      </option>
-                    );
-                  })}
-                </Select>
+                  <Select
+                    extra="pt-1"
+                    label="Uygulama"
+                    onChange={handleProductValues}
+                    name="application"
+                  >
+                    {application.map((item, idx) => {
+                      return (
+                        <option
+                          value={item.name}
+                          key={idx}
+                          selected={idx === 0}
+                        >
+                          {item.name}
+                        </option>
+                      );
+                    })}
+                  </Select>
 
-                <Select
-                  extra="pt-1"
-                  label="standart"
-                  onChange={handleProductValues}
-                  name="standard"
-                >
-                  {standard.map((item, idx) => {
-                    return (
-                      <option value={item.name} key={idx} selected={idx === 0}>
-                        {item.name}
-                      </option>
-                    );
-                  })}
-                </Select>
+                  <Select
+                    extra="pt-1"
+                    label="standart"
+                    onChange={handleProductValues}
+                    name="standard"
+                  >
+                    {standard.map((item, idx) => {
+                      return (
+                        <option
+                          value={item.name}
+                          key={idx}
+                          selected={idx === 0}
+                        >
+                          {item.name}
+                        </option>
+                      );
+                    })}
+                  </Select>
+                </div>
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <InputField
+                    label="Miktar"
+                    onChange={handleProductValues}
+                    type="number"
+                    id="quantity"
+                    name="quantity"
+                    placeholder=""
+                    extra="!h-[36px]"
+                    value={offer.quantity}
+                  />
 
-                <InputField
-                  label="Miktar"
-                  onChange={handleProductValues}
-                  type="number"
-                  id="quantity"
-                  name="quantity"
-                  placeholder=""
-                  extra="!h-[36px]"
-                  value={offer.quantity}
-                />
-                <InputField
-                  label="Fiyat"
-                  onChange={handleProductValues}
-                  type="number"
-                  id="price"
-                  name="price"
-                  placeholder=""
-                  extra="!h-[36px]"
-                  value={offer.price}
-                />
+                  <InputField
+                    label="Birim Fiyat"
+                    onChange={handleProductValues}
+                    type="number"
+                    id="unitPrice"
+                    name="unitPrice"
+                    placeholder=""
+                    extra="!h-[36px]"
+                    value={offer.unitPrice}
+                  />
 
+                  <InputField
+                    label="İndirimli Fiyat"
+                    onChange={handleProductValues}
+                    type="number"
+                    id="discountPrice"
+                    name="discountPrice"
+                    placeholder=""
+                    extra="!h-[36px]"
+                    value={offer.discountPrice}
+                  />
+                </div>
+                <div className="ml-auto w-full max-w-[208px]">
+                  <InputField
+                    label="Tutar"
+                    onChange={handleProductValues}
+                    type="number"
+                    id="price"
+                    name="price"
+                    placeholder=""
+                    extra="!h-[36px]"
+                    value={offer.price}
+                  />
+                </div>
+                <div className="col-span-3 w-full">
+                  <TextArea
+                    label="Açıklama"
+                    onChange={handleProductValues}
+                    id="description"
+                    name="description"
+                    placeholder="Açıklama"
+                    extra="mb-4 w-full"
+                    value={offer.description}
+                  />
+                </div>
+                <div className="my-8 w-full">
+                  <label className="ml-3 text-sm font-bold text-navy-700 dark:text-white">
+                    İlgili Doküman
+                  </label>
+                  <Upload
+                    onChange={(val) => setFile(val)}
+                    fileType="all"
+                    multiple={false}
+                    key={products?.length}
+                  />
+                </div>
                 <Button
                   onClick={addProduct}
                   extra="mt-7 h-[36px]"
                   text="EKLE"
                 />
-              </Card>
+              </div>
             </div>
           </div>
 

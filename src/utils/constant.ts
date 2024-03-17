@@ -193,3 +193,9 @@ export const faultControlTranslate = {
   updatedAt: 'Güncelleme Tarihi',
   image: 'İlgili Doküman',
 };
+
+export const currencySymbol = {
+  TL: '₺',
+  USD: '$',
+  EUR: '€',
+};
