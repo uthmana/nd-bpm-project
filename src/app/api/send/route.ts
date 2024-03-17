@@ -5,6 +5,7 @@ import prisma from 'app/lib/db';
 import crypto from 'crypto';
 import InvoiceDoc from 'components/invoice';
 import OfferDoc from 'components/offer';
+import OfferTemplete from '../../../emails/offer';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -18,7 +19,8 @@ export async function POST(request: Request) {
   };
 
   if (formData.type === 'offer') {
-    emailBody.react = OfferDoc({ offer: formData.data });
+    //emailBody.react = OfferDoc({ offer: formData.data });
+    emailBody.react = OfferTemplete({ offer: formData.data });
     const { data, error }: any = await resend.emails.send(emailBody);
     if (error) {
       return NextResponse.json(
