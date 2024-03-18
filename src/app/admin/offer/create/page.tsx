@@ -52,6 +52,7 @@ export default function Create() {
   };
 
   const handleChange = (val) => {
+    console.log(val);
     setOfferData(val);
   };
 
@@ -69,14 +70,16 @@ export default function Create() {
 
       <div className="mx-auto flex w-full max-w-[1320px] flex-col-reverse justify-center gap-2 xl:flex-row">
         <div className="mx-auto w-full max-w-[700px] bg-white">
-          <OfferDoc offer={offerData} />
-          <iframe
-            width="100%"
-            height="900px"
-            srcDoc={ReactDOMServer.renderToString(
-              <OfferTemplete offer={offerData} />,
-            )}
-          ></iframe>
+          {/* <OfferDoc offer={offerData} /> */}
+          <div className="page-break min-h-[800px] w-full bg-white px-10 lg:w-[700px] lg:max-w-[700px] print:absolute  print:top-0 print:z-[99999] print:min-h-screen print:w-full print:pl-0 print:pr-8">
+            <iframe
+              width="100%"
+              height="1000px"
+              srcDoc={ReactDOMServer.renderToString(
+                <OfferTemplete offer={offerData} />,
+              )}
+            ></iframe>
+          </div>
         </div>
         <Card className="mx-auto w-full max-w-[700px] bg-white px-4 py-8 dark:bg-navy-700">
           <OfferForm

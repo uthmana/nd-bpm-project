@@ -11,18 +11,12 @@ import {
 import TextArea from 'components/fields/textArea';
 import Button from 'components/button/button';
 import Select from 'components/select/page';
-import { MdOutlineArrowBack } from 'react-icons/md';
-import NextLink from 'next/link';
+import { MdAdd } from 'react-icons/md';
 import InputField from 'components/fields/InputField';
 import DataList from 'components/fields/dataList';
-import {
-  addOfferItem,
-  deleteOfferItem,
-  getFaultSettings,
-} from 'app/lib/apiRequest';
+import { addOfferItem, deleteOfferItem } from 'app/lib/apiRequest';
 import { useSession } from 'next-auth/react';
-import Card from 'components/card';
-import Upload from 'components/upload';
+import OfferPopup from 'components/offer/popup';
 
 export default function OfferForm(props: {
   onSubmit: (e: any, d: any) => void;
@@ -38,11 +32,8 @@ export default function OfferForm(props: {
   const [formTouch, setFormTouch] = useState(isUpdate);
   const [customers, setCustomers] = useState(info || []);
   const [products, setProducts] = useState(isUpdate ? editData?.product : []);
-  const [application, setApplication] = useState([]);
-  const [standard, setStandard] = useState([]);
-  const [file, setFile] = useState('');
   const [resetFile, setResetFile] = useState(false);
-
+  const [showAddProduct, setShowAddProduct] = useState(false);
   const { data: session } = useSession();
   const currency = ['TL', 'USD', 'EUR'];
   const [values, setValues] = useState(
@@ -66,31 +57,6 @@ export default function OfferForm(props: {
           company_name: '',
         },
   );
-
-  const [offer, setOffer] = useState({
-    name: '',
-    application: '',
-    standard: '',
-    quantity: '',
-    price: '',
-    unitPrice: '',
-    discountPrice: '',
-    description: '',
-    image: '',
-  });
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data, status } = await getFaultSettings();
-      if (status === 200) {
-        const { applications, standards } = data;
-        setApplication(applications);
-        setStandard(standards);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   const handleValues = (event) => {
     setError(false);
@@ -154,92 +120,6 @@ export default function OfferForm(props: {
     );
   };
 
-  const handleProductValues = (event) => {
-    setError(false);
-    let newVal: any = { [event.target?.name]: event.target?.value };
-
-    if (
-      event.target?.name === 'quantity' ||
-      event.target?.name === 'discountPrice'
-    ) {
-      const price =
-        parseInt(newVal?.discountPrice || offer.discountPrice) *
-        parseInt(newVal.quantity || offer.quantity);
-      newVal = { ...newVal, price: price };
-    }
-
-    setOffer({ ...offer, ...newVal });
-  };
-
-  const addProduct = async (e) => {
-    e.preventDefault();
-    const {
-      name,
-      application,
-      standard,
-      quantity,
-      price,
-      unitPrice,
-      discountPrice,
-    } = offer;
-    if (
-      !name ||
-      !application ||
-      !standard ||
-      !quantity ||
-      !price ||
-      !unitPrice ||
-      !discountPrice
-    ) {
-      return;
-    }
-
-    let updatedOfferItem = offer;
-    if (isUpdate) {
-      const { status, data } = await addOfferItem({
-        ...offer,
-        quantity: parseFloat(quantity),
-        price: parseFloat(price),
-        offerId: editData?.id,
-        createdBy: session?.user?.name,
-        currency: values.currency,
-      });
-      if (status === 200) {
-        updatedOfferItem = data;
-      }
-    }
-
-    const newVal = [...products];
-    newVal.push({
-      ...updatedOfferItem,
-      quantity: parseFloat(quantity),
-      price: parseFloat(price),
-      unitPrice: parseFloat(unitPrice),
-      discountPrice: parseFloat(discountPrice),
-      image: file,
-    });
-    setResetFile(true);
-
-    setProducts(newVal);
-    const totalPrice = newVal.reduce(
-      (a, b) => parseInt(a) + parseInt(b.price),
-      0,
-    );
-    setValues({ ...values, totalAmount: totalPrice });
-    onChange({ ...values, totalAmount: totalPrice, product: newVal });
-    setOffer({
-      name: '',
-      application: offer.application,
-      standard: offer.standard,
-      quantity: '',
-      price: '',
-      unitPrice: '',
-      discountPrice: '',
-      description: '',
-      image: '',
-    });
-  };
-
   const removeProduct = async (e, idx) => {
     e.preventDefault();
     e.stopPropagation();
@@ -266,6 +146,35 @@ export default function OfferForm(props: {
     );
     setValues({ ...values, totalAmount: totalPrice });
     onChange({ ...values, totalAmount: totalPrice, product: newProd });
+  };
+
+  const onAddProduct = async (val) => {
+    let updatedOfferItem = val;
+    if (isUpdate) {
+      const { status, data } = await addOfferItem({
+        ...val,
+        offerId: editData?.id,
+        createdBy: session?.user?.name,
+        currency: values.currency,
+      });
+      if (status === 200) {
+        updatedOfferItem = data;
+      }
+    }
+
+    const newVal = [...products];
+    newVal.push({ ...updatedOfferItem });
+    setResetFile(true);
+
+    setProducts(newVal);
+    const totalPrice = newVal.reduce(
+      (a, b) => parseInt(a) + parseInt(b.price),
+      0,
+    );
+    setValues({ ...values, totalAmount: totalPrice });
+    onChange({ ...values, totalAmount: totalPrice, product: newVal });
+
+    setShowAddProduct(false);
   };
 
   return (
@@ -413,7 +322,6 @@ export default function OfferForm(props: {
                   Tutar
                 </div>
               </div>
-
               {products?.length > 0 ? (
                 products.map((item, idx) => {
                   return (
@@ -493,146 +401,30 @@ export default function OfferForm(props: {
                 </div>
               )}
 
-              <div className="mb-4 ml-auto mt-5 max-w-[200px]">
-                <InputField
-                  label={`Toplam ${currencySymbol[values.currency]}`}
-                  onChange={handleValues}
-                  type="text"
-                  id="totalAmount"
-                  name="totalAmount"
-                  placeholder=""
-                  extra="mb-2"
-                  value={values.totalAmount}
-                />
-              </div>
-
-              <div className="mt-10 min-h-[1px] w-full rounded-lg bg-lightPrimary px-3 py-4 dark:bg-navy-700">
-                <h2 className="my-5 text-center text-lg font-bold dark:text-white">
-                  Teklif Ürünü Ekle
-                </h2>
-                <div className="mb-3 flex flex-col gap-3 sm:flex-row">
+              <div className="flex w-full justify-between">
+                <div className="mb-4  mt-5 max-w-[200px]">
+                  <Button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowAddProduct(!showAddProduct);
+                    }}
+                    extra="mt-7 h-[36px] px-4"
+                    text="ÜRÜN EKLE"
+                    icon={<MdAdd className="ml-1 h-6 w-6" />}
+                  />
+                </div>
+                <div className="mb-4  mt-5 max-w-[200px]">
                   <InputField
-                    label="Ürün"
-                    onChange={handleProductValues}
+                    label={`Toplam ${currencySymbol[values.currency]}`}
+                    onChange={handleValues}
                     type="text"
-                    id="name"
-                    name="name"
+                    id="totalAmount"
+                    name="totalAmount"
                     placeholder=""
-                    extra="!h-[36px]"
-                    value={offer.name}
-                  />
-
-                  <Select
-                    extra="pt-1"
-                    label="Uygulama"
-                    onChange={handleProductValues}
-                    name="application"
-                  >
-                    {application.map((item, idx) => {
-                      return (
-                        <option
-                          value={item.name}
-                          key={idx}
-                          selected={idx === 0}
-                        >
-                          {item.name}
-                        </option>
-                      );
-                    })}
-                  </Select>
-
-                  <Select
-                    extra="pt-1"
-                    label="standart"
-                    onChange={handleProductValues}
-                    name="standard"
-                  >
-                    {standard.map((item, idx) => {
-                      return (
-                        <option
-                          value={item.name}
-                          key={idx}
-                          selected={idx === 0}
-                        >
-                          {item.name}
-                        </option>
-                      );
-                    })}
-                  </Select>
-                </div>
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <InputField
-                    label="Miktar"
-                    onChange={handleProductValues}
-                    type="number"
-                    id="quantity"
-                    name="quantity"
-                    placeholder=""
-                    extra="!h-[36px]"
-                    value={offer.quantity}
-                  />
-
-                  <InputField
-                    label="Birim Fiyat"
-                    onChange={handleProductValues}
-                    type="number"
-                    id="unitPrice"
-                    name="unitPrice"
-                    placeholder=""
-                    extra="!h-[36px]"
-                    value={offer.unitPrice}
-                  />
-
-                  <InputField
-                    label="İndirimli Fiyat"
-                    onChange={handleProductValues}
-                    type="number"
-                    id="discountPrice"
-                    name="discountPrice"
-                    placeholder=""
-                    extra="!h-[36px]"
-                    value={offer.discountPrice}
+                    extra="mb-2"
+                    value={values.totalAmount}
                   />
                 </div>
-                <div className="ml-auto w-full max-w-[208px]">
-                  <InputField
-                    label="Tutar"
-                    onChange={handleProductValues}
-                    type="number"
-                    id="price"
-                    name="price"
-                    placeholder=""
-                    extra="!h-[36px]"
-                    value={offer.price}
-                  />
-                </div>
-                <div className="col-span-3 w-full">
-                  <TextArea
-                    label="Açıklama"
-                    onChange={handleProductValues}
-                    id="description"
-                    name="description"
-                    placeholder="Açıklama"
-                    extra="mb-4 w-full"
-                    value={offer.description}
-                  />
-                </div>
-                <div className="my-8 w-full">
-                  <label className="ml-3 text-sm font-bold text-navy-700 dark:text-white">
-                    İlgili Doküman
-                  </label>
-                  <Upload
-                    onChange={(val) => setFile(val)}
-                    fileType="all"
-                    multiple={false}
-                    key={products?.length}
-                  />
-                </div>
-                <Button
-                  onClick={addProduct}
-                  extra="mt-7 h-[36px]"
-                  text="EKLE"
-                />
               </div>
             </div>
           </div>
@@ -682,22 +474,13 @@ export default function OfferForm(props: {
           />
         </form>
       </div>
-      {/* <div className="mt-8 flex justify-between text-sm font-bold opacity-40">
-        <div>
-          <p>Oluşturan: {editData?.createdBy}</p>
-          <p>
-            Oluşturulma Tarihi:{' '}
-            {editData?.createdAt ? formatDateTime(editData?.createdAt) : ''}
-          </p>
-        </div>
-        <div>
-          <p>Güncelleyen: {editData?.updatedBy}</p>
-          <p>
-            Güncelleme Tarihi:{' '}
-            {editData?.updatedAt ? formatDateTime(editData?.updatedAt) : ''}
-          </p>
-        </div>
-      </div> */}
+
+      <OfferPopup
+        extra="!top-[50%] !w-[90%] !max-w-[700px]"
+        isShowPopUp={showAddProduct}
+        onAdd={(val) => onAddProduct(val)}
+        onClose={() => setShowAddProduct(false)}
+      />
     </div>
   );
 }

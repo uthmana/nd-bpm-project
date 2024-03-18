@@ -50,7 +50,7 @@ export const offer = ({ offer }) => {
                     src="https://www.ndindustries.com.tr/wp-content/uploads/2018/12/nd.png"
                     width="80"
                     height="auto"
-                    alt="Apple Logo"
+                    alt="ndindustries Logo"
                   />
                 </Column>
                 <Column colSpan={1}>
@@ -85,15 +85,17 @@ export const offer = ({ offer }) => {
             <Section className="mb-8">
               <Row>
                 <Column colSpan={1}>
-                  <div className="flex gap-1">
+                  <div className="mb-[2px] flex">
                     <Text className="mb-1 mt-0 w-20 text-xs font-bold leading-4">
                       Müşteri:
                     </Text>
-                    <Text className="my-0 text-xs capitalize leading-4">
-                      {offer?.Customer?.company_name?.toLowerCase()}
+                    <Text className="my-0 max-w-[200px] text-left text-xs capitalize leading-4">
+                      {offer?.companyName?.toLowerCase() ||
+                        offer?.company_name?.toLowerCase() ||
+                        offer?.Customer?.company_name?.toLowerCase()}
                     </Text>
                   </div>
-                  <div className="flex">
+                  <div className="mb-[2px] flex ">
                     <Text className="mb-1 mt-0 w-20 text-xs font-bold leading-4">
                       İlgili:
                     </Text>
@@ -101,7 +103,7 @@ export const offer = ({ offer }) => {
                       {offer?.rep_name}
                     </Text>
                   </div>
-                  <div className="flex">
+                  <div className="mb-[2px] flex ">
                     <Text className="mb-1 mt-0 w-20 text-xs font-bold leading-4">
                       E-posta:
                     </Text>
@@ -112,7 +114,7 @@ export const offer = ({ offer }) => {
                 </Column>
                 <Column colSpan={1}>
                   <div className="ml-auto w-fit">
-                    <div className="flex">
+                    <div className="mb-[2px] flex">
                       <Text className="mb-1 mt-0 w-24 text-xs font-bold leading-4">
                         Referans No:
                       </Text>
@@ -120,7 +122,7 @@ export const offer = ({ offer }) => {
                         {offer?.barcode}
                       </Text>
                     </div>
-                    <div className="flex">
+                    <div className="mb-[2px] flex ">
                       <Text className="mb-1 mt-0 w-24 text-xs font-bold leading-4">
                         Teklif Tarihi:
                       </Text>
@@ -130,7 +132,7 @@ export const offer = ({ offer }) => {
                           : 'DD-MM-YYYY'}
                       </Text>
                     </div>
-                    <div className="flex">
+                    <div className="mb-[2px] flex ">
                       <Text className="mb-1 mt-0 w-24 text-xs font-bold leading-4">
                         Son Geçerlilik:
                       </Text>
@@ -198,14 +200,17 @@ export const offer = ({ offer }) => {
                     <Row key={idx} className="mb-2">
                       <Column colSpan={6} className="w-32">
                         <Row className="mb-2">
-                          <Column colSpan={1} className="w-12 align-top">
-                            <Img
-                              src={`${baseUrl}/uploads/${item.image}`}
-                              width="48"
-                              height="auto"
-                              alt="nd industries Logo"
-                            />
-                          </Column>
+                          {item?.image ? (
+                            <Column colSpan={1} className="w-12 align-top">
+                              <Img
+                                src={`${baseUrl}/uploads/${item.image}`}
+                                width="48"
+                                height="auto"
+                                alt="nd industries Logo"
+                              />
+                            </Column>
+                          ) : null}
+
                           <Column colSpan={4} className="align-top">
                             <Text className="mb-1 mt-0 max-w-[200px] px-1 text-xs font-bold">
                               {item.name} - {item.application} - {item.standard}
