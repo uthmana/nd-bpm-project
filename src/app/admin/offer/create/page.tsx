@@ -78,7 +78,7 @@ export default function Create() {
             )}
           ></iframe>
         </div>
-        <Card className="mx-auto w-full max-w-[700px] bg-white px-4 py-8">
+        <Card className="mx-auto w-full max-w-[700px]  px-4 py-8">
           <OfferForm
             key={customers.length}
             info={customers}

@@ -488,8 +488,8 @@ export default function OfferForm(props: {
                 />
               </div>
 
-              <div className="mt-10 min-h-[1px] w-full rounded-lg bg-lightPrimary px-3 py-4">
-                <h2 className="my-5 text-center text-lg font-bold">
+              <div className="mt-10 min-h-[1px] w-full rounded-lg bg-lightPrimary px-3 py-4 dark:bg-navy-700">
+                <h2 className="my-5 text-center text-lg font-bold dark:text-white">
                   Teklif Ürünü Ekle
                 </h2>
                 <div className="mb-3 flex flex-col gap-3 sm:flex-row">
