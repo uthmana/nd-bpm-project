@@ -47,7 +47,7 @@ export async function PUT(req: NextRequest) {
         const { status, response }: any = await sendOffer({
           type: 'offer',
           email: offerData.email,
-          subject: 'Fiyat Teklifi',
+          subject: 'Teklif | ND Industries',
           data: offerTemp,
         });
         if (response?.error || status !== 200) {

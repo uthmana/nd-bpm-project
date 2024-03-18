@@ -70,13 +70,13 @@ export default function Create() {
       <div className="mx-auto flex w-full max-w-[1320px] flex-col-reverse justify-center gap-2 xl:flex-row">
         <div className="mx-auto w-full max-w-[700px] bg-white">
           <OfferDoc offer={offerData} />
-          {/* <iframe
+          <iframe
             width="100%"
             height="900px"
             srcDoc={ReactDOMServer.renderToString(
               <OfferTemplete offer={offerData} />,
             )}
-          ></iframe> */}
+          ></iframe>
         </div>
         <Card className="mx-auto w-full max-w-[700px] bg-white px-4 py-8">
           <OfferForm

@@ -318,19 +318,23 @@ model Offer {
 }
 
 model OfferItem {
-  id          String    @id @default(cuid())
-  name        String?
-  application String?
-  standard    String?
-  currency    Currency? @default(TL)
-  quantity    Int?
-  price       Float?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime? @updatedAt
-  createdBy   String?
-  updatedBy   String?
-  Offer       Offer?    @relation(fields: [offerId], references: [id])
-  offerId     String?
+  id            String    @id @default(cuid())
+  name          String?
+  application   String?
+  standard      String?
+  currency      Currency? @default(TL)
+  quantity      Int?
+  price         Float?
+  unitPrice     Float?
+  discountPrice Float?
+  description   String?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt
+  createdBy     String?
+  updatedBy     String?
+  Offer         Offer?    @relation(fields: [offerId], references: [id])
+  offerId       String?
 }
 
 enum InvoiceStatus {

@@ -13,8 +13,19 @@ import {
   Column,
   Hr,
 } from '@react-email/components';
+import { currencySymbol } from 'utils';
 
 export const offer = ({ offer }) => {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_PATH;
+
+  const totalDiscount = () => {
+    const discount = offer?.product?.reduce(
+      (a, b) => parseInt(b.discountPrice) + parseInt(a),
+      0,
+    );
+    return offer?.totalAmount - discount || 0;
+  };
+
   return (
     <Html>
       <Head />
@@ -89,12 +100,13 @@ export const offer = ({ offer }) => {
                   <Text className="mb-1 mt-0 text-xs font-bold leading-4">
                     Sevkiyat Adresi:
                   </Text>
-                  <Text className="max-[120px] my-0 text-xs">
-                    Fatura Adresi:
+                  <Text className="my-0 max-w-[160px] text-xs">
+                    {offer.address}
                   </Text>
                 </Column>
               </Row>
             </Section>
+
             <Section className="mb-1">
               <Row className="mb-1">
                 <Column colSpan={6} className="w-[120px]">
@@ -111,7 +123,7 @@ export const offer = ({ offer }) => {
                 </Column>
               </Row>
               <Hr className="my-1" />
-              {[1, 2, 3].map((item, idx) => {
+              {offer?.product?.map((item, idx) => {
                 return (
                   <>
                     <Row key={idx} className="mb-2">
@@ -119,25 +131,64 @@ export const offer = ({ offer }) => {
                         <Row className="mb-2">
                           <Column colSpan={1} className="w-12 align-top">
                             <Img
-                              src="https://www.ndindustries.com.tr/wp-content/uploads/2018/12/nd.png"
+                              src={`${baseUrl}/uploads/${item.image}`}
                               width="48"
                               height="auto"
                               alt="nd industries Logo"
                             />
                           </Column>
-                          <Column colSpan={5} className="align-top">
-                            <Text className="my-0 px-1 text-xs">Ürün</Text>
+                          <Column colSpan={4} className="align-top">
+                            <Text className="mb-1 mt-0 max-w-[200px] px-1 text-xs font-bold">
+                              {item.name} - {item.application} - {item.standard}
+                            </Text>
+                            <Text className="my-0 px-1 text-xs">
+                              {item.description}
+                            </Text>
                           </Column>
                         </Row>
                       </Column>
                       <Column colSpan={1} className="align-top">
-                        <Text className="my-0 px-1 text-xs">Miktar</Text>
+                        <Text className="my-0 px-1 text-xs">
+                          {item.quantity}
+                        </Text>
                       </Column>
                       <Column colSpan={1} className="align-top">
-                        <Text className="my-0 px-1 text-xs">Birim Fiyat</Text>
+                        <div className="my-0 flex gap-1 text-xs">
+                          <Text className="my-0 text-xs line-through">
+                            {item?.unitPrice}
+                          </Text>
+                          <Text className="my-0 text-xs">
+                            {currencySymbol[offer?.currency]}
+                          </Text>
+                        </div>
+
+                        <div className="my-0 flex gap-1 text-xs">
+                          <Text className="my-0 text-xs">
+                            {item?.discountPrice}
+                          </Text>
+                          <Text className="my-0 text-xs">
+                            {currencySymbol[offer?.currency]}
+                          </Text>
+                        </div>
+
+                        <div className="my-0 flex gap-1 text-xs">
+                          <Text className="my-0 text-xs">
+                            {' '}
+                            {'('}%{' '}
+                            {Math.round(
+                              ((item?.unitPrice - item?.discountPrice) /
+                                item?.unitPrice) *
+                                100,
+                            )}{' '}
+                            indi.
+                            {')'}
+                          </Text>
+                        </div>
                       </Column>
                       <Column colSpan={1} className="align-top">
-                        <Text className="my-0 px-1 text-xs">Tutar</Text>
+                        <Text className="my-0 px-1 text-xs">
+                          {item.price} {currencySymbol[offer?.currency]}
+                        </Text>
                       </Column>
                     </Row>
                     <Hr className="my-1" />
@@ -149,20 +200,23 @@ export const offer = ({ offer }) => {
               <Row>
                 <Column align="right">
                   <Text className="my-0 px-10 text-xs">
-                    Genel Toplam (4.549,45 TL indirim içerir)
+                    Genel Toplam ({totalDiscount()}
+                    {''}
+                    {currencySymbol[offer?.currency]} indirim içerir)
                   </Text>
                 </Column>
                 <Column align="right" className="w-[86px]">
-                  <Text className="my-0 text-left text-xs">4.549,45</Text>
+                  <Text className="my-0 text-left text-xs">
+                    {' '}
+                    {offer.totalAmount} {currencySymbol[offer?.currency]}
+                  </Text>
                 </Column>
               </Row>
             </Section>
             <Section className="mb-8">
               <Row>
                 <Column>
-                  <Text className="my-0 text-xs">
-                    Yalniz OtuzBesBinikiYüzYedi TL ElliBes Kr.
-                  </Text>
+                  <Text className="my-0 text-xs">{offer?.description}</Text>
                 </Column>
               </Row>
             </Section>
@@ -192,7 +246,7 @@ export const offer = ({ offer }) => {
                     </Column>
                     <Column>
                       <Text className="my-0 text-xs font-bold">
-                        Uthman Ahmad
+                        {offer.createdBy}
                       </Text>
                     </Column>
                   </Row>
