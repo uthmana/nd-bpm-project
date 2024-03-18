@@ -173,8 +173,24 @@ export default function OfferForm(props: {
 
   const addProduct = async (e) => {
     e.preventDefault();
-    const { name, application, standard, quantity, price } = offer;
-    if (!name || !application || !standard || !quantity || !price) {
+    const {
+      name,
+      application,
+      standard,
+      quantity,
+      price,
+      unitPrice,
+      discountPrice,
+    } = offer;
+    if (
+      !name ||
+      !application ||
+      !standard ||
+      !quantity ||
+      !price ||
+      !unitPrice ||
+      !discountPrice
+    ) {
       return;
     }
 
@@ -198,6 +214,8 @@ export default function OfferForm(props: {
       ...updatedOfferItem,
       quantity: parseFloat(quantity),
       price: parseFloat(price),
+      unitPrice: parseFloat(unitPrice),
+      discountPrice: parseFloat(discountPrice),
       image: file,
     });
     setResetFile(true);
@@ -385,7 +403,7 @@ export default function OfferForm(props: {
           </div>
 
           <div className="mb-12 min-w-full pl-2">
-            <div className="mb-6 grid w-full grid-cols-1">
+            <div className="mb-6 grid w-full grid-cols-1 dark:text-white">
               <div className="grid w-full grid-cols-11 gap-1 border-b text-sm font-bold">
                 <div className="col-span-1"></div>
                 <div className="col-span-6">Ürün</div>

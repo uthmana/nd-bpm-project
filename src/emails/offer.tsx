@@ -13,7 +13,7 @@ import {
   Column,
   Hr,
 } from '@react-email/components';
-import { currencySymbol } from 'utils';
+import { currencySymbol, formatDateTime } from 'utils';
 
 export const offer = ({ offer }) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_PATH;
@@ -45,7 +45,7 @@ export const offer = ({ offer }) => {
           <Container className="mx-auto my-0 w-[660px] max-w-full py-10">
             <Section>
               <Row>
-                <Column>
+                <Column colSpan={1}>
                   <Img
                     src="https://www.ndindustries.com.tr/wp-content/uploads/2018/12/nd.png"
                     width="80"
@@ -53,22 +53,24 @@ export const offer = ({ offer }) => {
                     alt="Apple Logo"
                   />
                 </Column>
-                <Column align="right">
-                  <Text className="my-0 text-xs leading-4">
-                    ND Industries Türkiye
-                  </Text>
-                  <Text className="my-0 text-xs leading-4">
-                    İkitelli OSB Metal-İş San. Sit. 4.
-                  </Text>
-                  <Text className="my-0 text-xs leading-4">
-                    Blok No:1 – No: 3 Başakşehir / İstanbul
-                  </Text>
-                  <Text className="my-0 text-xs leading-4">
-                    +90 (212) 549-0545
-                  </Text>
-                  <Text className="my-0 text-xs leading-4">
-                    www.ndindustries.com.tr
-                  </Text>
+                <Column colSpan={1}>
+                  <div className="ml-auto w-fit">
+                    <Text className="my-0 text-xs leading-4">
+                      ND Industries Türkiye
+                    </Text>
+                    <Text className="my-0 text-xs leading-4">
+                      İkitelli OSB Metal-İş San. Sit. 4.
+                    </Text>
+                    <Text className="my-0 text-xs leading-4">
+                      Blok No:1 – No: 3 Başakşehir / İstanbul
+                    </Text>
+                    <Text className="my-0 text-xs leading-4">
+                      +90 (212) 549-0545
+                    </Text>
+                    <Text className="my-0 text-xs leading-4">
+                      www.ndindustries.com.tr
+                    </Text>
+                  </div>
                 </Column>
               </Row>
             </Section>
@@ -82,27 +84,94 @@ export const offer = ({ offer }) => {
             </Section>
             <Section className="mb-8">
               <Row>
-                <Column>
-                  <Text className="mb-1 mt-0 text-xs font-bold leading-4">
-                    Fatura Adresi:
-                  </Text>
-                  <Text className="my-0 text-xs leading-4">
-                    İkitelli OSB Metal-İş San. Sit. 4.
-                  </Text>
-                  <Text className="my-0 text-xs leading-4">
-                    Blok No:1 – No: 3
-                  </Text>
-                  <Text className="my-0 text-xs leading-4">
-                    Başakşehir / İstanbul
-                  </Text>
+                <Column colSpan={1}>
+                  <div className="flex gap-1">
+                    <Text className="mb-1 mt-0 w-20 text-xs font-bold leading-4">
+                      Müşteri:
+                    </Text>
+                    <Text className="my-0 text-xs capitalize leading-4">
+                      {offer?.Customer?.company_name?.toLowerCase()}
+                    </Text>
+                  </div>
+                  <div className="flex">
+                    <Text className="mb-1 mt-0 w-20 text-xs font-bold leading-4">
+                      İlgili:
+                    </Text>
+                    <Text className="my-0 text-xs leading-4">
+                      {offer?.rep_name}
+                    </Text>
+                  </div>
+                  <div className="flex">
+                    <Text className="mb-1 mt-0 w-20 text-xs font-bold leading-4">
+                      E-posta:
+                    </Text>
+                    <Text className="my-0 text-xs leading-4">
+                      {offer?.email}
+                    </Text>
+                  </div>
                 </Column>
-                <Column>
-                  <Text className="mb-1 mt-0 text-xs font-bold leading-4">
-                    Sevkiyat Adresi:
-                  </Text>
-                  <Text className="my-0 max-w-[160px] text-xs">
-                    {offer.address}
-                  </Text>
+                <Column colSpan={1}>
+                  <div className="ml-auto w-fit">
+                    <div className="flex">
+                      <Text className="mb-1 mt-0 w-24 text-xs font-bold leading-4">
+                        Referans No:
+                      </Text>
+                      <Text className="my-0 text-xs leading-4">
+                        {offer?.barcode}
+                      </Text>
+                    </div>
+                    <div className="flex">
+                      <Text className="mb-1 mt-0 w-24 text-xs font-bold leading-4">
+                        Teklif Tarihi:
+                      </Text>
+                      <Text className="my-0 text-xs leading-4">
+                        {offer?.startDate
+                          ? formatDateTime(offer?.startDate).split(' ')[0]
+                          : 'DD-MM-YYYY'}
+                      </Text>
+                    </div>
+                    <div className="flex">
+                      <Text className="mb-1 mt-0 w-24 text-xs font-bold leading-4">
+                        Son Geçerlilik:
+                      </Text>
+                      <Text className="my-0 text-xs leading-4">
+                        {offer?.endDate
+                          ? formatDateTime(offer?.endDate).split(' ')[0]
+                          : 'DD-MM-YYYY'}
+                      </Text>
+                    </div>
+                  </div>
+                </Column>
+              </Row>
+            </Section>
+
+            <Section className="mb-8">
+              <Row>
+                <Column colSpan={1} className="w-1/2 align-top">
+                  <div>
+                    <Text className="mb-1 mt-0 text-xs font-bold leading-4">
+                      Fatura Adresi:
+                    </Text>
+                    <Text className="my-0 text-xs leading-4">
+                      İkitelli OSB Metal-İş San. Sit. 4.
+                    </Text>
+                    <Text className="my-0 text-xs leading-4">
+                      Blok No:1 – No: 3
+                    </Text>
+                    <Text className="my-0 text-xs leading-4">
+                      Başakşehir / İstanbul
+                    </Text>
+                  </div>
+                </Column>
+                <Column colSpan={1} className="w-1/2 align-top">
+                  <div className="my-0">
+                    <Text className="mb-1 mt-0 text-xs font-bold leading-4">
+                      Sevkiyat Adresi:
+                    </Text>
+                    <Text className="my-0 max-w-[160px] text-xs capitalize">
+                      {offer?.address?.toLowerCase()}
+                    </Text>
+                  </div>
                 </Column>
               </Row>
             </Section>

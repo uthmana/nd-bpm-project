@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React, { useState } from 'react';
 import { formatDateTime, currencySymbol } from 'utils';
 import nd_logo from '/public/img/auth/nd_logo.webp';
@@ -118,10 +119,12 @@ export default function OfferDoc({ offer }) {
                   <div className="col-span-6 grid grid-cols-5">
                     {item?.image ? (
                       <span className="col-span-1">
-                        <img
+                        <Image
                           className="w-full"
-                          src={item?.image}
+                          src={`${process.env.NEXT_PUBLIC_BASE_PATH}/uploads/${item?.image}`}
                           alt={item?.name}
+                          width={40}
+                          height={60}
                         />
                       </span>
                     ) : null}
