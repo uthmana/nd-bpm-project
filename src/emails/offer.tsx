@@ -19,11 +19,14 @@ export const offer = ({ offer }) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_PATH;
 
   const totalDiscount = () => {
-    const discount = offer?.product?.reduce(
-      (a, b) => parseInt(b.discountPrice) + parseInt(a),
-      0,
-    );
-    return offer?.totalAmount - discount || 0;
+    const _discount = offer?.product?.map((item) => {
+      let totalDisc = 0;
+      return (
+        (totalDisc += parseInt(item.unitPrice) * parseInt(item.quantity)) -
+        item.price
+      );
+    });
+    return _discount?.reduce((a, b) => b + a, 0) || 0;
   };
 
   return (
@@ -170,7 +173,7 @@ export const offer = ({ offer }) => {
                     <Text className="mb-1 mt-0 text-xs font-bold leading-4">
                       Sevkiyat Adresi:
                     </Text>
-                    <Text className="my-0 max-w-[160px] text-xs capitalize">
+                    <Text className="my-0 max-w-[64%] text-xs capitalize">
                       {offer?.address?.toLowerCase()}
                     </Text>
                   </div>
@@ -297,55 +300,45 @@ export const offer = ({ offer }) => {
 
             <Section className="mb-3">
               <Row>
-                <Column>
-                  <Row className="mb-6">
-                    <Column>
-                      <Text className="my-0 text-xs font-bold">
-                        Hazırlayan:
-                      </Text>
-                    </Column>
-                    <Column></Column>
-                  </Row>
-                  <Row className="mb-6">
-                    <Column>
-                      <Text className="my-0 text-xs font-bold">İmza:</Text>
-                    </Column>
-                    <Column>
-                      <Text className="my-0 text-left text-xs  font-bold"></Text>
-                    </Column>
-                  </Row>
-                  <Row className="mb-6">
-                    <Column>
-                      <Text className="my-0 text-xs font-bold">İsim:</Text>
-                    </Column>
-                    <Column>
-                      <Text className="my-0 text-xs font-bold">
-                        {offer.createdBy}
-                      </Text>
-                    </Column>
-                  </Row>
+                <Column className="w-1/2">
+                  <div className="mb-6 flex gap-1">
+                    <Text className="my-0 w-20 text-xs font-bold">
+                      Hazırlayan:
+                    </Text>
+                    <Text className="my-0 text-xs font-bold"></Text>
+                  </div>
+                  <div className="mb-6 flex gap-1">
+                    <Text className="my-0 w-20 text-xs font-bold">İmza:</Text>
+                    {offer?.creatorTitle ? (
+                      <Img
+                        src={offer?.creatorTitle}
+                        width="54"
+                        height="auto"
+                        alt="imza"
+                      />
+                    ) : null}
+                  </div>
+                  <div className="mb-6 flex gap-1">
+                    <Text className="my-0 w-20 text-xs font-bold">İsim:</Text>
+                    <Text className="my-0 text-xs font-bold">
+                      {offer.createdBy}
+                    </Text>
+                  </div>
                 </Column>
                 <Column align="left">
-                  <Row className="mb-6">
-                    <Column>
-                      <Text className="my-0 text-left text-xs font-bold">
-                        Kabul Eden:
-                      </Text>
-                    </Column>
-                    <Column></Column>
-                  </Row>
-                  <Row className="mb-6">
-                    <Column>
-                      <Text className="my-0 text-xs font-bold">İmza:</Text>
-                    </Column>
-                    <Column></Column>
-                  </Row>
-                  <Row className="mb-6">
-                    <Column>
-                      <Text className="my-0 text-xs font-bold">İsim:</Text>
-                    </Column>
-                    <Column></Column>
-                  </Row>
+                  <div className="mb-6 flex gap-1">
+                    <Text className="my-0 w-20 text-xs font-bold">
+                      Kabul Eden:
+                    </Text>
+                    <Text className="my-0 text-xs font-bold"></Text>
+                  </div>
+                  <div className="mb-6 flex gap-1">
+                    <Text className="my-0 w-20 text-xs font-bold">İmza:</Text>
+                  </div>
+                  <div className="mb-6 flex gap-1">
+                    <Text className="my-0 w-20 text-xs font-bold">İsim:</Text>
+                    <Text className="my-0 text-xs font-bold"></Text>
+                  </div>
                 </Column>
               </Row>
             </Section>

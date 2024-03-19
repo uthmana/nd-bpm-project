@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const useDrage = () => {
   const [isDown, setIsDown] = useState(false);
@@ -33,4 +33,20 @@ export const useDrage = () => {
   };
 
   return { handleMouseDown, handleMouseLeave, handleMouseUp, handleMouseMove };
+};
+
+export const useDebounce = (value, milliSeconds) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, milliSeconds);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, milliSeconds]);
+
+  return debouncedValue;
 };

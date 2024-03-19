@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
-  formatDateTime,
-  removeMillisecondsAndUTC,
   convertToISO8601,
   generateSKU,
   currencySymbol,
+  useDebounce,
 } from 'utils';
 import TextArea from 'components/fields/textArea';
 import Button from 'components/button/button';
@@ -16,7 +15,12 @@ import InputField from 'components/fields/InputField';
 import DataList from 'components/fields/dataList';
 import { addOfferItem, deleteOfferItem } from 'app/lib/apiRequest';
 import { useSession } from 'next-auth/react';
-import OfferPopup from 'components/offer/popup';
+import dynamic from 'next/dynamic';
+import SignaturePad from 'components/signaturePad';
+
+const OfferPopup = dynamic(() => import('components/offer/popup'), {
+  ssr: false,
+});
 
 export default function OfferForm(props: {
   onSubmit: (e: any, d: any) => void;
@@ -35,6 +39,7 @@ export default function OfferForm(props: {
   const [resetFile, setResetFile] = useState(false);
   const [showAddProduct, setShowAddProduct] = useState(false);
   const { data: session } = useSession();
+
   const currency = ['TL', 'USD', 'EUR'];
   const [values, setValues] = useState(
     isUpdate
@@ -78,14 +83,14 @@ export default function OfferForm(props: {
       };
 
       setValues({ ...values, ...seletecCustomer });
-      onChange({ ...values, product: products });
+      debounce(onChange({ ...values, product: products }));
 
       return;
     }
 
     const newVal = { [event.target?.name]: event.target?.value };
     setValues({ ...values, ...newVal });
-    onChange({ ...values, ...newVal, product: products });
+    debounce(onChange({ ...values, ...newVal, product: products }));
   };
 
   const handleSubmit = (e) => {
@@ -145,7 +150,9 @@ export default function OfferForm(props: {
       0,
     );
     setValues({ ...values, totalAmount: totalPrice });
-    onChange({ ...values, totalAmount: totalPrice, product: newProd });
+    debounce(
+      onChange({ ...values, totalAmount: totalPrice, product: newProd }),
+    );
   };
 
   const onAddProduct = async (val) => {
@@ -172,9 +179,21 @@ export default function OfferForm(props: {
       0,
     );
     setValues({ ...values, totalAmount: totalPrice });
-    onChange({ ...values, totalAmount: totalPrice, product: newVal });
+    debounce(onChange({ ...values, totalAmount: totalPrice, product: newVal }));
 
     setShowAddProduct(false);
+  };
+
+  const handleSignaturePad = (val) => {
+    setValues({ ...values, creatorTitle: val });
+    debounce(onChange({ ...values, creatorTitle: val }));
+  };
+
+  const debounce = (value) => {
+    if (!value) return;
+    setTimeout(() => {
+      value();
+    }, 1000);
   };
 
   return (
@@ -187,6 +206,9 @@ export default function OfferForm(props: {
         ) : null}
 
         <form onSubmit={handleSubmit} className="w-full">
+          <h1 className="mb-4 text-center text-2xl font-bold">
+            Teklif Oluşturma
+          </h1>
           <div className="mb-4 grid grid-cols-2 gap-2">
             <InputField
               label="Başlangıç Tarihi"
@@ -311,7 +333,8 @@ export default function OfferForm(props: {
             </div>
           </div>
 
-          <div className="mb-12 min-w-full pl-2">
+          <div className="mb-12 min-w-full border-b border-t pl-2">
+            <h3 className="mb-4 mt-8 text-center text-xl">Teklif Ürünleri</h3>
             <div className="mb-6 grid w-full grid-cols-1 dark:text-white">
               <div className="grid w-full grid-cols-11 gap-1 border-b text-sm font-bold">
                 <div className="col-span-1"></div>
@@ -429,7 +452,19 @@ export default function OfferForm(props: {
             </div>
           </div>
 
-          <div className="mb-4 grid grid-cols-1 gap-2 md:grid-cols-2">
+          <div className="w-full">
+            <TextArea
+              label="Açıklama"
+              onChange={handleValues}
+              id="description"
+              name="description"
+              placeholder="Açıklama"
+              extra="mb-8 w-full"
+              value={values.description}
+            />
+          </div>
+
+          <div className="mb-4 flex max-w-[330px] flex-col">
             <InputField
               label="Teklif Hazırlayan"
               onChange={handleValues}
@@ -441,28 +476,11 @@ export default function OfferForm(props: {
               value={values.createdBy}
               required={true}
             />
-            <InputField
-              label="Teklif Hazırlayan Unvanı"
-              onChange={handleValues}
-              type="text"
-              id="creatorTitle"
-              name="creatorTitle"
-              placeholder=""
-              extra="mb-2"
-              value={values.creatorTitle}
-              required={true}
-            />
-          </div>
 
-          <div className="w-full">
-            <TextArea
-              label="Açıklama"
-              onChange={handleValues}
-              id="description"
-              name="description"
-              placeholder="Açıklama"
-              extra="mb-8 w-full"
-              value={values.description}
+            <SignaturePad
+              label="İmza"
+              value={values.creatorTitle}
+              onSave={(sign: string) => handleSignaturePad(sign)}
             />
           </div>
 
