@@ -83,28 +83,29 @@ model Customer {
 }
 
 model Stock {
-  id              String    @id @default(cuid())
-  product_code    String
-  product_name    String
-  product_barcode String?
-  description     String?
-  main_group      String?
-  group1          String?
-  group2          String?
-  inventory       Int?
-  unit            String?
-  current_price   String
-  curency         String
-  brand           String?
-  date            DateTime? @default(now())
-  updatedAt       DateTime? @updatedAt
-  createdBy       String?
-  updatedBy       String?
-  image           String?
-  customerId      String?
-  customer        Customer? @relation(fields: [customerId], references: [id])
-  faultId         String?   @unique
-  fault           Fault?    @relation(fields: [faultId], references: [id], onDelete: Cascade)
+  id                 String    @id @default(cuid())
+  product_code       String    @unique
+  product_name       String
+  product_barcode    String?
+  productBatchNumber String?
+  description        String?
+  main_group         String?
+  group1             String?
+  group2             String?
+  inventory          Int?
+  unit               String?
+  current_price      String
+  curency            String
+  brand              String?
+  date               DateTime? @default(now())
+  updatedAt          DateTime? @updatedAt
+  createdBy          String?
+  updatedBy          String?
+  image              String?
+  customerId         String?
+  customer           Customer? @relation(fields: [customerId], references: [id])
+  faultId            String?   @unique
+  fault              Fault?    @relation(fields: [faultId], references: [id], onDelete: Cascade)
 }
 
 model Fault {

@@ -77,7 +77,7 @@ export default function Edit() {
         </div>
       );
     }
-    return <p className="font-bold"> {val} </p>;
+    return <p className="break-all font-bold"> {val} </p>;
   };
 
   const renderValues = (key, val) => {
@@ -120,7 +120,7 @@ export default function Edit() {
       return <FileViewer file={val} />;
     }
 
-    return <p className="font-bold"> {val} </p>;
+    return <p className="break-all font-bold "> {val} </p>;
   };
 
   const handleBarcodePrint = () => {

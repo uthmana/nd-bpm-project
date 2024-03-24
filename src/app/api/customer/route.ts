@@ -19,15 +19,15 @@ export async function GET(req: NextRequest) {
     const stock = searchParams.get('stock');
     if (stock && stock === 'true') {
       const customers = await prisma.customer.findMany({
-        where: {
-          Stock: {
-            some: {
-              inventory: {
-                gt: 0,
-              },
-            },
-          },
-        },
+        // where: {
+        //   Stock: {
+        //     some: {
+        //       inventory: {
+        //         gt: 0,
+        //       },
+        //     },
+        //   },
+        // },
         include: { Stock: true },
       });
       return NextResponse.json(customers, { status: 200 });

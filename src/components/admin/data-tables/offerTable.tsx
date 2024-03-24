@@ -77,19 +77,19 @@ function OfferTable({
           </p>
         ),
       }),
-      columnHelper.accessor('OfferType', {
-        id: 'OfferType',
-        header: () => (
-          <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            TEKLİF
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
-          </p>
-        ),
-      }),
+      // columnHelper.accessor('OfferType', {
+      //   id: 'OfferType',
+      //   header: () => (
+      //     <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+      //       TEKLİF
+      //     </p>
+      //   ),
+      //   cell: (info: any) => (
+      //     <p className="text-sm font-bold text-navy-700 dark:text-white">
+      //       {info.getValue()}
+      //     </p>
+      //   ),
+      // }),
       columnHelper.accessor('customerName', {
         id: 'customerName',
         header: () => (

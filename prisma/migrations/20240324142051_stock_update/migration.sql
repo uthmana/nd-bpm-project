@@ -113,6 +113,7 @@ CREATE TABLE "Stock" (
     "product_code" TEXT NOT NULL,
     "product_name" TEXT NOT NULL,
     "product_barcode" TEXT,
+    "productBatchNumber" TEXT,
     "description" TEXT,
     "main_group" TEXT,
     "group1" TEXT,
@@ -419,6 +420,9 @@ CREATE UNIQUE INDEX "Address_userId_key" ON "Address"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ContactInfo_userId_key" ON "ContactInfo"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Stock_product_code_key" ON "Stock"("product_code");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Stock_faultId_key" ON "Stock"("faultId");

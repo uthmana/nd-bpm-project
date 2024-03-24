@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/db';
-import { Fault, Prisma, Process } from '@prisma/client';
+import { Fault, Prisma, Process, Stock } from '@prisma/client';
 
 //Get single Fault
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
@@ -29,7 +29,13 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
     const id = route.params.id;
     const result: Fault = await req.json();
-    const { customerName, productCode, quantity, application } = result;
+    const {
+      customerName,
+      productCode,
+      quantity,
+      application,
+      product_barcode,
+    } = result;
 
     if (!customerName || !productCode || !quantity || !application) {
       return NextResponse.json(
@@ -42,6 +48,9 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       where: { id },
     });
 
+    if (!fault) {
+      return NextResponse.json({ message: 'No such fault' }, { status: 401 });
+    }
     const updateFault = await prisma.fault.update({
       where: {
         id: id,
@@ -51,8 +60,51 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       },
     });
 
+    //Tracking Stock
+    if (updateFault) {
+      const {
+        customerId,
+        productCode,
+        product,
+        technicalDrawingAttachment,
+        productBatchNumber,
+      } = updateFault;
+
+      const stockData = await prisma.stock.findUnique({
+        where: {
+          product_code: updateFault.productCode,
+          customerId: updateFault.customerId,
+        },
+      });
+
+      if (stockData) {
+        let qty = stockData.inventory;
+        if (fault.quantity !== quantity) {
+          const _qtyDiff = fault.quantity - quantity;
+          qty = _qtyDiff < 0 ? qty + _qtyDiff * -1 : qty - _qtyDiff;
+        }
+        const stock: Stock = await prisma.stock.update({
+          where: {
+            product_code: updateFault.productCode,
+          },
+          data: {
+            product_code: productCode,
+            product_name: product,
+            inventory: qty,
+            current_price: '',
+            curency: '',
+            image: technicalDrawingAttachment,
+            customerId: customerId,
+            product_barcode,
+            productBatchNumber,
+          },
+        });
+      }
+    }
+
     return NextResponse.json(updateFault, { status: 200 });
   } catch (e) {
+    console.log(e);
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
       e instanceof Prisma.PrismaClientUnknownRequestError ||
@@ -73,21 +125,31 @@ export async function DELETE(
   try {
     //TODO: restrict unathorized user : only normal and admin allowed
     const id = route.params.id;
-    const deletedFault = await prisma.fault.delete({
+    const deletedFault: Fault = await prisma.fault.delete({
       where: {
         id: id,
       },
     });
 
     //Tracking stock
-    // if (deletedFault) {
-    //   const updateStock = await prisma.stock.update({
-    //     where: {
-    //       id: deletedFault.stockId,
-    //     },
-    //     data: { faultId: null },
-    //   });
-    // }
+    if (deletedFault) {
+      const stockData = await prisma.stock.findUnique({
+        where: {
+          product_code: deletedFault.productCode,
+          customerId: deletedFault.customerId,
+        },
+      });
+      if (stockData) {
+        const diffQty = stockData.inventory - deletedFault.quantity;
+        const qty = diffQty > stockData.inventory ? 0 : diffQty;
+        const updateStock = await prisma.stock.update({
+          where: {
+            product_code: deletedFault.productCode,
+          },
+          data: { inventory: qty },
+        });
+      }
+    }
 
     return NextResponse.json(deletedFault, { status: 200 });
   } catch (e) {

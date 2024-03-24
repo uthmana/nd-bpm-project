@@ -14,6 +14,7 @@ import DataList from 'components/fields/dataList';
 type StockObj = {
   product_code: string;
   product_name: string;
+  productBatchNumber: string;
   product_barcode: string;
   inventory: number;
   current_price: string;
@@ -45,6 +46,7 @@ export default function Stock(props: {
         product_code: '',
         product_name: '',
         product_barcode: '',
+        productBatchNumber: '',
         inventory: 1,
         current_price: '',
         description: '',
@@ -88,16 +90,16 @@ export default function Stock(props: {
     const {
       product_name,
       product_code,
-      current_price,
       customerId,
       company_name,
+      productBatchNumber,
     } = values;
     if (
       !product_name ||
       !product_code ||
-      !current_price ||
       !customerId ||
-      !company_name
+      !company_name ||
+      !productBatchNumber
     ) {
       setError(true);
     }
@@ -145,6 +147,18 @@ export default function Stock(props: {
           required={true}
           value={values.company_name}
           onChange={handleValues}
+        />
+
+        <InputField
+          label="Parti No."
+          onChange={handleValues}
+          type="text"
+          id="productBatchNumber"
+          name="productBatchNumber"
+          placeholder="Parti No."
+          extra="mb-2"
+          value={values.productBatchNumber}
+          required={true}
         />
       </div>
 
@@ -263,7 +277,6 @@ export default function Stock(props: {
           placeholder="22.99"
           extra="mb-2"
           value={values.current_price}
-          required={true}
         />
         <Select
           extra="pt-1"

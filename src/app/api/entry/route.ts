@@ -58,28 +58,54 @@ export async function PUT(req: Request) {
       data: result,
     });
 
-    //TODO create stock
     if (fault) {
+      const stockData = await prisma.stock.findUnique({
+        where: { product_code: fault.productCode },
+      });
+
       const {
         customerId,
         productCode,
         quantity,
         product,
         technicalDrawingAttachment,
+        productBatchNumber,
       } = fault;
-      const stock: Stock = await prisma.stock.create({
-        data: {
-          product_code: productCode,
-          product_name: product,
-          inventory: quantity,
-          current_price: '',
-          curency: '',
-          image: technicalDrawingAttachment,
-          customerId: customerId,
-          faultId: fault.id,
-          product_barcode,
-        },
-      });
+
+      if (!stockData) {
+        const stock: Stock = await prisma.stock.create({
+          data: {
+            product_code: productCode,
+            product_name: product,
+            inventory: quantity,
+            current_price: '',
+            curency: '',
+            image: technicalDrawingAttachment,
+            customerId: customerId,
+            faultId: fault.id,
+            product_barcode,
+            productBatchNumber,
+          },
+        });
+      }
+
+      if (stockData) {
+        const stock: Stock = await prisma.stock.update({
+          where: { id: stockData.id, customerId },
+          data: {
+            product_code: productCode,
+            product_name: product,
+            inventory: quantity + stockData.inventory,
+            current_price: '',
+            curency: '',
+            image: technicalDrawingAttachment,
+            customerId: customerId,
+            faultId: fault.id,
+            product_barcode,
+            productBatchNumber,
+          },
+        });
+      }
     }
 
     //Create Notification

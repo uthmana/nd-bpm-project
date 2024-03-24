@@ -114,6 +114,22 @@ function EntryTable({
           </p>
         ),
       }),
+      columnHelper.accessor('productBatchNumber', {
+        id: 'productBatchNumber',
+        header: () => (
+          <p className="group relative min-w-[100px] whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Parti No.{' '}
+            <span className="absolute right-0 top-0 hidden group-hover:block">
+              <MdOutlineKeyboardDoubleArrowDown />
+            </span>
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="min-w-[180px] text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
+          </p>
+        ),
+      }),
       columnHelper.accessor('customerName', {
         id: 'customerName',
         header: () => (
