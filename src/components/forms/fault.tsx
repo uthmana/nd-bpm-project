@@ -15,9 +15,24 @@ import {
   generateSKU,
 } from 'utils';
 import { FaultObj } from '../../app/localTypes/table-types';
-import { getCustomers, getFaultSettings } from '../../app/lib/apiRequest';
+import {
+  getCustomers,
+  getCustomersWithStock,
+  getFaultSettings,
+} from '../../app/lib/apiRequest';
 import DataList from 'components/fields/dataList';
 import { toast } from 'react-toastify';
+
+type SettingItem = {
+  id: string;
+  name: string;
+};
+
+type Settings = {
+  applications: Array<SettingItem>;
+  standards: Array<SettingItem>;
+  colors: Array<SettingItem>;
+};
 
 export default function Fault(props: {
   onSubmit: (e: any) => void;
@@ -46,39 +61,77 @@ export default function Fault(props: {
 
   const [values, setValues] = useState(initialValues);
   const [error, setError] = useState(false);
+  const [customers, setCustomers] = useState([]);
+  const [faultSettings, setFaultSettings] = useState({} as Settings);
+  const [stockProduct, setStockProduct] = useState([]);
+
   const [file, setFile] = useState(
     initialValues.technicalDrawingAttachment
       ? initialValues.technicalDrawingAttachment
       : '',
   );
 
-  type SettingItem = {
-    id: string;
-    name: string;
-  };
-
-  type Settings = {
-    applications: Array<SettingItem>;
-    standards: Array<SettingItem>;
-    colors: Array<SettingItem>;
-  };
-
-  const [customers, setCustomers] = useState([]);
-  const [faultSettings, setFaultSettings] = useState({} as Settings);
-
   const handleValues = (event) => {
     setError(false);
+    // Handle Company chanrge
     if (event.target?.name === 'company_name') {
       const _customer = customers.filter(
         (item) => item.company_name === event.target?.value,
       )[0];
-      const seletecCustomer = {
+      let selectedCustomer = {
         customerName: _customer?.company_name,
         customerId: _customer?.id,
+        product: '',
       };
-      setValues({ ...values, ...seletecCustomer });
+
+      if (_customer?.Stock?.length > 0) {
+        setStockProduct(_customer?.Stock);
+        const {
+          product_name,
+          product_code,
+          inventory,
+          date,
+          productBatchNumber,
+        } = _customer?.Stock[0];
+        const stockData = {
+          product: product_name,
+          productBatchNumber: productBatchNumber,
+          productCode: product_code,
+          quantity: inventory,
+          arrivalDate: removeMillisecondsAndUTC(date),
+        };
+        selectedCustomer = { ...selectedCustomer, ...stockData };
+      } else {
+        setStockProduct([]);
+      }
+
+      setValues({ ...values, ...selectedCustomer });
       return;
     }
+
+    // Handle Product chanrge
+    if (event.target?.name === 'product' && stockProduct.length > 0) {
+      const _stockData = stockProduct.find(
+        (item) => item.id === event.target?.value,
+      );
+      const {
+        product_name,
+        product_code,
+        date,
+        inventory,
+        productBatchNumber,
+      } = _stockData;
+      const stockData = {
+        product: product_name,
+        productBatchNumber: productBatchNumber,
+        productCode: product_code,
+        quantity: inventory,
+        arrivalDate: removeMillisecondsAndUTC(date),
+      };
+      setValues({ ...values, ...stockData });
+      return;
+    }
+
     const newVal = { [event.target?.name]: event.target?.value };
     setValues({ ...values, ...newVal });
   };
@@ -87,7 +140,7 @@ export default function Fault(props: {
     const fetchData = async () => {
       const [settingsResponse, customerResponse]: any = await Promise.all([
         getFaultSettings(),
-        getCustomers(),
+        getCustomersWithStock(),
       ]);
       const { status: setStatus, data: setData } = settingsResponse;
       const { status: custStatus, data: custData } = customerResponse;
@@ -175,16 +228,45 @@ export default function Fault(props: {
           onChange={handleValues}
         />
 
+        {stockProduct.length > 0 ? (
+          <Select
+            required={true}
+            extra="pt-1"
+            label="Ürün Adı"
+            name="product"
+            onChange={handleValues}
+          >
+            {stockProduct?.map((item, idx) => {
+              return (
+                <option value={item.id} key={idx} selected={idx === 0}>
+                  {item.product_name}
+                </option>
+              );
+            })}
+          </Select>
+        ) : (
+          <InputField
+            label="Ürün Adı"
+            onChange={handleValues}
+            type="text"
+            id="product"
+            name="product"
+            placeholder="Ürün Adı"
+            extra="mb-2"
+            value={values.product}
+            required={true}
+          />
+        )}
+
         <InputField
-          label="Ürün Adı"
+          label="Varış tarihi"
           onChange={handleValues}
-          type="text"
-          id="product"
-          name="product"
-          placeholder="Ürün Adı"
+          type="datetime-local"
+          id="arrivalDate"
+          name="arrivalDate"
+          placeholder="varış tarihi"
           extra="mb-2"
-          value={values.product}
-          required={true}
+          value={values.arrivalDate}
         />
       </div>
 
@@ -200,6 +282,18 @@ export default function Fault(props: {
           value={values.productCode}
           required={true}
         />
+
+        <InputField
+          label="Parti No."
+          onChange={handleValues}
+          type="text"
+          id="productBatchNumber"
+          name="productBatchNumber"
+          placeholder="Parti No."
+          extra="mb-2"
+          value={values.productBatchNumber}
+        />
+
         <InputField
           label="Miktar"
           onChange={handleValues}
@@ -209,17 +303,6 @@ export default function Fault(props: {
           placeholder="Miktar"
           extra="mb-2"
           value={values.quantity}
-        />
-
-        <InputField
-          label="Varış tarihi"
-          onChange={handleValues}
-          type="datetime-local"
-          id="arrivalDate"
-          name="arrivalDate"
-          placeholder="varış tarihi"
-          extra="mb-2"
-          value={values.arrivalDate}
         />
       </div>
       <div className="mb-8 flex flex-col gap-3 sm:flex-row">

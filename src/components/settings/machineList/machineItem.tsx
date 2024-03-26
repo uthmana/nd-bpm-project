@@ -30,14 +30,14 @@ const MachineList = ({
           >
             <button
               onClick={() => handleMachineEdit(item)}
-              className="absolute right-10 top-2 flex h-6  w-6 items-center justify-center rounded-full border bg-[#f4f7fe] text-lg hover:bg-green-500 hover:text-white"
+              className="absolute right-10 top-2 flex h-6  w-6 items-center justify-center rounded-full border bg-[#f4f7fe] text-lg hover:bg-green-500 hover:text-white dark:bg-green-500"
             >
               ✐
             </button>
 
             <button
               onClick={() => onDeleteMachine(item.id)}
-              className="text-md absolute right-2 top-2 flex h-6  w-6 items-center justify-center rounded-full border bg-[#f4f7fe] hover:bg-red-500 hover:text-white"
+              className="text-md absolute right-2 top-2 flex h-6  w-6 items-center justify-center rounded-full border bg-[#f4f7fe] hover:bg-red-500 hover:text-white dark:bg-red-500"
             >
               X
             </button>
@@ -55,7 +55,7 @@ const MachineList = ({
                 key={idx}
                 className="mb-2 flex justify-between text-sm text-gray-800"
               >
-                <div>Teknikal Parametreleri</div>
+                <div className="dark:text-white">Teknikal Parametreleri</div>
                 <MdOutlineKeyboardArrowDown className="h-6 w-6" />
               </div>
               <div

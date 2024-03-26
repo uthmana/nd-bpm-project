@@ -41,6 +41,9 @@
     ".next/types/**/*.ts",
     "seeds/users.ts",
     "seeds/seed.ts",
-    "src/app/localTypes"
+    "src/app/localTypes",
+    "emails",
+    "react-email-starter/emails",
+    "emails"
   ]
 }

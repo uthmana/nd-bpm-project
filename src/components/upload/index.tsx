@@ -15,6 +15,7 @@ const Upload = (props: {
   const fileElem = useRef(null);
   const [filePath, setFilePath] = useState(_filePath ? _filePath : '');
   const [fileName, setFileName] = useState(_fileName ? _fileName : '');
+  const [loading, setLoading] = useState(false);
 
   const supportedFiles = [
     'application/pdf',
@@ -35,6 +36,7 @@ const Upload = (props: {
     if (!fileData) return;
     try {
       if (!supportedFiles.includes(fileData.type)) return;
+      setLoading(true);
       const data = new FormData();
       data.set('file', fileData);
       const res = await fetch('/api/upload', {
@@ -46,14 +48,17 @@ const Upload = (props: {
       setFilePath(path);
       setFileName(name);
       onChange(name);
+      setLoading(false);
     } catch (e: any) {
       console.error(e);
+      setLoading(false);
     }
   };
 
   const handleFileDelete = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       const res = await fetch('/api/upload', {
         method: 'DELETE',
         body: JSON.stringify({ name: fileName }),
@@ -62,14 +67,16 @@ const Upload = (props: {
       setFilePath('');
       setFileName('');
       onChange('');
+      setLoading(false);
     } catch (e: any) {
       console.error(e);
+      setLoading(false);
     }
   };
 
   return (
-    <Card className="flex h-full w-full flex-col gap-3  rounded-[20px] bg-white bg-clip-border font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none sm:flex-row">
-      <div className="h-[164px] w-full rounded-xl bg-lightPrimary dark:!bg-navy-700">
+    <Card className="flex h-full w-full flex-col gap-3  rounded-[20px] bg-white/0 bg-clip-border font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none sm:flex-row">
+      <div className="h-[164px] w-full rounded-xl bg-white/0">
         <input
           ref={fileElem}
           type="file"
@@ -95,8 +102,18 @@ const Upload = (props: {
 
       <div
         className="h-[164px] w-full overflow-hidden rounded-xl bg-white bg-contain dark:!bg-navy-800"
-        style={{ backgroundImage: `url(${placeholderImage.src})` }}
+        style={{
+          backgroundImage: `url(${placeholderImage.src})`,
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'cover',
+        }}
       >
+        {loading ? (
+          <div className="relative bottom-0 mb-auto w-full rounded bg-gray-200">
+            <div className="shim-blue absolute top-0 h-2 w-full rounded"></div>
+          </div>
+        ) : null}
+
         {fileName.length > 0 ? (
           <div className="relative h-full w-full">
             <button
@@ -112,7 +129,6 @@ const Upload = (props: {
               width="100%"
               title={fileName}
             ></iframe>
-            {/* <img className="h-full w-full"  /> */}
           </div>
         ) : null}
       </div>

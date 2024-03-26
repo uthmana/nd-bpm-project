@@ -8,6 +8,10 @@ import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { log } from 'utils';
 import Card from 'components/card';
+import OfferTemplete from 'emails/offer';
+import ReactDOMServer from 'react-dom/server';
+import html2PDF from 'jspdf-html2canvas';
+import jsPDF from 'jspdf';
 
 export default function Create() {
   const [customers, setCustomers] = useState([]);
@@ -26,6 +30,28 @@ export default function Create() {
   }, []);
 
   const handleSubmit = async (val) => {
+    // const toHtml = ReactDOMServer.renderToString(
+    //   <OfferTemplete offer={offerData} />,
+    // );
+    // const iframe =
+    //   document.getElementById('page')?.contentWindow?.document.firstChild;
+    // console.log(iframe);
+
+    // var pdf = new jsPDF('p', 'pt', 'letter');
+    // pdf.canvas.height = 72 * 11;
+    // pdf.canvas.width = 72 * 8.5;
+    // //  pdf.html(iframe);
+    // pdf.html(toHtml).then(() => pdf.save('fileName.pdf'));
+
+    // const pdf = await html2PDF(iframe as HTMLElement, {
+    //   jsPDF: {
+    //     format: 'a4',
+    //   },
+    //   imageType: 'image/jpeg',
+    //   output: './pdf/generate.pdf',
+    // });
+    // console.log({ pdf });
+
     delete val.company_name;
     delete val.companyName;
     setIsSubmitting(true);
@@ -50,6 +76,7 @@ export default function Create() {
   };
 
   const handleChange = (val) => {
+    console.log(val);
     setOfferData(val);
   };
 
@@ -66,10 +93,20 @@ export default function Create() {
       </div>
 
       <div className="mx-auto flex w-full max-w-[1320px] flex-col-reverse justify-center gap-2 xl:flex-row">
-        <div className="mx-auto w-full max-w-[700px]">
-          <OfferDoc offer={offerData} />
+        <div className="mx-auto w-full max-w-[700px] bg-white">
+          {/* <OfferDoc offer={offerData} /> */}
+          <div className="page-break min-h-[800px] w-full bg-white px-10 lg:w-[700px] lg:max-w-[700px] print:absolute  print:top-0 print:z-[99999] print:min-h-screen print:w-full print:pl-0 print:pr-8">
+            <iframe
+              id="page"
+              width="100%"
+              height="1000px"
+              srcDoc={ReactDOMServer.renderToString(
+                <OfferTemplete offer={offerData} />,
+              )}
+            ></iframe>
+          </div>
         </div>
-        <Card className="mx-auto w-full max-w-[700px] bg-white px-4 py-8">
+        <Card className="mx-auto w-full max-w-[700px] bg-white px-4 py-8 dark:bg-navy-700">
           <OfferForm
             key={customers.length}
             info={customers}

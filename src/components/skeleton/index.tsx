@@ -288,7 +288,7 @@ export function NewTableRowSkeleton(props: { header?: boolean }) {
 
 export function NewDashboardSkeleton() {
   return (
-    <div className="w-full animate-pulse bg-[#f4f7fe] px-2">
+    <div className="w-full animate-pulse bg-[#f4f7fe] px-2 dark:bg-navy-800">
       <NavbarSkeleton />
       <BreadCrambSkeleton />
       <div className="mb-5 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
@@ -314,7 +314,7 @@ export function NewDashboardSkeleton() {
 
 export function NavbarSkeleton() {
   return (
-    <div className="mb-5 flex items-center justify-between py-2">
+    <div className="mb-8 flex items-center justify-between py-6">
       <div className="ml-2 h-6 w-7 rounded-sm  bg-gray-200" />
       <div className="ml-2 h-10 w-36 rounded-full bg-gray-200" />
     </div>
@@ -323,7 +323,7 @@ export function NavbarSkeleton() {
 
 export function BreadCrambSkeleton() {
   return (
-    <div className="mb-8 flex flex-col gap-1">
+    <div className="mb-12 flex flex-col gap-1">
       <div className="ml-2 h-2 w-36 rounded-full bg-gray-200" />
       <div className="ml-2 h-2 w-24 rounded-sm bg-gray-200" />
     </div>

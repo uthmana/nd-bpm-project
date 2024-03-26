@@ -117,6 +117,7 @@ export type StockObj = {
   date: string;
   image: string;
   customerName: string;
+  productBatchNumber: string;
 };
 
 export type PrimaryTable = {

@@ -24,9 +24,11 @@ const Dashboard = () => {
   const [monthlyProcess, setMonthlyProcess] = useState([] as any);
   const [recentProcess, setRecentProcess] = useState([]);
   const [recentCustomer, setRecentCustomer] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       const { data, status } = await getDashboard();
       if (status === 200) {
         setWidgetData(data?.widget);
@@ -47,6 +49,7 @@ const Dashboard = () => {
         ]);
         setRecentProcess(data?.recentProcess);
         setRecentCustomer(data?.recentCustomer);
+        setLoading(false);
         return;
       }
       log(data, status);
@@ -55,65 +58,69 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="w-full">
-      <Suspense fallback={<NewDashboardSkeleton />}>
-        <div className="mt-3 grid grid-cols-1 gap-5  sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 2xl:grid-cols-3 3xl:grid-cols-6">
-          <Widget
-            icon={<MdOutlineGroups3 className="h-7 w-7" />}
-            title={'Müşteri Sayısı'}
-            subtitle={widgetData?.customer}
-          />
-          <Widget
-            icon={<MdOutlineMultilineChart className="h-6 w-6" />}
-            title={'Stok Sayısı'}
-            subtitle={widgetData?.stock}
-          />
-          <Widget
-            icon={<MdOutlineBusiness className="h-7 w-7" />}
-            title={'Aylık Ürün Girişi'}
-            subtitle={widgetData?.entry}
-          />
-          <Widget
-            icon={<MdGroupWork className="h-6 w-6" />}
-            title={'Aylık Proses'}
-            subtitle={widgetData?.process}
-          />
-          <Widget
-            icon={<MdTaskAlt className="h-7 w-7" />}
-            title={'Toplam İrsaliye'}
-            subtitle={widgetData?.invoice}
-          />
-          <Widget
-            icon={<MdLocalOffer className="h-6 w-6" />}
-            title={'Gönderilen Teklifler'}
-            subtitle={widgetData?.offer}
-          />
-        </div>
-        <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
-          <TotalSpent chartData={monthlyProcess} />
-          <WeeklyRevenue chartData={monthlyInvoice} />
-        </div>
-        <div className="mt-5 grid grid-cols-1 gap-5">
-          <MiniTable
-            variant="process"
-            title="Yeni Proces"
-            tableData={recentProcess}
-            key={recentProcess.length}
-          />
-        </div>
-        <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
-          <div className="col-span-2">
-            <MiniTable
-              variant="customer"
-              title="Yeni Müşteri"
-              tableData={recentCustomer}
-              key={recentCustomer.length}
+    <>
+      {loading ? (
+        <NewDashboardSkeleton />
+      ) : (
+        <div className="w-full">
+          <div className="mt-3 grid grid-cols-1 gap-5  sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 2xl:grid-cols-3 3xl:grid-cols-6">
+            <Widget
+              icon={<MdOutlineGroups3 className="h-7 w-7" />}
+              title={'Müşteri Sayısı'}
+              subtitle={widgetData?.customer}
+            />
+            <Widget
+              icon={<MdOutlineMultilineChart className="h-6 w-6" />}
+              title={'Stok Sayısı'}
+              subtitle={widgetData?.stock}
+            />
+            <Widget
+              icon={<MdOutlineBusiness className="h-7 w-7" />}
+              title={'Aylık Ürün Girişi'}
+              subtitle={widgetData?.entry}
+            />
+            <Widget
+              icon={<MdGroupWork className="h-6 w-6" />}
+              title={'Aylık Proses'}
+              subtitle={widgetData?.process}
+            />
+            <Widget
+              icon={<MdTaskAlt className="h-7 w-7" />}
+              title={'Toplam İrsaliye'}
+              subtitle={widgetData?.invoice}
+            />
+            <Widget
+              icon={<MdLocalOffer className="h-6 w-6" />}
+              title={'Gönderilen Teklifler'}
+              subtitle={widgetData?.offer}
             />
           </div>
-          <MiniCalendar className="p-4 dark:!bg-[#111c44]" />
+          <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
+            <TotalSpent chartData={monthlyProcess} />
+            <WeeklyRevenue chartData={monthlyInvoice} />
+          </div>
+          <div className="mt-5 grid grid-cols-1 gap-5">
+            <MiniTable
+              variant="process"
+              title="Yeni Proces"
+              tableData={recentProcess}
+              key={recentProcess.length}
+            />
+          </div>
+          <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
+            <div className="col-span-2">
+              <MiniTable
+                variant="customer"
+                title="Yeni Müşteri"
+                tableData={recentCustomer}
+                key={recentCustomer.length}
+              />
+            </div>
+            <MiniCalendar className="p-4 dark:!bg-[#111c44]" />
+          </div>
         </div>
-      </Suspense>
-    </div>
+      )}
+    </>
   );
 };
 

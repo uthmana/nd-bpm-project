@@ -9,6 +9,8 @@ import Button from 'components/button/button';
 import { MdOutlinePayment, MdPrint } from 'react-icons/md';
 import { OfferObj } from 'app/localTypes/table-types';
 import { log } from 'utils';
+import OfferTemplete from 'emails/offer';
+import ReactDOMServer from 'react-dom/server';
 
 export default function Create() {
   const [offerData, setOfferData] = useState({} as OfferObj);
@@ -78,7 +80,15 @@ export default function Create() {
 
       <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-2 lg:flex-row">
         <div className="w-full">
-          <OfferDoc offer={offerData} />
+          <div className="page-break min-h-[800px] w-full bg-white px-10 lg:w-[700px] lg:max-w-[700px] print:absolute  print:top-0 print:z-[99999] print:min-h-screen print:w-full print:pl-0 print:pr-8">
+            <iframe
+              width="100%"
+              height="1000px"
+              srcDoc={ReactDOMServer.renderToString(
+                <OfferTemplete offer={offerData} />,
+              )}
+            ></iframe>
+          </div>
         </div>
         <div className="flex w-full flex-col gap-4 bg-white px-4 py-8">
           <Button

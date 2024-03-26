@@ -1,26 +1,26 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
-  formatDateTime,
-  removeMillisecondsAndUTC,
   convertToISO8601,
   generateSKU,
+  currencySymbol,
+  useDebounce,
 } from 'utils';
 import TextArea from 'components/fields/textArea';
 import Button from 'components/button/button';
 import Select from 'components/select/page';
-import { MdOutlineArrowBack } from 'react-icons/md';
-import NextLink from 'next/link';
+import { MdAdd } from 'react-icons/md';
 import InputField from 'components/fields/InputField';
 import DataList from 'components/fields/dataList';
-import {
-  addOfferItem,
-  deleteOfferItem,
-  getFaultSettings,
-} from 'app/lib/apiRequest';
+import { addOfferItem, deleteOfferItem } from 'app/lib/apiRequest';
 import { useSession } from 'next-auth/react';
-import Card from 'components/card';
+import dynamic from 'next/dynamic';
+import SignaturePad from 'components/signaturePad';
+
+const OfferPopup = dynamic(() => import('components/offer/popup'), {
+  ssr: false,
+});
 
 export default function OfferForm(props: {
   onSubmit: (e: any, d: any) => void;
@@ -36,10 +36,10 @@ export default function OfferForm(props: {
   const [formTouch, setFormTouch] = useState(isUpdate);
   const [customers, setCustomers] = useState(info || []);
   const [products, setProducts] = useState(isUpdate ? editData?.product : []);
-  const [application, setApplication] = useState([]);
-  const [standard, setStandard] = useState([]);
-
+  const [resetFile, setResetFile] = useState(false);
+  const [showAddProduct, setShowAddProduct] = useState(false);
   const { data: session } = useSession();
+
   const currency = ['TL', 'USD', 'EUR'];
   const [values, setValues] = useState(
     isUpdate
@@ -63,27 +63,6 @@ export default function OfferForm(props: {
         },
   );
 
-  const [offer, setOffer] = useState({
-    name: '',
-    application: '',
-    standard: '',
-    quantity: '',
-    price: '',
-  });
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data, status } = await getFaultSettings();
-      if (status === 200) {
-        const { applications, standards } = data;
-        setApplication(applications);
-        setStandard(standards);
-      }
-    };
-
-    fetchData();
-  }, []);
-
   const handleValues = (event) => {
     setError(false);
     setFormTouch(false);
@@ -104,14 +83,14 @@ export default function OfferForm(props: {
       };
 
       setValues({ ...values, ...seletecCustomer });
-      onChange({ ...values, product: products });
+      debounce(onChange({ ...values, product: products }));
 
       return;
     }
 
     const newVal = { [event.target?.name]: event.target?.value };
     setValues({ ...values, ...newVal });
-    onChange({ ...values, ...newVal, product: products });
+    debounce(onChange({ ...values, ...newVal, product: products }));
   };
 
   const handleSubmit = (e) => {
@@ -146,58 +125,6 @@ export default function OfferForm(props: {
     );
   };
 
-  const handleProductValues = (event) => {
-    setError(false);
-    const newVal = { [event.target?.name]: event.target?.value };
-    setOffer({ ...offer, ...newVal });
-  };
-
-  const addProduct = async (e) => {
-    e.preventDefault();
-    const { name, application, standard, quantity, price } = offer;
-    if (!name || !application || !standard || !quantity || !price) {
-      return;
-    }
-
-    let updatedOfferItem = offer;
-    if (isUpdate) {
-      const { status, data } = await addOfferItem({
-        ...offer,
-        quantity: parseFloat(quantity),
-        price: parseFloat(price),
-        offerId: editData?.id,
-        createdBy: session?.user?.name,
-        currency: values.currency,
-      });
-      if (status === 200) {
-        updatedOfferItem = data;
-      }
-    }
-
-    const newVal = [...products];
-    newVal.push({
-      ...updatedOfferItem,
-      quantity: parseFloat(quantity),
-      price: parseFloat(price),
-    });
-
-    setProducts(newVal);
-
-    const totalPrice = newVal.reduce(
-      (a, b) => parseInt(a) + parseInt(b.price),
-      0,
-    );
-    setValues({ ...values, totalAmount: totalPrice });
-    onChange({ ...values, totalAmount: totalPrice, product: newVal });
-    setOffer({
-      name: '',
-      application: offer.application,
-      standard: offer.standard,
-      quantity: '',
-      price: '',
-    });
-  };
-
   const removeProduct = async (e, idx) => {
     e.preventDefault();
     e.stopPropagation();
@@ -223,7 +150,50 @@ export default function OfferForm(props: {
       0,
     );
     setValues({ ...values, totalAmount: totalPrice });
-    onChange({ ...values, totalAmount: totalPrice, product: newProd });
+    debounce(
+      onChange({ ...values, totalAmount: totalPrice, product: newProd }),
+    );
+  };
+
+  const onAddProduct = async (val) => {
+    let updatedOfferItem = val;
+    if (isUpdate) {
+      const { status, data } = await addOfferItem({
+        ...val,
+        offerId: editData?.id,
+        createdBy: session?.user?.name,
+        currency: values.currency,
+      });
+      if (status === 200) {
+        updatedOfferItem = data;
+      }
+    }
+
+    const newVal = [...products];
+    newVal.push({ ...updatedOfferItem });
+    setResetFile(true);
+
+    setProducts(newVal);
+    const totalPrice = newVal.reduce(
+      (a, b) => parseInt(a) + parseInt(b.price),
+      0,
+    );
+    setValues({ ...values, totalAmount: totalPrice });
+    debounce(onChange({ ...values, totalAmount: totalPrice, product: newVal }));
+
+    setShowAddProduct(false);
+  };
+
+  const handleSignaturePad = (val) => {
+    setValues({ ...values, creatorTitle: val });
+    debounce(onChange({ ...values, creatorTitle: val }));
+  };
+
+  const debounce = (value) => {
+    if (!value) return;
+    setTimeout(() => {
+      value();
+    }, 1000);
   };
 
   return (
@@ -236,6 +206,9 @@ export default function OfferForm(props: {
         ) : null}
 
         <form onSubmit={handleSubmit} className="w-full">
+          <h1 className="mb-4 text-center text-2xl font-bold">
+            Teklif Oluşturma
+          </h1>
           <div className="mb-4 grid grid-cols-2 gap-2">
             <InputField
               label="Başlangıç Tarihi"
@@ -360,37 +333,87 @@ export default function OfferForm(props: {
             </div>
           </div>
 
-          <div className="mb-12 min-w-full pl-2">
-            <div className="mb-6 grid w-full grid-cols-1">
-              <div className="grid w-full grid-cols-10 gap-1 border-b text-sm font-bold">
-                <div className="col-span-1">No</div>
-                <div className="col-span-2">Ürün</div>
-                <div className="col-span-2">Uygulama</div>
-                <div className="col-span-2">Standart</div>
+          <div className="mb-12 min-w-full border-b border-t pl-2">
+            <h3 className="mb-4 mt-8 text-center text-xl">Teklif Ürünleri</h3>
+            <div className="mb-6 grid w-full grid-cols-1 dark:text-white">
+              <div className="grid w-full grid-cols-11 gap-1 border-b text-sm font-bold">
+                <div className="col-span-1"></div>
+                <div className="col-span-6">Ürün</div>
                 <div className="col-span-1">Miktar</div>
-                <div className="col-span-2 whitespace-nowrap break-keep">
-                  Fiyat {`(${values.currency})`}
+                <div className="col-span-2">Birim Fiyat</div>
+                <div className="col-span-1 whitespace-nowrap break-keep">
+                  Tutar
                 </div>
               </div>
-
               {products?.length > 0 ? (
                 products.map((item, idx) => {
                   return (
                     <label className="flex items-center" key={idx}>
-                      <div className="group grid w-full grid-cols-10 items-center gap-2 border-b py-1 text-sm font-bold text-navy-700 dark:text-white">
+                      <div className="group grid w-full grid-cols-11 items-start gap-2 border-b py-1 text-sm font-bold text-navy-700 dark:text-white">
                         <div className="col-span-1 flex gap-2 py-1">
                           <div
                             className="flex h-[24px] w-[24px] items-center justify-center rounded-full border p-2 hover:bg-red-400 hover:text-white"
                             onClick={(e) => removeProduct(e, idx)}
                           >
                             X
-                          </div>{' '}
+                          </div>
                         </div>
-                        <div className="col-span-2">{item?.name}</div>
-                        <div className="col-span-2">{item?.application}</div>
-                        <div className="col-span-2">{item?.standard}</div>
+                        <div className="col-span-6">
+                          <div className="grid grid-cols-5">
+                            {item?.image ? (
+                              <span className="col-span-1">
+                                <img
+                                  className="w-full"
+                                  src={`/uploads/${item.image}`}
+                                  alt={item?.name}
+                                />
+                              </span>
+                            ) : null}
+
+                            <div className="col-span-4">
+                              <div className="col-span-4 px-1">
+                                <div>{item?.name}</div>
+                                <div className="mb-1">
+                                  {item?.application} - {item?.standard}
+                                </div>
+                                <div className="text-xs font-normal">
+                                  {item?.description}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
                         <div className="col-span-1">{item?.quantity}</div>
-                        <div className="col-span-2">{item?.price}</div>
+                        <div className="col-span-2 flex flex-col text-[10px]">
+                          <div className="flex gap-1">
+                            <span className="line-through">
+                              {item?.unitPrice}
+                            </span>
+                            <span> {currencySymbol[values.currency]}</span>
+                          </div>
+                          <div className="flex gap-1">
+                            <span>{item?.discountPrice}</span>
+                            <span> {currencySymbol[values.currency]}</span>
+                          </div>
+
+                          <div className="flex gap-1">
+                            <span>
+                              {' '}
+                              {'('}%{' '}
+                              {Math.round(
+                                ((item?.unitPrice - item?.discountPrice) /
+                                  item?.unitPrice) *
+                                  100,
+                              )}{' '}
+                              indi.
+                              {')'}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="col-span-1">
+                          {item?.price} {currencySymbol[values.currency]}
+                        </div>
                       </div>
                     </label>
                   );
@@ -400,114 +423,33 @@ export default function OfferForm(props: {
                   Henüz İş Açıklaması Eklenmedi.
                 </div>
               )}
-              <div className="mb-4 ml-auto mt-5 max-w-[200px]">
-                <InputField
-                  label={`Toplam (${values.currency})`}
-                  onChange={handleValues}
-                  type="text"
-                  id="totalAmount"
-                  name="totalAmount"
-                  placeholder=""
-                  extra="mb-2"
-                  value={values.totalAmount}
-                />
+
+              <div className="flex w-full justify-between">
+                <div className="mb-4  mt-5 max-w-[200px]">
+                  <Button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowAddProduct(!showAddProduct);
+                    }}
+                    extra="mt-7 h-[36px] px-4"
+                    text="ÜRÜN EKLE"
+                    icon={<MdAdd className="ml-1 h-6 w-6" />}
+                  />
+                </div>
+                <div className="mb-4  mt-5 max-w-[200px]">
+                  <InputField
+                    label={`Toplam ${currencySymbol[values.currency]}`}
+                    onChange={handleValues}
+                    type="text"
+                    id="totalAmount"
+                    name="totalAmount"
+                    placeholder=""
+                    extra="mb-2"
+                    value={values.totalAmount}
+                  />
+                </div>
               </div>
-
-              <Card extra="mt-10 grid w-full grid-cols-2 gap-2 rounded-lg bg-lightPrimary px-3 py-4 sm:grid-cols-3">
-                <InputField
-                  label="Ürün"
-                  onChange={handleProductValues}
-                  type="text"
-                  id="name"
-                  name="name"
-                  placeholder=""
-                  extra="!h-[36px]"
-                  value={offer.name}
-                />
-
-                <Select
-                  extra="pt-1"
-                  label="Uygulama"
-                  onChange={handleProductValues}
-                  name="application"
-                >
-                  {application.map((item, idx) => {
-                    return (
-                      <option value={item.name} key={idx} selected={idx === 0}>
-                        {item.name}
-                      </option>
-                    );
-                  })}
-                </Select>
-
-                <Select
-                  extra="pt-1"
-                  label="standart"
-                  onChange={handleProductValues}
-                  name="standard"
-                >
-                  {standard.map((item, idx) => {
-                    return (
-                      <option value={item.name} key={idx} selected={idx === 0}>
-                        {item.name}
-                      </option>
-                    );
-                  })}
-                </Select>
-
-                <InputField
-                  label="Miktar"
-                  onChange={handleProductValues}
-                  type="number"
-                  id="quantity"
-                  name="quantity"
-                  placeholder=""
-                  extra="!h-[36px]"
-                  value={offer.quantity}
-                />
-                <InputField
-                  label="Fiyat"
-                  onChange={handleProductValues}
-                  type="number"
-                  id="price"
-                  name="price"
-                  placeholder=""
-                  extra="!h-[36px]"
-                  value={offer.price}
-                />
-
-                <Button
-                  onClick={addProduct}
-                  extra="mt-7 h-[36px]"
-                  text="EKLE"
-                />
-              </Card>
             </div>
-          </div>
-
-          <div className="mb-4 grid grid-cols-1 gap-2 md:grid-cols-2">
-            <InputField
-              label="Teklif Hazırlayan"
-              onChange={handleValues}
-              type="text"
-              id="text"
-              name="createdBy"
-              placeholder=""
-              extra="mb-2"
-              value={values.createdBy}
-              required={true}
-            />
-            <InputField
-              label="Teklif Hazırlayan Unvanı"
-              onChange={handleValues}
-              type="text"
-              id="creatorTitle"
-              name="creatorTitle"
-              placeholder=""
-              extra="mb-2"
-              value={values.creatorTitle}
-              required={true}
-            />
           </div>
 
           <div className="w-full">
@@ -522,6 +464,26 @@ export default function OfferForm(props: {
             />
           </div>
 
+          <div className="mb-4 flex max-w-[330px] flex-col">
+            <InputField
+              label="Teklif Hazırlayan"
+              onChange={handleValues}
+              type="text"
+              id="text"
+              name="createdBy"
+              placeholder=""
+              extra="mb-2"
+              value={values.createdBy}
+              required={true}
+            />
+
+            <SignaturePad
+              label="İmza"
+              value={values.creatorTitle}
+              onSave={(sign: string) => handleSignaturePad(sign)}
+            />
+          </div>
+
           <Button
             disabled={formTouch}
             loading={isSubmitting}
@@ -530,22 +492,13 @@ export default function OfferForm(props: {
           />
         </form>
       </div>
-      {/* <div className="mt-8 flex justify-between text-sm font-bold opacity-40">
-        <div>
-          <p>Oluşturan: {editData?.createdBy}</p>
-          <p>
-            Oluşturulma Tarihi:{' '}
-            {editData?.createdAt ? formatDateTime(editData?.createdAt) : ''}
-          </p>
-        </div>
-        <div>
-          <p>Güncelleyen: {editData?.updatedBy}</p>
-          <p>
-            Güncelleme Tarihi:{' '}
-            {editData?.updatedAt ? formatDateTime(editData?.updatedAt) : ''}
-          </p>
-        </div>
-      </div> */}
+
+      <OfferPopup
+        extra="!top-[50%] !w-[90%] !max-w-[700px]"
+        isShowPopUp={showAddProduct}
+        onAdd={(val) => onAddProduct(val)}
+        onClose={() => setShowAddProduct(false)}
+      />
     </div>
   );
 }

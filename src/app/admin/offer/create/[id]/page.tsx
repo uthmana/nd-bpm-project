@@ -14,6 +14,8 @@ import { useParams } from 'next/navigation';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
 import { log, removeMillisecondsAndUTC } from 'utils';
 import { useRouter } from 'next/navigation';
+import OfferTemplete from 'emails/offer';
+import ReactDOMServer from 'react-dom/server';
 
 export default function Create() {
   const [customers, setCustomers] = useState([]);
@@ -120,7 +122,15 @@ export default function Create() {
           <>
             {' '}
             <div className="mx-auto w-full max-w-[700px]">
-              <OfferDoc offer={offerData} />
+              <div className="page-break min-h-[800px] w-full bg-white px-10 lg:w-[700px] lg:max-w-[700px] print:absolute  print:top-0 print:z-[99999] print:min-h-screen print:w-full print:pl-0 print:pr-8">
+                <iframe
+                  width="100%"
+                  height="1000px"
+                  srcDoc={ReactDOMServer.renderToString(
+                    <OfferTemplete offer={offerData} />,
+                  )}
+                ></iframe>
+              </div>
             </div>
             <div className="mx-auto w-full max-w-[700px] bg-white px-4 py-8">
               <OfferForm

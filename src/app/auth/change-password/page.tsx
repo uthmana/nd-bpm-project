@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { changePassword } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import NextLink from 'next/link';
+import { MdKeyboardArrowLeft } from 'react-icons/md';
 
 function ChangePassword() {
   const router = useRouter();
@@ -86,9 +87,9 @@ function ChangePassword() {
 
             <NextLink
               href="/auth/sign-in"
-              className="mb-4 inline-block text-sm font-medium dark:text-white"
+              className="mb-4  inline-flex items-center text-sm font-medium dark:text-white"
             >
-              {'<'} Giriş
+              <MdKeyboardArrowLeft className="h-6 w-6" /> Giriş
             </NextLink>
 
             <h3 className="mb-8 text-4xl font-bold text-navy-700 dark:text-white">
@@ -104,18 +105,19 @@ function ChangePassword() {
             <InputField
               variant="auth"
               extra="mb-3"
-              label="Yeni Şifre*"
+              label="Yeni Şifre"
               placeholder="Min. 8 characters"
               id="password"
               type="password"
               name="newPassword"
               onChange={(e: any) => handleValues(e)}
               state={pwdState}
+              required={true}
             />
             <InputField
               variant="auth"
               extra="mb-6"
-              label="Şifreyi tekrarla*"
+              label="Şifreyi tekrarla"
               placeholder="Min. 8 characters"
               id="password"
               type="password"

@@ -82,28 +82,29 @@ model Customer {
 }
 
 model Stock {
-  id              String    @id @default(cuid())
-  product_code    String
-  product_name    String
-  product_barcode String?
-  description     String?
-  main_group      String?
-  group1          String?
-  group2          String?
-  inventory       Int?
-  unit            String?
-  current_price   String
-  curency         String
-  brand           String?
-  date            DateTime? @default(now())
-  updatedAt       DateTime? @updatedAt
-  createdBy       String?
-  updatedBy       String?
-  image           String?
-  customerId      String?
-  customer        Customer? @relation(fields: [customerId], references: [id])
-  faultId         String?   @unique
-  fault           Fault?    @relation(fields: [faultId], references: [id], onDelete: Cascade)
+  id                 String    @id @default(cuid())
+  product_code       String    @unique
+  product_name       String
+  product_barcode    String?
+  productBatchNumber String?
+  description        String?
+  main_group         String?
+  group1             String?
+  group2             String?
+  inventory          Int?
+  unit               String?
+  current_price      String
+  curency            String
+  brand              String?
+  date               DateTime? @default(now())
+  updatedAt          DateTime? @updatedAt
+  createdBy          String?
+  updatedBy          String?
+  image              String?
+  customerId         String?
+  customer           Customer? @relation(fields: [customerId], references: [id])
+  faultId            String?   @unique
+  fault              Fault?    @relation(fields: [faultId], references: [id], onDelete: Cascade)
 }
 
 model Fault {
@@ -317,19 +318,23 @@ model Offer {
 }
 
 model OfferItem {
-  id          String    @id @default(cuid())
-  name        String?
-  application String?
-  standard    String?
-  currency    Currency? @default(TL)
-  quantity    Int?
-  price       Float?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime? @updatedAt
-  createdBy   String?
-  updatedBy   String?
-  Offer       Offer?    @relation(fields: [offerId], references: [id])
-  offerId     String?
+  id            String    @id @default(cuid())
+  name          String?
+  application   String?
+  standard      String?
+  currency      Currency? @default(TL)
+  quantity      Int?
+  price         Float?
+  unitPrice     Float?
+  discountPrice Float?
+  description   String?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt
+  createdBy     String?
+  updatedBy     String?
+  Offer         Offer?    @relation(fields: [offerId], references: [id])
+  offerId       String?
 }
 
 enum InvoiceStatus {
