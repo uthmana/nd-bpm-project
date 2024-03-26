@@ -7,7 +7,6 @@ const Chart = dynamic(() => import('react-apexcharts'), {
 
 const LineAreaChart = (props) => {
   const { chartData, chartOptions } = props;
-
   return (
     <Chart
       options={chartOptions}

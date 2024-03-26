@@ -125,3 +125,5 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+export const revalidate = 6;
