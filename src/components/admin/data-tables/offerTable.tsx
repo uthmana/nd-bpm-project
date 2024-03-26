@@ -22,7 +22,7 @@ import {
 import Search from 'components/search/search';
 import Button from 'components/button/button';
 import { formatDateTime, useDrage } from 'utils';
-import { OfferObj, OfferTable } from 'app/localTypes/table-types';
+import { OfferObj, OfferTypeTable } from 'app/localTypes/table-types';
 import TablePagination from './tablePagination';
 
 function OfferTable({
@@ -33,7 +33,7 @@ function OfferTable({
   onControl,
   variant = 'NORMAL',
   searchValue,
-}: OfferTable) {
+}: OfferTypeTable) {
   let defaultData = tableData;
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
