@@ -20,7 +20,7 @@ import {
 } from '@tanstack/react-table';
 import Search from 'components/search/search';
 import { formatDateTime, useDrage } from 'utils';
-import { InvoiceObj, InvoiceTable } from 'app/localTypes/table-types';
+import { InvoiceObj, InvoiceTypeTable } from 'app/localTypes/table-types';
 import TablePagination from './tablePagination';
 
 function InvoiceTable({
@@ -31,7 +31,7 @@ function InvoiceTable({
   onControl,
   variant = 'NORMAL',
   searchValue,
-}: InvoiceTable) {
+}: InvoiceTypeTable) {
   let defaultData = tableData;
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
