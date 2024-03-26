@@ -110,10 +110,9 @@ export default function Fault(props: {
     }
 
     // Handle Product chanrge
-    //TODO: check product with unique id not by product name
     if (event.target?.name === 'product' && stockProduct.length > 0) {
       const _stockData = stockProduct.find(
-        (item) => item.product_name === event.target?.value,
+        (item) => item.id === event.target?.value,
       );
       const {
         product_name,
@@ -239,11 +238,7 @@ export default function Fault(props: {
           >
             {stockProduct?.map((item, idx) => {
               return (
-                <option
-                  value={item.product_name}
-                  key={idx}
-                  selected={idx === 0}
-                >
+                <option value={item.id} key={idx} selected={idx === 0}>
                   {item.product_name}
                 </option>
               );

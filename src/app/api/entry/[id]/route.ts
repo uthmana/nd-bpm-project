@@ -101,7 +101,6 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         });
       }
     }
-
     return NextResponse.json(updateFault, { status: 200 });
   } catch (e) {
     console.log(e);
