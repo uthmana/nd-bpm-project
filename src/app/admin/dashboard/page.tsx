@@ -126,4 +126,5 @@ const Dashboard = () => {
 
 export default Dashboard;
 
-export const revalidate = 6;
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
