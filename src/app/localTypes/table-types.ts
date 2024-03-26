@@ -162,7 +162,7 @@ export type OfferTable = {
   searchValue: string;
 };
 
-export type InvoiceTable = {
+export type InvoiceTypeTable = {
   tableData: InvoiceObj[];
   variant: string;
   onEdit: (e: any) => void;
