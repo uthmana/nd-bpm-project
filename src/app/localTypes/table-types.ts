@@ -130,7 +130,7 @@ export type PrimaryTable = {
   title?: string;
 };
 
-export type ProcessTable = {
+export type ProcessTypeTable = {
   tableData: ProcessObj[];
   variant?: string;
   onEdit?: (e: any) => void;
@@ -152,7 +152,7 @@ export type UserObj = {
   delete: string;
 };
 
-export type OfferTable = {
+export type OfferTypeTable = {
   tableData: OfferObj[];
   variant: string;
   onEdit: (e: any) => void;

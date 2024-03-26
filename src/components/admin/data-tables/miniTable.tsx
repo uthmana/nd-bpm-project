@@ -3,7 +3,7 @@ import Card from 'components/card';
 import { useDrage } from 'utils';
 import {
   ProcessObj,
-  ProcessTable,
+  ProcessTypeTable,
   PrimaryTable,
   CustomerObj,
 } from 'app/localTypes/table-types';
@@ -24,7 +24,7 @@ function MiniTable({
   tableData,
   variant = 'NORMAL',
   title,
-}: ProcessTable | PrimaryTable) {
+}: ProcessTypeTable | PrimaryTable) {
   let defaultData = tableData;
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');

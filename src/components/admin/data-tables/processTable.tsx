@@ -3,7 +3,7 @@ import Card from 'components/card';
 import Search from 'components/search/search';
 import FileViewer from 'components/fileViewer';
 import { useDrage } from 'utils';
-import { ProcessObj, ProcessTable } from 'app/localTypes/table-types';
+import { ProcessObj, ProcessTypeTable } from 'app/localTypes/table-types';
 import TablePagination from './tablePagination';
 
 import {
@@ -32,7 +32,7 @@ function ProcessTable({
   onControl,
   variant = 'NORMAL',
   searchValue,
-}: ProcessTable) {
+}: ProcessTypeTable) {
   let defaultData = tableData;
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
