@@ -284,35 +284,18 @@ export default function EntryControl() {
                   if (productInfo.includes(key)) {
                     if (key === 'product_barcode') {
                       return (
-<<<<<<< HEAD
                         <div className="w-full" key={idx}>
                           <h2 className="mb-0 font-bold capitalize italic">
                             {infoTranslate[key]}
                           </h2>
                           <div id="product_barcode" className="max-w-[200px]">
-=======
-                        <>
-                          <h2 className="mb-0 font-bold capitalize italic print:hidden">
-                            {infoTranslate[key]}
-                          </h2>
-
-                          <div
-                            id="product_barcode"
-                            className="max-w-[200px]"
-                            key={idx}
-                          >
->>>>>>> origin/main
                             <Barcode
                               className="h-full w-full"
                               value={value.toString()}
                               options={{ format: 'code128' }}
                             />
                           </div>
-<<<<<<< HEAD
                         </div>
-=======
-                        </>
->>>>>>> origin/main
                       );
                     }
 
