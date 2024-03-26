@@ -1,5 +1,5 @@
 {
-  "name": "horizon-tailwind-react-nextjs",
+  "name": "nd-tailwind-react-nextjs",
   "version": "1.0.0",
   "private": true,
   "dependencies": {
@@ -53,7 +53,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "npx prisma generate && next build",
+    "build": "npx prisma generate && npx migrate deploy && next build",
     "start": "next start",
     "export": "next export",
     "lint": "next lint",
