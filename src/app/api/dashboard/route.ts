@@ -98,7 +98,10 @@ export async function GET(req: NextRequest) {
       recentCustomer: recentCustomer,
     };
 
-    return NextResponse.json(trackings, { status: 200 });
+    return NextResponse.json(trackings, {
+      status: 200,
+      headers: { 'Cache-Control': 'no-store' },
+    });
   } catch (e) {
     console.log(e);
     if (
