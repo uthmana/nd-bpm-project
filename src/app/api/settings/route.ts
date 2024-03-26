@@ -1,10 +1,10 @@
 import { authOptions } from '../../lib/authOptions';
 import { getServerSession } from 'next-auth';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { Prisma } from '@prisma/client';
 import prisma from 'app/lib/db';
 
-export async function GET(request: Request) {
+export async function GET(req: NextRequest) {
   try {
     const [applications, standards, color] = await Promise.all([
       prisma.applications.findMany(),
