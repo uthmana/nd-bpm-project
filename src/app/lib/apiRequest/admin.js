@@ -1,4 +1,5 @@
 import { fetchAPI } from './request';
+import { unstable_noStore as noStore } from 'next/cache';
 
 //Users
 export async function getUsers() {
@@ -325,5 +326,6 @@ export async function sendOffer(payload) {
 
 // Dashboard
 export async function getDashboard() {
+  noStore();
   return fetchAPI('dashboard');
 }
