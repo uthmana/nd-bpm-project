@@ -18,6 +18,9 @@ import { Suspense, useEffect, useState } from 'react';
 import { log } from 'utils';
 import { NewDashboardSkeleton } from 'components/skeleton';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 const Dashboard = () => {
   const [widgetData, setWidgetData] = useState({} as any);
   const [monthlyInvoice, setMonthlyInvoice] = useState([]);
@@ -125,6 +128,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
