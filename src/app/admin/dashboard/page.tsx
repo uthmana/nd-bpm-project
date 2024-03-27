@@ -17,9 +17,8 @@ import { getDashboard } from '../../lib/apiRequest';
 import { Suspense, useEffect, useState } from 'react';
 import { log } from 'utils';
 import { NewDashboardSkeleton } from 'components/skeleton';
-import { useRouter } from 'next/navigation';
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'auto';
 export const revalidate = 0;
 
 const Dashboard = () => {
@@ -29,7 +28,6 @@ const Dashboard = () => {
   const [recentProcess, setRecentProcess] = useState([]);
   const [recentCustomer, setRecentCustomer] = useState([]);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,13 +53,12 @@ const Dashboard = () => {
         setRecentProcess(data?.recentProcess);
         setRecentCustomer(data?.recentCustomer);
         setLoading(false);
-        router.refresh();
         return;
       }
       log(data, status);
     };
     fetchData();
-  }, [loading]);
+  }, []);
 
   return (
     <>
