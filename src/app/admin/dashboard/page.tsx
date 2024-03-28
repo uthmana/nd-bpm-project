@@ -17,6 +17,7 @@ import { getDashboard } from '../../lib/apiRequest';
 import { Suspense, useEffect, useState } from 'react';
 import { log } from 'utils';
 import { NewDashboardSkeleton } from 'components/skeleton';
+import { toast } from 'react-toastify';
 
 export const dynamic = 'auto';
 export const revalidate = 0;
@@ -32,30 +33,62 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const { data, status } = await getDashboard();
-      if (status === 200) {
-        setWidgetData(data?.widget);
-        setMonthlyProcess([
-          {
-            name: 'Process',
-            data: data?.monthlyEntry?.process,
-            color: '#4318FF',
-            total: data?.monthlyEntry?.process.reduce((a, b) => b + a, 0),
-          },
-        ]);
-        setMonthlyInvoice([
-          {
-            name: 'invoice',
-            data: data?.monthlyEntry?.invoice,
-            color: '#6AD2Fa',
-          },
-        ]);
-        setRecentProcess(data?.recentProcess);
-        setRecentCustomer(data?.recentCustomer);
-        setLoading(false);
-        return;
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_PATH}/api/dashboard`,
+        { cache: 'no-store' },
+      );
+      if (!res.ok) {
+        toast.error(
+          'Beklenmeyen bir hata oluştu!. Lütfen daha sonra tekrar deneyin ! =>' +
+            res.statusText,
+        );
+        console.log(res.statusText);
       }
-      log(data, status);
+      const resData = await res.json();
+      setWidgetData(resData?.widget);
+      setMonthlyProcess([
+        {
+          name: 'Process',
+          data: resData?.monthlyEntry?.process,
+          color: '#4318FF',
+          total: resData?.monthlyEntry?.process.reduce((a, b) => b + a, 0),
+        },
+      ]);
+      setMonthlyInvoice([
+        {
+          name: 'invoice',
+          data: resData?.monthlyEntry?.invoice,
+          color: '#6AD2Fa',
+        },
+      ]);
+      setRecentProcess(resData?.recentProcess);
+      setRecentCustomer(resData?.recentCustomer);
+      setLoading(false);
+
+      // const { data, status } = await getDashboard();
+      // if (status === 200) {
+      //   setWidgetData(data?.widget);
+      //   setMonthlyProcess([
+      //     {
+      //       name: 'Process',
+      //       data: data?.monthlyEntry?.process,
+      //       color: '#4318FF',
+      //       total: data?.monthlyEntry?.process.reduce((a, b) => b + a, 0),
+      //     },
+      //   ]);
+      //   setMonthlyInvoice([
+      //     {
+      //       name: 'invoice',
+      //       data: data?.monthlyEntry?.invoice,
+      //       color: '#6AD2Fa',
+      //     },
+      //   ]);
+      //   setRecentProcess(data?.recentProcess);
+      //   setRecentCustomer(data?.recentCustomer);
+      //   setLoading(false);
+      //  return;
+      //}
+      //log(data, status);
     };
     fetchData();
   }, []);
