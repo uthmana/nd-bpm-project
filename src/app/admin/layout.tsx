@@ -16,7 +16,7 @@ import Breadcrump from 'components/breadcrumb';
 import { useSession } from 'next-auth/react';
 import { ToastContainer } from 'react-toastify';
 
-export const revalidate = 1;
+export const revalidate = 0;
 
 export default function Admin({ children }: { children: React.ReactNode }) {
   // states and functions
