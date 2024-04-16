@@ -1,4 +1,6 @@
+import html2pdf from 'html2pdf.js';
 import { entryPages } from './constant';
+
 export function isEntryPage(pathname: string) {
   let entryPage = false;
   entryPages.map((page: string) => {
@@ -140,4 +142,29 @@ export const getMonthlySum = (arr, dateName) => {
         .length,
   );
   return result;
+};
+
+export const generateAndSendPDF = async () => {
+  try {
+    const element = document.getElementById('pdf-content');
+    if (!element) {
+      return;
+    }
+
+    const pdf = await html2pdf().from(element).toPdf().get('pdf');
+    const pdfBlob = pdf.output('blob');
+    const formData = new FormData();
+    formData.append('pdf', pdfBlob, 'file.pdf');
+    const res = await fetch('/api/savePdf', {
+      method: 'POST',
+      body: formData,
+    });
+    if (!res.ok) {
+      return { status: res.status, message: res.text() };
+    }
+    const data = await res.json();
+    return { ...data, status: res.status };
+  } catch (error) {
+    return { status: error.status, message: error.message };
+  }
 };

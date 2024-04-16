@@ -19,18 +19,23 @@ import { NewDashboardSkeleton } from 'components/skeleton';
 import { toast } from 'react-toastify';
 
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+//export const revalidate = 0;
 
 const getDashboradData = async () => {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_PATH}/api/dashboard`,
-    { cache: 'no-store' },
-  );
-  if (!res.ok) {
-    console.log(res.statusText);
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_PATH}/api/dashboard`,
+      { next: { revalidate: 0 } },
+    );
+    console.log({ res });
+    if (!res.ok) {
+      console.log(res.statusText);
+    }
+    const resData = await res.json();
+    return resData;
+  } catch (err) {
+    console.log({ err });
   }
-  const resData = await res.json();
-  return resData;
 };
 
 const Dashboard = async () => {

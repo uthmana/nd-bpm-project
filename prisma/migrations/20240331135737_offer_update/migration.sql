@@ -338,6 +338,7 @@ CREATE TABLE "Offer" (
     "rep_name" TEXT,
     "tax_Office" TEXT,
     "taxNo" TEXT,
+    "docPath" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
     "createdBy" TEXT,
