@@ -1,4 +1,3 @@
-import html2pdf from 'html2pdf.js';
 import { entryPages } from './constant';
 
 export function isEntryPage(pathname: string) {
@@ -146,6 +145,7 @@ export const getMonthlySum = (arr, dateName) => {
 
 export const generateAndSendPDF = async () => {
   try {
+    const { default: html2pdf } = await import('html2pdf.js');
     const element = document.getElementById('pdf-content');
     if (!element) {
       return;

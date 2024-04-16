@@ -86,6 +86,5 @@ export async function POST(request: Request) {
     }
     return NextResponse.json({ data }, { status: 200 });
   }
-
   return NextResponse.json({ error: 'Unkwon User' }, { status: 404 });
 }

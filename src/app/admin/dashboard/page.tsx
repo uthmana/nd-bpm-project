@@ -12,14 +12,10 @@ import {
 
 import Widget from 'components/widget/Widget';
 import MiniTable from 'components/admin/data-tables/miniTable';
-import { getDashboard } from '../../lib/apiRequest';
 import { Suspense } from 'react';
-import { log } from 'utils';
 import { NewDashboardSkeleton } from 'components/skeleton';
-import { toast } from 'react-toastify';
 
 export const dynamic = 'force-dynamic';
-//export const revalidate = 0;
 
 const getDashboradData = async () => {
   try {
@@ -27,9 +23,8 @@ const getDashboradData = async () => {
       `${process.env.NEXT_PUBLIC_BASE_PATH}/api/dashboard`,
       { next: { revalidate: 0 } },
     );
-    console.log({ res });
     if (!res.ok) {
-      console.log(res.statusText);
+      console.log(res.statusText, { res });
     }
     const resData = await res.json();
     return resData;
@@ -39,13 +34,6 @@ const getDashboradData = async () => {
 };
 
 const Dashboard = async () => {
-  // const [widgetData, setWidgetData] = useState({} as any);
-  // const [monthlyInvoice, setMonthlyInvoice] = useState([]);
-  // const [monthlyProcess, setMonthlyProcess] = useState([] as any);
-  // const [recentProcess, setRecentProcess] = useState([]);
-  // const [recentCustomer, setRecentCustomer] = useState([]);
-  // const [loading, setLoading] = useState(false);
-
   const resData = await getDashboradData();
 
   const processChart = (data) => {
@@ -68,44 +56,6 @@ const Dashboard = async () => {
       },
     ];
   };
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     setLoading(true);
-  //     const res = await fetch(
-  //       `${process.env.NEXT_PUBLIC_BASE_PATH}/api/dashboard`,
-  //       { cache: 'no-store' },
-  //     );
-  //     if (!res.ok) {
-  //       toast.error(
-  //         'Beklenmeyen bir hata oluştu!. Lütfen daha sonra tekrar deneyin ! =>' +
-  //           res.statusText,
-  //       );
-  //       console.log(res.statusText);
-  //     }
-  //     const resData = await res.json();
-  //     setWidgetData(resData?.widget);
-  //     setMonthlyProcess([
-  //       {
-  //         name: 'Process',
-  //         data: resData?.monthlyEntry?.process,
-  //         color: '#4318FF',
-  //         total: resData?.monthlyEntry?.process.reduce((a, b) => b + a, 0),
-  //       },
-  //     ]);
-  //     setMonthlyInvoice([
-  //       {
-  //         name: 'invoice',
-  //         data: resData?.monthlyEntry?.invoice,
-  //         color: '#6AD2Fa',
-  //       },
-  //     ]);
-  //     setRecentProcess(resData?.recentProcess);
-  //     setRecentCustomer(resData?.recentCustomer);
-  //     setLoading(false);
-  //   };
-  //   fetchData();
-  // }, []);
 
   return (
     <Suspense fallback={<NewDashboardSkeleton />}>
