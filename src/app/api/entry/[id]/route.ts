@@ -8,7 +8,7 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     const id = route.params.id;
     const fault: Fault = await prisma.fault.findUnique({
       where: { id: id },
-      include: { faultControl: true },
+      include: { faultControl: true, unacceptable: true },
     });
     return NextResponse.json(fault, { status: 200 });
   } catch (e) {

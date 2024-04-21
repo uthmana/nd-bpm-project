@@ -1,4 +1,7 @@
 -- CreateEnum
+CREATE TYPE "UnacceptableStageStatus" AS ENUM ('ENTRY', 'FINAL', 'PROCESS', 'CUSTOMER');
+
+-- CreateEnum
 CREATE TYPE "FinalItemStatus" AS ENUM ('OK', 'NOT_OK');
 
 -- CreateEnum
@@ -181,6 +184,7 @@ CREATE TABLE "FaultControl" (
     "quantityConfirmation" BOOLEAN,
     "dirtyThreads" BOOLEAN DEFAULT false,
     "processFrequency" TEXT,
+    "frequencyDimension" INTEGER,
     "remarks" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
@@ -189,6 +193,23 @@ CREATE TABLE "FaultControl" (
     "result" "FaultControlResult" NOT NULL,
 
     CONSTRAINT "FaultControl_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Unacceptable" (
+    "id" TEXT NOT NULL,
+    "unacceptableStage" "UnacceptableStageStatus" NOT NULL DEFAULT 'ENTRY',
+    "unacceptableDescription" TEXT,
+    "unacceptableAction" TEXT,
+    "result" TEXT,
+    "description" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "faultId" TEXT,
+
+    CONSTRAINT "Unacceptable_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -241,6 +262,32 @@ CREATE TABLE "FinalControl" (
     "processId" TEXT,
 
     CONSTRAINT "FinalControl_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "TestItem" (
+    "id" TEXT NOT NULL,
+    "standard" TEXT,
+    "requiredValue" TEXT,
+    "x1" TEXT,
+    "x2" TEXT,
+    "x3" TEXT,
+    "x4" TEXT,
+    "x5" TEXT,
+    "x6" TEXT,
+    "x7" TEXT,
+    "x8" TEXT,
+    "x9" TEXT,
+    "x10" TEXT,
+    "result" TEXT,
+    "description" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "finalControlId" TEXT,
+
+    CONSTRAINT "TestItem_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -435,6 +482,9 @@ CREATE UNIQUE INDEX "Fault_faultControlId_key" ON "Fault"("faultControlId");
 CREATE UNIQUE INDEX "FaultControl_faultId_key" ON "FaultControl"("faultId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Unacceptable_faultId_key" ON "Unacceptable"("faultId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Process_faultId_key" ON "Process"("faultId");
 
 -- CreateIndex
@@ -459,10 +509,16 @@ ALTER TABLE "Fault" ADD CONSTRAINT "Fault_customerId_fkey" FOREIGN KEY ("custome
 ALTER TABLE "FaultControl" ADD CONSTRAINT "FaultControl_faultId_fkey" FOREIGN KEY ("faultId") REFERENCES "Fault"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Unacceptable" ADD CONSTRAINT "Unacceptable_faultId_fkey" FOREIGN KEY ("faultId") REFERENCES "Fault"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Process" ADD CONSTRAINT "Process_invoiceId_fkey" FOREIGN KEY ("invoiceId") REFERENCES "Invoice"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "FinalControl" ADD CONSTRAINT "FinalControl_processId_fkey" FOREIGN KEY ("processId") REFERENCES "Process"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TestItem" ADD CONSTRAINT "TestItem_finalControlId_fkey" FOREIGN KEY ("finalControlId") REFERENCES "FinalControl"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "MachineParams" ADD CONSTRAINT "MachineParams_machineId_fkey" FOREIGN KEY ("machineId") REFERENCES "Machine"("id") ON DELETE SET NULL ON UPDATE CASCADE;

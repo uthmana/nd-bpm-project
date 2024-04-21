@@ -125,6 +125,7 @@ model Fault {
   status                     FaultStatus    @default(PENDING)
   technicalDrawingAttachment String?
   faultControl               FaultControl[]
+  unacceptable               Unacceptable[]
   customerId                 String?
   customer                   Customer?      @relation(fields: [customerId], references: [id])
   faultControlId             String?        @unique
@@ -136,8 +137,8 @@ model Fault {
 }
 
 model FaultControl {
-  id                    String    @id @default(cuid())
-  faultId               String    @unique
+  id                    String             @id @default(cuid())
+  faultId               String             @unique
   customerName          String?
   traceabilityCode      String?
   arrivalDate           DateTime?
@@ -147,22 +148,36 @@ model FaultControl {
   productCode           String?
   productBatchNumber    String?
   plating               String?
-  controlDate           DateTime? @default(now())
+  controlDate           DateTime?          @default(now())
   image                 String?
   productDimension      String?
   dimensionConfirmation Boolean?
   quantityConfirmation  Boolean?
-  dirtyThreads          Boolean?  @default(false)
+  dirtyThreads          Boolean?           @default(false)
   processFrequency      String? //yazilsin-yazilmasin
+  frequencyDimension    Int?
   remarks               String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime? @updatedAt
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime?          @updatedAt
   createdBy             String?
   updatedBy             String?
+  result                FaultControlResult
+  Fault                 Fault              @relation(fields: [faultId], references: [id], onDelete: Cascade)
+}
 
-  result FaultControlResult
-
-  Fault Fault @relation(fields: [faultId], references: [id], onDelete: Cascade)
+model Unacceptable {
+  id                      String                  @id @default(cuid())
+  unacceptableStage       UnacceptableStageStatus @default(ENTRY)
+  unacceptableDescription String?
+  unacceptableAction      String?
+  result                  String?
+  description             String?
+  createdAt               DateTime                @default(now())
+  updatedAt               DateTime?               @updatedAt
+  createdBy               String?
+  updatedBy               String?
+  Fault                   Fault?                  @relation(fields: [faultId], references: [id])
+  faultId                 String?                 @unique
 }
 
 model Process {
@@ -213,6 +228,38 @@ model FinalControl {
   result                FaultControlResult
   Process               Process?           @relation(fields: [processId], references: [id], onDelete: Cascade)
   processId             String?
+  testItem              TestItem[]
+}
+
+model TestItem {
+  id             String        @id @default(cuid())
+  standard       String?
+  requiredValue  String?
+  x1             String?
+  x2             String?
+  x3             String?
+  x4             String?
+  x5             String?
+  x6             String?
+  x7             String?
+  x8             String?
+  x9             String?
+  x10            String?
+  result         String?
+  description    String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime?     @updatedAt
+  createdBy      String?
+  updatedBy      String?
+  FinalControl   FinalControl? @relation(fields: [finalControlId], references: [id])
+  finalControlId String?
+}
+
+enum UnacceptableStageStatus {
+  ENTRY
+  FINAL
+  PROCESS
+  CUSTOMER
 }
 
 enum FinalItemStatus {

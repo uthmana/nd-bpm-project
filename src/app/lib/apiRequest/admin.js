@@ -327,3 +327,12 @@ export async function sendOffer(payload) {
 export async function getDashboard() {
   return fetchAPI('dashboard');
 }
+
+// unacceptable
+export async function addUnacceptable(payload) {
+  return fetchAPI('unacceptable', 'put', payload);
+}
+
+export async function updateUnacceptable(payload) {
+  return fetchAPI(`unacceptable/${payload.id}`, 'put', payload);
+}

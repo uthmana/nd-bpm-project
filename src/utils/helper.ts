@@ -151,7 +151,11 @@ export const generateAndSendPDF = async () => {
       return;
     }
 
-    const pdf = await html2pdf().from(element).toPdf().get('pdf');
+    const pdf = await html2pdf()
+      .from(element)
+      .toPdf()
+      .set({ dpi: 600 })
+      .get('pdf');
     const pdfBlob = pdf.output('blob');
     const formData = new FormData();
     formData.append('pdf', pdfBlob, 'file.pdf');
