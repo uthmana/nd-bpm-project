@@ -6,6 +6,8 @@ import Button from 'components/button/button';
 import Image from 'next/image';
 import logo from '/public/img/auth/nd.png';
 import Radio from 'components/radio';
+import { toast } from 'react-toastify';
+import { MdCheck } from 'react-icons/md';
 
 type faultInfo = {
   customerName: string;
@@ -34,13 +36,19 @@ type UnacceptObj = {
 };
 
 export default function Unaccept(props: {
-  onSaveUnacceptable: (e: any) => void;
-  handleClose: (e: any) => void;
+  onSaveUnacceptable?: (e: any) => void;
+  handleClose?: (e: any) => void;
   formData?: UnacceptObj;
-  isSubmittingUnaccept: boolean;
+  isSubmittingUnaccept?: boolean;
+  variant?: string;
 }) {
-  const { formData, onSaveUnacceptable, handleClose, isSubmittingUnaccept } =
-    props;
+  const {
+    formData,
+    variant = 'input',
+    onSaveUnacceptable,
+    handleClose,
+    isSubmittingUnaccept,
+  } = props;
   const { fault, unacceptable } = formData;
   const [values, setValues] = useState(unacceptable as UnacceptInfo);
 
@@ -50,7 +58,10 @@ export default function Unaccept(props: {
   };
 
   const handleSubmit = () => {
-    //TODO: validate values
+    if (!values?.unacceptableStage) {
+      toast.error('Lütfen Uygunsuz Ürün/Hizmet Formu doldurmanız gerekiyor !');
+      return;
+    }
     onSaveUnacceptable(values);
   };
 
@@ -88,40 +99,40 @@ export default function Unaccept(props: {
 
       <div className="mb-3 flex justify-between gap-3">
         <div className="flex w-1/2 flex-col">
-          <div className="flex items-center  text-sm font-semibold">
+          <div className="flex  text-sm font-semibold">
             <span className="w-[100px] font-normal">Müşteri :</span>
             <span className="text-xs capitalize">
               {fault?.customerName?.toLocaleLowerCase()}
             </span>
           </div>
-          <div className="flex items-center text-sm font-semibold">
+          <div className="flex  text-sm font-semibold">
             <span className="w-[80px] font-normal">Ürün Adi :</span>
             <span className="text-xs">{fault?.product}</span>
           </div>
-          <div className="flex items-center  text-sm font-semibold">
+          <div className="flex  text-sm font-semibold">
             <span className="w-[80px] font-normal">Miktar :</span>
             <span className="text-xs">{fault?.quantity}</span>
           </div>
-          <div className="flex items-center  text-sm font-semibold">
+          <div className="flex  text-sm font-semibold">
             <span className="w-[80px] font-normal">Uygulama :</span>
             <span className="text-xs">{fault?.application}</span>
           </div>
         </div>
 
         <div className="flex w-1/2 flex-col">
-          <div className="flex items-center gap-3 text-sm font-semibold">
+          <div className="flex  gap-3 text-sm font-semibold">
             <span className="w-[80px] font-normal">Barkod No :</span>
             <span className="text-xs">{fault?.product_barcode}</span>
           </div>
-          <div className="flex items-center gap-3 text-sm font-semibold">
+          <div className="flex  gap-3 text-sm font-semibold">
             <span className="w-[80px] font-normal">Ürün Kodu :</span>
             <span className="text-xs">{fault?.productCode}</span>
           </div>
-          <div className="flex items-center gap-3 text-sm font-semibold">
+          <div className="flex gap-3 text-sm font-semibold">
             <span className="w-[80px] font-normal">Tarih :</span>
             <span className="text-xs">{fault?.createdAt}</span>
           </div>
-          <div className="flex items-center gap-3 text-sm font-semibold">
+          <div className="flex  gap-3 text-sm font-semibold">
             <span className="w-[80px] font-normal">Renk: </span>
             <span className="text-xs">{fault?.color}</span>
           </div>
@@ -142,12 +153,23 @@ export default function Unaccept(props: {
                   className="flex items-center gap-3 text-sm font-semibold"
                 >
                   <span className="w-[100px] font-normal">{item.label}</span>
-                  <Radio
-                    name="unacceptableStage"
-                    value={item.value}
-                    onChange={handleValues}
-                    checked={values?.unacceptableStage === item.value}
-                  />
+                  {variant && variant === 'value' ? (
+                    <div className="border border-[#000] px-3 py-1">
+                      {values?.unacceptableStage === item.value ? (
+                        <MdCheck className="h-4 w-4" />
+                      ) : (
+                        <div className="h-4 w-4"></div>
+                      )}
+                    </div>
+                  ) : (
+                    <Radio
+                      name="unacceptableStage"
+                      value={item.value}
+                      disabled={variant === 'value'}
+                      onChange={handleValues}
+                      checked={values?.unacceptableStage === item.value}
+                    />
+                  )}
                 </div>
               );
             })}
@@ -159,61 +181,86 @@ export default function Unaccept(props: {
         <div className="border border-[#000] p-1 text-center text-sm font-bold">
           Uygunsuzluğun Tanımı
         </div>
-        <TextArea
-          onChange={handleValues}
-          id="unacceptableDescription"
-          name="unacceptableDescription"
-          placeholder=""
-          extra="mb-3 !rounded-none !border-[#000000] border-t-0"
-          value={values?.unacceptableDescription}
-          rows={2}
-        />
+        {variant && variant === 'value' ? (
+          <div className="mb-3 min-h-16 border border-t-0 border-[#000000] px-2 py-1 text-sm">
+            {values?.unacceptableDescription}
+          </div>
+        ) : (
+          <TextArea
+            onChange={handleValues}
+            id="unacceptableDescription"
+            name="unacceptableDescription"
+            placeholder=""
+            extra="mb-3 !rounded-none !border-[#000000] border-t-0"
+            value={values?.unacceptableDescription}
+            rows={2}
+          />
+        )}
       </div>
 
       <div className="w-full">
         <div className="border border-[#000] p-1 text-center text-sm font-bold">
           Alınan Aksiyonlar
         </div>
-        <TextArea
-          onChange={handleValues}
-          id="unacceptableAction"
-          name="unacceptableAction"
-          placeholder=""
-          extra="mb-3 !rounded-none !border-[#000000] border-t-0"
-          value={values?.unacceptableAction}
-          rows={2}
-        />
+        {variant && variant === 'value' ? (
+          <div className="mb-3  min-h-16 border border-t-0 border-[#000000] px-2 py-1 text-sm">
+            {values?.unacceptableAction}
+          </div>
+        ) : (
+          <TextArea
+            onChange={handleValues}
+            id="unacceptableAction"
+            name="unacceptableAction"
+            placeholder=""
+            extra="mb-3 !rounded-none !border-[#000000] border-t-0"
+            value={values?.unacceptableAction}
+            rows={2}
+          />
+        )}
       </div>
 
       <div className="w-full">
         <div className="border border-[#000] p-1 text-center text-sm font-bold">
           Sonuc/Karar
         </div>
-        <TextArea
-          onChange={handleValues}
-          id="result"
-          name="result"
-          placeholder=""
-          extra="mb-3 !rounded-none !border-[#000000] !border-t-0"
-          value={values?.result}
-          rows={2}
-        />
+        {variant && variant === 'value' ? (
+          <div className="mb-3  min-h-16 border border-t-0 border-[#000000] px-2 py-1 text-sm">
+            {values?.result}
+          </div>
+        ) : (
+          <TextArea
+            onChange={handleValues}
+            id="result"
+            name="result"
+            placeholder=""
+            extra="mb-3 !rounded-none !border-[#000000] !border-t-0"
+            value={values?.result}
+            rows={2}
+          />
+        )}
       </div>
 
       <div className="mb-5 flex w-full items-center">
         <div className="w-[100px] border border-r-0 border-[#000000] p-3 text-center text-sm font-bold">
           Açıklama:
         </div>
+
         <div className="w-full">
-          <TextArea
-            onChange={handleValues}
-            id="description"
-            name="description"
-            placeholder=""
-            extra="!rounded-none !border-[#000000]"
-            rows={1}
-            value={values?.description}
-          />
+          {variant && variant === 'value' ? (
+            <div className="min-h-[46px] border  border-[#000000] px-2 py-2 text-sm">
+              {values?.description}
+            </div>
+          ) : (
+            <TextArea
+              onChange={handleValues}
+              id="description"
+              name="description"
+              placeholder=""
+              extra="!rounded-none !border-[#000000]"
+              rows={1}
+              value={values?.description}
+            />
+          )}
         </div>
       </div>
 
@@ -224,15 +271,17 @@ export default function Unaccept(props: {
         </div>
       </div>
 
-      <div className="flex gap-4">
-        <Button
-          loading={isSubmittingUnaccept}
-          text="Kaydet"
-          extra="w-[60px] bg-red-700 h-[40px]"
-          onClick={handleSubmit}
-        />
-        <Button text="GERİ" extra="w-[60px] h-[40px]" onClick={handleClose} />
-      </div>
+      {variant && variant === 'input' ? (
+        <div className="flex gap-4">
+          <Button
+            loading={isSubmittingUnaccept}
+            text="Kaydet"
+            extra="w-[60px] bg-red-700 h-[40px]"
+            onClick={handleSubmit}
+          />
+          <Button text="GERİ" extra="w-[60px] h-[40px]" onClick={handleClose} />
+        </div>
+      ) : null}
     </div>
   );
 }

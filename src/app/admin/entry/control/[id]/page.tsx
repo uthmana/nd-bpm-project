@@ -9,6 +9,7 @@ import {
   updateFaultControl,
   addUnacceptable,
   updateUnacceptable,
+  deleteUnacceptable,
 } from 'app/lib/apiRequest';
 import { useParams, useRouter } from 'next/navigation';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
@@ -66,7 +67,6 @@ export default function EntryControl() {
 
   useEffect(() => {
     if (isSubmitControl) {
-      console.log({ controlValues });
       handleSubmit(controlValues);
     }
   }, [isSubmitControl, controlValues]);
@@ -79,6 +79,22 @@ export default function EntryControl() {
       setIsShowPopUp(true);
       return;
     }
+
+    if (values.result !== 'ACCEPT' && !isSubmitControl) {
+      setControlValues(val);
+      setUnacceptableFormData({ fault, unacceptable });
+      setIsShowPopUp(true);
+      return;
+    }
+
+    //Handle unacceptable when accepted
+    if (values.result === 'ACCEPT' && unacceptable?.id) {
+      const { status, data } = await deleteUnacceptable(unacceptable?.id);
+      if (status === 200) {
+        toast.success('Uygunsuz kayıt güncelleme işlemi başarılı.');
+      }
+    }
+
     setIsSubmitting(true);
     if (isUpdate) {
       const resData: any = await updateFaultControl({

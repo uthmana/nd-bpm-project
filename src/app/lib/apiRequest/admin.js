@@ -336,3 +336,7 @@ export async function addUnacceptable(payload) {
 export async function updateUnacceptable(payload) {
   return fetchAPI(`unacceptable/${payload.id}`, 'put', payload);
 }
+
+export async function deleteUnacceptable(id) {
+  return fetchAPI(`unacceptable/${id}`, 'delete');
+}

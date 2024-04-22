@@ -19,6 +19,7 @@ import { MdAdd, MdPrint } from 'react-icons/md';
 import FileViewer from 'components/fileViewer';
 import DetailHeader from 'components/detailHeader';
 import Barcode from 'react-jsbarcode';
+import Unaccept from 'components/forms/unaccept';
 
 export default function Edit() {
   const router = useRouter();
@@ -27,6 +28,7 @@ export default function Edit() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fault, setFault] = useState([] as any);
   const [faultControl, setFaultControl] = useState({} as any);
+  const [unacceptable, setUnacceptable] = useState({} as any);
   const [isLoading, setIsLoading] = useState(false);
 
   const detailData = {
@@ -43,6 +45,7 @@ export default function Edit() {
       if (status === 200) {
         setFault(data);
         setFaultControl(data?.faultControl[0]);
+        setUnacceptable({ fault: data, unacceptable: data?.unacceptable[0] });
         setIsLoading(false);
         return;
       }
@@ -143,6 +146,10 @@ export default function Edit() {
     printWindow.print();
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
     <div className="w-full">
       {isLoading ? (
@@ -150,80 +157,103 @@ export default function Edit() {
       ) : (
         <>
           <DetailHeader {...detailData} />
-          <Card extra="my-4 mx-auto mt-4 w-full rounded-2xl px-8 pt-10 bg-white dark:bg-[#111c44] dark:text-white">
-            <div className="mb-4 flex w-full justify-between">
-              <h2 className="mb-4 text-2xl font-bold">Ürün Bilgileri</h2>
-              <Button
-                extra={`px-4 h-[40px] max-w-fit`}
-                onClick={handleBarcodePrint}
-                text="BARKODU YAZDIR"
-                icon={<MdPrint className="mr-1 h-5 w-5" />}
-              />
-            </div>
-            <div className="mb-10 grid w-full grid-cols-2 gap-2  md:grid-cols-3 lg:grid-cols-4">
-              {fault && fault.id
-                ? Object.entries(fault).map(([key, val]: any, index) => {
-                    if (faultInfo.includes(key)) {
-                      return (
-                        <div
-                          key={index}
-                          className="mb-5 flex flex-col flex-nowrap"
-                        >
-                          <h4 className="mx-1 italic">{infoTranslate[key]}</h4>
-                          {renderProductInfo(key, val)}
-                        </div>
-                      );
-                    }
-                  })
-                : null}
-            </div>
-          </Card>
 
-          <Card extra="mx-auto mt-4 w-full rounded-2xl px-8 pt-10 bg-white dark:bg-[#111c44] dark:text-white">
-            <div className="mb-8 flex justify-between gap-3">
-              <h2 className="text-2xl font-bold">
-                Ürün Giriş Kontrol Bilgileri
-              </h2>
-
-              {session?.user?.role === 'SUPER' ||
-              session?.user?.role === 'ADMIN' ? (
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 print:hidden">
+            <Card extra="my-4 mx-auto mt-4 w-full rounded-2xl px-8 pt-10 bg-white dark:bg-[#111c44] dark:text-white">
+              <div className="mb-4 flex w-full justify-between">
+                <h2 className="mb-4 text-2xl font-bold">Ürün Bilgileri</h2>
                 <Button
-                  icon={<MdAdd className="mr-1 h-5 w-5" />}
-                  extra="max-w-fit px-4  h-[40px]"
-                  text={
-                    faultControl?.id
-                      ? 'ÜRÜN KONTROLÜ DÜZENLE'
-                      : 'ÜRÜN KONTROLÜ YAP'
-                  }
-                  onClick={handlefaultControl}
+                  extra={`px-4 h-[40px] max-w-fit`}
+                  onClick={handleBarcodePrint}
+                  text="BARKODU YAZDIR"
+                  icon={<MdPrint className="mr-1 h-5 w-5" />}
                 />
-              ) : null}
-            </div>
-
-            {faultControl?.id ? (
+              </div>
               <div className="mb-10 grid w-full grid-cols-2 gap-2  md:grid-cols-3 lg:grid-cols-4">
-                {Object.entries(faultControl).map(([key, val]: any, index) => {
-                  if (faultControlInfo.includes(key)) {
-                    return (
-                      <div
-                        key={index}
-                        className="mb-5 flex flex-col flex-nowrap"
-                      >
-                        <h4 className="mb-0 italic">
-                          {faultControlTranslate[key]}
-                        </h4>
-                        {renderValues(key, val)}
-                      </div>
-                    );
-                  }
-                })}
+                {fault && fault.id
+                  ? Object.entries(fault).map(([key, val]: any, index) => {
+                      if (faultInfo.includes(key)) {
+                        return (
+                          <div
+                            key={index}
+                            className="mb-5 flex flex-col flex-nowrap"
+                          >
+                            <h4 className="mx-1 italic">
+                              {infoTranslate[key]}
+                            </h4>
+                            {renderProductInfo(key, val)}
+                          </div>
+                        );
+                      }
+                    })
+                  : null}
               </div>
-            ) : (
-              <div className="flex h-32 w-full items-center justify-center opacity-75">
-                Henüz Ürün Kontrolü yapılmadı
+            </Card>
+
+            <Card extra="mx-auto mb-4 mt-4 w-full rounded-2xl px-8 pt-10 bg-white dark:bg-[#111c44] dark:text-white">
+              <div className="mb-8 flex justify-between gap-3">
+                <h2 className="text-2xl font-bold">
+                  Ürün Giriş Kontrol Bilgileri
+                </h2>
+
+                {session?.user?.role === 'SUPER' ||
+                session?.user?.role === 'ADMIN' ? (
+                  <Button
+                    icon={<MdAdd className="mr-1 h-5 w-5" />}
+                    extra="max-w-fit px-4  h-[40px]"
+                    text={
+                      faultControl?.id
+                        ? 'ÜRÜN KONTROLÜ DÜZENLE'
+                        : 'ÜRÜN KONTROLÜ YAP'
+                    }
+                    onClick={handlefaultControl}
+                  />
+                ) : null}
               </div>
-            )}
-          </Card>
+
+              {faultControl?.id ? (
+                <div className="mb-10 grid w-full grid-cols-2 gap-2  md:grid-cols-3 lg:grid-cols-4">
+                  {Object.entries(faultControl).map(
+                    ([key, val]: any, index) => {
+                      if (faultControlInfo.includes(key)) {
+                        return (
+                          <div
+                            key={index}
+                            className="mb-5 flex flex-col flex-nowrap"
+                          >
+                            <h4 className="mb-0 italic">
+                              {faultControlTranslate[key]}
+                            </h4>
+                            {renderValues(key, val)}
+                          </div>
+                        );
+                      }
+                    },
+                  )}
+                </div>
+              ) : (
+                <div className="flex h-32 w-full items-center justify-center opacity-75">
+                  Henüz Ürün Kontrolü yapılmadı
+                </div>
+              )}
+            </Card>
+          </div>
+
+          {fault?.unacceptable?.length > 0 ? (
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+              <div className="page-break relative min-h-[800px] w-full bg-white px-7 py-5 print:absolute  print:top-0 print:z-[99999] print:min-h-screen print:w-full print:pl-0 print:pr-8">
+                <Unaccept formData={unacceptable} variant="value" />
+              </div>
+              <div className="!max-w-fit bg-white px-7 py-5 ">
+                <Button
+                  extra={`px-4 h-[40px] !max-w-fit`}
+                  onClick={handlePrint}
+                  text="UYGUNSUZ YAZDIR"
+                  icon={<MdPrint className="mr-1 h-5 w-5" />}
+                />
+              </div>
+            </div>
+          ) : null}
         </>
       )}
     </div>

@@ -19,8 +19,9 @@ const Radio = (props: {
   id?: string;
   name?: string;
   value?: string;
+  disabled?: boolean;
 }) => {
-  const { checked, color, id, name, value, ...rest } = props;
+  const { checked, color, id, name, value, disabled, ...rest } = props;
   return (
     <input
       id={id}
@@ -28,6 +29,7 @@ const Radio = (props: {
       type="radio"
       checked={checked}
       value={value}
+      disabled={disabled}
       className={`before:contet[""] relative h-5 w-5 cursor-pointer appearance-none rounded-full
        border !border-gray-200 transition-all duration-[0.2s] before:absolute before:left-[50%]
        before:top-[3px] before:h-3 before:w-3 before:translate-x-[-50%] before:rounded-full before:transition-all before:duration-[0.2s] dark:!border-gray-800
