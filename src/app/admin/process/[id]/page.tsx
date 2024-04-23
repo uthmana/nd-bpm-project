@@ -20,6 +20,8 @@ import { MdAdd, MdPrint } from 'react-icons/md';
 import FileViewer from 'components/fileViewer';
 import DetailHeader from 'components/detailHeader';
 import Barcode from 'react-jsbarcode';
+import Unaccept from 'components/forms/unaccept';
+import { UnacceptInfo } from 'app/localTypes/table-types';
 
 export default function EntryControl() {
   const router = useRouter();
@@ -33,6 +35,7 @@ export default function EntryControl() {
   const [finalControl, setFinalControl] = useState([]);
   const [isShowPopUp, setIsShowPopUp] = useState(false);
   const { data: session } = useSession();
+  const [unacceptable, setUnacceptable] = useState({} as any);
 
   const productInfo = [
     'product_barcode',
@@ -70,6 +73,7 @@ export default function EntryControl() {
       setTechParams(data?.technicalParams);
       setMachineParams(data.machineParams.map((item) => item.param_name));
       setFinalControl(data?.finalControl);
+      setUnacceptable({ fault: data, unacceptable: data?.unacceptable[0] });
       setIsloading(false);
       return;
     }
@@ -260,6 +264,10 @@ export default function EntryControl() {
     printWindow.print();
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
     <div className="mx-auto mt-4 max-w-full rounded-2xl px-2">
       {isLoading ? (
@@ -267,7 +275,7 @@ export default function EntryControl() {
       ) : (
         <>
           <DetailHeader {...detailData} />
-          <div className="flex flex-col gap-4">
+          <div className="mb-4 flex flex-col gap-4 ">
             {/* Product Info */}
             <Card extra="w-full px-8 pt-4 pb-8">
               <div className="mb-4 flex w-full justify-between">
@@ -288,13 +296,15 @@ export default function EntryControl() {
                           <h2 className="mb-0 font-bold capitalize italic">
                             {infoTranslate[key]}
                           </h2>
-                          <div id="product_barcode" className="max-w-[200px]">
-                            <Barcode
-                              className="h-full w-full"
-                              value={value.toString()}
-                              options={{ format: 'code128' }}
-                            />
-                          </div>
+                          {value ? (
+                            <div id="product_barcode" className="max-w-[200px]">
+                              <Barcode
+                                className="h-full w-full"
+                                value={value.toString()}
+                                options={{ format: 'code128' }}
+                              />
+                            </div>
+                          ) : null}
                         </div>
                       );
                     }
@@ -313,7 +323,7 @@ export default function EntryControl() {
             </Card>
 
             {/* Tecknical Params */}
-            <Card extra="w-full px-8 pt-4 pb-8">
+            <Card extra="w-full px-8 pt-4 pb-8 print:hidden">
               <div className="w-full">
                 <div className="my-5 flex justify-between">
                   <h2 className="text-2xl font-bold">Frekans Bilgileri</h2>
@@ -367,9 +377,11 @@ export default function EntryControl() {
                 </div>
               </div>
             </Card>
+          </div>
 
+          <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
             {/* Form  COntrol */}
-            <Card extra="w-full px-8 pt-4 pb-8">
+            <Card extra="w-full px-8 pt-4 pb-8 print:hidden">
               <div className="w-full">
                 <div className="my-5 flex justify-between">
                   <h2 className="text-2xl font-bold">
@@ -418,6 +430,24 @@ export default function EntryControl() {
                 )}
               </div>
             </Card>
+            {process?.unacceptable?.length > 0 ? (
+              <div className="grid grid-cols-1">
+                <div className="mb-2 flex w-full justify-between bg-white px-7 py-5 ">
+                  <h2 className="text-2xl font-bold">
+                    Uygunsuz Ürün/Hizmet Formu
+                  </h2>
+                  <Button
+                    extra={`px-4 h-[40px] !max-w-fit`}
+                    onClick={handlePrint}
+                    text="UYGUNSUZ YAZDIR"
+                    icon={<MdPrint className="mr-1 h-5 w-5" />}
+                  />
+                </div>
+                <div className="print:page-break relative min-h-[800px] w-full bg-white px-7 py-5 print:absolute  print:left-0 print:top-0 print:z-[99999] print:min-h-screen print:w-full">
+                  <Unaccept formData={unacceptable} variant="value" />
+                </div>
+              </div>
+            ) : null}
           </div>
         </>
       )}

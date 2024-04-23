@@ -178,6 +178,8 @@ model Unacceptable {
   updatedBy               String?
   Fault                   Fault?                  @relation(fields: [faultId], references: [id])
   faultId                 String?                 @unique
+  Process                 Process?                @relation(fields: [processId], references: [id])
+  processId               String?                 @unique
 }
 
 model Process {
@@ -205,6 +207,7 @@ model Process {
   status                     ProcessStatus        @default(PENDING)
   technicalParams            TechnicalParameter[]
   finalControl               FinalControl[]
+  unacceptable               Unacceptable[]
   Invoice                    Invoice?             @relation(fields: [invoiceId], references: [id])
   invoiceId                  String?
 }

@@ -21,15 +21,7 @@ import Popup from 'components/popup';
 import Button from 'components/button/button';
 import UnacceptForm from 'components/forms/unaccept';
 import SignaturePad from 'components/signaturePad';
-
-type UnacceptInfo = {
-  unacceptableStage: string;
-  unacceptableDescription: string;
-  unacceptableAction: string;
-  result: string;
-  description: string;
-  id: string;
-};
+import { UnacceptInfo } from 'app/localTypes/table-types';
 
 export default function EntryControl() {
   const router = useRouter();
@@ -75,14 +67,10 @@ export default function EntryControl() {
     const [values, isUpdate] = val;
     if (values.result !== 'ACCEPT' && !isSubmitControl) {
       setControlValues(val);
-      setUnacceptableFormData({ fault, unacceptable });
-      setIsShowPopUp(true);
-      return;
-    }
-
-    if (values.result !== 'ACCEPT' && !isSubmitControl) {
-      setControlValues(val);
-      setUnacceptableFormData({ fault, unacceptable });
+      setUnacceptableFormData({
+        fault,
+        unacceptable: { ...unacceptable, createdBy: session?.user?.name },
+      });
       setIsShowPopUp(true);
       return;
     }

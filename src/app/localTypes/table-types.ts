@@ -181,3 +181,12 @@ export type MainTable = {
   onControl: (e: any) => void;
   searchValue: string;
 };
+
+export type UnacceptInfo = {
+  unacceptableStage: string;
+  unacceptableDescription: string;
+  unacceptableAction: string;
+  result: string;
+  description: string;
+  id: string;
+};

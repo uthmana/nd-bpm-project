@@ -27,6 +27,7 @@ type UnacceptInfo = {
   unacceptableAction: string;
   result: string;
   description: string;
+  createdBy: string;
   id: string;
 };
 
@@ -98,10 +99,10 @@ export default function Unaccept(props: {
       </div>
 
       <div className="mb-3 flex justify-between gap-3">
-        <div className="flex w-1/2 flex-col">
+        <div className="flex w-1/2 flex-col gap-1">
           <div className="flex  text-sm font-semibold">
-            <span className="w-[100px] font-normal">Müşteri :</span>
-            <span className="text-xs capitalize">
+            <span className="w-[80px] font-normal">Müşteri :</span>
+            <span className="max-w-[160px] text-xs capitalize">
               {fault?.customerName?.toLocaleLowerCase()}
             </span>
           </div>
@@ -240,14 +241,14 @@ export default function Unaccept(props: {
         )}
       </div>
 
-      <div className="mb-5 flex w-full items-center">
-        <div className="w-[100px] border border-r-0 border-[#000000] p-3 text-center text-sm font-bold">
+      <div className="mb-5 flex w-full flex-nowrap">
+        <div className="flex min-h-[46px] border border-r-0 border-[#000000] p-3 text-center text-sm font-bold">
           Açıklama:
         </div>
 
-        <div className="w-full">
+        <div className="h-auto w-full">
           {variant && variant === 'value' ? (
-            <div className="min-h-[46px] border  border-[#000000] px-2 py-2 text-sm">
+            <div className="flex min-h-[46px] items-center border border-[#000000] px-2 py-2 text-sm">
               {values?.description}
             </div>
           ) : (
@@ -267,7 +268,7 @@ export default function Unaccept(props: {
       <div className="mb-5 flex w-full justify-end">
         <div className="mr-5 flex flex-col gap-2 text-sm">
           <div>Onaylayan / QC</div>
-          <div className="font-bold">{fault?.createdBy}</div>
+          <div className="font-bold">{unacceptable?.createdBy}</div>
         </div>
       </div>
 

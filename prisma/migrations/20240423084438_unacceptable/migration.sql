@@ -208,6 +208,7 @@ CREATE TABLE "Unacceptable" (
     "createdBy" TEXT,
     "updatedBy" TEXT,
     "faultId" TEXT,
+    "processId" TEXT,
 
     CONSTRAINT "Unacceptable_pkey" PRIMARY KEY ("id")
 );
@@ -485,6 +486,9 @@ CREATE UNIQUE INDEX "FaultControl_faultId_key" ON "FaultControl"("faultId");
 CREATE UNIQUE INDEX "Unacceptable_faultId_key" ON "Unacceptable"("faultId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Unacceptable_processId_key" ON "Unacceptable"("processId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Process_faultId_key" ON "Process"("faultId");
 
 -- CreateIndex
@@ -510,6 +514,9 @@ ALTER TABLE "FaultControl" ADD CONSTRAINT "FaultControl_faultId_fkey" FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE "Unacceptable" ADD CONSTRAINT "Unacceptable_faultId_fkey" FOREIGN KEY ("faultId") REFERENCES "Fault"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Unacceptable" ADD CONSTRAINT "Unacceptable_processId_fkey" FOREIGN KEY ("processId") REFERENCES "Process"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Process" ADD CONSTRAINT "Process_invoiceId_fkey" FOREIGN KEY ("invoiceId") REFERENCES "Invoice"("id") ON DELETE SET NULL ON UPDATE CASCADE;

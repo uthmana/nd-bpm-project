@@ -158,8 +158,8 @@ export default function Edit() {
         <>
           <DetailHeader {...detailData} />
 
-          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 print:hidden">
-            <Card extra="my-4 mx-auto mt-4 w-full rounded-2xl px-8 pt-10 bg-white dark:bg-[#111c44] dark:text-white">
+          <div className="mb-4 grid grid-cols-1 gap-4 xl:grid-cols-2 print:hidden">
+            <Card extra="mx-auto  w-full rounded-2xl px-8 pt-10 bg-white dark:bg-[#111c44] dark:text-white">
               <div className="mb-4 flex w-full justify-between">
                 <h2 className="mb-4 text-2xl font-bold">Ürün Bilgileri</h2>
                 <Button
@@ -190,7 +190,7 @@ export default function Edit() {
               </div>
             </Card>
 
-            <Card extra="mx-auto mb-4 mt-4 w-full rounded-2xl px-8 pt-10 bg-white dark:bg-[#111c44] dark:text-white">
+            <Card extra="mx-auto w-full rounded-2xl px-8 pt-10 bg-white dark:bg-[#111c44] dark:text-white">
               <div className="mb-8 flex justify-between gap-3">
                 <h2 className="text-2xl font-bold">
                   Ürün Giriş Kontrol Bilgileri
@@ -240,17 +240,22 @@ export default function Edit() {
           </div>
 
           {fault?.unacceptable?.length > 0 ? (
-            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-              <div className="page-break relative min-h-[800px] w-full bg-white px-7 py-5 print:absolute  print:top-0 print:z-[99999] print:min-h-screen print:w-full print:pl-0 print:pr-8">
-                <Unaccept formData={unacceptable} variant="value" />
-              </div>
-              <div className="!max-w-fit bg-white px-7 py-5 ">
-                <Button
-                  extra={`px-4 h-[40px] !max-w-fit`}
-                  onClick={handlePrint}
-                  text="UYGUNSUZ YAZDIR"
-                  icon={<MdPrint className="mr-1 h-5 w-5" />}
-                />
+            <div className="grid grid-cols-1 gap-2 xl:grid-cols-2">
+              <div>
+                <div className="mb-2 flex justify-between gap-3 bg-white px-7 py-5">
+                  <h2 className="text-2xl font-bold">
+                    Uygunsuz Ürün/Hizmet Formu
+                  </h2>
+                  <Button
+                    extra={`px-4 h-[40px] !max-w-fit`}
+                    onClick={handlePrint}
+                    text="UYGUNSUZ YAZDIR"
+                    icon={<MdPrint className="mr-1 h-5 w-5" />}
+                  />
+                </div>
+                <div className="page-break relative min-h-[800px] w-full bg-white px-7 py-5 print:absolute  print:top-0 print:z-[99999] print:min-h-screen print:w-full print:pl-0 print:pr-8">
+                  <Unaccept formData={unacceptable} variant="value" />
+                </div>
               </div>
             </div>
           ) : null}

@@ -11,6 +11,7 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
       include: {
         technicalParams: true,
         finalControl: true,
+        unacceptable: true,
       },
     });
 
@@ -28,6 +29,7 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
 
     return NextResponse.json({ ...process, machineParams }, { status: 200 });
   } catch (e) {
+    console.log(e);
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
       e instanceof Prisma.PrismaClientUnknownRequestError ||

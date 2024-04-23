@@ -6,6 +6,9 @@ import {
   getProcessById,
   addProcessControl,
   updateProcessControl,
+  updateUnacceptable,
+  addUnacceptable,
+  deleteUnacceptable,
 } from 'app/lib/apiRequest';
 import { useParams, useRouter } from 'next/navigation';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
@@ -13,6 +16,17 @@ import ProcessControlForm from 'components/forms/processControl';
 import { useSession } from 'next-auth/react';
 import Card from 'components/card';
 import { log } from 'util';
+import Popup from 'components/popup';
+import UnacceptForm from 'components/forms/unaccept';
+
+type UnacceptInfo = {
+  unacceptableStage: string;
+  unacceptableDescription: string;
+  unacceptableAction: string;
+  result: string;
+  description: string;
+  id: string;
+};
 
 export default function EntryControl() {
   const router = useRouter();
@@ -23,6 +37,13 @@ export default function EntryControl() {
   const [processControl, setProcessControl] = useState({} as any);
   const { data: session } = useSession();
 
+  const [isShowPopUp, setIsShowPopUp] = useState(false);
+  const [controlValues, setControlValues] = useState([]);
+  const [unacceptable, setUnacceptable] = useState({} as UnacceptInfo);
+  const [unacceptableFormData, setUnacceptableFormData] = useState({});
+  const [isSubmitControl, setIsSubmitControl] = useState(false);
+  const [isSubmittingUnaccept, setIsSubmittingUnaccept] = useState(false);
+
   useEffect(() => {
     const getSingleProcess = async () => {
       setIsloading(true);
@@ -30,6 +51,12 @@ export default function EntryControl() {
       if (status === 200) {
         setProcess(data);
         setProcessControl(data?.finalControl[0]);
+        setUnacceptable(data?.unacceptable[0]);
+        setUnacceptableFormData({
+          fault: data,
+          unacceptable: data?.unacceptable[0],
+        });
+
         setIsloading(false);
         return;
       }
@@ -41,8 +68,33 @@ export default function EntryControl() {
     }
   }, [queryParams?.id]);
 
+  useEffect(() => {
+    if (isSubmitControl) {
+      handleSubmit(controlValues);
+    }
+  }, [isSubmitControl, controlValues]);
+
   const handleSubmit = async (val) => {
     const [values, isUpdate] = val;
+
+    if (values.result !== 'ACCEPT' && !isSubmitControl) {
+      setControlValues(val);
+      setUnacceptableFormData({
+        fault: process,
+        unacceptable: { ...unacceptable, createdBy: session?.user?.name },
+      });
+      setIsShowPopUp(true);
+      return;
+    }
+
+    //Handle unacceptable when accepted
+    if (values.result === 'ACCEPT' && unacceptable?.id) {
+      const { status, data } = await deleteUnacceptable(unacceptable?.id);
+      if (status === 200) {
+        toast.success('Uygunsuz kayıt güncelleme işlemi başarılı.');
+      }
+    }
+
     setIsSubmitting(true);
     if (isUpdate) {
       const resData: any = await updateProcessControl({
@@ -94,6 +146,50 @@ export default function EntryControl() {
     }
   };
 
+  const onSaveUnacceptable = async (val) => {
+    setIsSubmitControl(false);
+    setIsSubmittingUnaccept(true);
+
+    //handle Update
+    if (unacceptable?.id) {
+      const { status, data } = await updateUnacceptable({
+        ...val,
+        processId: process.id,
+        id: unacceptable?.id,
+        updatedBy: session?.user?.name,
+      });
+
+      if (status === 200) {
+        setIsShowPopUp(false);
+        toast.success('Uygunsuz kayıt güncelleme işlemi başarılı.');
+        setIsSubmitControl(true);
+        setIsSubmittingUnaccept(false);
+      }
+
+      return;
+    }
+
+    //handle new Unacceptable
+    const { status, data } = await addUnacceptable({
+      ...val,
+      processId: process.id,
+      createdBy: session?.user?.name,
+    });
+    if (status === 200) {
+      setIsShowPopUp(false);
+      toast.success('Uygunsuz kayıt işlemi başarılı.');
+      setIsSubmitControl(true);
+      setIsSubmittingUnaccept(false);
+    }
+
+    return;
+  };
+
+  const handleClose = () => {
+    setIsSubmitControl(false);
+    setIsShowPopUp(false);
+  };
+
   return (
     <Card className="mx-auto mt-4 max-w-[700px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
       {isLoading ? (
@@ -107,6 +203,18 @@ export default function EntryControl() {
           onSubmit={(...val) => handleSubmit(val)}
         />
       )}
+
+      <Popup
+        show={isShowPopUp}
+        extra="flex flex-col gap-3 !top-[50%] py-6 px-8 !w-[90%] md:!w-[600px] !rounded-sm"
+      >
+        <UnacceptForm
+          formData={unacceptableFormData as any}
+          handleClose={handleClose}
+          onSaveUnacceptable={(val) => onSaveUnacceptable(val)}
+          isSubmittingUnaccept={isSubmittingUnaccept}
+        />
+      </Popup>
     </Card>
   );
 }
