@@ -172,3 +172,27 @@ export const generateAndSendPDF = async () => {
     return { status: error.status, message: error.message };
   }
 };
+
+export const formatTechParams = (arr, val) => {
+  if (!val) return arr;
+  const value = arr.map((item) => {
+    if (
+      item.param_name ===
+      Object.keys(val).find((key) => val[key] === val[item.param_name])
+    ) {
+      return { ...item, value: val[item.param_name] };
+    }
+    return item;
+  });
+  return value;
+};
+
+export const resetDafaultParams = (arr) => {
+  const result = {};
+  arr.forEach((item) => {
+    if (item.value) {
+      result[item.param_name] = item.value;
+    }
+  });
+  return result;
+};

@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-table';
 import { FooterCell } from './footerCell';
 import { columns } from './column';
+import { formatDateTime } from 'utils';
 
 type Student = {
   studentId: number;
@@ -80,8 +81,13 @@ const TechParamsTable = ({
       addRow: () => {
         let val = {};
         const rowKeys = filteredColumns.map((item: any) => {
+          let defaultVal = '';
           if (item.accessorKey !== undefined) {
-            return (val[item.accessorKey] = '');
+            //TODO handle all default values
+            if (item.accessorKey === 'Ort_Uretim_saat') {
+              defaultVal = formatDateTime(new Date())?.slice(11);
+            }
+            return (val[item.accessorKey] = defaultVal);
           }
         });
         onAddRow(val);

@@ -18,6 +18,7 @@ export type FaultObj = {
   faultControl?: any;
   product_name?: string;
   product_barcode?: string;
+  defaultTechParameter?: any;
 };
 
 export type InvoiceObj = {

@@ -43,7 +43,7 @@ export async function PUT(req: Request) {
         { status: 403 },
       );
     }
-    const result: Fault = await req.json();
+    const result: Fault | any = await req.json();
 
     const { customerName, productCode, application, product_barcode } = result;
 
@@ -54,8 +54,17 @@ export async function PUT(req: Request) {
       );
     }
 
+    const tempDefaultParams = result.defaultTechParameter;
+    let tempFault: any = { ...result };
+    delete tempFault.defaultTechParameter;
+
     const fault = await prisma.fault.create({
-      data: result,
+      data: {
+        ...tempFault,
+        defaultTechParameter: {
+          create: tempDefaultParams,
+        },
+      },
     });
 
     if (fault) {

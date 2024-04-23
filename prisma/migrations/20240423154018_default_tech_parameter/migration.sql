@@ -339,6 +339,7 @@ CREATE TABLE "TechnicalParameter" (
     "updatedBy" TEXT,
     "machineId" TEXT NOT NULL,
     "processId" TEXT,
+    "faultId" TEXT,
 
     CONSTRAINT "TechnicalParameter_pkey" PRIMARY KEY ("id")
 );
@@ -532,6 +533,9 @@ ALTER TABLE "MachineParams" ADD CONSTRAINT "MachineParams_machineId_fkey" FOREIG
 
 -- AddForeignKey
 ALTER TABLE "TechnicalParameter" ADD CONSTRAINT "TechnicalParameter_processId_fkey" FOREIGN KEY ("processId") REFERENCES "Process"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TechnicalParameter" ADD CONSTRAINT "TechnicalParameter_faultId_fkey" FOREIGN KEY ("faultId") REFERENCES "Fault"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

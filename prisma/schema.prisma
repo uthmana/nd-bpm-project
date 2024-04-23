@@ -109,9 +109,9 @@ model Stock {
 }
 
 model Fault {
-  id                         String         @id @default(cuid())
+  id                         String               @id @default(cuid())
   customerName               String?
-  arrivalDate                DateTime?      @default(now())
+  arrivalDate                DateTime?            @default(now())
   invoiceDate                DateTime?
   product                    String?
   product_barcode            String?
@@ -122,15 +122,16 @@ model Fault {
   standard                   String?
   color                      String?
   faultDescription           String?
-  status                     FaultStatus    @default(PENDING)
+  status                     FaultStatus          @default(PENDING)
   technicalDrawingAttachment String?
   faultControl               FaultControl[]
   unacceptable               Unacceptable[]
+  defaultTechParameter       TechnicalParameter[]
   customerId                 String?
-  customer                   Customer?      @relation(fields: [customerId], references: [id])
-  faultControlId             String?        @unique
-  createdAt                  DateTime       @default(now())
-  updatedAt                  DateTime?      @updatedAt
+  customer                   Customer?            @relation(fields: [customerId], references: [id])
+  faultControlId             String?              @unique
+  createdAt                  DateTime             @default(now())
+  updatedAt                  DateTime?            @updatedAt
   createdBy                  String?
   updatedBy                  String?
   Stock                      Stock[]
@@ -288,7 +289,6 @@ model MachineParams {
 model TechnicalParameter {
   id                     String    @id @default(cuid())
   Ort_Uretim_saat        String?
-  Makine_secimi          String?
   Viskozite              String?
   Besleme_Tipi           String?
   Besleme_Hizi           String?
@@ -315,6 +315,8 @@ model TechnicalParameter {
   machineId              String
   Process                Process?  @relation(fields: [processId], references: [id], onDelete: Cascade)
   processId              String?
+  Fault                  Fault?    @relation(fields: [faultId], references: [id])
+  faultId                String?
 }
 
 model Invoice {

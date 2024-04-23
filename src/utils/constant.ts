@@ -12,85 +12,99 @@ export const techParameters = [
     display_name: 'Ort. Üretim/saat',
   },
   {
-    param_name: 'Makine_secimi',
-    display_name: 'Makine Seçimi',
-  },
-  {
     param_name: 'Viskozite',
     display_name: 'Viskozite',
+    value: '',
   },
   {
     param_name: 'Besleme_Tipi',
     display_name: 'Besleme Tipi',
+    value: '',
   },
   {
     param_name: 'Besleme_Hizi',
     display_name: 'Besleme Hızı',
+    value: '',
   },
   {
     param_name: 'Makine_Hizi',
     display_name: 'Makine Hızı',
+    value: '',
   },
   {
     param_name: 'Hava_Basinci',
     display_name: 'Hava Basıncı',
+    value: '',
   },
   {
     param_name: 'Firin_Bant_Hizi',
     display_name: 'Fırın Bant Hızı',
+    value: '',
   },
   {
     param_name: 'Firin_Sicakligi',
     display_name: 'Fırın Sıcaklığı',
+    value: '',
   },
   {
     param_name: 'Induksiyon_kW',
     display_name: 'İndüksiyon kW',
+    value: '',
   },
   {
     param_name: 'Induksiyon_Volts',
     display_name: 'İndüksiyon Volts',
+    value: '',
   },
   {
     param_name: 'Induksiyon_kHz',
     display_name: 'İndüksiyon kHz',
+    value: '',
   },
-
   {
     param_name: 'Patch_Vibrasyon_hizi',
     display_name: 'Patch Vibrasyon Hızı',
+    value: '',
   },
   {
     param_name: 'Patch_Hava_Basinci',
     display_name: 'Patch Hava Basıncı',
+    value: '',
   },
   {
     param_name: 'Patch_Toz_yukleme_Hizi',
     display_name: 'Patch Toz Yükleme Hızı',
+    value: '',
   },
   {
     param_name: 'Teach_Ayari',
     display_name: 'Teach Ayarı',
+    value: '',
   },
   {
     param_name: 'Delay_Ayari',
     display_name: 'Delay Ayarı',
+    value: '',
   },
   {
     param_name: 'Purge_Ayari',
     display_name: 'Purge Ayarı',
+    value: '',
   },
   {
     param_name: 'Testere_secimi',
     display_name: 'Testere Seçimi',
+    value: '',
   },
   {
     param_name: 'Kesim_Mesafesi',
     display_name: 'Kesim Mesafesi',
+    value: '',
   },
   {
     param_name: 'Yuva_Boyutu',
     display_name: 'Yuva Boyutu',
+    value: '',
   },
 ];
 

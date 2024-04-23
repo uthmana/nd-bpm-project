@@ -8,7 +8,11 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     const id = route.params.id;
     const fault: Fault = await prisma.fault.findUnique({
       where: { id: id },
-      include: { faultControl: true, unacceptable: true },
+      include: {
+        faultControl: true,
+        unacceptable: true,
+        defaultTechParameter: true,
+      },
     });
     return NextResponse.json(fault, { status: 200 });
   } catch (e) {
@@ -28,7 +32,7 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
 export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
     const id = route.params.id;
-    const result: Fault = await req.json();
+    const result: Fault | any = await req.json();
     const {
       customerName,
       productCode,
@@ -44,19 +48,27 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       );
     }
 
-    const fault: Fault = await prisma.fault.findUnique({
+    const fault: Fault | any = await prisma.fault.findUnique({
       where: { id },
     });
 
     if (!fault) {
       return NextResponse.json({ message: 'No such fault' }, { status: 401 });
     }
+
+    const { unacceptable, defaultTechParameter, ...updatedData } = result;
     const updateFault = await prisma.fault.update({
       where: {
         id: id,
       },
       data: {
-        ...result,
+        ...updatedData,
+        defaultTechParameter: {
+          update: {
+            where: { id: defaultTechParameter.id },
+            data: defaultTechParameter,
+          },
+        },
       },
     });
 
