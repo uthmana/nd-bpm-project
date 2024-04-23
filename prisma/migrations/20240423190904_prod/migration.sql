@@ -184,7 +184,7 @@ CREATE TABLE "FaultControl" (
     "quantityConfirmation" BOOLEAN,
     "dirtyThreads" BOOLEAN DEFAULT false,
     "processFrequency" TEXT,
-    "frequencyDimension" INTEGER,
+    "frequencyDimension" TEXT,
     "remarks" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
@@ -313,7 +313,6 @@ CREATE TABLE "MachineParams" (
 CREATE TABLE "TechnicalParameter" (
     "id" TEXT NOT NULL,
     "Ort_Uretim_saat" TEXT,
-    "Makine_secimi" TEXT,
     "Viskozite" TEXT,
     "Besleme_Tipi" TEXT,
     "Besleme_Hizi" TEXT,

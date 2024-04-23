@@ -156,7 +156,7 @@ model FaultControl {
   quantityConfirmation  Boolean?
   dirtyThreads          Boolean?           @default(false)
   processFrequency      String? //yazilsin-yazilmasin
-  frequencyDimension    Int?
+  frequencyDimension    String?
   remarks               String?
   createdAt             DateTime           @default(now())
   updatedAt             DateTime?          @updatedAt

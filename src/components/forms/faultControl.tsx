@@ -57,7 +57,7 @@ export default function EntryControlForm({
           quantityConfirmation: '',
           remarks: '',
           faultId: info?.id,
-          frequencyDimension: 0,
+          frequencyDimension: '',
         },
   );
 
@@ -103,9 +103,6 @@ export default function EntryControlForm({
         dirtyThreads: values.dirtyThreads?.toString() === 'true',
         quantityConfirmation:
           values.quantityConfirmation?.toString() === 'true',
-        frequencyDimension: values.frequencyDimension
-          ? parseInt(values.frequencyDimension)
-          : null,
       },
       isUpdate,
     );
@@ -287,7 +284,7 @@ export default function EntryControlForm({
               <InputField
                 label="Frekans Aralığı"
                 onChange={handleValues}
-                type="number"
+                type="text"
                 id="frequencyDimension"
                 name="frequencyDimension"
                 placeholder="0"
