@@ -41,6 +41,7 @@ export default function EntryControl() {
   const [values, setValues] = useState({} as any);
   const { data: session } = useSession();
   const [isFrequencyPopUp, setIsFrequencyPopUp] = useState(false);
+  const [defaultTechParams, setDefaultTechParams] = useState({});
 
   const productInfo = [
     'faultId',
@@ -77,6 +78,7 @@ export default function EntryControl() {
       setProcess(data);
       setTechParams(data?.technicalParams);
       setMachineParams(data.machineParams.map((item) => item.param_name));
+      setDefaultTechParams(data?.defaultTechParam || {});
       setIsloading(false);
       return;
     }
@@ -260,6 +262,7 @@ export default function EntryControl() {
                 key={isTechParams as any}
                 fields={machineParams}
                 techParams={techParams}
+                defaultTechParams={defaultTechParams}
                 status={process?.status}
                 onUpdateData={(id, val) => onUpdateData(id, val)}
                 onAddRow={(val) => onAddRow(val)}

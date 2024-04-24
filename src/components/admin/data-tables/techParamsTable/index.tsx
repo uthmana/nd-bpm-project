@@ -18,6 +18,7 @@ type Student = {
 
 const TechParamsTable = ({
   techParams = [],
+  defaultTechParams,
   fields,
   onUpdateData,
   onAddRow,
@@ -81,11 +82,20 @@ const TechParamsTable = ({
       addRow: () => {
         let val = {};
         const rowKeys = filteredColumns.map((item: any) => {
-          let defaultVal = '';
+          let defaultVal: string | unknown = '';
           if (item.accessorKey !== undefined) {
-            //TODO handle all default values
             if (item.accessorKey === 'Ort_Uretim_saat') {
               defaultVal = formatDateTime(new Date())?.slice(11);
+            }
+            if (JSON.stringify(defaultTechParams) !== '{}') {
+              Object.entries(defaultTechParams).forEach(([key, value]) => {
+                if (
+                  key === item.accessorKey &&
+                  item.accessorKey !== 'Ort_Uretim_saat'
+                ) {
+                  defaultVal = value;
+                }
+              });
             }
             return (val[item.accessorKey] = defaultVal);
           }

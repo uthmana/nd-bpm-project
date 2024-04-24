@@ -403,7 +403,7 @@ export default function Fault(props: {
         </Select>
       </div>
 
-      <div className="flex flex-col gap-3 bg-gray-50 p-4 !text-sm">
+      <div className="flex flex-col gap-3 rounded-md bg-gray-50 p-4 !text-sm dark:bg-gray-50/10">
         <h2 className="mb-3 font-bold">Teknikal Params </h2>
 
         <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
@@ -418,6 +418,7 @@ export default function Fault(props: {
                 name={item.param_name}
                 placeholder=""
                 extra="mb-2"
+                disabled={item.param_name === 'Ort_Uretim_saat'}
                 value={item.value}
               />
             );

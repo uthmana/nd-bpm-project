@@ -64,6 +64,9 @@ export const generateSKU = (
 ) => {
   const currentDate = new Date();
   const formattedDate = currentDate.toLocaleDateString('en-GB', {
+    second: '2-digit',
+    minute: '2-digit',
+    hour: '2-digit',
     day: '2-digit',
     month: '2-digit',
     year: '2-digit',
@@ -94,7 +97,10 @@ export const generateSKU = (
 
   const sku = `${cleanCustomerName.toUpperCase().slice(0, 3)}-${cleanProductName
     .toUpperCase()
-    .slice(0, 2)}-${formattedQuantity}-${formattedDate.replaceAll('/', '')}`;
+    .slice(0, 2)}-${formattedQuantity}-${formattedDate
+    .replaceAll('/', '')
+    .replaceAll(':', '')
+    .replace(',', '-')}`;
   return sku;
 };
 
@@ -195,4 +201,18 @@ export const resetDafaultParams = (arr) => {
     }
   });
   return result;
+};
+
+export const filterObject = (obj) => {
+  const filteredKeys = Object.keys(obj).filter((key) => {
+    const value = obj[key];
+    return value !== null && value !== undefined && value !== '';
+  });
+
+  const filteredObject = {};
+  filteredKeys.forEach((key) => {
+    filteredObject[key] = obj[key];
+  });
+
+  return filteredObject;
 };
