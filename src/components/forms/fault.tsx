@@ -67,6 +67,7 @@ export default function Fault(props: {
   const [customers, setCustomers] = useState([]);
   const [faultSettings, setFaultSettings] = useState({} as Settings);
   const [stockProduct, setStockProduct] = useState([]);
+  const [newProduct, setNewProduct] = useState(null);
   const [file, setFile] = useState(
     initialValues.technicalDrawingAttachment
       ? initialValues.technicalDrawingAttachment
@@ -108,6 +109,16 @@ export default function Fault(props: {
   const handleValues = (event) => {
     setError(false);
     // Handle Company chanrge
+    if (
+      event.target?.name === 'product' &&
+      event.target?.value === 'NEW_ENTRY'
+    ) {
+      setValues({ ...values, product: '' });
+      setNewProduct(event.target?.value);
+      setStockProduct([]);
+      return;
+    }
+
     if (event.target?.name === 'company_name') {
       const _customer = customers.filter(
         (item) => item.company_name === event.target?.value,
@@ -142,8 +153,7 @@ export default function Fault(props: {
       setValues({ ...values, ...selectedCustomer });
       return;
     }
-
-    // Handle Product chanrge
+    // Handle Product change
     if (event.target?.name === 'product' && stockProduct.length > 0) {
       const _stockData = stockProduct.find(
         (item) => item.id === event.target?.value,
@@ -191,7 +201,7 @@ export default function Fault(props: {
     defaultTechParameter =
       JSON.stringify(defaultTechParameter) !== '{}'
         ? { ...defaultTechParameter, machineId: 'defaultparams_' + Date.now() }
-        : null;
+        : { Ort_Uretim_saat: null, machineId: 'defaultparams_' + Date.now() };
     if (editData?.defaultTechParameter && editData?.defaultTechParameter[0]) {
       defaultTechParameter = {
         ...defaultTechParameter,
@@ -260,7 +270,7 @@ export default function Fault(props: {
           onChange={handleValues}
         />
 
-        {stockProduct.length > 0 ? (
+        {stockProduct.length > 0 && newProduct === null ? (
           <Select
             required={true}
             extra="pt-1"
@@ -270,9 +280,12 @@ export default function Fault(props: {
           >
             {stockProduct?.map((item, idx) => {
               return (
-                <option value={item.id} key={idx} selected={idx === 0}>
-                  {item.product_name}
-                </option>
+                <>
+                  <option value={item.id} key={idx} selected={idx === 0}>
+                    {item.product_name}
+                  </option>
+                  <option value={'NEW_ENTRY'}>---Yeni Ürün Ekle</option>
+                </>
               );
             })}
           </Select>

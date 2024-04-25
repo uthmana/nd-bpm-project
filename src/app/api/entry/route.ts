@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
 export async function PUT(req: Request) {
   try {
     //TODO: restrict unathorized user : only normal and admin allowed
-    const allowedRoles = ['NORMAL', 'ADMIN'];
+    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER', 'TECH'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
       return NextResponse.json(
@@ -54,7 +54,7 @@ export async function PUT(req: Request) {
       );
     }
 
-    const tempDefaultParams = result.defaultTechParameter;
+    const tempDefaultParams = result?.defaultTechParameter;
     let tempFault: any = { ...result };
     delete tempFault.defaultTechParameter;
 
