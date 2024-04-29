@@ -108,34 +108,36 @@ export default function Unaccept(props: {
           </div>
           <div className="flex  text-sm font-semibold">
             <span className="w-[80px] font-normal">Ürün Adi :</span>
-            <span className="text-xs">{fault?.product}</span>
+            <span className="max-w-[160px] text-xs">{fault?.product}</span>
           </div>
           <div className="flex  text-sm font-semibold">
             <span className="w-[80px] font-normal">Miktar :</span>
-            <span className="text-xs">{fault?.quantity}</span>
+            <span className="max-w-[160px] text-xs">{fault?.quantity}</span>
           </div>
           <div className="flex  text-sm font-semibold">
             <span className="w-[80px] font-normal">Uygulama :</span>
-            <span className="text-xs">{fault?.application}</span>
+            <span className="max-w-[160px] text-xs">{fault?.application}</span>
           </div>
         </div>
 
         <div className="flex w-1/2 flex-col">
           <div className="flex  gap-3 text-sm font-semibold">
             <span className="w-[80px] font-normal">Barkod No :</span>
-            <span className="text-xs">{fault?.product_barcode}</span>
+            <span className="max-w-[160px] text-xs">
+              {fault?.product_barcode}
+            </span>
           </div>
           <div className="flex  gap-3 text-sm font-semibold">
             <span className="w-[80px] font-normal">Ürün Kodu :</span>
-            <span className="text-xs">{fault?.productCode}</span>
+            <span className="max-w-[160px] text-xs">{fault?.productCode}</span>
           </div>
           <div className="flex gap-3 text-sm font-semibold">
             <span className="w-[80px] font-normal">Tarih :</span>
-            <span className="text-xs">{fault?.createdAt}</span>
+            <span className="max-w-[160px] text-xs">{fault?.createdAt}</span>
           </div>
           <div className="flex  gap-3 text-sm font-semibold">
             <span className="w-[80px] font-normal">Renk: </span>
-            <span className="text-xs">{fault?.color}</span>
+            <span className="max-w-[160px] text-xs">{fault?.color}</span>
           </div>
         </div>
       </div>

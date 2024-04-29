@@ -18,6 +18,9 @@ import Card from 'components/card';
 import { log } from 'util';
 import Popup from 'components/popup';
 import UnacceptForm from 'components/forms/unaccept';
+import FinalControl from 'components/forms/finalControl';
+import NextLink from 'next/link';
+import { MdOutlineArrowBack } from 'react-icons/md';
 
 type UnacceptInfo = {
   unacceptableStage: string;
@@ -191,30 +194,47 @@ export default function EntryControl() {
   };
 
   return (
-    <Card className="mx-auto mt-4 max-w-[700px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
-      {isLoading ? (
-        <LatestInvoicesSkeleton />
-      ) : (
-        <ProcessControlForm
-          title={'Ürün Final Kontrol Formu'}
-          info={process}
-          data={processControl}
-          isSubmitting={isSubmitting}
-          onSubmit={(...val) => handleSubmit(val)}
-        />
-      )}
-
-      <Popup
-        show={isShowPopUp}
-        extra="flex flex-col gap-3 !top-[50%] py-6 px-8 !w-[90%] md:!w-[600px] !rounded-sm"
+    <>
+      <NextLink
+        href="/admin/process"
+        className="mb-3 flex  w-fit items-center gap-2 text-sm dark:text-white"
       >
-        <UnacceptForm
-          formData={unacceptableFormData as any}
-          handleClose={handleClose}
-          onSaveUnacceptable={(val) => onSaveUnacceptable(val)}
-          isSubmittingUnaccept={isSubmittingUnaccept}
-        />
-      </Popup>
-    </Card>
+        <span>
+          <MdOutlineArrowBack />
+        </span>
+        Prosesler
+      </NextLink>
+
+      <Card className="mx-auto mt-4 max-w-[700px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
+        {isLoading ? (
+          <LatestInvoicesSkeleton />
+        ) : (
+          <>
+            <FinalControl
+              data={{ ...process, inspector: session?.user?.name }}
+            />
+            {/* <ProcessControlForm
+            title={'Ürün Final Kontrol Formu'}
+            info={process}
+            data={processControl}
+            isSubmitting={isSubmitting}
+            onSubmit={(...val) => handleSubmit(val)}
+          /> */}
+          </>
+        )}
+
+        <Popup
+          show={isShowPopUp}
+          extra="flex flex-col gap-3 !top-[50%] py-6 px-8 !w-[90%] md:!w-[600px] !rounded-sm"
+        >
+          <UnacceptForm
+            formData={unacceptableFormData as any}
+            handleClose={handleClose}
+            onSaveUnacceptable={(val) => onSaveUnacceptable(val)}
+            isSubmittingUnaccept={isSubmittingUnaccept}
+          />
+        </Popup>
+      </Card>
+    </>
   );
 }
