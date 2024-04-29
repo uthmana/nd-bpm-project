@@ -24,7 +24,7 @@ const TechParamsTable = ({
   onAddRow,
   onRemoveRow,
   status,
-}) => {
+}: any) => {
   const [data, setData] = useState(() => [...techParams]);
   const [originalData, setOriginalData] = useState(() => [...techParams]);
   const [editedRows, setEditedRows] = useState({});
