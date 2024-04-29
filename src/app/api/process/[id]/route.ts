@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/db';
-import { Prisma, Process, Stock } from '@prisma/client';
+import { Fault, Prisma, Process, Stock } from '@prisma/client';
+import { filterObject } from 'utils';
 
 //Get single  Process
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
@@ -11,6 +12,7 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
       include: {
         technicalParams: true,
         finalControl: true,
+        unacceptable: true,
       },
     });
 
@@ -26,8 +28,38 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
       }
     }
 
-    return NextResponse.json({ ...process, machineParams }, { status: 200 });
+    const fault: Fault | any = await prisma.fault.findUnique({
+      where: { id: process.faultId },
+      select: {
+        defaultTechParameter: true,
+      },
+    });
+
+    //Set defaultTechParam
+    let defaultTechParam = {};
+    if (fault) {
+      const {
+        createdAt,
+        createdBy,
+        faultId,
+        id,
+        machineId,
+        processId,
+        updatedAt,
+        updatedBy,
+        ...defaultTechParameter
+      } = fault?.defaultTechParameter[0];
+      if (defaultTechParameter) {
+        defaultTechParam = filterObject(defaultTechParameter);
+      }
+    }
+
+    return NextResponse.json(
+      { ...process, machineParams, defaultTechParam },
+      { status: 200 },
+    );
   } catch (e) {
+    console.log(e);
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
       e instanceof Prisma.PrismaClientUnknownRequestError ||

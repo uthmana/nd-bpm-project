@@ -9,7 +9,6 @@ export const machines: MachineData[] = [
   {
     machine_Name: 'Mikrokapsül',
     machineParams: [
-      { param_name: 'Makine_secimi', display_name: 'Makine Seçimi' },
       { param_name: 'Viskozite', display_name: 'Viskozite' },
       { param_name: 'Besleme_Tipi', display_name: 'Besleme Tipi' },
       { param_name: 'Besleme_Hizi', display_name: 'Besleme Hızı' },
@@ -26,7 +25,6 @@ export const machines: MachineData[] = [
   {
     machine_Name: 'Patch',
     machineParams: [
-      { param_name: 'Makine_secimi', display_name: 'Makine Seçimi' },
       {
         param_name: 'Patch_Vibrasyon_hizi',
         display_name: 'Patch Vibrasyon Hızı',
@@ -49,7 +47,6 @@ export const machines: MachineData[] = [
   {
     machine_Name: 'ST-3',
     machineParams: [
-      { param_name: 'Makine_secimi', display_name: 'Makine Seçimi' },
       { param_name: 'Viskozite', display_name: 'Viskozite' },
       { param_name: 'Besleme_Tipi', display_name: 'Besleme Tipi' },
       { param_name: 'Besleme_Hizi', display_name: 'Besleme Hızı' },
@@ -63,7 +60,6 @@ export const machines: MachineData[] = [
   {
     machine_Name: 'Maskeleme',
     machineParams: [
-      { param_name: 'Makine_secimi', display_name: 'Makine Seçimi' },
       { param_name: 'Viskozite', display_name: 'Viskozite' },
       { param_name: 'Besleme_Tipi', display_name: 'Besleme Tipi' },
       { param_name: 'Besleme_Hizi', display_name: 'Besleme Hızı' },
@@ -80,7 +76,6 @@ export const machines: MachineData[] = [
   {
     machine_Name: 'EZ-Drive',
     machineParams: [
-      { param_name: 'Makine_secimi', display_name: 'Makine Seçimi' },
       {
         param_name: 'Patch_Vibrasyon_hizi',
         display_name: 'Patch Vibrasyon Hızı',
@@ -103,7 +98,6 @@ export const machines: MachineData[] = [
   {
     machine_Name: 'Plastisol',
     machineParams: [
-      { param_name: 'Makine_secimi', display_name: 'Makine Seçimi' },
       { param_name: 'Besleme_Tipi', display_name: 'Besleme Tipi' },
       { param_name: 'Besleme_Hizi', display_name: 'Besleme Hızı' },
       { param_name: 'Makine_Hizi', display_name: 'Makine Hızı' },
@@ -119,7 +113,6 @@ export const machines: MachineData[] = [
   {
     machine_Name: 'Strip',
     machineParams: [
-      { param_name: 'Makine_secimi', display_name: 'Makine Seçimi' },
       { param_name: 'Testere_secimi', display_name: 'Testere Seçimi' },
       { param_name: 'Kesim_Mesafesi', display_name: 'Kesim Mesafesi' },
       { param_name: 'Yuva_Boyutu', display_name: 'Yuva Boyutu' },
@@ -129,14 +122,12 @@ export const machines: MachineData[] = [
   {
     machine_Name: 'Kafa_Boyama',
     machineParams: [
-      { param_name: 'Makine_secimi', display_name: 'Makine Seçimi' },
       { param_name: 'Ort_Uretim_saat', display_name: 'Ort. Üretim/saat' },
     ],
   },
   {
     machine_Name: 'Mühürleme',
     machineParams: [
-      { param_name: 'Makine_secimi', display_name: 'Makine Seçimi' },
       { param_name: 'Besleme_Tipi', display_name: 'Besleme Tipi' },
       { param_name: 'Besleme_Hizi', display_name: 'Besleme Hızı' },
       { param_name: 'Makine_Hizi', display_name: 'Makine Hızı' },

@@ -1,7 +1,7 @@
 // Custom components
 function TextArea(props: {
   id: string;
-  label: string;
+  label?: string;
   extra?: string;
   placeholder: string;
   variant?: string;
@@ -11,6 +11,7 @@ function TextArea(props: {
   name: string;
   onChange?: any;
   value?: string;
+  rows?: number;
 }) {
   const {
     label,
@@ -24,20 +25,24 @@ function TextArea(props: {
     name,
     required,
     value,
+    rows = 3,
   } = props;
 
   return (
     <div className={``}>
-      <label
-        htmlFor={id}
-        className={`text-sm text-navy-700 dark:text-white ${
-          variant === 'auth' ? 'ml-1.5 font-medium' : 'ml-3 font-bold'
-        }`}
-      >
-        {label}
-      </label>
+      {label ? (
+        <label
+          htmlFor={id}
+          className={`mb-1 text-sm text-navy-700 dark:text-white ${
+            variant === 'auth' ? 'ml-1.5 font-medium' : 'ml-3 font-bold'
+          }`}
+        >
+          {label}
+        </label>
+      ) : null}
+
       <textarea
-        rows={3}
+        rows={rows}
         value={value}
         onChange={onChange}
         disabled={disabled}
@@ -45,7 +50,7 @@ function TextArea(props: {
         name={name}
         required={required}
         placeholder={placeholder}
-        className={`mt-1 flex w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none focus:border-[#777777] dark:focus:!border-[#cccccc] ${
+        className={`flex w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none focus:border-[#777777] dark:focus:!border-[#cccccc] ${
           disabled === true
             ? '!border-none !bg-gray-100 dark:!bg-white/5 dark:placeholder:!text-[rgba(255,255,255,0.15)]'
             : state === 'error'

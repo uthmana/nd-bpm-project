@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
 export async function PUT(req: Request) {
   try {
     //TODO: restrict unathorized user : only normal and admin allowed
-    const allowedRoles = ['NORMAL', 'ADMIN'];
+    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER', 'TECH'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
       return NextResponse.json(
@@ -43,7 +43,7 @@ export async function PUT(req: Request) {
         { status: 403 },
       );
     }
-    const result: Fault = await req.json();
+    const result: Fault | any = await req.json();
 
     const { customerName, productCode, application, product_barcode } = result;
 
@@ -54,8 +54,17 @@ export async function PUT(req: Request) {
       );
     }
 
+    const tempDefaultParams = result?.defaultTechParameter;
+    let tempFault: any = { ...result };
+    delete tempFault.defaultTechParameter;
+
     const fault = await prisma.fault.create({
-      data: result,
+      data: {
+        ...tempFault,
+        defaultTechParameter: {
+          create: tempDefaultParams,
+        },
+      },
     });
 
     if (fault) {

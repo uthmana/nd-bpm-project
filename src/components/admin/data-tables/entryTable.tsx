@@ -39,7 +39,6 @@ function EntryTable({
   let defaultData = tableData;
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
-  const [search, setSearch] = useState(searchValue || '');
   const { handleMouseDown, handleMouseLeave, handleMouseUp, handleMouseMove } =
     useDrage();
 

@@ -21,6 +21,13 @@ export async function POST(request: Request) {
   if (formData.type === 'offer') {
     //emailBody.react = OfferDoc({ offer: formData.data });
     emailBody.react = OfferTemplete({ offer: formData.data });
+    emailBody.attachments = [
+      {
+        filename: 'Teklif.pdf',
+        path: formData?.data?.docPath,
+      },
+    ];
+
     const { data, error }: any = await resend.emails.send(emailBody);
     if (error) {
       return NextResponse.json(
@@ -79,6 +86,5 @@ export async function POST(request: Request) {
     }
     return NextResponse.json({ data }, { status: 200 });
   }
-
   return NextResponse.json({ error: 'Unkwon User' }, { status: 404 });
 }

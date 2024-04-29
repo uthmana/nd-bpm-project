@@ -195,7 +195,17 @@ export default function OfferDoc({ offer }) {
           </div>
           <div className="flex items-center gap-4">
             <span className="w-16 text-xs font-bold">İmza:</span>
-            <span></span>
+            <span className="max-w-[60px]">
+              {offer?.creatorTitle ? (
+                <Image
+                  className="w-full"
+                  src={offer?.creatorTitle}
+                  alt={offer?.createdBy}
+                  width={10}
+                  height={10}
+                />
+              ) : null}
+            </span>
           </div>
           <div className="flex items-center gap-4">
             <span className="w-16 text-xs font-bold">İsim:</span>

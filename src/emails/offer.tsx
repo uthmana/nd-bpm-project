@@ -199,8 +199,8 @@ export const offer = ({ offer }) => {
               <Hr className="my-1" />
               {offer?.product?.map((item, idx) => {
                 return (
-                  <>
-                    <Row key={idx} className="mb-2">
+                  <div key={idx}>
+                    <Row className="mb-2">
                       <Column colSpan={6} className="w-32">
                         <Row className="mb-2">
                           {item?.image ? (
@@ -269,7 +269,7 @@ export const offer = ({ offer }) => {
                       </Column>
                     </Row>
                     <Hr className="my-1" />
-                  </>
+                  </div>
                 );
               })}
             </Section>

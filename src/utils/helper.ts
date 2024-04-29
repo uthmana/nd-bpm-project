@@ -1,4 +1,5 @@
 import { entryPages } from './constant';
+
 export function isEntryPage(pathname: string) {
   let entryPage = false;
   entryPages.map((page: string) => {
@@ -63,6 +64,9 @@ export const generateSKU = (
 ) => {
   const currentDate = new Date();
   const formattedDate = currentDate.toLocaleDateString('en-GB', {
+    second: '2-digit',
+    minute: '2-digit',
+    hour: '2-digit',
     day: '2-digit',
     month: '2-digit',
     year: '2-digit',
@@ -93,7 +97,10 @@ export const generateSKU = (
 
   const sku = `${cleanCustomerName.toUpperCase().slice(0, 3)}-${cleanProductName
     .toUpperCase()
-    .slice(0, 2)}-${formattedQuantity}-${formattedDate.replaceAll('/', '')}`;
+    .slice(0, 2)}-${formattedQuantity}-${formattedDate
+    .replaceAll('/', '')
+    .replaceAll(':', '')
+    .replace(',', '-')}`;
   return sku;
 };
 
@@ -140,4 +147,72 @@ export const getMonthlySum = (arr, dateName) => {
         .length,
   );
   return result;
+};
+
+export const generateAndSendPDF = async () => {
+  try {
+    const { default: html2pdf } = await import('html2pdf.js');
+    const element = document.getElementById('pdf-content');
+    if (!element) {
+      return;
+    }
+
+    const pdf = await html2pdf()
+      .from(element)
+      .toPdf()
+      .set({ dpi: 600 })
+      .get('pdf');
+    const pdfBlob = pdf.output('blob');
+    const formData = new FormData();
+    formData.append('pdf', pdfBlob, 'file.pdf');
+    const res = await fetch('/api/savePdf', {
+      method: 'POST',
+      body: formData,
+    });
+    if (!res.ok) {
+      return { status: res.status, message: res.text() };
+    }
+    const data = await res.json();
+    return { ...data, status: res.status };
+  } catch (error) {
+    return { status: error.status, message: error.message };
+  }
+};
+
+export const formatTechParams = (arr, val) => {
+  if (!val) return arr;
+  const value = arr.map((item) => {
+    if (
+      item.param_name ===
+      Object.keys(val).find((key) => val[key] === val[item.param_name])
+    ) {
+      return { ...item, value: val[item.param_name] };
+    }
+    return item;
+  });
+  return value;
+};
+
+export const resetDafaultParams = (arr) => {
+  const result = {};
+  arr.forEach((item) => {
+    if (item.value) {
+      result[item.param_name] = item.value;
+    }
+  });
+  return result;
+};
+
+export const filterObject = (obj) => {
+  const filteredKeys = Object.keys(obj).filter((key) => {
+    const value = obj[key];
+    return value !== null && value !== undefined && value !== '';
+  });
+
+  const filteredObject = {};
+  filteredKeys.forEach((key) => {
+    filteredObject[key] = obj[key];
+  });
+
+  return filteredObject;
 };

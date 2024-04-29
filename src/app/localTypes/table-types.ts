@@ -18,6 +18,7 @@ export type FaultObj = {
   faultControl?: any;
   product_name?: string;
   product_barcode?: string;
+  defaultTechParameter?: any;
 };
 
 export type InvoiceObj = {
@@ -180,4 +181,13 @@ export type MainTable = {
   onAdd: (e: any) => void;
   onControl: (e: any) => void;
   searchValue: string;
+};
+
+export type UnacceptInfo = {
+  unacceptableStage: string;
+  unacceptableDescription: string;
+  unacceptableAction: string;
+  result: string;
+  description: string;
+  id: string;
 };

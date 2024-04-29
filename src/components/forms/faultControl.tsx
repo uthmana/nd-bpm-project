@@ -21,6 +21,7 @@ import Radio from 'components/radio';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import NextLink from 'next/link';
 import FileViewer from 'components/fileViewer';
+import InputField from 'components/fields/InputField';
 
 export default function EntryControlForm({
   info,
@@ -56,6 +57,7 @@ export default function EntryControlForm({
           quantityConfirmation: '',
           remarks: '',
           faultId: info?.id,
+          frequencyDimension: '',
         },
   );
 
@@ -147,7 +149,7 @@ export default function EntryControlForm({
 
         <form onSubmit={handleSubmit} className="w-full">
           <h2 className="mb-4 text-sm font-bold">kaplama</h2>
-          <div className="mb-6 grid w-full grid-cols-2 gap-3 sm:grid-cols-3">
+          <div className="mb-12 grid w-full grid-cols-2 gap-3 sm:grid-cols-3">
             {platings.map((item, idx) => {
               return (
                 <label className="flex cursor-pointer items-center" key={idx}>
@@ -188,9 +190,7 @@ export default function EntryControlForm({
                 );
               })}
             </Select>
-          </div>
 
-          <div className="mb-2 flex flex-col gap-3 sm:flex-row">
             <Select
               extra="pt-1"
               label="Ürün Boyutlari"
@@ -237,7 +237,7 @@ export default function EntryControlForm({
               })}
             </Select>
           </div>
-          <div className="mb-8 flex flex-col gap-3 sm:flex-row">
+          <div className="mb-8 grid  grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
             <Select
               extra="pt-1"
               label="Temizleme"
@@ -279,6 +279,20 @@ export default function EntryControlForm({
                 );
               })}
             </Select>
+
+            {values.processFrequency === 'Yazılsın' ? (
+              <InputField
+                label="Frekans Aralığı"
+                onChange={handleValues}
+                type="text"
+                id="frequencyDimension"
+                name="frequencyDimension"
+                placeholder="0"
+                extra="mb-2"
+                value={values.frequencyDimension}
+                required={true}
+              />
+            ) : null}
           </div>
 
           <div className="mb-6">

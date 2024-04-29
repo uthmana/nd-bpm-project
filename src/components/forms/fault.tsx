@@ -13,6 +13,9 @@ import {
   convertToISO8601,
   removeMillisecondsAndUTC,
   generateSKU,
+  techParameters,
+  formatTechParams,
+  resetDafaultParams,
 } from 'utils';
 import { FaultObj } from '../../app/localTypes/table-types';
 import {
@@ -64,16 +67,58 @@ export default function Fault(props: {
   const [customers, setCustomers] = useState([]);
   const [faultSettings, setFaultSettings] = useState({} as Settings);
   const [stockProduct, setStockProduct] = useState([]);
-
+  const [newProduct, setNewProduct] = useState(null);
   const [file, setFile] = useState(
     initialValues.technicalDrawingAttachment
       ? initialValues.technicalDrawingAttachment
       : '',
   );
 
+  const formatedTechParams = formatTechParams(
+    techParameters,
+    editData?.defaultTechParameter && editData?.defaultTechParameter[0],
+  );
+  const [techParams, setTechParams] = useState(formatedTechParams);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const [settingsResponse, customerResponse]: any = await Promise.all([
+        getFaultSettings(),
+        getCustomersWithStock(),
+      ]);
+      const { status: setStatus, data: setData } = settingsResponse;
+      const { status: custStatus, data: custData } = customerResponse;
+      if (setStatus === 200 && custStatus === 200) {
+        setCustomers(custData);
+        setFaultSettings(setData);
+        if (!editData) {
+          setValues({
+            ...values,
+            application: setData.applications[0].name,
+            standard: setData.standards[0].name,
+            color: setData.colors[0].name,
+          });
+        }
+        return;
+      }
+      toast.error('Beklenmeyen bir hata oluştu!. Daha sonra tekrar deenyin!');
+    };
+    fetchData();
+  }, []);
+
   const handleValues = (event) => {
     setError(false);
     // Handle Company chanrge
+    if (
+      event.target?.name === 'product' &&
+      event.target?.value === 'NEW_ENTRY'
+    ) {
+      setValues({ ...values, product: '' });
+      setNewProduct(event.target?.value);
+      setStockProduct([]);
+      return;
+    }
+
     if (event.target?.name === 'company_name') {
       const _customer = customers.filter(
         (item) => item.company_name === event.target?.value,
@@ -108,8 +153,7 @@ export default function Fault(props: {
       setValues({ ...values, ...selectedCustomer });
       return;
     }
-
-    // Handle Product chanrge
+    // Handle Product change
     if (event.target?.name === 'product' && stockProduct.length > 0) {
       const _stockData = stockProduct.find(
         (item) => item.id === event.target?.value,
@@ -136,32 +180,6 @@ export default function Fault(props: {
     setValues({ ...values, ...newVal });
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const [settingsResponse, customerResponse]: any = await Promise.all([
-        getFaultSettings(),
-        getCustomersWithStock(),
-      ]);
-      const { status: setStatus, data: setData } = settingsResponse;
-      const { status: custStatus, data: custData } = customerResponse;
-      if (setStatus === 200 && custStatus === 200) {
-        setCustomers(custData);
-        setFaultSettings(setData);
-        if (!editData) {
-          setValues({
-            ...values,
-            application: setData.applications[0].name,
-            standard: setData.standards[0].name,
-            color: setData.colors[0].name,
-          });
-        }
-        return;
-      }
-      toast.error('Beklenmeyen bir hata oluştu!. Daha sonra tekrar deenyin!');
-    };
-    fetchData();
-  }, []);
-
   const handleSubmit = (e) => {
     e.preventDefault();
     const { customerName, productCode, quantity, application, product } =
@@ -178,17 +196,41 @@ export default function Fault(props: {
       return;
     }
 
-    const product_barcode = generateSKU(customerName, product, quantity);
+    //handle defaultTechParameter
+    let defaultTechParameter = resetDafaultParams([...techParams]);
+    defaultTechParameter =
+      JSON.stringify(defaultTechParameter) !== '{}'
+        ? { ...defaultTechParameter, machineId: 'defaultparams_' + Date.now() }
+        : { Ort_Uretim_saat: null, machineId: 'defaultparams_' + Date.now() };
+    if (editData?.defaultTechParameter && editData?.defaultTechParameter[0]) {
+      defaultTechParameter = {
+        ...defaultTechParameter,
+        id: editData?.defaultTechParameter[0].id,
+      };
+    }
 
+    const product_barcode = generateSKU(customerName, product, quantity);
     delete values.product_name;
 
     onSubmit({
       ...values,
+      defaultTechParameter,
       product_barcode,
       quantity: parseInt(values.quantity.toString()),
       technicalDrawingAttachment: file,
       arrivalDate: convertToISO8601(values.arrivalDate),
     });
+  };
+
+  const handleTechValues = (event) => {
+    const temp = [...techParams];
+    const value = temp.map((item) => {
+      if (item.param_name === event.target?.name) {
+        return { ...item, value: event.target?.value };
+      }
+      return item;
+    });
+    setTechParams(value);
   };
 
   return (
@@ -228,7 +270,7 @@ export default function Fault(props: {
           onChange={handleValues}
         />
 
-        {stockProduct.length > 0 ? (
+        {stockProduct.length > 0 && newProduct === null ? (
           <Select
             required={true}
             extra="pt-1"
@@ -238,9 +280,12 @@ export default function Fault(props: {
           >
             {stockProduct?.map((item, idx) => {
               return (
-                <option value={item.id} key={idx} selected={idx === 0}>
-                  {item.product_name}
-                </option>
+                <>
+                  <option value={item.id} key={idx} selected={idx === 0}>
+                    {item.product_name}
+                  </option>
+                  <option value={'NEW_ENTRY'}>---Yeni Ürün Ekle</option>
+                </>
               );
             })}
           </Select>
@@ -369,6 +414,29 @@ export default function Fault(props: {
             );
           })}
         </Select>
+      </div>
+
+      <div className="flex flex-col gap-3 rounded-md bg-gray-50 p-4 !text-sm dark:bg-gray-50/10">
+        <h2 className="mb-3 font-bold">Teknikal Params </h2>
+
+        <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+          {techParams.map((item, idx) => {
+            return (
+              <InputField
+                key={idx}
+                label={item.display_name}
+                onChange={handleTechValues}
+                type="text"
+                id={item.param_name}
+                name={item.param_name}
+                placeholder=""
+                extra="mb-2"
+                disabled={item.param_name === 'Ort_Uretim_saat'}
+                value={item.value}
+              />
+            );
+          })}
+        </div>
       </div>
 
       <div className="my-8">

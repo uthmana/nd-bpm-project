@@ -100,6 +100,7 @@ export default function Create() {
   };
 
   const handleChange = (val) => {
+    setOfferData({});
     setOfferData(val);
   };
 
