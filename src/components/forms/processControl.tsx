@@ -267,7 +267,7 @@ export default function ProcessControlForm({
             />
           </div>
 
-          <div className="mb-6">
+          {/* <div className="mb-6">
             <h2 className="mb-3 ml-3  block w-full text-sm font-bold">
               İlgili Doküman
             </h2>
@@ -278,7 +278,7 @@ export default function ProcessControlForm({
               _fileName={values.image}
               _filePath={isUpdate ? '/uploads/' + values.image : ''}
             />
-          </div>
+          </div> */}
 
           <div className="w-full">
             <TextArea

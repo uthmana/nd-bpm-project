@@ -41,6 +41,7 @@ export type InvoiceObj = {
   totalQuantity: string;
   products: string;
   customerName: string;
+  newtechparam: string;
 };
 
 export type OfferObj = {
@@ -74,6 +75,7 @@ export type ProcessObj = {
   technicalDrawingAttachment: string;
   status: string;
   faultId: string;
+  newtechparam: string;
 };
 
 export type CustomerObj = {

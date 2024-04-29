@@ -61,12 +61,44 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    const process = await prisma.process.findMany({
-      include: { technicalParams: true },
-      orderBy: { createdAt: 'desc' },
+    // const process = await prisma.process.findMany({
+    //   include: { technicalParams: true },
+    //   orderBy: { createdAt: 'desc' },
+    // });
+    //return NextResponse.json(process, { status: 200 });
+
+    const processnew = await prisma.$transaction(async (trans) => {
+      // Fetch all fault IDs
+      const faultsIds = (
+        await trans.faultControl.findMany({ select: { id: true } })
+      ).map((fault) => fault.id);
+
+      // Fetch processes with technical parameters
+      const processes = await trans.process.findMany({
+        include: { technicalParams: true },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      // Fetch fault resources based on fault IDs
+      const faultResources = await trans.faultControl.findMany({
+        where: {
+          id: { in: faultsIds },
+        },
+      });
+
+      //merge the data of the processes and the faultResources where  they match by ID
+      const mergedData = processes.map((p) => ({
+        ...p,
+        newtechparam: p.technicalDrawingAttachment.concat(
+          ';',
+          faultResources.find((f) => f.faultId === p.faultId).image,
+        ),
+      }));
+      console.log(mergedData[1]);
+      return mergedData;
     });
 
-    return NextResponse.json(process, { status: 200 });
+    return NextResponse.json(processnew, { status: 200 });
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
