@@ -205,21 +205,18 @@ export default function EntryControl() {
         Prosesler
       </NextLink>
 
-      <Card className="mx-auto mt-4 max-w-[700px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
+      <Card className="mx-auto mb-7 mt-4 max-w-[700px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
         {isLoading ? (
           <LatestInvoicesSkeleton />
         ) : (
           <>
-            <FinalControl
-              data={{ ...process, inspector: session?.user?.name }}
+            <ProcessControlForm
+              title={'Ürün Final Kontrol Formu'}
+              info={process}
+              data={processControl}
+              isSubmitting={isSubmitting}
+              onSubmit={(...val) => handleSubmit(val)}
             />
-            {/* <ProcessControlForm
-            title={'Ürün Final Kontrol Formu'}
-            info={process}
-            data={processControl}
-            isSubmitting={isSubmitting}
-            onSubmit={(...val) => handleSubmit(val)}
-          /> */}
           </>
         )}
 
@@ -235,6 +232,10 @@ export default function EntryControl() {
           />
         </Popup>
       </Card>
+
+      <div className="mx-auto mt-4 max-w-[700px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
+        <FinalControl data={{ ...process, inspector: session?.user?.name }} />
+      </div>
     </>
   );
 }
