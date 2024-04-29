@@ -209,17 +209,41 @@ function ProcessTable({
           </p>
         ),
       }),
-      columnHelper.accessor('technicalDrawingAttachment', {
-        id: 'technicalDrawingAttachment',
+      // columnHelper.accessor('technicalDrawingAttachment', {
+      //   id: 'technicalDrawingAttachment',
+      //   header: () => (
+      //     <p className="min-w-[110px]  whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
+      //       İLGİLİ DOKÜMAN
+      //     </p>
+      //   ),
+      //   cell: (info: any) => (
+      //     <p className="text-sm font-bold text-navy-700 dark:text-white">
+      //       {info.getValue() ? <FileViewer file={info.getValue()} /> : null}
+      //     </p>
+      //   ),
+      // }),
+      columnHelper.accessor('newtechparam', {
+        id: 'newtechparam',
         header: () => (
           <p className="min-w-[110px]  whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
             İLGİLİ DOKÜMAN
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue() ? <FileViewer file={info.getValue()} /> : null}
-          </p>
+          <div className="flex">
+            {info
+              .getValue()
+              .toString()
+              .split(';')
+              .map((url, index) => (
+                <span
+                  key={index}
+                  className="text-sm font-bold text-navy-700 dark:text-white"
+                >
+                  {info.getValue() ? <FileViewer file={url} /> : null}
+                </span>
+              ))}
+          </div>
         ),
       }),
       columnHelper.accessor('status', {

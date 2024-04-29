@@ -17,6 +17,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
+    "@vercel/blob": "^0.23.2",
     "apexcharts": "3.35.5",
     "axios": "^1.6.2",
     "bcryptjs": "^2.4.3",

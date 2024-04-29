@@ -447,14 +447,19 @@ export default function Fault(props: {
           onChange={(val) => setFile(val)}
           fileType="all"
           multiple={false}
-          _fileName={
-            initialValues.technicalDrawingAttachment
-              ? initialValues.technicalDrawingAttachment
-              : ''
-          }
+          // _fileName={
+          //   initialValues.technicalDrawingAttachment
+          //     ? initialValues.technicalDrawingAttachment
+          //     : ''
+          // }
+          // _filePath={
+          //   initialValues.technicalDrawingAttachment
+          //     ? '/uploads/' + initialValues.technicalDrawingAttachment
+          //     : ''
+          // }
           _filePath={
             initialValues.technicalDrawingAttachment
-              ? '/uploads/' + initialValues.technicalDrawingAttachment
+              ? initialValues.technicalDrawingAttachment
               : ''
           }
         />

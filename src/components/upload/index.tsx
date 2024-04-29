@@ -3,6 +3,8 @@ import { MdFileUpload } from 'react-icons/md';
 import Card from 'components/card';
 import { useRef, useState } from 'react';
 import placeholderImage from '/public/img/others/placeholder-image.svg';
+import type { PutBlobResult } from '@vercel/blob';
+
 
 const Upload = (props: {
   onChange: (val: string) => void;
@@ -44,10 +46,16 @@ const Upload = (props: {
         body: data,
       });
       if (!res.ok) throw new Error(await res.text());
-      const { path, name } = await res.json();
-      setFilePath(path);
-      setFileName(name);
-      onChange(name);
+      //const { path, name } = await res.json();
+
+      const { url, pathname, downloadUrl } =
+        (await res.json()) as PutBlobResult;
+       // setFilePath(path);
+      // setFileName(name);
+      // onChange(name);
+      setFilePath(url);
+      setFileName(url);
+      onChange(url);
       setLoading(false);
     } catch (e: any) {
       console.error(e);
@@ -114,7 +122,7 @@ const Upload = (props: {
           </div>
         ) : null}
 
-        {fileName.length > 0 ? (
+        {fileName?.length > 0 ? (
           <div className="relative h-full w-full">
             <button
               onClick={handleFileDelete}
