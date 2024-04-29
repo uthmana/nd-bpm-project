@@ -54,7 +54,7 @@ const newCol = [
   }),
 ];
 techParameters.map((item) => {
-  let temp = columnHelper.accessor(item.param_name, {
+  let temp: any = columnHelper.accessor(item.param_name, {
     header: item.display_name,
     cell: TableCell,
     meta: {

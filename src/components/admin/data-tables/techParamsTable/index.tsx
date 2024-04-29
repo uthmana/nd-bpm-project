@@ -16,15 +16,25 @@ type Student = {
   major: string;
 };
 
-const TechParamsTable = ({
-  techParams = [],
-  defaultTechParams,
-  fields,
-  onUpdateData,
-  onAddRow,
-  onRemoveRow,
-  status,
-}: any) => {
+const TechParamsTable = (props: {
+  techParams?: any;
+  defaultTechParams?: any;
+  fields?: any;
+  onUpdateData?: (a, b) => void;
+  onAddRow?: (a) => void;
+  onRemoveRow?: (a) => void;
+  status?: string;
+}) => {
+  const {
+    techParams = [],
+    defaultTechParams,
+    fields,
+    onUpdateData,
+    onAddRow,
+    onRemoveRow,
+    status,
+  } = props;
+
   const [data, setData] = useState(() => [...techParams]);
   const [originalData, setOriginalData] = useState(() => [...techParams]);
   const [editedRows, setEditedRows] = useState({});
