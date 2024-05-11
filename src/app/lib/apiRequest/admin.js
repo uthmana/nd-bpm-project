@@ -324,8 +324,8 @@ export async function sendOffer(payload) {
 }
 
 // Dashboard
-export async function getDashboard() {
-  return fetchAPI('dashboard');
+export async function getDashboard({ startOfMonth, endOfMonth }) {
+  return fetchAPI(`dashboard?start=${startOfMonth}&end=${endOfMonth}`);
 }
 
 // unacceptable

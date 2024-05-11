@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
 import { Prisma } from '@prisma/client';
-import { getMonthlySum, getMonthAndWeekDates } from 'utils';
 
 export async function GET(req: NextRequest) {
   try {
-    const { startOfMonth, endOfMonth } = getMonthAndWeekDates();
+    const searchParams = req.nextUrl.searchParams;
+    const startOfMonth = searchParams.get('start');
+    const endOfMonth = searchParams.get('end');
+
     const trackings = await prisma.$transaction(async (query) => {
       const [
         customer,
@@ -14,10 +16,8 @@ export async function GET(req: NextRequest) {
         process,
         invoice,
         offer,
-
         monthlyProcess,
         monthlyInvoice,
-
         recentProcess,
         recentCustomer,
       ] = await Promise.all([
@@ -94,8 +94,8 @@ export async function GET(req: NextRequest) {
           offer: offer,
         },
         monthlyEntry: {
-          process: getMonthlySum(monthlyProcess, 'createdAt'),
-          invoice: getMonthlySum(monthlyInvoice, 'createdAt'),
+          process: monthlyProcess,
+          invoice: monthlyInvoice,
         },
         recentProcess: recentProcess,
         recentCustomer: recentCustomer,
