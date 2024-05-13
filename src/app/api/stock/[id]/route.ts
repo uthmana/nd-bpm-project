@@ -67,7 +67,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   }
 }
 
-//Delete user
+//Delete stock
 export async function DELETE(
   req: NextRequest,
   route: { params: { id: string } },

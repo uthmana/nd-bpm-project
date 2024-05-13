@@ -24,6 +24,10 @@ export async function addStock(payload) {
 export async function getStocks() {
   return fetchAPI('stock');
 }
+//get stock with zero quantity
+export async function getZeroStocks() {
+  return fetchAPI('stock?inventory=true');
+}
 
 export async function getStockById(id) {
   return fetchAPI(`stock/${id}`);
