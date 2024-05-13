@@ -5,7 +5,6 @@ import { useRef, useState } from 'react';
 import placeholderImage from '/public/img/others/placeholder-image.svg';
 import type { PutBlobResult } from '@vercel/blob';
 
-
 const Upload = (props: {
   onChange: (val: string) => void;
   fileType?: string;
@@ -50,7 +49,7 @@ const Upload = (props: {
 
       const { url, pathname, downloadUrl } =
         (await res.json()) as PutBlobResult;
-       // setFilePath(path);
+      // setFilePath(path);
       // setFileName(name);
       // onChange(name);
       setFilePath(url);
@@ -69,7 +68,7 @@ const Upload = (props: {
       setLoading(true);
       const res = await fetch('/api/upload', {
         method: 'DELETE',
-        body: JSON.stringify({ name: fileName }),
+        body: JSON.stringify({ name: fileName, url: fileName }),
       });
       if (!res.ok) throw new Error(await res.text());
       setFilePath('');

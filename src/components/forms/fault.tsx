@@ -44,6 +44,7 @@ export default function Fault(props: {
   loading: boolean;
 }) {
   const { onSubmit, editData, title, loading } = props;
+  console.log(editData);
   const initialValues = editData
     ? editData
     : {
@@ -447,11 +448,11 @@ export default function Fault(props: {
           onChange={(val) => setFile(val)}
           fileType="all"
           multiple={false}
-          // _fileName={
-          //   initialValues.technicalDrawingAttachment
-          //     ? initialValues.technicalDrawingAttachment
-          //     : ''
-          // }
+          _fileName={
+            initialValues.technicalDrawingAttachment
+              ? initialValues.technicalDrawingAttachment
+              : ''
+          }
           // _filePath={
           //   initialValues.technicalDrawingAttachment
           //     ? '/uploads/' + initialValues.technicalDrawingAttachment
