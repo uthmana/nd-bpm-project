@@ -1,18 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
 import { Prisma, Stock } from '@prisma/client';
+import { checkUserRole } from 'utils/auth';
+
 
 //All Stocks
 export async function GET(req: NextRequest) {
   try {
-    const stock = await prisma.stock.findMany({
-      include: { customer: true },
-      orderBy: {
-        date: 'desc',
-      },
-    });
 
-    return NextResponse.json(stock, { status: 200 });
+    //check roles and permission of user
+    const allowedRoles = ['SUPER', 'ADMIN', 'NORMAL', 'TECH'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
+    }
+
+  
+    const inventory = req.nextUrl.searchParams.get('inventory') === 'true';
+
+    let stocks;
+    if (inventory) {
+      // Retrieve stock where inventory is zero
+      stocks = await prisma.stock.findMany({
+        where: { inventory: 0 },
+        include: { customer: true },
+        orderBy: { date: 'desc' },
+      });
+    } else {
+         // Retrieve all stock data where inventory is greater than zero
+         stocks = await prisma.stock.findMany({
+          where: { inventory: { gt: 0 } }, // 'gt' stands for 'greater than'
+          include: { customer: true },
+          orderBy: { date: 'desc' },
+        });
+      }
+
+    return NextResponse.json(stocks, { status: 200 });
+
+
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||

@@ -14,6 +14,7 @@ import {
   MdTaskAlt,
   MdLocalOffer,
   MdLock,
+  MdOutlineSportsCricket,
 } from 'react-icons/md';
 
 const iconStyle = 'h-6 w-6 !hover:text-[black] dark:!hover:text-white';
@@ -32,6 +33,13 @@ const routes = [
     path: 'customer',
     role: 'normal',
     icon: <MdOutlineGroups3 className={`${iconStyle}`} />,
+  },
+  {
+    name: 'Liste',
+    layout: '/admin',
+    path: 'liste',
+    role: 'normal',
+    icon: <MdOutlineSportsCricket className={`${iconStyle}`} />,
   },
   {
     name: 'Stok',
