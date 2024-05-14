@@ -1,6 +1,9 @@
 .test-table thead tr td,
 .test-table tbody tr td {
-  @apply min-w-[50px] border border-[#000] p-2 text-sm;
+  @apply min-w-[42px] border border-[#000] p-2 text-sm;
+}
+.mikrokapsul tbody tr td:nth-child(1) {
+  @apply !w-[20px];
 }
 
 .test-table thead tr:nth-child(2) td {

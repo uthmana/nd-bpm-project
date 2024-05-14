@@ -14,7 +14,14 @@ export default function Mikrokapsul({ data, onChange }) {
           {tableData.map((item, idx) => {
             return (
               <tr key={idx}>
-                <td> </td>
+                <td
+                  rowSpan={3}
+                  className={`w-[20px] text-center font-bold [writing-mode:vertical-lr] ${
+                    idx !== 0 && idx !== 3 ? 'hidden' : ''
+                  }`}
+                >
+                  {idx == 0 ? 'Yüksüz Test' : 'Yüklü Test'}
+                </td>
                 <td> {item.standard} </td>
                 <td> {item.requiredValue} </td>
                 <td> {item.x1} </td>
