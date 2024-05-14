@@ -52,6 +52,7 @@ export default function EntryControl() {
       setIsloading(true);
       const { status, data } = await getProcessById(queryParams.id);
       if (status === 200) {
+        console.log({ process: data });
         setProcess(data);
         setProcessControl(data?.finalControl[0]);
         setUnacceptable(data?.unacceptable[0]);
@@ -219,23 +220,26 @@ export default function EntryControl() {
             />
           </>
         )}
-
-        <Popup
-          show={isShowPopUp}
-          extra="flex flex-col gap-3 !top-[50%] py-6 px-8 !w-[90%] md:!w-[600px] !rounded-sm"
-        >
-          <UnacceptForm
-            formData={unacceptableFormData as any}
-            handleClose={handleClose}
-            onSaveUnacceptable={(val) => onSaveUnacceptable(val)}
-            isSubmittingUnaccept={isSubmittingUnaccept}
-          />
-        </Popup>
       </Card>
 
-      <div className="mx-auto mt-4 max-w-[700px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
-        <FinalControl data={{ ...process, inspector: session?.user?.name }} />
+      <div className="mx-auto mt-4 max-w-[800px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
+        <FinalControl
+          key={process.id}
+          data={{ ...process, inspector: session?.user?.name }}
+        />
       </div>
+
+      <Popup
+        show={isShowPopUp}
+        extra="flex flex-col gap-3 !top-[50%] py-6 px-8 !w-[90%] md:!w-[600px] !rounded-sm"
+      >
+        <UnacceptForm
+          formData={unacceptableFormData as any}
+          handleClose={handleClose}
+          onSaveUnacceptable={(val) => onSaveUnacceptable(val)}
+          isSubmittingUnaccept={isSubmittingUnaccept}
+        />
+      </Popup>
     </>
   );
 }

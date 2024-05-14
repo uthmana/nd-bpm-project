@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import EditableBox from 'components/EditableBox';
 import Radio from 'components/radio';
-import TestTable from './testTable';
+import TestTable from './table/testTable';
 
 export default function Index({ data }) {
   const [values, setValues] = useState(data || ({} as any));
@@ -82,7 +82,7 @@ export default function Index({ data }) {
           </div>
         </div>
       </div>
-      <TestTable onChange={(val) => handleChange(val)} data={data} />
+      <TestTable onChange={(val) => handleChange(val)} data={values} />
       <div className="mb-7 w-full text-xs">
         <div className="mb-3 font-semibold">Sonuç / Result:</div>
         <div className="flex flex-wrap justify-around gap-3">
