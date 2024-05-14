@@ -42,4 +42,6 @@ next-env.d.ts
 .idea
 
 #Prisma
-#/prisma/migrations
+/prisma
+
+/src/app/lib/db.ts
