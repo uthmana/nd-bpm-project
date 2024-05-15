@@ -18,7 +18,7 @@ export default function Mikrokapsul({ data, variant = 'input', onChange }) {
   };
 
   return (
-    <div className="mb-5 w-full">
+    <div className="test--table__wrapper mb-5 w-full">
       <table className="mikrokapsul test-table">
         <TableHeader />
         <tbody>
@@ -61,7 +61,7 @@ export default function Mikrokapsul({ data, variant = 'input', onChange }) {
                           id={key}
                           name={key}
                           placeholder=""
-                          extra="!h-full w-full !px-0 text-xs !rounded-none"
+                          extra="!h-full w-full !px-0 text-xs !rounded-none text-center"
                           value={value}
                         />
                       )}

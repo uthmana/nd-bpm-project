@@ -24,7 +24,7 @@ export default function Diger({ data, onChange, variant = 'input' }) {
         </div>
         <div className="w-3/4 border border-b-0 border-[#000] p-2 text-sm">
           {variant !== 'input' ? (
-            <div>{tableData[0].standard}</div>
+            <div>{tableData[0].description}</div>
           ) : (
             <TextArea
               label=""
@@ -45,7 +45,7 @@ export default function Diger({ data, onChange, variant = 'input' }) {
         </div>
         <div className="w-3/4 border border-[#000] p-2 text-sm">
           {variant !== 'input' ? (
-            <div>{tableData[1].standard}</div>
+            <div>{tableData[1].description}</div>
           ) : (
             <TextArea
               label=""

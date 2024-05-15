@@ -12,10 +12,10 @@ function HeaderItem(props: {
   const { tilteEn, titleTr, value, className } = props;
 
   return (
-    <div className="mb-1 flex items-center gap-1 text-sm font-medium">
+    <div className="mb-[2px] flex items-center gap-1 text-xs font-medium">
       <div className="flex w-[110px] flex-col">
         <span>{titleTr} :</span>
-        <span className="text-xs font-normal italic">{tilteEn} :</span>
+        <span className="text-[10px] font-normal italic">{tilteEn} :</span>
       </div>
       <span className={`max-w-[160px] ${className}`}>{value}</span>
     </div>
@@ -84,7 +84,7 @@ export default function ControlHeader({ data }) {
           <HeaderItem
             tilteEn={'Date'}
             titleTr={'Tarih'}
-            value={data?.createdAt}
+            value={formatDateTime(data?.createdAt)}
           />
         </div>
       </div>

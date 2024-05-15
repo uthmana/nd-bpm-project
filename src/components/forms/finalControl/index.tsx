@@ -6,7 +6,13 @@ import ControlBody from './controlBody';
 import Button from 'components/button/button';
 import { getDefaultData } from '../finalControl/controlBody/table/defaultData';
 
-export default function FinalControl({ data, onSubmit, isSubmitting }) {
+export default function FinalControl(props: {
+  data: any;
+  onSubmit?: (a, b) => void;
+  isSubmitting?: boolean;
+  variant?: string;
+}) {
+  const { data, onSubmit, isSubmitting, variant = 'input' } = props;
   const { faultId, id, updatedBy, inspector, finalControl, machineName } = data;
   const isUpdate = finalControl?.length > 0;
   const [values, setValues] = useState(
@@ -45,15 +51,17 @@ export default function FinalControl({ data, onSubmit, isSubmitting }) {
   return (
     <div className="w-full">
       <ControlHeader data={data} />
-      <ControlBody data={values} onChange={handleChange} />
+      <ControlBody data={values} onChange={handleChange} variant={variant} />
       <ControlFooter data={data} />
-      <Button
-        onClick={handleSubmit}
-        loading={isSubmitting}
-        extra="mt-5 print:hidden"
-        text="KAYDET"
-        disabled={values?.result?.length === 0}
-      />
+      {variant == 'input' ? (
+        <Button
+          onClick={handleSubmit}
+          loading={isSubmitting}
+          extra="mt-5 print:hidden"
+          text="KAYDET"
+          disabled={values?.result?.length === 0}
+        />
+      ) : null}
     </div>
   );
 }

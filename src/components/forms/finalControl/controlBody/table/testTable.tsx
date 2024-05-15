@@ -5,7 +5,7 @@ import Mikrokapsul from '../mikrokapsul';
 import Diger from '../diger';
 import './table.css';
 
-export default function TestTable({ data, onChange, machineName }) {
+export default function TestTable({ data, onChange, variant, machineName }) {
   const [values, setValues] = useState(data || ({} as any));
 
   const getApplicationType = (machineName) => {
@@ -31,18 +31,22 @@ export default function TestTable({ data, onChange, machineName }) {
     };
 
     if (type === 'patch') {
-      return <Patch data={values} onChange={handleChange} />;
+      return <Patch data={values} variant={variant} onChange={handleChange} />;
     }
 
     if (type === 'ezDrive') {
-      return <EzDrive data={values} onChange={handleChange} />;
+      return (
+        <EzDrive data={values} variant={variant} onChange={handleChange} />
+      );
     }
 
     if (type === 'mikrokapsul') {
-      return <Mikrokapsul data={values} onChange={handleChange} />;
+      return (
+        <Mikrokapsul data={values} variant={variant} onChange={handleChange} />
+      );
     }
 
-    return <Diger data={values} onChange={handleChange} />;
+    return <Diger data={values} variant={variant} onChange={handleChange} />;
   };
 
   return (

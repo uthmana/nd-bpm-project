@@ -102,8 +102,7 @@ export default function EntryControl() {
     if (isUpdate) {
       const resData: any = await updateProcessControl({
         ...values,
-        processId: process.id,
-        faultId: process.faultId,
+        id: processControl.id,
         updatedBy: session?.user?.name,
       });
 
@@ -204,23 +203,6 @@ export default function EntryControl() {
         </span>
         Prosesler
       </NextLink>
-
-      {/* <Card className="mx-auto mb-7 mt-4 max-w-[700px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
-        {isLoading ? (
-          <LatestInvoicesSkeleton />
-        ) : (
-          <>
-            <ProcessControlForm
-              title={'Ürün Final Kontrol Formu'}
-              info={process}
-              data={processControl}
-              isSubmitting={isSubmitting}
-              onSubmit={(...val) => handleSubmit(val)}
-            />
-          </>
-        )}
-      </Card> */}
-
       <div className="mx-auto mt-4 max-w-[800px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
         {isLoading ? (
           <LatestInvoicesSkeleton />

@@ -44,7 +44,7 @@ export default function Fault(props: {
   loading: boolean;
 }) {
   const { onSubmit, editData, title, loading } = props;
-  console.log(editData);
+
   const initialValues = editData
     ? editData
     : {
