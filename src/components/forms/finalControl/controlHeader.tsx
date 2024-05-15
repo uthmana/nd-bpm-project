@@ -23,8 +23,6 @@ function HeaderItem(props: {
 }
 
 export default function ControlHeader({ data }) {
-  console.log(data);
-
   return (
     <div className="w-full">
       <div className="mb-2 flex items-center border-b border-[#000]">

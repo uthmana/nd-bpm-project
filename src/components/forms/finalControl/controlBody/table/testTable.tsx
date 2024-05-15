@@ -5,7 +5,7 @@ import Mikrokapsul from '../mikrokapsul';
 import Diger from '../diger';
 import './table.css';
 
-export default function TestTable({ data, onChange }) {
+export default function TestTable({ data, onChange, machineName }) {
   const [values, setValues] = useState(data || ({} as any));
 
   const getApplicationType = (machineName) => {
@@ -26,8 +26,8 @@ export default function TestTable({ data, onChange }) {
 
   const getControlTypeTable = (type) => {
     const handleChange = (val) => {
-      setValues({ ...values, ...val });
-      onChange({ ...values, ...val });
+      setValues(val);
+      onChange(val);
     };
 
     if (type === 'patch') {
@@ -47,7 +47,7 @@ export default function TestTable({ data, onChange }) {
 
   return (
     <div className="w-full">
-      {getControlTypeTable(getApplicationType(values?.machineName))}
+      {getControlTypeTable(getApplicationType(machineName))}
     </div>
   );
 }

@@ -1,55 +1,61 @@
 import TextArea from 'components/fields/textArea';
 import React, { useState } from 'react';
 
-export default function Diger({ data, onChange, variant = 'inputs' }) {
-  const [values, setValues] = useState(data || ({} as any));
+export default function Diger({ data, onChange, variant = 'input' }) {
+  const [tableData, setTableData] = useState(data);
 
-  const handleValues = (event) => {
-    const newVal = { [event.target?.name]: event.target?.value };
-    setValues({ ...values, ...newVal });
-    onChange({ ...values, ...newVal });
+  const handleValues = (event, index) => {
+    const newList = tableData?.map((item, idx) => {
+      if (idx === index) {
+        const newVal = { [event.target?.name]: event.target?.value };
+        return { ...item, ...newVal };
+      }
+      return item;
+    });
+    setTableData(newList);
+    onChange(newList);
   };
 
   return (
     <div className="mb-8 flex w-full  flex-col">
       <div className="flex w-full">
         <div className=" flex min-h-11 w-1/4 items-center border border-b-0  border-r-0 border-[#000] p-2 text-sm">
-          Test Standard:
+          {tableData[0].standard}
         </div>
         <div className="w-3/4 border border-b-0 border-[#000] p-2 text-sm">
           {variant !== 'input' ? (
-            <div>{values?.standard}</div>
+            <div>{tableData[0].standard}</div>
           ) : (
             <TextArea
               label=""
-              onChange={handleValues}
-              id="standard"
-              name="standard"
+              onChange={(e) => handleValues(e, 0)}
+              id="description"
+              name="description"
               placeholder=""
               extra="rounded-none m-0 border-0 "
               rows={2}
-              value={values.standard}
+              value={tableData[0].description}
             />
           )}
         </div>
       </div>
       <div className="flex w-full">
         <div className="flex min-h-11 w-1/4 items-center border border-r-0  border-[#000] p-2 text-sm">
-          Açıklama / Comments:
+          {tableData[1].standard}
         </div>
         <div className="w-3/4 border border-[#000] p-2 text-sm">
           {variant !== 'input' ? (
-            <div>{values?.description}</div>
+            <div>{tableData[1].standard}</div>
           ) : (
             <TextArea
               label=""
-              onChange={handleValues}
+              onChange={(e) => handleValues(e, 1)}
               id="description"
               name="description"
               placeholder=""
               extra="rounded-none m-0 border-0 "
               rows={2}
-              value={values.description}
+              value={tableData[1].description}
             />
           )}
         </div>

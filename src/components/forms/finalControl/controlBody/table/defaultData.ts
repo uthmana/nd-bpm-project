@@ -172,11 +172,27 @@ export const ezDriveData = [
 ];
 export const otherData = [
   {
-    standard: 'sıkma torku',
-    description: '',
+    standard: 'Test Standard:',
+    description: 'dgsfdsg5456',
   },
   {
-    standard: 'sıkma torku',
-    description: '',
+    standard: 'Açıklama / Comments:',
+    description: 'asd',
   },
 ];
+
+export const getDefaultData = (machineName) => {
+  let appName = machineName?.toLowerCase();
+  if (!appName) return otherData;
+
+  if (appName.includes('patch')) {
+    return patchData;
+  }
+  if (appName.includes('mikrokapsül')) {
+    return mikrokapsulData;
+  }
+  if (appName.includes('ez-drive')) {
+    return ezDriveData;
+  }
+  return otherData;
+};

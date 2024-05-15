@@ -52,7 +52,6 @@ export default function EntryControl() {
       setIsloading(true);
       const { status, data } = await getProcessById(queryParams.id);
       if (status === 200) {
-        console.log({ process: data });
         setProcess(data);
         setProcessControl(data?.finalControl[0]);
         setUnacceptable(data?.unacceptable[0]);
@@ -206,7 +205,7 @@ export default function EntryControl() {
         Prosesler
       </NextLink>
 
-      <Card className="mx-auto mb-7 mt-4 max-w-[700px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
+      {/* <Card className="mx-auto mb-7 mt-4 max-w-[700px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
         {isLoading ? (
           <LatestInvoicesSkeleton />
         ) : (
@@ -220,13 +219,23 @@ export default function EntryControl() {
             />
           </>
         )}
-      </Card>
+      </Card> */}
 
       <div className="mx-auto mt-4 max-w-[800px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
-        <FinalControl
-          key={process.id}
-          data={{ ...process, inspector: session?.user?.name }}
-        />
+        {isLoading ? (
+          <LatestInvoicesSkeleton />
+        ) : (
+          <FinalControl
+            key={process.id}
+            data={{
+              ...process,
+              inspector: session?.user?.name,
+              updatedBy: session?.user?.name,
+            }}
+            onSubmit={(...val) => handleSubmit(val)}
+            isSubmitting={isSubmitting}
+          />
+        )}
       </div>
 
       <Popup
