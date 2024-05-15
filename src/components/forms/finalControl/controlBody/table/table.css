@@ -1,0 +1,25 @@
+.test--table__wrapper {
+  @apply overflow-x-auto;
+}
+
+.test-table tbody {
+  @apply max-w-[800px];
+}
+
+.test-table thead tr td,
+.test-table tbody tr td {
+  @apply min-w-[42px] border border-[#000] p-2 text-sm;
+}
+.mikrokapsul tbody tr td:nth-child(1) {
+  @apply !w-[20px];
+}
+
+.test-table thead tr:nth-child(2) td {
+  @apply text-center font-semibold;
+}
+
+.mikrokapsul tbody tr td:nth-child(2),
+.patch tbody tr td:nth-child(1),
+.ez-drive tbody tr td:nth-child(1) {
+  @apply min-w-[108px] text-xs;
+}
