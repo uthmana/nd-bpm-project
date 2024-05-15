@@ -1,0 +1,198 @@
+export const mikrokapsulData = [
+  {
+    standard: 'Sıkma Torku / Screw-in Torque (max.)',
+    requiredValue: '',
+    x1: '',
+    x2: '',
+    x3: '',
+    x4: '',
+    x5: '',
+    x6: '',
+    x7: '',
+    x8: '',
+    x9: '',
+    x10: '',
+    result: '',
+  },
+  {
+    standard: 'Kırılma Torku / Breakaway Torque (min.) ',
+    requiredValue: '',
+    x1: '',
+    x2: '',
+    x3: '',
+    x4: '',
+    x5: '',
+    x6: '',
+    x7: '',
+    x8: '',
+    x9: '',
+    x10: '',
+    result: '',
+  },
+  {
+    standard: 'Gevşetme Torku / Loosening Torque (max.)',
+    requiredValue: '',
+    x1: '',
+    x2: '',
+    x3: '',
+    x4: '',
+    x5: '',
+    x6: '',
+    x7: '',
+    x8: '',
+    x9: '',
+    x10: '',
+    result: '',
+  },
+  {
+    standard: 'Sıkma Torku / Tightening Torque (max.)',
+    requiredValue: '',
+    x1: '',
+    x2: '',
+    x3: '',
+    x4: '',
+    x5: '',
+    x6: '',
+    x7: '',
+    x8: '',
+    x9: '',
+    x10: '',
+    result: '',
+  },
+  {
+    standard: 'Kırılma Torku / Breakaway Torque (min.) ',
+    requiredValue: '',
+    x1: '',
+    x2: '',
+    x3: '',
+    x4: '',
+    x5: '',
+    x6: '',
+    x7: '',
+    x8: '',
+    x9: '',
+    x10: '',
+    result: '',
+  },
+  {
+    standard: 'Gevşetme Torku / Loosening Torque (max.)',
+    requiredValue: '',
+    x1: '',
+    x2: '',
+    x3: '',
+    x4: '',
+    x5: '',
+    x6: '',
+    x7: '',
+    x8: '',
+    x9: '',
+    x10: '',
+    result: '',
+  },
+];
+export const patchData = [
+  {
+    standard: '1.Sıkma Torku / 1st on Prevailing Torque',
+    requiredValue: '',
+    x1: '',
+    x2: '',
+    x3: '',
+    x4: '',
+    x5: '',
+    x6: '',
+    x7: '',
+    x8: '',
+    x9: '',
+    x10: '',
+    result: '',
+  },
+  {
+    standard: '1.Açma Torku /1st off Prevailing Torque',
+    requiredValue: '',
+    x1: '',
+    x2: '',
+    x3: '',
+    x4: '',
+    x5: '',
+    x6: '',
+    x7: '',
+    x8: '',
+    x9: '',
+    x10: '',
+    result: '',
+  },
+  {
+    standard: '3.Açma Torku / 3rd off Prevailing Torque',
+    requiredValue: '',
+    x1: '',
+    x2: '',
+    x3: '',
+    x4: '',
+    x5: '',
+    x6: '',
+    x7: '',
+    x8: '',
+    x9: '',
+    x10: '',
+    result: '',
+  },
+  {
+    standard: '5.Açma Torku / 5th off Prevailing Torque',
+    requiredValue: '',
+    x1: '',
+    x2: '',
+    x3: '',
+    x4: '',
+    x5: '',
+    x6: '',
+    x7: '',
+    x8: '',
+    x9: '',
+    x10: '',
+    result: '',
+  },
+];
+
+export const ezDriveData = [
+  {
+    standard: 'Diş Açma Torku / Thread Forming Torque ( max.)',
+    requiredValue: '',
+    x1: '',
+    x2: '',
+    x3: '',
+    x4: '',
+    x5: '',
+    x6: '',
+    x7: '',
+    x8: '',
+    x9: '',
+    x10: '',
+    result: '',
+  },
+];
+export const otherData = [
+  {
+    standard: 'Test Standard:',
+    description: 'dgsfdsg5456',
+  },
+  {
+    standard: 'Açıklama / Comments:',
+    description: 'asd',
+  },
+];
+
+export const getDefaultData = (machineName) => {
+  let appName = machineName?.toLowerCase();
+  if (!appName) return otherData;
+
+  if (appName.includes('patch')) {
+    return patchData;
+  }
+  if (appName.includes('mikrokapsül')) {
+    return mikrokapsulData;
+  }
+  if (appName.includes('ez-drive')) {
+    return ezDriveData;
+  }
+  return otherData;
+};

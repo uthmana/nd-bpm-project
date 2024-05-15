@@ -30,8 +30,8 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
 export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
     const id = route.params.id;
-    const data: FinalControl = await req.json();
-    const { faultId, result, processId } = data;
+    const data: FinalControl | any = await req.json();
+    const { faultId, result, updatedBy, processId } = data;
 
     if (!faultId || !result || !processId) {
       return NextResponse.json(
@@ -40,9 +40,10 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       );
     }
 
-    const finalControl: FinalControl = await prisma.finalControl.findUnique({
-      where: { id },
-    });
+    const finalControl: FinalControl | any =
+      await prisma.finalControl.findUnique({
+        where: { id },
+      });
 
     if (!finalControl) {
       return NextResponse.json(
@@ -51,14 +52,32 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       );
     }
 
+    const {
+      id: finalControlId,
+      faultId: finalControlFaultId,
+      testItem,
+      ...rest
+    } = data;
     const updateFinalControl = await prisma.finalControl.update({
       where: {
         id: id,
       },
       data: {
-        ...data,
+        ...rest,
       },
     });
+
+    if (updateFinalControl) {
+      const testResult = await Promise.all(
+        testItem?.map(async (item) => {
+          const { id, updatedAt, createdAt, finalControlId, ...rest } = item;
+          await prisma.testItem.update({
+            where: { id: id },
+            data: { ...rest },
+          });
+        }),
+      );
+    }
 
     // Update Invoice and Process
     if (result === 'REJECT') {

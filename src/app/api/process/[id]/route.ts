@@ -11,7 +11,9 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
       where: { id: id },
       include: {
         technicalParams: true,
-        finalControl: true,
+        finalControl: {
+          include: { testItem: true },
+        },
         unacceptable: true,
       },
     });

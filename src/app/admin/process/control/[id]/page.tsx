@@ -102,8 +102,7 @@ export default function EntryControl() {
     if (isUpdate) {
       const resData: any = await updateProcessControl({
         ...values,
-        processId: process.id,
-        faultId: process.faultId,
+        id: processControl.id,
         updatedBy: session?.user?.name,
       });
 
@@ -204,38 +203,34 @@ export default function EntryControl() {
         </span>
         Prosesler
       </NextLink>
-
-      <Card className="mx-auto mb-7 mt-4 max-w-[700px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
+      <div className="mx-auto mt-4 max-w-[800px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
         {isLoading ? (
           <LatestInvoicesSkeleton />
         ) : (
-          <>
-            <ProcessControlForm
-              title={'Ürün Final Kontrol Formu'}
-              info={process}
-              data={processControl}
-              isSubmitting={isSubmitting}
-              onSubmit={(...val) => handleSubmit(val)}
-            />
-          </>
-        )}
-
-        <Popup
-          show={isShowPopUp}
-          extra="flex flex-col gap-3 !top-[50%] py-6 px-8 !w-[90%] md:!w-[600px] !rounded-sm"
-        >
-          <UnacceptForm
-            formData={unacceptableFormData as any}
-            handleClose={handleClose}
-            onSaveUnacceptable={(val) => onSaveUnacceptable(val)}
-            isSubmittingUnaccept={isSubmittingUnaccept}
+          <FinalControl
+            key={process.id}
+            data={{
+              ...process,
+              inspector: session?.user?.name,
+              updatedBy: session?.user?.name,
+            }}
+            onSubmit={(...val) => handleSubmit(val)}
+            isSubmitting={isSubmitting}
           />
-        </Popup>
-      </Card>
-
-      <div className="mx-auto mt-4 max-w-[700px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
-        <FinalControl data={{ ...process, inspector: session?.user?.name }} />
+        )}
       </div>
+
+      <Popup
+        show={isShowPopUp}
+        extra="flex flex-col gap-3 !top-[50%] py-6 px-8 !w-[90%] md:!w-[600px] !rounded-sm"
+      >
+        <UnacceptForm
+          formData={unacceptableFormData as any}
+          handleClose={handleClose}
+          onSaveUnacceptable={(val) => onSaveUnacceptable(val)}
+          isSubmittingUnaccept={isSubmittingUnaccept}
+        />
+      </Popup>
     </>
   );
 }
