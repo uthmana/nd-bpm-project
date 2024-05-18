@@ -52,6 +52,7 @@ export default function Invoice() {
       email: value.email,
       subject: 'İrsaliye',
       data: invoice,
+      docPath: 'https://7udazvcrth30pyp4.public.blob.vercel-storage.com/pdfs/j3uplOW-vrn82biCr10iEk67oIPHjEOjqd58Py.pdf',
     });
     const { status, response } = invoiceRes;
 

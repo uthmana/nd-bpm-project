@@ -68,6 +68,47 @@ function EntryTable({
       columnHelper.accessor('id', {
         id: 'id',
         header: () => (
+          <p className="min-w-[80px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+            AKSİYON
+          </p>
+        ),
+        cell: (info: any) => {
+          const isAccept =
+            info.row.original.status === 'ACCEPT' ||
+            info.row.original.status === 'ACCEPTANCE_WITH_CONDITION';
+          return (
+            <div className="flex gap-1">
+              <button
+                className="rounded-md bg-blue-600 px-2 py-1 hover:bg-blue-700"
+                onClick={() => onControl(info.getValue())}
+              >
+                <MdPreview className="h-5 w-5 text-white" />
+              </button>
+              <button
+                className={`rounded-md bg-green-600 px-2 py-1 hover:bg-green-700 ${
+                  isAccept ? 'disabled:opacity-25' : ''
+                }`}
+                onClick={() => onEdit(info.getValue())}
+                disabled={isAccept}
+              >
+                <MdModeEdit className="h-5 w-5 text-white" />
+              </button>
+              <button
+                className={`rounded-md bg-red-600 px-2 py-1 hover:bg-red-700 ${
+                  isAccept ? 'disabled:opacity-25' : ''
+                }`}
+                onClick={() => onDelete(info.getValue())}
+                disabled={isAccept}
+              >
+                <MdOutlineDelete className="h-5 w-5 text-white" />
+              </button>
+            </div>
+          );
+        },
+      }),
+      columnHelper.accessor('id', {
+        id: 'id',
+        header: () => (
           <p className="group relative min-w-[65px] max-w-fit  whitespace-nowrap break-keep  text-sm font-bold text-gray-600 dark:text-white">
             SİRA NO.{' '}
             <span className="absolute right-0 top-0 hidden group-hover:block">
@@ -304,47 +345,6 @@ function EntryTable({
             </p>
           </div>
         ),
-      }),
-      columnHelper.accessor('id', {
-        id: 'id',
-        header: () => (
-          <p className="min-w-[80px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            AKSİYON
-          </p>
-        ),
-        cell: (info: any) => {
-          const isAccept =
-            info.row.original.status === 'ACCEPT' ||
-            info.row.original.status === 'ACCEPTANCE_WITH_CONDITION';
-          return (
-            <div className="flex gap-1">
-              <button
-                className="rounded-md bg-blue-600 px-2 py-1 hover:bg-blue-700"
-                onClick={() => onControl(info.getValue())}
-              >
-                <MdPreview className="h-5 w-5 text-white" />
-              </button>
-              <button
-                className={`rounded-md bg-green-600 px-2 py-1 hover:bg-green-700 ${
-                  isAccept ? 'disabled:opacity-25' : ''
-                }`}
-                onClick={() => onEdit(info.getValue())}
-                disabled={isAccept}
-              >
-                <MdModeEdit className="h-5 w-5 text-white" />
-              </button>
-              <button
-                className={`rounded-md bg-red-600 px-2 py-1 hover:bg-red-700 ${
-                  isAccept ? 'disabled:opacity-25' : ''
-                }`}
-                onClick={() => onDelete(info.getValue())}
-                disabled={isAccept}
-              >
-                <MdOutlineDelete className="h-5 w-5 text-white" />
-              </button>
-            </div>
-          );
-        },
       }),
     ];
   }, []);
