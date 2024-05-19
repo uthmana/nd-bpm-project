@@ -323,7 +323,7 @@ export default function Stock(props: {
         />
       </div>
 
-      <Button loading={loading} extra="mt-4" text="SAVE" />
+      <Button loading={loading} extra="mt-4" text="KAYDET" />
     </form>
   );
 }

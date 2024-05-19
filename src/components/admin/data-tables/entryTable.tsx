@@ -33,7 +33,7 @@ function EntryTable({
   onDelete,
   onAdd,
   onControl,
-  variant = 'NORMAL',
+  variant,
   searchValue,
 }: MainTable) {
   let defaultData = tableData;
@@ -349,7 +349,7 @@ function EntryTable({
     ];
   }, []);
 
-  const [data, setData] = useState(() => [...defaultData]);
+  const [data, setData] = useState(() => Array.isArray(defaultData) ? [...defaultData] : []);
   const table = useReactTable({
     data,
     columns,
@@ -380,7 +380,7 @@ function EntryTable({
             onChange={(val) => setGlobalFilter(val)}
           />
         </div>
-        {variant === 'NORMAL' || variant === 'ADMIN' ? (
+        {variant === 'NORMAL' || variant === 'SUPER'|| variant === 'ADMIN' ? (
           <Button
             text="EKLE"
             extra="!w-[140px] h-[38px] font-bold mb-3"

@@ -6,7 +6,7 @@ import { checkUserRole } from 'utils/auth';
 //All Faults
 export async function GET(req: NextRequest) {
   try {
-    const allowedRoles = ['NORMAL', 'ADMIN'];
+    const allowedRoles = ['NORMAL', 'ADMIN','SUPER'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
       return NextResponse.json({ error: 'Access forbidden', status: 403 });
@@ -34,8 +34,8 @@ export async function GET(req: NextRequest) {
 // Create Fault
 export async function PUT(req: Request) {
   try {
-    //TODO: restrict unathorized user : only normal and admin allowed
-    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER', 'TECH'];
+    //TODO: restrict unathorized user : allow all but TECH
+    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
       return NextResponse.json(

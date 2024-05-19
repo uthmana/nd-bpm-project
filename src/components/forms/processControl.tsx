@@ -320,7 +320,7 @@ export default function ProcessControlForm({
             disabled={formTouch}
             loading={isSubmitting}
             extra="mt-4"
-            text="SAVE"
+            text="KAYDET"
           />
         </form>
       </div>

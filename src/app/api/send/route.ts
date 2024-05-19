@@ -4,6 +4,7 @@ import ResetPassword from '../../../emails/resetPassword';
 import prisma from 'app/lib/db';
 import crypto from 'crypto';
 import InvoiceDoc from 'components/invoice';
+// import createPDF from 'utils/generatePDF';
 import OfferDoc from 'components/offer';
 import OfferTemplete from '../../../emails/offer';
 import fs from 'fs';
@@ -42,20 +43,19 @@ export async function POST(request: Request) {
 
   if (formData.type === 'invoice') {
     formData.data.serverSide = true;
-    emailBody.react = InvoiceDoc({ invoice: formData.data });
 
-    // Ensure the path to the PDF is correct
-    const pdfPath = formData?.docPath;
+    // Generate the PDF
+    const pdfPath = formData.docPath; //await createPDF(formData.data);
 
     // Add the PDF attachment
     emailBody.attachments = [
       {
-        filename: 'Irsaliye.pdf',
+        filename: 'Invoice.pdf',
         path: pdfPath,
       },
     ];
 
-    const { data, error }: any = await resend.emails.send(emailBody);
+    const { data, error }: any =await resend.emails.send(emailBody);
     if (error) {
       return NextResponse.json(
         { message: error.message },
