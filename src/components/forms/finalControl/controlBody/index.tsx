@@ -1,8 +1,9 @@
 import React, { useRef, useState } from 'react';
-import EditableBox from 'components/EditableBox';
+import EditableBox from 'components/Box';
 import Radio from 'components/radio';
 import TestTable from './table/testTable';
 import { MdCheck } from 'react-icons/md';
+import TestArea from './table/testArea';
 
 export default function Index({ data, onChange, variant }) {
   const [values, setValues] = useState(data || ({} as any));
@@ -21,6 +22,11 @@ export default function Index({ data, onChange, variant }) {
   const handleTestTableChange = (val) => {
     setValues({ ...values, testItem: val });
     onChange({ ...values, testItem: val });
+  };
+
+  const handleTestAreaChange = (val) => {
+    setValues({ ...values, testArea: val });
+    onChange({ ...values, testArea: val });
   };
 
   const resultsList = [
@@ -43,62 +49,11 @@ export default function Index({ data, onChange, variant }) {
           <span> Uygun / Uygun Değil</span>
         </div>
       </div>
-
-      <div className="mb-5 flex flex-col">
-        <div className="mb-3 text-center text-xs">Ön Alan / Lead Area</div>
-        <div className="flex flex-wrap justify-between gap-1">
-          <div className="">
-            <div className="mb-1 text-xs">İstenen/ Requested</div>
-            <div className="flex flex-nowrap items-center gap-1 text-xs">
-              <EditableBox editable={true} label="mm/diş" />
-              <EditableBox className="w-[70px]" />
-              <EditableBox className="w-[70px]" />
-              <EditableBox />
-              <EditableBox />
-            </div>
-          </div>
-          <div className="">
-            <div className="mb-1 text-xs">Sonuçlar / Results</div>
-            <div className="flex flex-nowrap items-center gap-1 text-xs">
-              <EditableBox editable={true} className="w-[70px]" />
-              <EditableBox className="w-[70px]" />
-              <EditableBox />
-              <EditableBox />
-              <EditableBox />
-              <EditableBox />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="mb-8 flex flex-col">
-        <div className="mb-3 text-center text-xs">
-          Uygulama Alanı / Coverage Area:
-        </div>
-        <div className="flex flex-wrap justify-between gap-1">
-          <div className="">
-            <div className="mb-1 text-xs">İstenen/ Requested</div>
-            <div className="flex flex-nowrap items-center gap-1 text-xs">
-              <EditableBox editable={true} label="mm/diş" />
-              <EditableBox className="w-[70px]" />
-              <EditableBox className="w-[70px]" />
-              <EditableBox />
-              <EditableBox />
-            </div>
-          </div>
-          <div className="">
-            <div className="mb-1 text-xs">Sonuçlar / Results</div>
-            <div className="flex flex-nowrap items-center gap-1 text-xs">
-              <EditableBox editable={true} className="w-[70px]" />
-              <EditableBox className="w-[70px]" />
-              <EditableBox />
-              <EditableBox />
-              <EditableBox />
-              <EditableBox />
-            </div>
-          </div>
-        </div>
-      </div>
+      <TestArea
+        onChange={(val) => handleTestAreaChange(val)}
+        data={values?.testArea}
+        variant={'variant'}
+      />
       <TestTable
         onChange={(val) => handleTestTableChange(val)}
         machineName={values?.machineName}

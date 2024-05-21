@@ -203,7 +203,7 @@ export default function EntryControl() {
         </span>
         Prosesler
       </NextLink>
-      <div className="mx-auto mt-4 max-w-[800px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
+      <div className="mx-auto mt-4 max-w-[900px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
         {isLoading ? (
           <LatestInvoicesSkeleton />
         ) : (
