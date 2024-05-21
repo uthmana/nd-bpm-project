@@ -277,7 +277,7 @@ export default function InvoiceForm(props: {
             disabled={formTouch}
             loading={isSubmitting}
             extra="mt-4"
-            text="SAVE"
+            text="KAYDET"
           />
         </form>
       </div>

@@ -102,7 +102,7 @@ export default function Fault(props: {
         }
         return;
       }
-      toast.error('Beklenmeyen bir hata oluştu!. Daha sonra tekrar deenyin!');
+      toast.error('Beklenmeyen bir hata oluştu!. Daha sonra tekrar deneyiniz!');
     };
     fetchData();
   }, []);

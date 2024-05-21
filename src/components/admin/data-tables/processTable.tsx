@@ -67,6 +67,31 @@ function ProcessTable({
       columnHelper.accessor('id', {
         id: 'id',
         header: () => (
+          <p className="text-sm font-bold text-gray-600 dark:text-white">
+            AKSIYON
+          </p>
+        ),
+        cell: (info) => (
+          <div className="flex gap-1">
+            <button
+              className="rounded-md bg-blue-600  px-2 py-1 hover:bg-blue-700"
+              onClick={() => onControl(info.getValue())}
+            >
+              <MdPreview className="h-5 w-5 text-white" />
+            </button>
+
+            <button
+              className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
+              onClick={() => onDelete(info.getValue())}
+            >
+              <MdOutlineDelete className="h-5 w-5 text-white" />
+            </button>
+          </div>
+        ),
+      }),
+      columnHelper.accessor('id', {
+        id: 'id',
+        header: () => (
           <p className="whitespace-nowrap  break-keep text-sm font-bold text-gray-600 dark:text-white">
             SİRA NO.
           </p>
@@ -74,6 +99,19 @@ function ProcessTable({
         cell: ({ row }) => (
           <p className="text-sm font-bold text-navy-700 dark:text-white">
             {(row.index + 1).toString()}
+          </p>
+        ),
+      }),
+      columnHelper.accessor('product_barcode', {
+        id: 'product_barcode',
+        header: () => (
+          <p className="min-w-[150px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+            BARKODU
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
           </p>
         ),
       }),
@@ -259,31 +297,6 @@ function ProcessTable({
             <p className="whitespace-nowrap  break-keep  text-sm font-bold text-navy-700 dark:text-white">
               {entryStatus[info.getValue()]}
             </p>
-          </div>
-        ),
-      }),
-      columnHelper.accessor('id', {
-        id: 'id',
-        header: () => (
-          <p className="text-sm font-bold text-gray-600 dark:text-white">
-            AKSIYON
-          </p>
-        ),
-        cell: (info) => (
-          <div className="flex gap-1">
-            <button
-              className="rounded-md bg-blue-600  px-2 py-1 hover:bg-blue-700"
-              onClick={() => onControl(info.getValue())}
-            >
-              <MdPreview className="h-5 w-5 text-white" />
-            </button>
-
-            <button
-              className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
-              onClick={() => onDelete(info.getValue())}
-            >
-              <MdOutlineDelete className="h-5 w-5 text-white" />
-            </button>
           </div>
         ),
       }),

@@ -1,10 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/db';
 import { Fault, Prisma, Process, Stock } from '@prisma/client';
+import { checkUserRole } from 'utils/auth';
 
 //Get single Fault
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
   try {
+    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
+    }
     const id = route.params.id;
     const fault: Fault = await prisma.fault.findUnique({
       where: { id: id },
@@ -31,6 +40,15 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
 //Update Fault
 export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
+
+      const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
+    }
     const id = route.params.id;
     const result: Fault | any = await req.json();
     const {
@@ -135,6 +153,14 @@ export async function DELETE(
 ) {
   try {
     //TODO: restrict unathorized user : only normal and admin allowed
+    const allowedRoles = ['ADMIN'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
+    }
     const id = route.params.id;
     const deletedFault: Fault = await prisma.fault.delete({
       where: {
