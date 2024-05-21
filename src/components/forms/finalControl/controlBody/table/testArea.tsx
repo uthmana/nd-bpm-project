@@ -59,8 +59,7 @@ export default function TestArea(props: {
                       />
 
                       <Select
-                        className="!border-1 !mb-1 !h-[32px] !w-[48px] !rounded-none !border-[#000] !p-0"
-                        label=""
+                        className="!border-1 mb-1 !h-[32px] !w-[48px] !rounded-none !border-[#000] !p-0"
                         name="unit"
                         onChange={(e) => handleValues(e, idx)}
                         key={'unit' + idx}

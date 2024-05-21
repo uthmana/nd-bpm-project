@@ -54,7 +54,7 @@ export default function Index({ data, onChange, variant }) {
       <TestArea
         onChange={(val) => handleTestAreaChange(val)}
         data={values?.testArea}
-        variant={'variant'}
+        variant={variant}
       />
       <TestTable
         onChange={(val) => handleTestTableChange(val)}
