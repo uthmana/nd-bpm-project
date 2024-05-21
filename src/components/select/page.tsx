@@ -4,12 +4,13 @@ import React, { ReactNode, useState, useRef, useEffect } from 'react';
 
 type Select = {
   name?: string;
-  onChange?: (e: any) => void;
+  onChange?: (e: any) => void | any;
   children: ReactNode;
   label: string;
   extra?: string;
   onClick?: (e: any) => void;
   required?: boolean;
+  className?: string;
 };
 
 const Select = ({
@@ -20,6 +21,7 @@ const Select = ({
   extra,
   onClick,
   required,
+  className,
 }: Select) => {
   const [selecedValue, setSelectedValue] = useState('');
   const selectRef = useRef(null);
@@ -55,7 +57,7 @@ const Select = ({
         </label>
         <select
           ref={selectRef}
-          className={`flex h-[40px] w-full items-center justify-center rounded-xl border bg-white/0 px-1 text-sm outline-none first:!text-[#999]  dark:border-[#283357] dark:text-white dark:focus:!border-[#ffffff]`}
+          className={`flex h-[40px] w-full items-center justify-center rounded-xl border bg-white/0 px-1 text-sm outline-none first:!text-[#999]  dark:border-[#283357] dark:text-white dark:focus:!border-[#ffffff] ${className}`}
           name={name}
           onChange={handleOnChange}
         >
