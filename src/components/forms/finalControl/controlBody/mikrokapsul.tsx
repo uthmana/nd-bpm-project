@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import TableHeader from './table/tableHeader';
-import InputField from 'components/fields/InputField';
+import TextArea from 'components/fields/textArea';
 
 export default function Mikrokapsul({ data, variant = 'input', onChange }) {
   const [tableData, setTableData] = useState(data);
@@ -45,23 +45,22 @@ export default function Mikrokapsul({ data, variant = 'input', onChange }) {
                   {idx == 0 ? 'Yüksüz Test' : 'Yüklü Test'}
                 </td>
                 <td> {item.standard} </td>
-                {Object.entries(newItem).map(([key, value], index) => {
+                {Object.entries(newItem).map(([key, value]: any, index) => {
                   if (index < 1) {
                     return;
                   }
                   return (
-                    <td key={index}>
+                    <td key={index} className={`mikrokapsul-${variant}`}>
                       {variant !== 'input' ? (
                         <> {value} </>
                       ) : (
-                        <InputField
+                        <TextArea
                           label=""
                           onChange={(e) => handleValues(e, idx)}
-                          type="text"
                           id={key}
                           name={key}
                           placeholder=""
-                          extra="!h-full w-full !px-0 text-xs !rounded-none text-center"
+                          extra="!h-full w-full !px-[2px] text-xs !rounded-none text-center"
                           value={value}
                         />
                       )}

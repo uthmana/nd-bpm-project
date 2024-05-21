@@ -4,14 +4,10 @@ import Radio from 'components/radio';
 import TestTable from './table/testTable';
 import { MdCheck } from 'react-icons/md';
 import TestArea from './table/testArea';
+import InputField from 'components/fields/InputField';
 
 export default function Index({ data, onChange, variant }) {
   const [values, setValues] = useState(data || ({} as any));
-
-  const handleChange = (val) => {
-    setValues({ ...values, ...val });
-    onChange({ ...values, ...val });
-  };
 
   const handleResultValues = (event) => {
     const newVal = { [event.target?.name]: event.target?.value };
@@ -27,6 +23,12 @@ export default function Index({ data, onChange, variant }) {
   const handleTestAreaChange = (val) => {
     setValues({ ...values, testArea: val });
     onChange({ ...values, testArea: val });
+  };
+
+  const handleQuantityValues = (event) => {
+    const newVal = { [event.target?.name]: event.target?.value };
+    setValues({ ...values, ...newVal });
+    onChange({ ...values, ...newVal });
   };
 
   const resultsList = [
@@ -60,6 +62,45 @@ export default function Index({ data, onChange, variant }) {
         data={values?.testItem}
         variant={variant}
       />
+
+      <div className="mb-5 flex w-full items-center justify-between gap-3">
+        <InputField
+          label="Kontrol Miktar"
+          onChange={handleQuantityValues}
+          type="number"
+          id="kontrol_edilen_miktar"
+          name="kontrol_edilen_miktar"
+          placeholder=""
+          extra="mb-2 !rounded-none h-[32px] !p-1 border-1 !border-[#000]"
+          value={values?.kontrol_edilen_miktar}
+          required={true}
+          disabled={variant !== 'input'}
+        />
+        <InputField
+          label="Nakliye Miktar"
+          onChange={handleQuantityValues}
+          type="number"
+          id="nakliye_miktar"
+          name="nakliye_miktar"
+          placeholder=""
+          extra="mb-2 !rounded-none  h-[32px] !p-1 border-1 !border-[#000]"
+          value={values?.nakliye_miktar}
+          required={true}
+          disabled={variant !== 'input'}
+        />
+        <InputField
+          label="Hatalı Miktar"
+          onChange={handleQuantityValues}
+          type="number"
+          id="hatali_miktar"
+          name="hatali_miktar"
+          placeholder=""
+          extra="mb-2 !rounded-none  h-[32px] !p-1 border-1 !border-[#000]"
+          value={values?.hatali_miktar}
+          disabled={variant !== 'input'}
+        />
+      </div>
+
       <div className="mb-7 w-full text-xs">
         <div className="mb-3 font-semibold">Sonuç / Result:</div>
         <div className="flex flex-wrap justify-around gap-3">
@@ -73,7 +114,7 @@ export default function Index({ data, onChange, variant }) {
                       name="result"
                       value={item.value}
                       onChange={handleResultValues}
-                      checked={values.result === item.value}
+                      checked={values?.result === item.value}
                     />
                   ) : (
                     <div className="flex justify-center">
