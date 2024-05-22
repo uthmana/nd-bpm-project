@@ -43,7 +43,9 @@ export async function PUT(req: Request) {
         { status: 403 },
       );
     }
-    const result: FinalControl = await req.json();
+
+    const result: FinalControl | any = await req.json();
+
     const { faultId, result: controlReult, processId } = result;
 
     if (!faultId || !controlReult || !processId) {
@@ -52,9 +54,28 @@ export async function PUT(req: Request) {
         { status: 401 },
       );
     }
+
+    const { testItem, testArea, ...rest } = result;
     const finalControl = await prisma.finalControl.create({
-      data: result,
+      data: { ...rest },
     });
+
+    if (finalControl) {
+      const testResult = await Promise.all(
+        testItem?.map(async (item) => {
+          await prisma.testItem.create({
+            data: { ...item, finalControlId: finalControl.id },
+          });
+        }),
+      );
+      const testAreaResult = await Promise.all(
+        testArea?.map(async (item) => {
+          await prisma.testArea.create({
+            data: { ...item, finalControlId: finalControl.id },
+          });
+        }),
+      );
+    }
 
     if (result.result === 'ACCEPT') {
       const fault = await prisma.fault.findUnique({

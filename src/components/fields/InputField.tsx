@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 
 function InputField(props: {
   id: string;
-  label: string;
+  label?: string;
   extra?: string;
   placeholder: string;
   variant?: string;
@@ -47,23 +47,26 @@ function InputField(props: {
 
   return (
     <div className={`relative w-full`}>
-      <label
-        htmlFor={id}
-        className={`text-sm text-navy-700 dark:text-white ${
-          variant === 'auth' ? 'ml-1.5 font-medium' : 'ml-3 font-bold'
-        }`}
-      >
-        {label}{' '}
-        {required !== undefined ? (
-          <span
-            className={`${
-              required && value ? 'text-green-600' : 'text-red-400'
-            }`}
-          >
-            *
-          </span>
-        ) : null}
-      </label>
+      {label ? (
+        <label
+          htmlFor={id}
+          className={`text-sm text-navy-700 dark:text-white ${
+            variant === 'auth' ? 'ml-1.5 font-medium' : 'ml-3 font-bold'
+          }`}
+        >
+          {label}
+          {required !== undefined ? (
+            <span
+              className={`${
+                required && value ? 'text-green-600' : 'text-red-400'
+              }`}
+            >
+              *
+            </span>
+          ) : null}
+        </label>
+      ) : null}
+
       <input
         ref={inputElem}
         value={value}

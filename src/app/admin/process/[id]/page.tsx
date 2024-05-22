@@ -22,6 +22,7 @@ import DetailHeader from 'components/detailHeader';
 import Barcode from 'react-jsbarcode';
 import Unaccept from 'components/forms/unaccept';
 import { UnacceptInfo } from 'app/localTypes/table-types';
+import FinalControl from 'components/forms/finalControl';
 
 export default function EntryControl() {
   const router = useRouter();
@@ -378,75 +379,68 @@ export default function EntryControl() {
               </div>
             </Card>
           </div>
-
-          <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-            {/* Form  COntrol */}
-            <Card extra="w-full px-8 pt-4 pb-8 print:hidden">
-              <div className="w-full">
-                <div className="my-5 flex justify-between">
-                  <h2 className="text-2xl font-bold">
-                    Final Kontrol Bilgileri
-                  </h2>
-
-                  {process.status === 'FINISHED' &&
-                  (session?.user?.role === 'SUPER' ||
-                    session?.user?.role === 'ADMIN') ? (
-                    <Button
-                      icon={<MdAdd className="mr-1 h-5 w-5" />}
-                      extra="max-w-fit px-4  h-[40px]"
-                      text={`${
-                        finalControl.length > 0
-                          ? 'FİNAL KONTROLÜ DÜZENLE'
-                          : 'FİNAL KONTROLÜ YAP'
-                      } `}
-                      onClick={handleProcessControl}
-                    />
-                  ) : null}
-                </div>
-                {finalControl.length === 0 ? (
-                  <div className="flex h-32 w-full items-center justify-center opacity-40">
-                    Henüz final kontrolü yapılmadı
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-                    {Object.entries(finalControl[0]).map(
-                      ([key, val]: any, index) => {
-                        if (processInfo.includes(key)) {
-                          return (
-                            <div
-                              key={index}
-                              className="mb-3 flex flex-col flex-nowrap"
-                            >
-                              <h4 className="mb-0 italic">
-                                {infoProcessTranslate[key]}
-                              </h4>
-                              {renderValues(key, val)}
-                            </div>
-                          );
-                        }
-                      },
-                    )}
-                  </div>
-                )}
-              </div>
-            </Card>
-            {process?.unacceptable?.length > 0 ? (
-              <div className="grid grid-cols-1">
-                <div className="mb-2 flex w-full justify-between bg-white px-7 py-5 ">
-                  <h2 className="text-2xl font-bold">
-                    Uygunsuz Ürün/Hizmet Formu
-                  </h2>
+          <div>
+            <div className="mt-4 max-w-[800px] rounded-2xl bg-white px-8 py-3 dark:bg-[#111c44] dark:text-white">
+              <div className="my-2 flex justify-between">
+                <h2 className="text-2xl font-bold">Final Kontrol Bilgileri</h2>
+                {process.status === 'FINISHED' &&
+                (session?.user?.role === 'SUPER' ||
+                  session?.user?.role === 'ADMIN') ? (
                   <Button
-                    extra={`px-4 h-[40px] !max-w-fit`}
-                    onClick={handlePrint}
-                    text="UYGUNSUZ YAZDIR"
-                    icon={<MdPrint className="mr-1 h-5 w-5" />}
+                    icon={<MdAdd className="mr-1 h-5 w-5" />}
+                    extra="max-w-fit px-4  h-[40px]"
+                    text={`${
+                      finalControl.length > 0
+                        ? 'FİNAL KONTROLÜ DÜZENLE'
+                        : 'FİNAL KONTROLÜ YAP'
+                    } `}
+                    onClick={handleProcessControl}
                   />
-                </div>
-                <div className="print:page-break relative min-h-[800px] w-full bg-white px-7 py-5 print:absolute  print:left-0 print:top-0 print:z-[99999] print:min-h-screen print:w-full">
-                  <Unaccept formData={unacceptable} variant="value" />
-                </div>
+                ) : null}
               </div>
+            </div>
+            <div className="mt-2 max-w-[800px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
+              {finalControl.length === 0 ? (
+                <div className="flex h-32 w-full items-center justify-center opacity-40">
+                  Henüz final kontrolü yapılmadı
+                </div>
+              ) : (
+                <FinalControl
+                  key={process.id}
+                  data={{
+                    ...process,
+                    inspector: session?.user?.name,
+                  }}
+                  variant="data"
+                />
+              )}
+            </div>
+          </div>
+
+          <div>
+            {process?.unacceptable?.length > 0 ? (
+              <>
+                <div className="mt-4 max-w-[800px] rounded-2xl bg-white px-8 py-3 dark:bg-[#111c44] dark:text-white">
+                  <div className="my-2 flex justify-between">
+                    <h2 className="text-2xl font-bold">
+                      Uygunsuz Ürün/Hizmet Formu
+                    </h2>
+                    <Button
+                      extra={`px-4 h-[40px] !max-w-fit`}
+                      onClick={handlePrint}
+                      text="UYGUNSUZ YAZDIR"
+                      icon={<MdPrint className="mr-1 h-5 w-5" />}
+                    />
+                  </div>
+                </div>
+                <div className="mt-4 max-w-[800px] rounded-2xl bg-white px-8 py-3 dark:bg-[#111c44] dark:text-white">
+                  <div className="grid grid-cols-1">
+                    <div className="print:page-break relative min-h-[800px] w-full bg-white px-7 py-5 print:absolute  print:left-0 print:top-0 print:z-[99999] print:min-h-screen print:w-full">
+                      <Unaccept formData={unacceptable} variant="value" />
+                    </div>
+                  </div>
+                </div>
+              </>
             ) : null}
           </div>
         </>

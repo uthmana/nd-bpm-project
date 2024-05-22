@@ -94,7 +94,6 @@ export async function GET(req: NextRequest) {
           faultResources.find((f) => f.faultId === p.faultId).image,
         ),
       }));
-      console.log(mergedData[1]);
       return mergedData;
     });
 

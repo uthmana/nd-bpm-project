@@ -12,9 +12,7 @@ import {
 } from 'app/lib/apiRequest';
 import { useParams, useRouter } from 'next/navigation';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
-import ProcessControlForm from 'components/forms/processControl';
 import { useSession } from 'next-auth/react';
-import Card from 'components/card';
 import { log } from 'util';
 import Popup from 'components/popup';
 import UnacceptForm from 'components/forms/unaccept';
@@ -80,6 +78,11 @@ export default function EntryControl() {
   const handleSubmit = async (val) => {
     const [values, isUpdate] = val;
 
+    if (!values?.kontrol_edilen_miktar || !values?.nakliye_miktar) {
+      toast.error('Lütfen Miktar bilgilerini giriniz.');
+      return;
+    }
+
     if (values.result !== 'ACCEPT' && !isSubmitControl) {
       setControlValues(val);
       setUnacceptableFormData({
@@ -102,9 +105,11 @@ export default function EntryControl() {
     if (isUpdate) {
       const resData: any = await updateProcessControl({
         ...values,
-        processId: process.id,
-        faultId: process.faultId,
+        id: processControl.id,
         updatedBy: session?.user?.name,
+        kontrol_edilen_miktar: parseInt(values?.kontrol_edilen_miktar),
+        hatali_miktar: parseInt(values?.hatali_miktar),
+        nakliye_miktar: parseInt(values?.nakliye_miktar),
       });
 
       const { status, response } = resData;
@@ -130,6 +135,9 @@ export default function EntryControl() {
       processId: process.id,
       faultId: process.faultId,
       createdBy: session?.user?.name,
+      kontrol_edilen_miktar: parseInt(values?.kontrol_edilen_miktar),
+      hatali_miktar: parseInt(values?.hatali_miktar),
+      nakliye_miktar: parseInt(values?.nakliye_miktar),
     });
 
     const { status, response } = resProcess;
@@ -204,38 +212,34 @@ export default function EntryControl() {
         </span>
         Prosesler
       </NextLink>
-
-      <Card className="mx-auto mb-7 mt-4 max-w-[700px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
+      <div className="mx-auto mt-4 max-w-[900px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
         {isLoading ? (
           <LatestInvoicesSkeleton />
         ) : (
-          <>
-            <ProcessControlForm
-              title={'Ürün Final Kontrol Formu'}
-              info={process}
-              data={processControl}
-              isSubmitting={isSubmitting}
-              onSubmit={(...val) => handleSubmit(val)}
-            />
-          </>
-        )}
-
-        <Popup
-          show={isShowPopUp}
-          extra="flex flex-col gap-3 !top-[50%] py-6 px-8 !w-[90%] md:!w-[600px] !rounded-sm"
-        >
-          <UnacceptForm
-            formData={unacceptableFormData as any}
-            handleClose={handleClose}
-            onSaveUnacceptable={(val) => onSaveUnacceptable(val)}
-            isSubmittingUnaccept={isSubmittingUnaccept}
+          <FinalControl
+            key={process.id}
+            data={{
+              ...process,
+              inspector: session?.user?.name,
+              updatedBy: session?.user?.name,
+            }}
+            onSubmit={(...val) => handleSubmit(val)}
+            isSubmitting={isSubmitting}
           />
-        </Popup>
-      </Card>
-
-      <div className="mx-auto mt-4 max-w-[700px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
-        <FinalControl data={{ ...process, inspector: session?.user?.name }} />
+        )}
       </div>
+
+      <Popup
+        show={isShowPopUp}
+        extra="flex flex-col gap-3 !top-[50%] py-6 px-8 !w-[90%] md:!w-[600px] !rounded-sm"
+      >
+        <UnacceptForm
+          formData={unacceptableFormData as any}
+          handleClose={handleClose}
+          onSaveUnacceptable={(val) => onSaveUnacceptable(val)}
+          isSubmittingUnaccept={isSubmittingUnaccept}
+        />
+      </Popup>
     </>
   );
 }

@@ -1,19 +1,44 @@
 import React, { useRef, useState } from 'react';
-import EditableBox from 'components/EditableBox';
+import EditableBox from 'components/Box';
 import Radio from 'components/radio';
-import TestTable from './testTable';
+import TestTable from './table/testTable';
+import { MdCheck } from 'react-icons/md';
+import TestArea from './table/testArea';
+import InputField from 'components/fields/InputField';
 
-export default function Index({ data }) {
+export default function Index({ data, onChange, variant }) {
   const [values, setValues] = useState(data || ({} as any));
 
-  const handleValues = (event) => {
+  const handleResultValues = (event) => {
     const newVal = { [event.target?.name]: event.target?.value };
     setValues({ ...values, ...newVal });
+    onChange({ ...values, ...newVal });
   };
 
-  const handleChange = (val) => {
-    setValues({ ...values, ...val });
+  const handleTestTableChange = (val) => {
+    setValues({ ...values, testItem: val });
+    onChange({ ...values, testItem: val });
   };
+
+  const handleTestAreaChange = (val) => {
+    setValues({ ...values, testArea: val });
+    onChange({ ...values, testArea: val });
+  };
+
+  const handleQuantityValues = (event) => {
+    const newVal = { [event.target?.name]: event.target?.value };
+    setValues({ ...values, ...newVal });
+    onChange({ ...values, ...newVal });
+  };
+
+  const resultsList = [
+    { value: 'ACCEPT', name: 'Kabul / <br /> Acceptance' },
+    {
+      value: 'ACCEPTANCE_WITH_CONDITION',
+      name: 'Şartlı Kabul / <br /> Conditional <br /> Acceptance',
+    },
+    { value: 'REJECT', name: 'Red / <br /> Rejection' },
+  ];
 
   return (
     <div className="w-full">
@@ -26,107 +51,84 @@ export default function Index({ data }) {
           <span> Uygun / Uygun Değil</span>
         </div>
       </div>
+      <TestArea
+        onChange={(val) => handleTestAreaChange(val)}
+        data={values?.testArea}
+        variant={variant}
+      />
+      <TestTable
+        onChange={(val) => handleTestTableChange(val)}
+        machineName={values?.machineName}
+        data={values?.testItem}
+        variant={variant}
+      />
 
-      <div className="mb-5 flex flex-col">
-        <div className="mb-3 text-center text-xs">Ön Alan / Lead Area</div>
-        <div className="flex flex-wrap justify-between gap-1">
-          <div className="">
-            <div className="mb-1 text-xs">İstenen/ Requested</div>
-            <div className="flex flex-nowrap items-center gap-1 text-xs">
-              <EditableBox editable={true} label="mm/diş" />
-              <EditableBox className="w-[70px]" />
-              <EditableBox className="w-[70px]" />
-              <EditableBox />
-              <EditableBox />
-            </div>
-          </div>
-          <div className="">
-            <div className="mb-1 text-xs">Sonuçlar / Results</div>
-            <div className="flex flex-nowrap items-center gap-1 text-xs">
-              <EditableBox editable={true} className="w-[70px]" />
-              <EditableBox className="w-[70px]" />
-              <EditableBox />
-              <EditableBox />
-              <EditableBox />
-              <EditableBox />
-            </div>
-          </div>
-        </div>
+      <div className="mb-5 flex w-full items-center justify-between gap-3">
+        <InputField
+          label="Kontrol Miktar"
+          onChange={handleQuantityValues}
+          type="number"
+          id="kontrol_edilen_miktar"
+          name="kontrol_edilen_miktar"
+          placeholder=""
+          extra="mb-2 !rounded-none h-[32px] !p-1 border-1 !border-[#000]"
+          value={values?.kontrol_edilen_miktar}
+          required={true}
+          disabled={variant !== 'input'}
+        />
+        <InputField
+          label="Nakliye Miktar"
+          onChange={handleQuantityValues}
+          type="number"
+          id="nakliye_miktar"
+          name="nakliye_miktar"
+          placeholder=""
+          extra="mb-2 !rounded-none  h-[32px] !p-1 border-1 !border-[#000]"
+          value={values?.nakliye_miktar}
+          required={true}
+          disabled={variant !== 'input'}
+        />
+        <InputField
+          label="Hatalı Miktar"
+          onChange={handleQuantityValues}
+          type="number"
+          id="hatali_miktar"
+          name="hatali_miktar"
+          placeholder=""
+          extra="mb-2 !rounded-none  h-[32px] !p-1 border-1 !border-[#000]"
+          value={values?.hatali_miktar}
+          disabled={variant !== 'input'}
+        />
       </div>
 
-      <div className="mb-8 flex flex-col">
-        <div className="mb-3 text-center text-xs">
-          Uygulama Alanı / Coverage Area:
-        </div>
-        <div className="flex flex-wrap justify-between gap-1">
-          <div className="">
-            <div className="mb-1 text-xs">İstenen/ Requested</div>
-            <div className="flex flex-nowrap items-center gap-1 text-xs">
-              <EditableBox editable={true} label="mm/diş" />
-              <EditableBox className="w-[70px]" />
-              <EditableBox className="w-[70px]" />
-              <EditableBox />
-              <EditableBox />
-            </div>
-          </div>
-          <div className="">
-            <div className="mb-1 text-xs">Sonuçlar / Results</div>
-            <div className="flex flex-nowrap items-center gap-1 text-xs">
-              <EditableBox editable={true} className="w-[70px]" />
-              <EditableBox className="w-[70px]" />
-              <EditableBox />
-              <EditableBox />
-              <EditableBox />
-              <EditableBox />
-            </div>
-          </div>
-        </div>
-      </div>
-      <TestTable onChange={(val) => handleChange(val)} data={data} />
       <div className="mb-7 w-full text-xs">
         <div className="mb-3 font-semibold">Sonuç / Result:</div>
         <div className="flex flex-wrap justify-around gap-3">
-          <div className="flex items-center gap-2">
-            <div className="">
-              Kabul / <br /> Acceptance
-            </div>
-            <EditableBox className="w-[70px]">
-              <Radio
-                name="result"
-                value={'ACCEPT'}
-                onChange={handleValues}
-                checked={values.result === 'ACCEPT'}
-              />
-            </EditableBox>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="">
-              Şartlı Kabul / <br /> Conditional <br /> Acceptance
-            </div>
-            <EditableBox className="w-[70px]">
-              <Radio
-                name="result"
-                value={'ACCEPT_WITH_CONDITION'}
-                onChange={handleValues}
-                checked={values.result === 'ACCEPT_WITH_CONDITION'}
-              />
-            </EditableBox>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="">
-              Red / <br /> Rejection
-            </div>
-            <EditableBox className="flex w-[70px]">
-              <Radio
-                name="result"
-                value={'REJECT'}
-                onChange={handleValues}
-                checked={values.result === 'REJECT'}
-              />
-            </EditableBox>
-          </div>
+          {resultsList.map((item, idx) => {
+            return (
+              <div className="flex items-center gap-2" key={idx}>
+                <div dangerouslySetInnerHTML={{ __html: item.name }}></div>
+                <EditableBox className="w-[70px]">
+                  {variant === 'input' ? (
+                    <Radio
+                      name="result"
+                      value={item.value}
+                      onChange={handleResultValues}
+                      checked={values?.result === item.value}
+                    />
+                  ) : (
+                    <div className="flex justify-center">
+                      {values.result === item.value ? (
+                        <MdCheck className=" h-5 w-5" />
+                      ) : (
+                        ''
+                      )}
+                    </div>
+                  )}
+                </EditableBox>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

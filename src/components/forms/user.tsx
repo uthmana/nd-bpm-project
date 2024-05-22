@@ -139,7 +139,7 @@ export default function User({ onSubmit, data, title, loading }: userForm) {
           );
         })}
       </Select>
-      <Button loading={loading} extra="mt-8" text="SAVE" />
+      <Button loading={loading} extra="mt-8" text="KAYDET" />
     </form>
   );
 }
