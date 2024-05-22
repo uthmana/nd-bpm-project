@@ -416,29 +416,32 @@ export default function EntryControl() {
               )}
             </div>
           </div>
+
           <div>
-            <div className="mt-4 max-w-[800px] rounded-2xl bg-white px-8 py-3 dark:bg-[#111c44] dark:text-white">
-              <div className="my-2 flex justify-between">
-                <h2 className="text-2xl font-bold">
-                  Uygunsuz Ürün/Hizmet Formu
-                </h2>
-                <Button
-                  extra={`px-4 h-[40px] !max-w-fit`}
-                  onClick={handlePrint}
-                  text="UYGUNSUZ YAZDIR"
-                  icon={<MdPrint className="mr-1 h-5 w-5" />}
-                />
-              </div>
-            </div>
-            <div className="mt-4 max-w-[800px] rounded-2xl bg-white px-8 py-3 dark:bg-[#111c44] dark:text-white">
-              {process?.unacceptable?.length > 0 ? (
-                <div className="grid grid-cols-1">
-                  <div className="print:page-break relative min-h-[800px] w-full bg-white px-7 py-5 print:absolute  print:left-0 print:top-0 print:z-[99999] print:min-h-screen print:w-full">
-                    <Unaccept formData={unacceptable} variant="value" />
+            {process?.unacceptable?.length > 0 ? (
+              <>
+                <div className="mt-4 max-w-[800px] rounded-2xl bg-white px-8 py-3 dark:bg-[#111c44] dark:text-white">
+                  <div className="my-2 flex justify-between">
+                    <h2 className="text-2xl font-bold">
+                      Uygunsuz Ürün/Hizmet Formu
+                    </h2>
+                    <Button
+                      extra={`px-4 h-[40px] !max-w-fit`}
+                      onClick={handlePrint}
+                      text="UYGUNSUZ YAZDIR"
+                      icon={<MdPrint className="mr-1 h-5 w-5" />}
+                    />
                   </div>
                 </div>
-              ) : null}
-            </div>
+                <div className="mt-4 max-w-[800px] rounded-2xl bg-white px-8 py-3 dark:bg-[#111c44] dark:text-white">
+                  <div className="grid grid-cols-1">
+                    <div className="print:page-break relative min-h-[800px] w-full bg-white px-7 py-5 print:absolute  print:left-0 print:top-0 print:z-[99999] print:min-h-screen print:w-full">
+                      <Unaccept formData={unacceptable} variant="value" />
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : null}
           </div>
         </>
       )}

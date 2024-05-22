@@ -153,6 +153,7 @@ export const generateAndSendPDF = async () => {
   try {
     const { default: html2pdf } = await import('html2pdf.js');
     const element = document.getElementById('pdf-content');
+
     if (!element) {
       return;
     }
@@ -162,10 +163,14 @@ export const generateAndSendPDF = async () => {
       .toPdf()
       .set({ dpi: 600 })
       .get('pdf');
+
     const pdfBlob = pdf.output('blob');
     const formData = new FormData();
-    formData.append('pdf', pdfBlob, 'file.pdf');
-    const res = await fetch('/api/savePdf', {
+
+    const file = new File([pdfBlob], 'file.pdf', { type: 'application/pdf' });
+    formData.append('file', file);
+
+    const res = await fetch('/api/upload', {
       method: 'POST',
       body: formData,
     });

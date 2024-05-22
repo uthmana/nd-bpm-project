@@ -64,6 +64,7 @@ export type OfferObj = {
 
 export type ProcessObj = {
   id: string;
+  product_barcode: string;
   customerName: string;
   product: string;
   quantity: number;

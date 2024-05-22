@@ -370,7 +370,7 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
         value={values.definition}
       />
 
-      <Button loading={loading} extra="mt-4" text="SAVE" />
+      <Button loading={loading} extra="mt-4" text="KAYDET" />
     </form>
   );
 }

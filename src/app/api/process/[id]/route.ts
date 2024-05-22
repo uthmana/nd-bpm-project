@@ -12,7 +12,10 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
       include: {
         technicalParams: true,
         finalControl: {
-          include: { testItem: true },
+          include: {
+            testItem: true,
+            testArea: true,
+          },
         },
         unacceptable: true,
       },

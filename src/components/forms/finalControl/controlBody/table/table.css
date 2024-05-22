@@ -8,7 +8,7 @@
 
 .test-table thead tr td,
 .test-table tbody tr td {
-  @apply min-w-[42px] border border-[#000] p-2 text-sm;
+  @apply min-w-[70px] border border-[#000] p-2 text-sm;
 }
 .mikrokapsul tbody tr td:nth-child(1) {
   @apply !w-[20px];
@@ -22,4 +22,10 @@
 .patch tbody tr td:nth-child(1),
 .ez-drive tbody tr td:nth-child(1) {
   @apply min-w-[108px] text-xs;
+}
+
+.mikrokapsul-input,
+.patch-input,
+.ez-drive-input {
+  @apply !p-0;
 }
