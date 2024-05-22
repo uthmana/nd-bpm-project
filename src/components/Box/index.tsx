@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 
-export default function EditableBox(props: {
+export default function Box(props: {
   className?: string;
   text?: string;
   label?: string;
@@ -10,22 +10,12 @@ export default function EditableBox(props: {
   const { className, text, label, editable, children } = props;
   const editableElem = useRef(null);
 
-  const handleClick = (event) => {
-    event.stopPropagation();
-    if (editable) {
-      editableElem.current.setAttribute('contenteditable', 'true');
-    }
-  };
-
   return (
-    <div
-      onClick={handleClick}
-      className="flex items-center gap-1 overflow-hidden"
-    >
+    <div className="flex items-center gap-1 overflow-hidden">
       <div
         ref={editableElem}
-        className={`h-[30px]  border-2 border-[#000] p-1 ${
-          className ? className : 'w-[36px]'
+        className={`flex  h-[32px] items-center border border-[#000] px-1 ${
+          className ? className : 'min-w-[60px]'
         }`}
       >
         {children ? children : text}

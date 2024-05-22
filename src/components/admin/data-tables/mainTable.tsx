@@ -29,6 +29,7 @@ import {
   UserObj,
 } from '../../../app/localTypes/table-types';
 
+
 function MainTable({
   tableData,
   onEdit,
@@ -727,6 +728,7 @@ function MainTable({
                     <tr
                       key={row.id}
                       className="border-b border-gray-100 hover:bg-lightPrimary dark:border-gray-900 dark:hover:bg-navy-700"
+                      // onDoubleClick={() => onDoubleClick(row.original.id)}
                     >
                       {row.getVisibleCells().map((cell, indx) => {
                         return (

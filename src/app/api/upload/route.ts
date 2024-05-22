@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
   //const file = req.body || '';
   const data = await req.formData();
   const file: File | null = data.get('file') as unknown as File;
-  const contentType = file.type || 'text/plain';
+  const contentType = file?.type || 'text/plain';
   const filename = `${nanoid()}.${contentType.split('/')[1]}`;
   const blob = await put(`pdfs/${filename}`, file, {
     contentType,

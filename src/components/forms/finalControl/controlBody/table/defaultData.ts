@@ -181,6 +181,39 @@ export const otherData = [
   },
 ];
 
+export const testAreaData = [
+  {
+    title: 'Ön Alan / Lead Area',
+    requiredValue: '',
+    unit: '',
+    required_1: '',
+    required_2: '',
+    required_3: '',
+    required_4: '',
+    result_1: '',
+    result_2: '',
+    result_3: '',
+    result_4: '',
+    result_5: '',
+    result_6: '',
+  },
+  {
+    title: 'Uygulama Alanı / Coverage Area:',
+    requiredValue: '',
+    unit: '',
+    required_1: '',
+    required_2: '',
+    required_3: '',
+    required_4: '',
+    result_1: '',
+    result_2: '',
+    result_3: '',
+    result_4: '',
+    result_5: '',
+    result_6: '',
+  },
+];
+
 export const getDefaultData = (machineName) => {
   let appName = machineName?.toLowerCase();
   if (!appName) return otherData;

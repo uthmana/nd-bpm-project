@@ -3,9 +3,12 @@ import { NextResponse } from 'next/server';
 import ResetPassword from '../../../emails/resetPassword';
 import prisma from 'app/lib/db';
 import crypto from 'crypto';
-import InvoiceDoc from 'components/invoice';
-import OfferDoc from 'components/offer';
-import OfferTemplete from '../../../emails/offer';
+//import InvoiceDoc from 'components/invoice';
+// import createPDF from 'utils/generatePDF';
+// import OfferDoc from 'components/offer';
+// import OfferTemplete from '../../../emails/offer';
+// import fs from 'fs';
+// import path from 'path';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -13,14 +16,22 @@ export async function POST(request: Request) {
   const formData = await request.json();
 
   const emailBody: any = {
-    from: 'ND <majeed@ndindustriesbmp.com>',
+    from: 'ND Industries<info@ndindustriesbmp.com>',
     to: formData.email,
     subject: formData.subject,
+    text: formData.text,
   };
 
   if (formData.type === 'offer') {
-    //emailBody.react = OfferDoc({ offer: formData.data });
-    emailBody.react = OfferTemplete({ offer: formData.data });
+    //emailBody.react = OfferTemplete({ offer: formData.data });
+    emailBody.html = `
+    <p>Sayın ${formData?.data.rep_name},</p> 
+    <br/>
+    <p>Özel kampanyamızı kaçırmayın! Ürünlerimizde cazip indirim fırsatları sizi bekliyor. Detaylar için bizimle iletişime geçebilirsiniz.</p>
+     <br/>
+    <p>Saygılarımızla,</p>
+    <p>ND Industries Türkiye</p>
+    `;
     emailBody.attachments = [
       {
         filename: 'Teklif.pdf',
@@ -40,7 +51,14 @@ export async function POST(request: Request) {
 
   if (formData.type === 'invoice') {
     formData.data.serverSide = true;
-    emailBody.react = InvoiceDoc({ invoice: formData.data });
+    const pdfPath = formData.docPath;
+    emailBody.attachments = [
+      {
+        filename: 'Invoice.pdf',
+        path: pdfPath,
+      },
+    ];
+
     const { data, error }: any = await resend.emails.send(emailBody);
     if (error) {
       return NextResponse.json(
@@ -86,5 +104,5 @@ export async function POST(request: Request) {
     }
     return NextResponse.json({ data }, { status: 200 });
   }
-  return NextResponse.json({ error: 'Unkwon User' }, { status: 404 });
+  return NextResponse.json({ error: 'Unknown User' }, { status: 404 });
 }

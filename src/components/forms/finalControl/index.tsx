@@ -4,7 +4,10 @@ import ControlHeader from './controlHeader';
 import ControlFooter from './controlFooter';
 import ControlBody from './controlBody';
 import Button from 'components/button/button';
-import { getDefaultData } from '../finalControl/controlBody/table/defaultData';
+import {
+  getDefaultData,
+  testAreaData,
+} from '../finalControl/controlBody/table/defaultData';
 
 export default function FinalControl(props: {
   data: any;
@@ -13,7 +16,8 @@ export default function FinalControl(props: {
   variant?: string;
 }) {
   const { data, onSubmit, isSubmitting, variant = 'input' } = props;
-  const { faultId, id, updatedBy, inspector, finalControl, machineName } = data;
+  const { faultId, id, paketleme, createdBy, finalControl, machineName } = data;
+
   const isUpdate = finalControl?.length > 0;
   const [values, setValues] = useState(
     isUpdate
@@ -21,17 +25,27 @@ export default function FinalControl(props: {
           faultId,
           machineName,
           processId: id,
-          updatedBy,
+          createdBy,
+          paketleme: finalControl[0]?.paketleme,
+          kontrol_edilen_miktar: finalControl[0]?.kontrol_edilen_miktar,
+          hatali_miktar: finalControl[0]?.hatali_miktar,
+          nakliye_miktar: finalControl[0]?.nakliye_miktar,
           result: finalControl[0]?.result,
           testItem: finalControl[0]?.testItem,
+          testArea: finalControl[0]?.testArea,
         }
       : {
           faultId,
           machineName,
           processId: id,
-          createdBy: inspector,
+          createdBy: '',
+          paketleme: '',
+          kontrol_edilen_miktar: 0,
+          hatali_miktar: 0,
+          nakliye_miktar: 0,
           result: '',
           testItem: getDefaultData(machineName),
+          testArea: testAreaData,
         },
   );
 
@@ -52,7 +66,7 @@ export default function FinalControl(props: {
     <div className="w-full">
       <ControlHeader data={data} />
       <ControlBody data={values} onChange={handleChange} variant={variant} />
-      <ControlFooter data={data} />
+      <ControlFooter data={values} onChange={handleChange} variant={variant} />
       {variant == 'input' ? (
         <Button
           onClick={handleSubmit}

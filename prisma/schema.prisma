@@ -232,6 +232,26 @@ model FinalControl {
   Process               Process?           @relation(fields: [processId], references: [id], onDelete: Cascade)
   processId             String?
   testItem              TestItem[]
+  testArea              TestArea[]
+}
+
+model TestArea {
+  id             String        @id @default(cuid())
+  title          String?
+  requiredValue  String?
+  unit           String?
+  required_1     String?
+  required_2     String?
+  required_3     String?
+  required_4     String?
+  result_1       String?
+  result_2       String?
+  result_3       String?
+  result_4       String?
+  result_5       String?
+  result_6       String?
+  FinalControl   FinalControl? @relation(fields: [finalControlId], references: [id])
+  finalControlId String?
 }
 
 model TestItem {

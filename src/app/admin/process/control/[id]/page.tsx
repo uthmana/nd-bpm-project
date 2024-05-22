@@ -12,9 +12,7 @@ import {
 } from 'app/lib/apiRequest';
 import { useParams, useRouter } from 'next/navigation';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
-import ProcessControlForm from 'components/forms/processControl';
 import { useSession } from 'next-auth/react';
-import Card from 'components/card';
 import { log } from 'util';
 import Popup from 'components/popup';
 import UnacceptForm from 'components/forms/unaccept';
@@ -80,6 +78,11 @@ export default function EntryControl() {
   const handleSubmit = async (val) => {
     const [values, isUpdate] = val;
 
+    if (!values?.kontrol_edilen_miktar || !values?.nakliye_miktar) {
+      toast.error('Lütfen Miktar bilgilerini giriniz.');
+      return;
+    }
+
     if (values.result !== 'ACCEPT' && !isSubmitControl) {
       setControlValues(val);
       setUnacceptableFormData({
@@ -104,6 +107,9 @@ export default function EntryControl() {
         ...values,
         id: processControl.id,
         updatedBy: session?.user?.name,
+        kontrol_edilen_miktar: parseInt(values?.kontrol_edilen_miktar),
+        hatali_miktar: parseInt(values?.hatali_miktar),
+        nakliye_miktar: parseInt(values?.nakliye_miktar),
       });
 
       const { status, response } = resData;
@@ -129,6 +135,9 @@ export default function EntryControl() {
       processId: process.id,
       faultId: process.faultId,
       createdBy: session?.user?.name,
+      kontrol_edilen_miktar: parseInt(values?.kontrol_edilen_miktar),
+      hatali_miktar: parseInt(values?.hatali_miktar),
+      nakliye_miktar: parseInt(values?.nakliye_miktar),
     });
 
     const { status, response } = resProcess;
@@ -203,7 +212,7 @@ export default function EntryControl() {
         </span>
         Prosesler
       </NextLink>
-      <div className="mx-auto mt-4 max-w-[800px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
+      <div className="mx-auto mt-4 max-w-[900px] rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
         {isLoading ? (
           <LatestInvoicesSkeleton />
         ) : (

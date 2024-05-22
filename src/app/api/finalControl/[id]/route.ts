@@ -56,6 +56,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       id: finalControlId,
       faultId: finalControlFaultId,
       testItem,
+      testArea,
       ...rest
     } = data;
     const updateFinalControl = await prisma.finalControl.update({
@@ -72,6 +73,16 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         testItem?.map(async (item) => {
           const { id, updatedAt, createdAt, finalControlId, ...rest } = item;
           await prisma.testItem.update({
+            where: { id: id },
+            data: { ...rest },
+          });
+        }),
+      );
+
+      const testAreaResult = await Promise.all(
+        testArea?.map(async (item) => {
+          const { id, finalControlId, ...rest } = item;
+          await prisma.testArea.update({
             where: { id: id },
             data: { ...rest },
           });

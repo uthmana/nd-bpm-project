@@ -55,7 +55,7 @@ export async function PUT(req: Request) {
       );
     }
 
-    const { testItem, ...rest } = result;
+    const { testItem, testArea, ...rest } = result;
     const finalControl = await prisma.finalControl.create({
       data: { ...rest },
     });
@@ -64,6 +64,13 @@ export async function PUT(req: Request) {
       const testResult = await Promise.all(
         testItem?.map(async (item) => {
           await prisma.testItem.create({
+            data: { ...item, finalControlId: finalControl.id },
+          });
+        }),
+      );
+      const testAreaResult = await Promise.all(
+        testArea?.map(async (item) => {
+          await prisma.testArea.create({
             data: { ...item, finalControlId: finalControl.id },
           });
         }),

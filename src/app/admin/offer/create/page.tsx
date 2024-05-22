@@ -13,7 +13,7 @@ import ReactDOMServer from 'react-dom/server';
 
 export default function Create() {
   const [customers, setCustomers] = useState([]);
-  const [offerData, setOfferData] = useState({});
+  const [offerData, setOfferData] = useState({} as any);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
@@ -28,17 +28,21 @@ export default function Create() {
   }, []);
 
   const handleSubmit = async (val) => {
+    setIsSubmitting(true);
     const newPdf = await generateAndSendPDF();
     if (newPdf.status !== 200) {
-      alert(newPdf.message + ' Please try agan later');
+      toast.error('Hata oluştu. Daha sonra tekrar deneyin!');
+      setIsSubmitting(false);
       return;
     }
-    const docPath = `${process.env.NEXT_PUBLIC_BASE_PATH}${newPdf.path}`;
 
     delete val.company_name;
     delete val.companyName;
     setIsSubmitting(true);
-    const addOfferResponse: any = await addOffer({ ...val, docPath });
+    const addOfferResponse: any = await addOffer({
+      ...val,
+      docPath: newPdf.url,
+    });
     const { status, data, response } = addOfferResponse;
     if (response?.error) {
       const { message, detail } = response?.error;
@@ -59,7 +63,6 @@ export default function Create() {
   };
 
   const handleChange = (val) => {
-    setOfferData({});
     setOfferData(val);
   };
 
@@ -77,17 +80,7 @@ export default function Create() {
 
       <div className="mx-auto flex w-full max-w-[1320px] flex-col-reverse justify-center gap-2 xl:flex-row">
         <div id="pdf-content" className="mx-auto w-full max-w-[700px] bg-white">
-          <OfferDoc offer={offerData} />
-          {/* <div className="page-break min-h-[800px] w-full bg-white px-10 lg:w-[700px] lg:max-w-[700px] print:absolute  print:top-0 print:z-[99999] print:min-h-screen print:w-full print:pl-0 print:pr-8">
-            <iframe
-              id="page"
-              width="100%"
-              height="1000px"
-              srcDoc={ReactDOMServer.renderToString(
-                <OfferTemplete offer={offerData} />,
-              )}
-            ></iframe>
-          </div> */}
+          <OfferDoc key={offerData?.key} offer={offerData} />
         </div>
         <Card className="mx-auto w-full max-w-[700px] bg-white px-4 py-8 dark:bg-navy-700">
           <OfferForm
