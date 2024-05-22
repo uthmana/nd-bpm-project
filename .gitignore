@@ -42,6 +42,5 @@ next-env.d.ts
 .idea
 
 #Prisma
-/prisma
-
+#prisma
 /src/app/lib/db.ts
