@@ -37,30 +37,34 @@ export default function OfferDoc({ offer }) {
 
       <div className="mb-8 flex w-full justify-between">
         <div className="flex flex-col gap-1  text-sm">
-          <div className="flex items-center gap-4 capitalize">
+          <div className="flex  gap-4 capitalize">
             <span className="w-12  text-xs font-bold">Müşteri</span>
-            <span>{offer?.Customer?.company_name?.toLowerCase()}</span>
+            <span className="max-w-[250px]">
+              {offer?.company_name?.toLowerCase() ||
+                offer?.companyName?.toLowerCase() ||
+                offer?.Customer?.company_name?.toLowerCase()}
+            </span>
           </div>
-          <div className="flex items-center gap-4 capitalize">
+          <div className="flex  gap-4 capitalize">
             <span className="w-12 text-xs font-bold">İlgili</span>
             <span> {offer?.rep_name}</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex  gap-4">
             <span className="w-12 text-xs font-bold">E-posta</span>
             <span>{offer?.email}</span>
           </div>
         </div>
 
         <div className="flex flex-col gap-1 text-sm">
-          <div className="flex items-center justify-between gap-1">
+          <div className="flex  justify-between gap-1">
             <span className="mr-1 whitespace-nowrap text-xs font-bold">
               Referans No:
             </span>
             <span className="text-right">{offer?.barcode}</span>
           </div>
 
-          <div className="flex items-center justify-between gap-1">
-            <span className=" mr-1 whitespace-nowrap text-xs font-bold">
+          <div className="flex  justify-between gap-1">
+            <span className="mr-1 whitespace-nowrap text-xs font-bold">
               Teklif Tarihi:
             </span>
             <span className="text-right">
@@ -70,7 +74,7 @@ export default function OfferDoc({ offer }) {
             </span>
           </div>
 
-          <div className="flex items-center justify-between gap-1">
+          <div className="flex  justify-between gap-1">
             <span className=" mr-1 whitespace-nowrap text-xs font-bold">
               Son Geçerlilik:
             </span>
@@ -121,7 +125,7 @@ export default function OfferDoc({ offer }) {
                       <span className="col-span-1">
                         <Image
                           className="w-full"
-                          src={`${process.env.NEXT_PUBLIC_BASE_PATH}/uploads/${item?.image}`}
+                          src={`${item?.image}`}
                           alt={item?.name}
                           width={40}
                           height={60}

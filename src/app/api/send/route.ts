@@ -23,7 +23,9 @@ export async function POST(request: Request) {
   };
 
   if (formData.type === 'offer') {
-    emailBody.react = OfferTemplete({ offer: formData.data });
+    //emailBody.react = OfferTemplete({ offer: formData.data });
+    emailBody.text =
+      'Özel kampanyamızı kaçırmayın! Ürünlerimizde cazip indirim fırsatları sizi bekliyor. Detaylar için bizimle iletişime geçebilirsiniz.';
     emailBody.attachments = [
       {
         filename: 'Teklif.pdf',
@@ -43,11 +45,7 @@ export async function POST(request: Request) {
 
   if (formData.type === 'invoice') {
     formData.data.serverSide = true;
-
-    // Generate the PDF
-    const pdfPath = formData.docPath; //await createPDF(formData.data);
-
-    // Add the PDF attachment
+    const pdfPath = formData.docPath;
     emailBody.attachments = [
       {
         filename: 'Invoice.pdf',
@@ -55,7 +53,7 @@ export async function POST(request: Request) {
       },
     ];
 
-    const { data, error }: any =await resend.emails.send(emailBody);
+    const { data, error }: any = await resend.emails.send(emailBody);
     if (error) {
       return NextResponse.json(
         { message: error.message },

@@ -215,18 +215,6 @@ export default function InvoiceForm(props: {
 
           <div className="mb-4 flex flex-col gap-3 sm:flex-row">
             <InputField
-              label="Sorumlu"
-              onChange={handleValues}
-              type="text"
-              id="rep_name"
-              name="rep_name"
-              placeholder="Sorumlu"
-              extra="mb-2"
-              value={values.rep_name}
-              required={true}
-            />
-
-            <InputField
               label="Vergi Dairesi"
               onChange={handleValues}
               type="text"
@@ -236,6 +224,7 @@ export default function InvoiceForm(props: {
               extra="mb-2"
               value={values.tax_Office}
               required={true}
+              disabled={true}
             />
             <InputField
               label="Vergi No"
@@ -246,6 +235,18 @@ export default function InvoiceForm(props: {
               placeholder="Vergi No"
               extra="mb-2"
               value={values.taxNo}
+              required={true}
+              disabled={true}
+            />
+            <InputField
+              label="Sorumlu"
+              onChange={handleValues}
+              type="text"
+              id="rep_name"
+              name="rep_name"
+              placeholder="Sorumlu"
+              extra="mb-2"
+              value={values.rep_name}
               required={true}
             />
           </div>

@@ -453,11 +453,6 @@ export default function Fault(props: {
               ? initialValues.technicalDrawingAttachment
               : ''
           }
-          // _filePath={
-          //   initialValues.technicalDrawingAttachment
-          //     ? '/uploads/' + initialValues.technicalDrawingAttachment
-          //     : ''
-          // }
           _filePath={
             initialValues.technicalDrawingAttachment
               ? initialValues.technicalDrawingAttachment

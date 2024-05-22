@@ -10,7 +10,7 @@ import Button from 'components/button/button';
 import DetailHeader from 'components/detailHeader';
 import InputField from 'components/fields/InputField';
 import { toast } from 'react-toastify';
-import { log } from 'utils';
+import { generateAndSendPDF, log } from 'utils';
 
 export default function Invoice() {
   const [isLoading, setIsLoading] = useState(false);
@@ -47,13 +47,20 @@ export default function Invoice() {
 
   const handleSendEmail = async () => {
     setIsSubmiting(true);
+    const newPdf = await generateAndSendPDF();
+    if (newPdf.status !== 200) {
+      toast.error('Hata oluştu. Daha sonra tekrar deneyin!');
+      setIsSubmiting(false);
+      return;
+    }
+
     const invoiceRes: any = await sendInvoice({
       type: 'invoice',
       email: value.email,
       subject: 'İrsaliye',
       data: invoice,
-      text: "Kindly find the attached Invoice",
-      docPath: 'https://7udazvcrth30pyp4.public.blob.vercel-storage.com/pdfs/j3uplOW-vrn82biCr10iEk67oIPHjEOjqd58Py.pdf',
+      text: 'Kindly find the attached Invoice',
+      docPath: newPdf?.url,
     });
     const { status, response } = invoiceRes;
 
@@ -102,7 +109,10 @@ export default function Invoice() {
         </div>
       ) : (
         <div className="flex w-full flex-wrap gap-5 lg:mx-auto lg:w-[1000px]">
-          <InvoiceDoc invoice={invoice} />
+          <div id="pdf-content">
+            <InvoiceDoc invoice={invoice} />
+          </div>
+
           <div className="flex min-h-[200px] w-full flex-col gap-3 self-start bg-white px-2 py-4 lg:w-[calc(100%-700px)]">
             <div className="flex w-full flex-col gap-3 border-b px-3 py-4 text-sm">
               <h3 className="mb-2 border-b text-lg">Müşteri Bilgileri</h3>

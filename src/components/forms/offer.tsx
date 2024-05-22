@@ -83,14 +83,16 @@ export default function OfferForm(props: {
       };
 
       setValues({ ...values, ...seletecCustomer });
-      debounce(onChange({ ...values, product: products }));
+      onChange({ ...values, ...seletecCustomer, key: Date.now() });
 
       return;
     }
 
     const newVal = { [event.target?.name]: event.target?.value };
     setValues({ ...values, ...newVal });
-    debounce(onChange({ ...values, ...newVal, product: products }));
+    debounce(
+      onChange({ ...values, ...newVal, product: products, key: Date.now() }),
+    );
   };
 
   const handleSubmit = (e) => {
@@ -151,7 +153,12 @@ export default function OfferForm(props: {
     );
     setValues({ ...values, totalAmount: totalPrice });
     debounce(
-      onChange({ ...values, totalAmount: totalPrice, product: newProd }),
+      onChange({
+        ...values,
+        totalAmount: totalPrice,
+        product: newProd,
+        key: Date.now(),
+      }),
     );
   };
 
@@ -179,14 +186,28 @@ export default function OfferForm(props: {
       0,
     );
     setValues({ ...values, totalAmount: totalPrice });
-    debounce(onChange({ ...values, totalAmount: totalPrice, product: newVal }));
+    debounce(
+      onChange({
+        ...values,
+        totalAmount: totalPrice,
+        product: newVal,
+        key: Date.now(),
+      }),
+    );
 
     setShowAddProduct(false);
   };
 
   const handleSignaturePad = (val) => {
-    setValues({ ...values, creatorTitle: val });
-    debounce(onChange({ ...values, creatorTitle: val }));
+    setValues({ ...values, product: products, creatorTitle: val });
+    debounce(
+      onChange({
+        ...values,
+        creatorTitle: val,
+        product: products,
+        key: Date.now(),
+      }),
+    );
   };
 
   const debounce = (value) => {
@@ -364,7 +385,7 @@ export default function OfferForm(props: {
                               <span className="col-span-1">
                                 <img
                                   className="w-full"
-                                  src={`/uploads/${item.image}`}
+                                  src={`${item.image}`}
                                   alt={item?.name}
                                 />
                               </span>
