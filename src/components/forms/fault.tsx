@@ -95,7 +95,7 @@ export default function Fault(props: {
         if (!editData) {
           // const currentDateTime = new Date().toISOString().slice(0, 16);
           const currentDateTime = new Date();
-            const localDateTime = new Date(currentDateTime.getTime() - currentDateTime.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+          const localDateTime = new Date(currentDateTime.getTime() - currentDateTime.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
           setValues({
             ...values,
             application: setData.applications[0].name,
