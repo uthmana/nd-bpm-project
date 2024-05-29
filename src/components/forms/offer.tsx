@@ -40,14 +40,17 @@ export default function OfferForm(props: {
   const [showAddProduct, setShowAddProduct] = useState(false);
   const { data: session } = useSession();
 
+  const currentDateTime = new Date();
+  const localDateTime = new Date(currentDateTime.getTime() - currentDateTime.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+
   const currency = ['TL', 'USD', 'EUR'];
   const [values, setValues] = useState(
     isUpdate
       ? editData
       : {
           barcode: '',
-          startDate: '',
-          endDate: '',
+          startDate: localDateTime,
+          endDate: localDateTime,
           totalAmount: 0,
           currency: 'TL',
           description: '',
@@ -139,7 +142,7 @@ export default function OfferForm(props: {
       if (filteredProd && filteredProd?.id) {
         const { status, data } = await deleteOfferItem(filteredProd?.id);
         if (status !== 200) {
-          console.log('deleteOfferItem beklenmeyen bir hata oluştu.!');
+          console.log('delete Offer Item beklenmeyen bir hata oluştu.!');
         }
       } else {
         return;

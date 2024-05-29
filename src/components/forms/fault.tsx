@@ -93,11 +93,15 @@ export default function Fault(props: {
         setCustomers(custData);
         setFaultSettings(setData);
         if (!editData) {
+          // const currentDateTime = new Date().toISOString().slice(0, 16);
+          const currentDateTime = new Date();
+          const localDateTime = new Date(currentDateTime.getTime() - currentDateTime.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
           setValues({
             ...values,
             application: setData.applications[0].name,
             standard: setData.standards[0].name,
             color: setData.colors[0].name,
+            arrivalDate: localDateTime,
           });
         }
         return;

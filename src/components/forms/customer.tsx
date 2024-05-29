@@ -113,7 +113,6 @@ export default function Customer({ onSubmit, data, title, loading }: userForm) {
           placeholder="Sorumlu"
           extra="mb-2 w-full"
           value={values.rep_name}
-          required={true}
         />
       </div>
 
