@@ -4,11 +4,12 @@ import MainTable from 'components/admin/data-tables/mainTable';
 import { useRouter } from 'next/navigation';
 import { log } from 'utils';
 import { useEffect, useState } from 'react';
-import { deleteStock, getZeroStocks } from 'app/lib/apiRequest';
+import { deleteStock, getProductList, getZeroStocks } from 'app/lib/apiRequest';
 import { TableSkeleton } from 'components/skeleton';
 import { toast } from 'react-toastify';
 import Popup from 'components/popup';
 import Button from 'components/button/button';
+import { stat } from 'fs';
 
 const Liste = () => {
   const router = useRouter();
@@ -17,6 +18,17 @@ const Liste = () => {
   const [stockId, setStockId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isActive, setIsActive] = useState(false);
+
+  const getAllLists = async () => {
+    setIsLoading(true);
+    const { status, data } = await getProductList();
+    if (status === 200) {
+      console.log({ data });
+    } else {
+      console.log({ data });
+    }
+  };
 
   const getAllStocks = async () => {
     setIsLoading(true);
@@ -75,6 +87,10 @@ const Liste = () => {
     setIsShowPopUp(false);
   };
 
+  const handleActivation = () => {
+    // setIsShowPopUp(false);
+    setIsActive(!isActive);
+  };
   return (
     <div className="mt-3 w-full">
       {isLoading ? (
@@ -88,6 +104,9 @@ const Liste = () => {
           variant="stock"
         />
       )}
+      <Button onClick={handleActivation} text="close" />
+      <Button onClick={getAllLists} text="getLists" />
+      {isActive ? <h1>Iam active</h1> : <h1>Iam not active</h1>}
 
       <Popup show={isShowPopUp} extra="flex flex-col gap-3 py-6 px-8">
         <h1 className="text-3xl">Kullanıcı Silme</h1>
