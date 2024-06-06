@@ -187,11 +187,10 @@ export default function Fault(props: {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { customerName, productCode, quantity, application, product } =
+    const { customerName, quantity, application, product } =
       values;
     if (
       !customerName ||
-      !productCode ||
       !quantity ||
       !application ||
       !product
@@ -330,7 +329,6 @@ export default function Fault(props: {
           placeholder="Ürün kodu"
           extra="mb-2"
           value={values.productCode}
-          required={true}
         />
 
         <InputField

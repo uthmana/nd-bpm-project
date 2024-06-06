@@ -314,7 +314,7 @@ export default function OfferForm(props: {
               placeholder="Sorumlu"
               extra="mb-2"
               value={values.rep_name}
-              required={true}
+              // required={true}
             />
           </div>
 
@@ -359,10 +359,12 @@ export default function OfferForm(props: {
 
           <div className="mb-12 min-w-full border-b border-t pl-2">
             <h3 className="mb-4 mt-8 text-center text-xl">Teklif Ürünleri</h3>
-            <div className="mb-6 grid w-full grid-cols-1 dark:text-white">
+            <div className="mb-6 grid w-full grid-cols-1 dark:text-white ">
               <div className="grid w-full grid-cols-11 gap-1 border-b text-sm font-bold">
                 <div className="col-span-1"></div>
-                <div className="col-span-6">Ürün</div>
+                <div className="col-span-2">Ürün</div>
+                <div className="col-span-2">Uygulama</div>
+                <div className="col-span-2">Standart</div>
                 <div className="col-span-1">Miktar</div>
                 <div className="col-span-2">Birim Fiyat</div>
                 <div className="col-span-1 whitespace-nowrap break-keep">
@@ -372,7 +374,7 @@ export default function OfferForm(props: {
               {products?.length > 0 ? (
                 products.map((item, idx) => {
                   return (
-                    <label className="flex items-center" key={idx}>
+                    <label className="flex items-center " key={idx}>
                       <div className="group grid w-full grid-cols-11 items-start gap-2 border-b py-1 text-sm font-bold text-navy-700 dark:text-white">
                         <div className="col-span-1 flex gap-2 py-1">
                           <div
@@ -382,7 +384,7 @@ export default function OfferForm(props: {
                             X
                           </div>
                         </div>
-                        <div className="col-span-6">
+                        <div className="col-span-2">
                           <div className="grid grid-cols-5">
                             {item?.image ? (
                               <span className="col-span-1">
@@ -394,29 +396,26 @@ export default function OfferForm(props: {
                               </span>
                             ) : null}
 
-                            <div className="col-span-4">
-                              <div className="col-span-4 px-1">
-                                <div>{item?.name}</div>
-                                <div className="mb-1">
-                                  {item?.application} - {item?.standard}
-                                </div>
-                                <div className="text-xs font-normal">
+                            <div className="col-span-2">
+                            <div>{item?.name}</div>
+                            <div className="text-xs font-normal">
                                   {item?.description}
                                 </div>
-                              </div>
                             </div>
                           </div>
                         </div>
 
+                        <div className="col-span-2">{item?.application}</div>
+                        <div className="col-span-2">{item?.standard}</div>
                         <div className="col-span-1">{item?.quantity}</div>
-                        <div className="col-span-2 flex flex-col text-[10px]">
-                          <div className="flex gap-1">
-                            <span className="line-through">
+                        <div className="col-span-2  ">
+                          <div className="flex gap-1 ">
+                            <span >
                               {item?.unitPrice}
                             </span>
                             <span> {currencySymbol[values.currency]}</span>
                           </div>
-                          <div className="flex gap-1">
+                          {/* <div className="flex gap-1">
                             <span>{item?.discountPrice}</span>
                             <span> {currencySymbol[values.currency]}</span>
                           </div>
@@ -433,7 +432,7 @@ export default function OfferForm(props: {
                               indi.
                               {')'}
                             </span>
-                          </div>
+                          </div> */}
                         </div>
                         <div className="col-span-1">
                           {item?.price} {currencySymbol[values.currency]}

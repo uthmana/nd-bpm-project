@@ -70,7 +70,7 @@ const routes = [
     icon: <MdTaskAlt className={`${iconStyle}`} />,
   },
   {
-    name: 'Tekif',
+    name: 'Teklif',
     layout: '/admin',
     path: 'offer',
     role: 'admin',
