@@ -47,7 +47,7 @@ export async function PUT(req: Request) {
 
     const { customerName, productCode, application, product_barcode } = result;
 
-    if (!customerName || !productCode || !application || !product_barcode) {
+    if (!customerName || !application || !product_barcode) {
       return NextResponse.json(
         { message: 'You are missing a required data' },
         { status: 401 },
