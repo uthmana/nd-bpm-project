@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import React, { useState } from 'react';
-import { formatDateTime, currencySymbol } from 'utils';
+import { formatDateTime, currencySymbol, formatNumberLocale } from 'utils';
 import nd_logo from '/public/img/auth/nd_logo.webp';
 
 export default function OfferDoc({ offer }) {
@@ -111,7 +111,7 @@ export default function OfferDoc({ offer }) {
           <div className="col-span-2">Standart</div>
           <div className="col-span-1">Miktar</div>
           <div className="col-span-2">Birim Fiyat</div>
-          <div className="col-span-1 whitespace-nowrap break-keep">Tutar</div>
+          <div className="col-span-1">Tutar</div>
         </div>
 
         {offer?.product?.length > 0 ? (
@@ -142,16 +142,14 @@ export default function OfferDoc({ offer }) {
                       </div>
                     </div>
                   </div>
-                  <div className="col-span-2">
-                  {item?.application}
-                  </div>
-                  <div className="col-span-2">
-                  {item?.standard}
-                  </div>
+                  <div className="col-span-2">{item?.application}</div>
+                  <div className="col-span-2">{item?.standard}</div>
                   <div className="col-span-1">{item?.quantity}</div>
                   <div className="col-span-2 ">
                     <div className="flex gap-1">
-                      <span className="col-span-2">{item?.unitPrice}</span>
+                      <span className="col-span-2">
+                        {formatNumberLocale(item?.unitPrice)}
+                      </span>
                       <span> {currencySymbol[offer?.currency]}</span>
                     </div>
                     {/* <div className="flex gap-1">
@@ -173,7 +171,8 @@ export default function OfferDoc({ offer }) {
                     </div> */}
                   </div>
                   <div className="col-span-1">
-                    {item?.price} {currencySymbol[offer?.currency]}
+                    {formatNumberLocale(item?.price)}
+                    {currencySymbol[offer?.currency]}
                   </div>
                 </div>
               );
@@ -188,7 +187,8 @@ export default function OfferDoc({ offer }) {
           indirim içerir) */}
         </div>
         <div className="col-span-1 pr-3 text-right font-bold">
-          {offer.totalAmount} {currencySymbol[offer?.currency]}
+          {formatNumberLocale(offer.totalAmount)}
+          {currencySymbol[offer?.currency]}
         </div>
       </div>
 
