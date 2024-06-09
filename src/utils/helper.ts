@@ -221,3 +221,11 @@ export const filterObject = (obj) => {
 
   return filteredObject;
 };
+
+export const formatNumberLocale = (num) => {
+  if (!num) return num;
+  const nFormat = new Intl.NumberFormat(undefined, {
+    minimumFractionDigits: 2,
+  });
+  return nFormat.format(num);
+};

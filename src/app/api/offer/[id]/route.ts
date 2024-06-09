@@ -31,7 +31,7 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     ) {
       return NextResponse.json(e, { status: 403 });
     }
-    return NextResponse.json(e, { status: 500 });
+    return NextResponse.json({ message: e }, { status: 500 });
   }
 }
 

@@ -96,9 +96,9 @@ export default function Edit() {
       return <p className="font-bold"> {formatDateTime(val)} </p>;
     }
 
-    if (key === 'productDimension') {
-      return <p className="font-bold"> {val ? 'KARIŞIK' : 'DÜZGÜNLİ'} </p>;
-    }
+    // if (key === 'productDimension') {
+    //   return <p className="font-bold"> {val ? 'KARIŞIK' : 'DÜZGÜNLİ'} </p>;
+    // }
 
     if (key === 'dimensionConfirmation') {
       return <p className="font-bold"> {val ? 'UYGUN' : 'UYGUNSUZ'} </p>;
