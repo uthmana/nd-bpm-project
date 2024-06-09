@@ -6,62 +6,62 @@ import { checkUserRole } from 'utils/auth';
 import FinalControl from 'components/forms/finalControl';
 
 //All Lists1
-export async function GET1(req: NextRequest) {
-  try {
-    const transactions = await prisma.process.findMany({
-      include: {
-        finalControl: {
-          select: { createdAt: true, createdBy: true, gorunum_kontrol: true },
-        },
-        Invoice: {
-          select: {
-            createdAt: true,
-            createdBy: true,
-            amount: true,
-            status: true,
-            address: true,
-          },
-        },
-        technicalParams: { select: { createdAt: true, createdBy: true } },
-        unacceptable: {
-          select: {
-            unacceptableAction: true,
-            description: true,
-            unacceptableStage: true,
-          },
-        },
-      },
-    });
+// export async function GET1(req: NextRequest) {
+//   try {
+//     const transactions = await prisma.process.findMany({
+//       include: {
+//         finalControl: {
+//           select: { createdAt: true, createdBy: true, gorunum_kontrol: true },
+//         },
+//         Invoice: {
+//           select: {
+//             createdAt: true,
+//             createdBy: true,
+//             amount: true,
+//             status: true,
+//             address: true,
+//           },
+//         },
+//         technicalParams: { select: { createdAt: true, createdBy: true } },
+//         unacceptable: {
+//           select: {
+//             unacceptableAction: true,
+//             description: true,
+//             unacceptableStage: true,
+//           },
+//         },
+//       },
+//     });
 
-    if (transactions) {
-      const flattendtransaction = transactions.map((transaction) => ({
-        //  ...transaction,
-        ...transaction.finalControl,
-        ...transaction.Invoice,
-        ...transaction.technicalParams,
-        // Remove the nested objects to avoid duplication
-        finalControl: undefined,
-        Invoice: undefined,
-        technicalParams: undefined,
-        unacceptable: undefined,
-      }));
+//     if (transactions) {
+//       const flattendtransaction = transactions.map((transaction) => ({
+//         //  ...transaction,
+//         ...transaction.finalControl,
+//         ...transaction.Invoice,
+//         ...transaction.technicalParams,
+//         // Remove the nested objects to avoid duplication
+//         finalControl: undefined,
+//         Invoice: undefined,
+//         technicalParams: undefined,
+//         unacceptable: undefined,
+//       }));
 
-      return NextResponse.json({ flattendtransaction }, { status: 200 });
-    }
+//       return NextResponse.json({ flattendtransaction }, { status: 200 });
+//     }
 
-    return NextResponse.json({}, { status: 200 });
-  } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
-  }
-}
+//     return NextResponse.json({}, { status: 200 });
+//   } catch (e) {
+//     if (
+//       e instanceof Prisma.PrismaClientKnownRequestError ||
+//       e instanceof Prisma.PrismaClientUnknownRequestError ||
+//       e instanceof Prisma.PrismaClientValidationError ||
+//       e instanceof Prisma.PrismaClientRustPanicError
+//     ) {
+//       return NextResponse.json(e, { status: 403 });
+//     }
+//     return NextResponse.json(e, { status: 500 });
+//   }
+// }
 // GET All the Report on the fault
 export async function GET(req: NextRequest) {
   try {
