@@ -135,7 +135,18 @@ export const dirtyConfirmation = [
   { name: 'Yok', value: false },
 ];
 
-export const materials = ['Karışık', 'Düzenli'];
+export const materials = [
+  'Cıvata',
+  'Perçin',
+  'Pim',
+  'Pul',
+  'Saplama',
+  'Setskur',
+  'Somun',
+  'Vana,Tapa',
+  'Vida',
+  'Özel Parça',
+];
 
 export const processConfirmation = ['Yazılsın', 'Yazılmasın'];
 
