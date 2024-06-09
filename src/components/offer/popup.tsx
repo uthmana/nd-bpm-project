@@ -21,7 +21,7 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
     quantity: '',
     price: '',
     unitPrice: '',
-    discountPrice: '',
+    // discountPrice: '',
     description: '',
     image: '',
   });
@@ -49,7 +49,7 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
       quantity,
       price,
       unitPrice,
-      discountPrice,
+      // discountPrice,
     } = offer;
     if (
       !name ||
@@ -57,8 +57,8 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
       !standard ||
       !quantity ||
       !price ||
-      !unitPrice ||
-      !discountPrice
+      !unitPrice 
+      // !discountPrice
     ) {
       return;
     }
@@ -68,7 +68,7 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
       quantity: parseFloat(quantity),
       price: parseFloat(price),
       unitPrice: parseFloat(unitPrice),
-      discountPrice: parseFloat(discountPrice),
+      // discountPrice: parseFloat(discountPrice),
       image: file,
     });
 
@@ -79,7 +79,7 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
       quantity: '',
       price: '',
       unitPrice: '',
-      discountPrice: '',
+      // discountPrice: '',
       description: '',
       image: '',
     });
@@ -88,11 +88,11 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
   const handleProductValues = (event) => {
     let newVal: any = { [event.target?.name]: event.target?.value };
     if (
-      event.target?.name === 'quantity' ||
-      event.target?.name === 'discountPrice'
+      event.target?.name === 'quantity',
+      event.target?.name === 'unitPrice'
     ) {
       const price =
-        parseInt(newVal?.discountPrice || offer.discountPrice) *
+        parseInt(newVal?.unitPrice || offer.unitPrice) *
         parseInt(newVal.quantity || offer.quantity);
       newVal = { ...newVal, price: price };
     }
@@ -179,7 +179,7 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
                 value={offer.unitPrice}
               />
 
-              <InputField
+              {/* <InputField
                 label="İndirimli Fiyat"
                 onChange={handleProductValues}
                 type="number"
@@ -188,7 +188,7 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
                 placeholder=""
                 extra="!h-[36px]"
                 value={offer.discountPrice}
-              />
+              /> */}
             </div>
             <div className="ml-auto w-full max-w-[208px]">
               <InputField
