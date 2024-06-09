@@ -106,7 +106,9 @@ export default function OfferDoc({ offer }) {
 
       <div className="w-full" key={offer?.product?.length}>
         <div className="grid w-full grid-cols-10 gap-1 border-b text-sm font-bold">
-          <div className="col-span-6">Ürün</div>
+          <div className="col-span-2">Ürün</div>
+          <div className="col-span-2">Uygulama</div>
+          <div className="col-span-2">Standart</div>
           <div className="col-span-1">Miktar</div>
           <div className="col-span-2">Birim Fiyat</div>
           <div className="col-span-1 whitespace-nowrap break-keep">Tutar</div>
@@ -120,7 +122,7 @@ export default function OfferDoc({ offer }) {
                   key={idx}
                   className="grid w-full grid-cols-10 items-start gap-1 border-b py-2 text-sm font-bold text-navy-700 dark:text-white"
                 >
-                  <div className="col-span-6 grid grid-cols-5">
+                  <div className="col-span-2 grid grid-cols-5">
                     {item?.image ? (
                       <span className="col-span-1">
                         <Image
@@ -133,27 +135,30 @@ export default function OfferDoc({ offer }) {
                       </span>
                     ) : null}
 
-                    <div className="col-span-4 px-1">
+                    <div className="col-span-2 px-1">
                       <div>{item?.name}</div>
-                      <div className="mb-1">
-                        {item?.application} - {item?.standard}
-                      </div>
                       <div className="text-xs font-normal">
                         {item?.description}
                       </div>
                     </div>
                   </div>
+                  <div className="col-span-2">
+                  {item?.application}
+                  </div>
+                  <div className="col-span-2">
+                  {item?.standard}
+                  </div>
                   <div className="col-span-1">{item?.quantity}</div>
-                  <div className="col-span-2 text-[10px]">
+                  <div className="col-span-2 ">
                     <div className="flex gap-1">
-                      <span className="line-through">{item?.unitPrice}</span>
+                      <span className="col-span-2">{item?.unitPrice}</span>
                       <span> {currencySymbol[offer?.currency]}</span>
                     </div>
-                    <div className="flex gap-1">
+                    {/* <div className="flex gap-1">
                       <span>{item?.discountPrice}</span>
                       <span> {currencySymbol[offer?.currency]}</span>
-                    </div>
-                    <div className="flex gap-1">
+                    </div> */}
+                    {/* <div className="flex gap-1">
                       <span>
                         {' '}
                         {'('}%{' '}
@@ -165,7 +170,7 @@ export default function OfferDoc({ offer }) {
                         indi.
                         {')'}
                       </span>
-                    </div>
+                    </div> */}
                   </div>
                   <div className="col-span-1">
                     {item?.price} {currencySymbol[offer?.currency]}
@@ -179,8 +184,8 @@ export default function OfferDoc({ offer }) {
 
       <div className="mb-5 grid grid-cols-5 justify-between py-2 text-sm">
         <div className="col-span-4 text-right">
-          Genel Toplam ({totalDiscount()} {currencySymbol[offer?.currency]}{' '}
-          indirim içerir)
+          {/* Genel Toplam ({totalDiscount()} {currencySymbol[offer?.currency]}{' '}
+          indirim içerir) */}
         </div>
         <div className="col-span-1 pr-3 text-right font-bold">
           {offer.totalAmount} {currencySymbol[offer?.currency]}
