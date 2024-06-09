@@ -9,7 +9,6 @@ import { TableSkeleton } from 'components/skeleton';
 import { toast } from 'react-toastify';
 import Popup from 'components/popup';
 import Button from 'components/button/button';
-import { stat } from 'fs';
 
 const Liste = () => {
   const router = useRouter();
@@ -104,9 +103,9 @@ const Liste = () => {
           variant="stock"
         />
       )}
-      <Button onClick={handleActivation} text="close" />
+      {/* <Button onClick={handleActivation} text="close" />
       <Button onClick={getAllLists} text="getLists" />
-      {isActive ? <h1>Iam active</h1> : <h1>Iam not active</h1>}
+      {isActive ? <h1>Iam active</h1> : <h1>Iam not active</h1>} */}
 
       <Popup show={isShowPopUp} extra="flex flex-col gap-3 py-6 px-8">
         <h1 className="text-3xl">Kullanıcı Silme</h1>
