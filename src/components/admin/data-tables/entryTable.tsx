@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import React, { useMemo, useState } from 'react';
 import Card from 'components/card';
 import {
@@ -349,7 +350,9 @@ function EntryTable({
     ];
   }, []);
 
-  const [data, setData] = useState(() => Array.isArray(defaultData) ? [...defaultData] : []);
+  const [data, setData] = useState(() =>
+    Array.isArray(defaultData) ? [...defaultData] : [],
+  );
   const table = useReactTable({
     data,
     columns,
@@ -380,7 +383,7 @@ function EntryTable({
             onChange={(val) => setGlobalFilter(val)}
           />
         </div>
-        {variant === 'NORMAL' || variant === 'SUPER'|| variant === 'ADMIN' ? (
+        {variant === 'NORMAL' || variant === 'SUPER' || variant === 'ADMIN' ? (
           <Button
             text="EKLE"
             extra="!w-[140px] h-[38px] font-bold mb-3"

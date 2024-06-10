@@ -17,7 +17,13 @@ export default function OfferDoc({ offer }) {
       <div className="mb-4 flex items-center justify-between border-b-2 pb-2">
         <div className="flex max-w-[200px] flex-col gap-2 text-xs">
           <div className="mb-3">
-            <img width={90} src={nd_logo.src} alt="nd industries logo" />
+            <Image
+              width="90"
+              height="60"
+              src={`${nd_logo.src}`}
+              alt={'nd industries logo'}
+              className="w-full"
+            />
           </div>
         </div>
         <div className="flex flex-col gap-1 ">
@@ -126,11 +132,11 @@ export default function OfferDoc({ offer }) {
                     {item?.image ? (
                       <span className="col-span-1">
                         <Image
-                          className="w-full"
-                          src={`${item?.image}`}
-                          alt={item?.name}
                           width={40}
                           height={60}
+                          src={`${item?.image}`}
+                          alt={'product'}
+                          className="w-full"
                         />
                       </span>
                     ) : null}
@@ -209,7 +215,7 @@ export default function OfferDoc({ offer }) {
                 <Image
                   className="w-full"
                   src={offer?.creatorTitle}
-                  alt={offer?.createdBy}
+                  alt={'İmza'}
                   width={10}
                   height={10}
                 />

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/db';
 import { checkUserRole } from 'utils/auth';
-import { validateCustomerSchema } from 'utils/validate';
+import { validateCustomerSchema } from 'utils';
 import { CardType, Currency, Customer, Prisma } from '@prisma/client';
 
 //Get single customer

@@ -19,7 +19,7 @@ export default function Profile({ user }) {
           height="20"
           className="h-10 w-10 cursor-pointer rounded-full"
           src={avatar}
-          alt="Elon Musk"
+          alt="Profile"
         />
       }
       classNames={'py-2 top-8 -left-[180px] w-max'}
