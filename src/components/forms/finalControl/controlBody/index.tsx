@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import EditableBox from 'components/Box';
+import EditableBox from 'components/box';
 import Radio from 'components/radio';
 import TestTable from './table/testTable';
 import { MdCheck } from 'react-icons/md';
