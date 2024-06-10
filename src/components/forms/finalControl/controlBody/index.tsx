@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import EditableBox from 'components/Box';
+import Box from 'components/box';
 import Radio from 'components/radio';
 import TestTable from './table/testTable';
 import { MdCheck } from 'react-icons/md';
@@ -108,7 +108,7 @@ export default function Index({ data, onChange, variant }) {
             return (
               <div className="flex items-center gap-2" key={idx}>
                 <div dangerouslySetInnerHTML={{ __html: item.name }}></div>
-                <EditableBox className="w-[70px]">
+                <Box className="w-[70px]">
                   {variant === 'input' ? (
                     <Radio
                       name="result"
@@ -125,7 +125,7 @@ export default function Index({ data, onChange, variant }) {
                       )}
                     </div>
                   )}
-                </EditableBox>
+                </Box>
               </div>
             );
           })}
