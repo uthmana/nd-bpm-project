@@ -42,5 +42,5 @@ next-env.d.ts
 .idea
 
 #Prisma
-#prisma
-/src/app/lib/db.ts
+/prisma/migrations/
+

@@ -20,13 +20,12 @@ export default function Create() {
 
   const getSingleOffer = async (id) => {
     setIsLoading(true);
-    const { status, data, response } = await getOfferById(id);
+    const { status, data } = await getOfferById(id);
     if (status === 200) {
       setOfferData(data);
       setIsLoading(false);
       return;
     }
-    console.log({ response });
   };
 
   useEffect(() => {
