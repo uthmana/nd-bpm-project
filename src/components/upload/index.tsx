@@ -57,8 +57,8 @@ const Upload = (props: {
       onChange(url);
       setLoading(false);
     } catch (e: any) {
-      console.error(e);
       setLoading(false);
+      console.error(e);
     }
   };
 
@@ -76,8 +76,8 @@ const Upload = (props: {
       onChange('');
       setLoading(false);
     } catch (e: any) {
-      console.error(e);
       setLoading(false);
+      console.error(e);
     }
   };
 
