@@ -17,11 +17,9 @@ import Popup from 'components/popup';
 import { formatDateTime, log } from 'utils';
 import { useSession } from 'next-auth/react';
 import { MdAdd, MdPrint } from 'react-icons/md';
-import FileViewer from 'components/fileViewer';
 import DetailHeader from 'components/detailHeader';
 import Barcode from 'react-jsbarcode';
 import Unaccept from 'components/forms/unaccept';
-import { UnacceptInfo } from 'app/localTypes/table-types';
 import FinalControl from 'components/forms/finalControl';
 
 export default function EntryControl() {
@@ -180,69 +178,6 @@ export default function EntryControl() {
 
   const handleComplete = () => {
     router.push(`/admin/process/create/${process.id}`);
-  };
-
-  const processInfo = [
-    'product_barcode',
-    'olcu_Kontrol',
-    'gorunum_kontrol',
-    'tork_Kontrol',
-    'paketleme',
-    'kontrol_edilen_miktar',
-    'hatali_miktar',
-    'nakliye_miktar',
-    'remarks',
-    'image',
-    'createdAt',
-    'updatedAt',
-    'createdBy',
-    'updatedBy',
-    'result',
-  ];
-
-  const infoProcessTranslate = {
-    product_barcode: 'Barkodu',
-    olcu_Kontrol: 'Ölçü',
-    gorunum_kontrol: 'Görünüm',
-    tork_Kontrol: 'Tork',
-    paketleme: 'Paketleme',
-    kontrol_edilen_miktar: 'Kontrol edilen miktari',
-    hatali_miktar: 'Hatali Miktari',
-    nakliye_miktar: 'Nakliye Miktari',
-    remarks: 'Açıklama',
-    createdAt: 'Oluşturma Tarihi',
-    updatedAt: 'Güncellenme Tarihi',
-    createdBy: 'Oluşturan',
-    updatedBy: 'Güncelleyen',
-    image: 'İlgili Doküman',
-    result: 'Sonuç',
-  };
-
-  const renderValues = (key, val) => {
-    const results = {
-      ACCEPT: 'Kabul',
-      ACCEPTANCE_WITH_CONDITION: 'Şartlı Kabul',
-      PRE_PROCESS: 'Ön İşlem gerekli',
-      REJECT: 'Ret',
-    };
-
-    if (['createdAt', 'updatedAt'].includes(key)) {
-      return <p className="font-bold"> {formatDateTime(val)} </p>;
-    }
-
-    if (['olcu_Kontrol', 'gorunum_kontrol', 'tork_Kontrol'].includes(key)) {
-      return (
-        <p className="font-bold"> {val === 'NOT_OK' ? 'İYİ DEĞİL' : 'İYİ'} </p>
-      );
-    }
-
-    if (key === 'result') {
-      return <p className="font-bold uppercase"> {results[val]} </p>;
-    }
-    if (key === 'image') {
-      return <FileViewer file={val} />;
-    }
-    return <p className="font-bold"> {val} </p>;
   };
 
   const handleBarcodePrint = () => {

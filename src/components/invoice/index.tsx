@@ -2,6 +2,7 @@ import React from 'react';
 import { formatDateTime } from 'utils';
 import nd_logo from '/public/img/auth/nd_logo.webp';
 import Barcode from 'react-jsbarcode';
+import Image from 'next/image';
 
 export default function InvoiceDoc({ invoice }) {
   return (
@@ -9,7 +10,13 @@ export default function InvoiceDoc({ invoice }) {
       <div className="mb-8 flex justify-between border-b-2">
         <div className="mb-2 max-w-[200px]">
           <div className="mb-3">
-            <img width={90} src={nd_logo.src} alt="nd industries logo" />
+            <Image
+              width="90"
+              height="60"
+              src={`${nd_logo.src}`}
+              alt={'nd industries logo'}
+              className="w-full"
+            />
           </div>
           <p className="text-sm">
             İkitelli OSB Metal-İş San. Sit. 4. Blok No:1 – No: 3 Başakşehir /
@@ -18,11 +25,6 @@ export default function InvoiceDoc({ invoice }) {
         </div>
         <div className="flex flex-col gap-1">
           <h1 className="mb-1 text-right text-4xl">İrsaliye</h1>
-          {/* <p className="font-bold">Banka Hesap No:</p>
-          <p className="text-sm">Şube Adı:</p> 
-          <div className="text-xs font-bold">
-            <span>34334</span> <span> TR-87384859696745</span>
-          </div> */}
 
           <div className="flex h-32 w-[200px] flex-col items-center text-xs font-bold">
             {invoice?.serverSide ? (

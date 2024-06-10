@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { ReactNode } from 'react';
 
 type Button = {
@@ -19,7 +20,12 @@ const Button = ({ extra, onClick, text, disabled, icon, loading }: Button) => {
       } ${extra}`}
     >
       {loading ? (
-        <img src="/img/others/loading.svg" />
+        <Image
+          width="100"
+          height="40"
+          src={`${process.env.NEXT_PUBLIC_BASE_PATH}/img/others/loading.svg`}
+          alt="nd Industries Loading"
+        />
       ) : (
         <div className="flex">
           <span> {icon} </span> <span className="font-bold"> {text}</span>
