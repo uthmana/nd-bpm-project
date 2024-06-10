@@ -20,19 +20,12 @@ const NftCard = (props: {
     >
       <div className="h-full w-full">
         <div className="relative w-full">
-          {/* <Image 
-            width="2"
-            height="20"
-            src={image}
-            className="mb-3 h-full w-full rounded-xl 3xl:h-full 3xl:w-full"
-            alt=""
-          /> */}
           <Image
             width="2"
             height="20"
             className="mb-3 h-full w-full rounded-xl 3xl:h-full 3xl:w-full"
             src={image}
-            alt=""
+            alt="Nft Card"
           />
           <button
             onClick={() => setHeart(!heart)}

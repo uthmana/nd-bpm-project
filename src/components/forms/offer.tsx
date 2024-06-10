@@ -12,6 +12,7 @@ import { addOfferItem, deleteOfferItem } from 'app/lib/apiRequest';
 import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import SignaturePad from 'components/signaturePad';
+import Image from 'next/image';
 
 const OfferPopup = dynamic(() => import('components/offer/popup'), {
   ssr: false,
@@ -391,10 +392,12 @@ export default function OfferForm(props: {
                           <div className="grid grid-cols-5">
                             {item?.image ? (
                               <span className="col-span-1">
-                                <img
-                                  className="w-full"
+                                <Image
+                                  width="90"
+                                  height="60"
                                   src={`${item.image}`}
-                                  alt={item?.name}
+                                  alt={'Product'}
+                                  className="w-full"
                                 />
                               </span>
                             ) : null}

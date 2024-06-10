@@ -1,7 +1,7 @@
 'use client';
 import MiniCalendar from 'components/calendar/MiniCalendar';
-import WeeklyRevenue from 'components/admin/default/WeeklyRevenue';
-import TotalSpent from 'components/admin/default/TotalSpent';
+import WeeklyRevenue from 'components/weeklyRevenue';
+import TotalSpent from 'components/totalSpent';
 import {
   MdGroupWork,
   MdLocalOffer,
@@ -14,7 +14,7 @@ import {
 import Widget from 'components/widget/Widget';
 import MiniTable from 'components/admin/data-tables/miniTable';
 import { getDashboard } from '../../lib/apiRequest';
-import { Suspense, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   log,
   getMonthlySum,
