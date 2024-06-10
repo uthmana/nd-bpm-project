@@ -5,7 +5,6 @@ import { toast } from 'react-toastify';
 import {
   getFaultById,
   addControl,
-  getEntryControlByfaultId,
   updateFaultControl,
   addUnacceptable,
   updateUnacceptable,
@@ -18,9 +17,7 @@ import { useSession } from 'next-auth/react';
 import Card from 'components/card';
 import { log } from 'utils';
 import Popup from 'components/popup';
-import Button from 'components/button/button';
 import UnacceptForm from 'components/forms/unaccept';
-import SignaturePad from 'components/signaturePad';
 import { UnacceptInfo } from 'app/localTypes/table-types';
 
 export default function EntryControl() {

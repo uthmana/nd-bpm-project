@@ -39,7 +39,7 @@
     "**/*.tsx",
     "next.config.js",
     ".next/types/**/*.ts",
-    "seeds/users.ts",
+    "seeds/modals/users.ts",
     "seeds/seed.ts",
     "src/app/localTypes",
     "emails",
