@@ -1,9 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { log } from 'utils';
-import { toast } from 'react-toastify';
-import { getFaultById, updateFault } from 'app/lib/apiRequest';
+import { getFaultById} from 'app/lib/apiRequest';
 import { DetailSkeleton } from 'components/skeleton';
 import { useSession } from 'next-auth/react';
 import Card from 'components/card';
@@ -95,10 +93,6 @@ export default function Edit() {
     if (['createdAt', 'updatedAt'].includes(key)) {
       return <p className="font-bold"> {formatDateTime(val)} </p>;
     }
-
-    // if (key === 'productDimension') {
-    //   return <p className="font-bold"> {val ? 'KARIŞIK' : 'DÜZGÜNLİ'} </p>;
-    // }
 
     if (key === 'dimensionConfirmation') {
       return <p className="font-bold"> {val ? 'UYGUN' : 'UYGUNSUZ'} </p>;

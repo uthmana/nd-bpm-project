@@ -1,15 +1,3 @@
-import { entryPages } from './constant';
-
-export function isEntryPage(pathname: string) {
-  let entryPage = false;
-  entryPages.map((page: string) => {
-    if (pathname.includes(page)) {
-      return (entryPage = true);
-    }
-  });
-  return entryPage;
-}
-
 export const formatDateTime = (data) => {
   return new Date(data).toLocaleString('tr-TR')?.slice(0, -3);
 };
@@ -229,3 +217,23 @@ export const formatNumberLocale = (num) => {
   });
   return nFormat.format(num);
 };
+
+export async function validateCustomerSchema(data) {
+  const requiredFields = [
+    'rep_name',
+    'country_code',
+    'province_code',
+    'district_code',
+  ]; // Add other required fields
+  //const schemaFields = []; // Define all expected fields
+
+  const missingFields = requiredFields.filter(
+    (field) => !data.hasOwnProperty(field),
+  );
+  const errors = [];
+  if (missingFields.length > 0) {
+    errors.push(`Missing required fields: ${missingFields.join(', ')}`);
+  }
+
+  return errors;
+}

@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 'use client';
 import React, { useMemo, useState } from 'react';
 import Card from 'components/card';
@@ -28,7 +29,6 @@ import {
   CustomerObj,
   UserObj,
 } from '../../../app/localTypes/table-types';
-
 
 function MainTable({
   tableData,
