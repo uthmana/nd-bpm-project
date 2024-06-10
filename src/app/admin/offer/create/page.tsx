@@ -8,8 +8,8 @@ import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { log, generateAndSendPDF } from 'utils';
 import Card from 'components/card';
-import OfferTemplete from 'emails/offer';
-import ReactDOMServer from 'react-dom/server';
+// import OfferTemplete from 'emails/offer';
+// import ReactDOMServer from 'react-dom/server';
 
 export default function Create() {
   const [customers, setCustomers] = useState([]);
@@ -29,7 +29,7 @@ export default function Create() {
 
   const handleSubmit = async (val) => {
     setIsSubmitting(true);
-    const newPdf = await generateAndSendPDF();
+    const newPdf = await generateAndSendPDF('pdf-content');
     if (newPdf.status !== 200) {
       toast.error('Hata oluştu. Daha sonra tekrar deneyin!');
       setIsSubmitting(false);
@@ -84,7 +84,7 @@ export default function Create() {
         </div>
         <Card className="mx-auto w-full max-w-[700px] bg-white px-4 py-8 dark:bg-navy-700">
           <OfferForm
-            key={customers.length}
+            key={customers?.length}
             info={customers}
             onChange={handleChange}
             onSubmit={(val) => handleSubmit(val)}

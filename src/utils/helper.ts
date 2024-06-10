@@ -149,10 +149,10 @@ export const getMonthlySum = (arr, dateName) => {
   return result;
 };
 
-export const generateAndSendPDF = async () => {
+export const generateAndSendPDF = async (elemId) => {
   try {
     const { default: html2pdf } = await import('html2pdf.js');
-    const element = document.getElementById('pdf-content');
+    const element = document.getElementById(elemId);
 
     if (!element) {
       return;

@@ -64,7 +64,7 @@ export async function PUT(req: NextRequest) {
     }
     return NextResponse.json(offer, { status: 200 });
   } catch (e) {
-    console.log(e);
+    console.log({ e });
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
       e instanceof Prisma.PrismaClientUnknownRequestError ||
