@@ -16,7 +16,7 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     }
 
     const id = route.params.id;
-    const offer: Partial<Offer> = await prisma.offer.findUnique({
+    const offer: Offer = await prisma.offer.findUnique({
       where: { id: id },
       include: { product: true, Customer: true },
     });

@@ -42,6 +42,10 @@ next-env.d.ts
 .idea
 
 #Prisma
+<<<<<<< HEAD
 /prisma
 
 /src/app/lib/db.ts
+=======
+/prisma/migrations/
+>>>>>>> origin/develop
