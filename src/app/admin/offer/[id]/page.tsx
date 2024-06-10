@@ -9,8 +9,8 @@ import Button from 'components/button/button';
 import { MdOutlinePayment, MdPrint } from 'react-icons/md';
 import { OfferObj } from 'app/localTypes/table-types';
 import { log } from 'utils';
-import OfferTemplete from 'emails/offer';
-import ReactDOMServer from 'react-dom/server';
+// import OfferTemplete from 'emails/offer';
+// import ReactDOMServer from 'react-dom/server';
 
 export default function Create() {
   const [offerData, setOfferData] = useState({} as OfferObj);
@@ -20,11 +20,13 @@ export default function Create() {
 
   const getSingleOffer = async (id) => {
     setIsLoading(true);
-    const { status, data } = await getOfferById(id);
+    const { status, data, response } = await getOfferById(id);
     if (status === 200) {
       setOfferData(data);
+      setIsLoading(false);
+      return;
     }
-    setIsLoading(false);
+    console.log({ response });
   };
 
   useEffect(() => {
@@ -62,7 +64,7 @@ export default function Create() {
     seeAllText: 'Tüm Teklifler',
   };
 
-  if (offerData.status !== 'SENT') {
+  if (offerData?.status !== 'SENT') {
     detailData = {
       ...detailData,
       ...{

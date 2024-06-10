@@ -47,7 +47,7 @@ export default function Invoice() {
 
   const handleSendEmail = async () => {
     setIsSubmiting(true);
-    const newPdf = await generateAndSendPDF();
+    const newPdf = await generateAndSendPDF('pdf-content');
     if (newPdf.status !== 200) {
       toast.error('Hata oluştu. Daha sonra tekrar deneyin!');
       setIsSubmiting(false);

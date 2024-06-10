@@ -1,12 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  convertToISO8601,
-  generateSKU,
-  currencySymbol,
-  useDebounce,
-} from 'utils';
+import { convertToISO8601, generateSKU, currencySymbol } from 'utils';
 import TextArea from 'components/fields/textArea';
 import Button from 'components/button/button';
 import Select from 'components/select/page';
@@ -41,7 +36,11 @@ export default function OfferForm(props: {
   const { data: session } = useSession();
 
   const currentDateTime = new Date();
-  const localDateTime = new Date(currentDateTime.getTime() - currentDateTime.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+  const localDateTime = new Date(
+    currentDateTime.getTime() - currentDateTime.getTimezoneOffset() * 60000,
+  )
+    .toISOString()
+    ?.slice(0, 16);
 
   const currency = ['TL', 'USD', 'EUR'];
   const [values, setValues] = useState(
@@ -101,6 +100,7 @@ export default function OfferForm(props: {
   const handleSubmit = (e) => {
     e.preventDefault();
     const { startDate, endDate, customerId, email } = values;
+
     if (
       !startDate ||
       !endDate ||
@@ -195,6 +195,9 @@ export default function OfferForm(props: {
         totalAmount: totalPrice,
         product: newVal,
         key: Date.now(),
+        ...(values.company_name && totalPrice
+          ? { barcode: generateSKU('TEK', values.company_name, totalPrice) }
+          : {}),
       }),
     );
 
@@ -397,10 +400,10 @@ export default function OfferForm(props: {
                             ) : null}
 
                             <div className="col-span-2">
-                            <div>{item?.name}</div>
-                            <div className="text-xs font-normal">
-                                  {item?.description}
-                                </div>
+                              <div>{item?.name}</div>
+                              <div className="text-xs font-normal">
+                                {item?.description}
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -410,9 +413,7 @@ export default function OfferForm(props: {
                         <div className="col-span-1">{item?.quantity}</div>
                         <div className="col-span-2  ">
                           <div className="flex gap-1 ">
-                            <span >
-                              {item?.unitPrice}
-                            </span>
+                            <span>{item?.unitPrice}</span>
                             <span> {currencySymbol[values.currency]}</span>
                           </div>
                           {/* <div className="flex gap-1">
