@@ -2,7 +2,6 @@
 
 import MainTable from 'components/admin/data-tables/mainTable';
 import { useRouter } from 'next/navigation';
-import { log } from 'utils';
 import { useEffect, useState } from 'react';
 import { deleteCustomer, getCustomers } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';

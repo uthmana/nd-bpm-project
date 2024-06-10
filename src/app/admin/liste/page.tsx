@@ -19,15 +19,15 @@ const Liste = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isActive, setIsActive] = useState(false);
 
-  const getAllLists = async () => {
-    setIsLoading(true);
-    const { status, data } = await getProductList();
-    if (status === 200) {
-      console.log({ data });
-    } else {
-      console.log({ data });
-    }
-  };
+  // const getAllLists = async () => {
+  //   setIsLoading(true);
+  //   const { status, data } = await getProductList();
+  //   if (status === 200) {
+  //     console.log({ data });
+  //   } else {
+  //     console.log({ data });
+  //   }
+  // };
 
   const getAllStocks = async () => {
     setIsLoading(true);
@@ -86,10 +86,11 @@ const Liste = () => {
     setIsShowPopUp(false);
   };
 
-  const handleActivation = () => {
-    // setIsShowPopUp(false);
-    setIsActive(!isActive);
-  };
+  // const handleActivation = () => {
+  //   // setIsShowPopUp(false);
+  //   setIsActive(!isActive);
+  // };
+
   return (
     <div className="mt-3 w-full">
       {isLoading ? (

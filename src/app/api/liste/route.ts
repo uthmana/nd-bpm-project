@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
 import { Prisma } from '@prisma/client';
-import { validateCustomerSchema } from 'utils/validate';
+import { validateCustomerSchema } from 'utils';
 import { checkUserRole } from 'utils/auth';
 import FinalControl from 'components/forms/finalControl';
 

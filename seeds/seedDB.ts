@@ -1,11 +1,11 @@
 import fs from 'fs';
 import csvParser from 'csv-parser';
 import prisma from 'app/lib/db';
-import { users } from './users';
-import { machines } from './machines';
-import { colors } from './colors';
-import { applications } from './application';
-import { standards } from './standard';
+import { users } from './modals/users';
+import { machines } from './modals/machines';
+import { colors } from './modals/colors';
+import { applications } from './modals/application';
+import { standards } from './modals/standard';
 import { $Enums, Prisma } from '@prisma/client';
 
 //Seeding of Users from users type script file

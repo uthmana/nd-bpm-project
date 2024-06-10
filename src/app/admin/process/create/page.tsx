@@ -1,5 +1,4 @@
-import React from 'react';
-
-export default function page() {
-  return <div>Create Process</div>;
+import { redirect } from 'next/navigation';
+export default function Process() {
+  redirect('/admin/process');
 }

@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import React, { useMemo, useState } from 'react';
 import Card from 'components/card';
 import Search from 'components/search/search';

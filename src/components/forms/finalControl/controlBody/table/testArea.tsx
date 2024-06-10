@@ -1,4 +1,4 @@
-import Box from 'components/Box';
+import Box from 'components/box';
 import React, { useState } from 'react';
 import { testAreaData } from './defaultData';
 import InputField from 'components/fields/InputField';
