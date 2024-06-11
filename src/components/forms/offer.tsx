@@ -397,7 +397,6 @@ export default function OfferForm(props: {
                                   height="60"
                                   src={`${item.image}`}
                                   alt={'Product'}
-                                  className="w-full"
                                 />
                               </span>
                             ) : null}
