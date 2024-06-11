@@ -15,7 +15,6 @@ export default function InvoiceDoc({ invoice }) {
               height="60"
               src={`${nd_logo.src}`}
               alt={'nd industries logo'}
-              className="w-full"
             />
           </div>
           <p className="text-sm">
