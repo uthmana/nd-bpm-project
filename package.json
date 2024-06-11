@@ -56,7 +56,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "npx prisma generate && next build",
+    "build": "npx prisma generate && migrate deploy && next build",
     "start": "next start",
     "export": "next export",
     "lint": "next lint",
