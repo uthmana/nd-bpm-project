@@ -102,7 +102,7 @@ async function Applicaitons() {
 async function Customers() {
   const csvData = [];
 
-  fs.createReadStream('seeds/ND_Customers.csv', { encoding: 'utf-8' })
+  fs.createReadStream('seeds/modals/ND_Customers.csv', { encoding: 'utf-8' })
     .pipe(csvParser({ separator: ',' }))
     .on('data', (row) => {
       csvData.push(row);
