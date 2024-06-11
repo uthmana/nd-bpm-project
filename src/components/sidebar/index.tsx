@@ -43,7 +43,6 @@ function SidebarHorizon(props: { routes: IRoute[]; [x: string]: any }) {
       <div className={`ml-[30px] mr-[70px] mt-[50px] flex items-center`}>
         <div className="mt-4 flex h-2.5 items-center font-poppins text-[20px] font-bold uppercase text-navy-700 dark:text-white">
           <span className="mr-2 inline-block w-12">
-            value
             <img className="w-inherit" src={nd_logo.src} />
           </span>
           <span className="font-medium">TR Proses</span>
