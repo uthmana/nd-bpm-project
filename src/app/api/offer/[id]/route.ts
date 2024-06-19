@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { checkUserRole } from 'utils/auth';
 import { Offer, Prisma } from '@prisma/client';
 import { sendOffer } from 'app/lib/apiRequest';
+import prisma from '../../../lib/db';
 
 //Get single offer
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
