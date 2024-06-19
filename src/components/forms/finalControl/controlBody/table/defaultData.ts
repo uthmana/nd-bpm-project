@@ -173,11 +173,11 @@ export const ezDriveData = [
 export const otherData = [
   {
     standard: 'Test Standard:',
-    description: 'dgsfdsg5456',
+    description: '',
   },
   {
     standard: 'Açıklama / Comments:',
-    description: 'asd',
+    description: '',
   },
 ];
 
