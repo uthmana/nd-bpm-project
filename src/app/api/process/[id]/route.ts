@@ -14,7 +14,11 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
         finalControl: {
           include: {
             testItem: true,
-            testArea: true,
+            testArea: {
+              orderBy: {
+                title: 'desc',
+              },
+            },
           },
         },
         unacceptable: true,

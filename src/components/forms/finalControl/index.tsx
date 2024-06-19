@@ -59,14 +59,22 @@ export default function FinalControl(props: {
   };
 
   const handleChange = (val) => {
-    setValues(val);
+    setValues({ ...values, ...val });
+  };
+
+  const handleQcChange = (val) => {
+    setValues({ ...values, paketleme: val.paketleme });
   };
 
   return (
     <div className="w-full">
       <ControlHeader data={data} />
       <ControlBody data={values} onChange={handleChange} variant={variant} />
-      <ControlFooter data={values} onChange={handleChange} variant={variant} />
+      <ControlFooter
+        data={values}
+        onChange={handleQcChange}
+        variant={variant}
+      />
       {variant == 'input' ? (
         <Button
           onClick={handleSubmit}
