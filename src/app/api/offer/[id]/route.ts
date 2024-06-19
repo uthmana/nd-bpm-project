@@ -14,9 +14,9 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
         { status: 403 },
       );
     }
-
+    //TODO: findUnique is not working in prod
     const id = route.params.id;
-    const offer: Offer = await prisma.offer.findUnique({
+    const offer: Array<Offer> = await prisma.offer.findMany({
       where: { id: id },
       include: { product: true, Customer: true },
     });
