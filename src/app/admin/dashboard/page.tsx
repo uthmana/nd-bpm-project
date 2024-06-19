@@ -74,7 +74,7 @@ const Dashboard = () => {
   return (
     <>
       {loading ? (
-        <NewDashboardSkeleton />
+        <NewDashboardSkeleton nav={false} />
       ) : (
         <div className="w-full">
           <div className="mt-3 grid grid-cols-1 gap-5  sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 2xl:grid-cols-3 3xl:grid-cols-6">

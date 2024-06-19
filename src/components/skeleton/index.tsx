@@ -286,11 +286,15 @@ export function NewTableRowSkeleton(props: { header?: boolean }) {
   );
 }
 
-export function NewDashboardSkeleton() {
+export function NewDashboardSkeleton({ nav = true }) {
   return (
     <div className="w-full animate-pulse bg-[#f4f7fe] px-2 dark:bg-navy-800">
-      <NavbarSkeleton />
-      <BreadCrambSkeleton />
+      {nav ? (
+        <>
+          <NavbarSkeleton /> <BreadCrambSkeleton />
+        </>
+      ) : null}
+
       <div className="mb-5 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
         {[1, 2, 3, 4, 5, 6].map((item, idx) => {
           return <NewCardSkeleton key={idx} />;
