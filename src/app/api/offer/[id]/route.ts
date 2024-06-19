@@ -15,17 +15,6 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
       );
     }
 
-    const offers: Offer | Array<Offer> = await prisma.offer.findMany({
-      include: { product: true, Customer: true },
-    });
-
-    if (offers) {
-      const selectedOffer = offers?.find((item) => {
-        return item.id === route.params.id;
-      });
-      return NextResponse.json(selectedOffer, { status: 200 });
-    }
-
     const id = route.params.id;
     const offer: Offer = await prisma.offer.findUnique({
       where: { id: id },
