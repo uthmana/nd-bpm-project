@@ -32,13 +32,10 @@ export default function Create() {
         getOfferById(queryParams?.id),
         getCustomers(),
       ]);
-      const { status: offerStatus, data: offerDatas } = offerResponse;
+      const { status: offerStatus, data: offerData } = offerResponse;
       const { status: custStatus, data: custData } = customerResponse;
       if (offerStatus === 200 && custStatus === 200) {
         setCustomers(custData);
-        const offerData = offerDatas.find(
-          (item) => item.id === queryParams?.id,
-        );
         const customerName = offerData.Customer.company_name;
         setOfferData({
           ...offerData,

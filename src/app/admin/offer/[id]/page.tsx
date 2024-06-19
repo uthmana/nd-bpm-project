@@ -22,7 +22,7 @@ export default function Create() {
     setIsLoading(true);
     const { status, data } = await getOfferById(id);
     if (status === 200) {
-      setOfferData(data.find((item) => item.id === id));
+      setOfferData(data);
       setIsLoading(false);
       return;
     }

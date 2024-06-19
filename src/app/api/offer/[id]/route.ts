@@ -15,14 +15,20 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
       );
     }
     //TODO: findUnique is not working in prod
+    //const id = route.params.id;
+    // const offer: Offer = await prisma.offer.findUnique({
+    //   where: { id: id },
+    //   include: { product: true, Customer: true },
+    // });
     const id = route.params.id;
-    const offer: Array<Offer> = await prisma.offer.findMany({
-      where: { id: id },
-      include: { product: true, Customer: true },
+    const offer = await prisma.offer.findUnique({
+      where: { id },
+      include: { Customer: true, product: true },
     });
 
     return NextResponse.json(offer, { status: 200 });
   } catch (e) {
+    console.error('Error fetching offer:', e);
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
       e instanceof Prisma.PrismaClientUnknownRequestError ||
