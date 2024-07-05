@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getFaultById} from 'app/lib/apiRequest';
+import { getFaultById } from 'app/lib/apiRequest';
 import { DetailSkeleton } from 'components/skeleton';
 import { useSession } from 'next-auth/react';
 import Card from 'components/card';

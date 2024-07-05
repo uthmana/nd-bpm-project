@@ -1,7 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
-// GET All the Report on the fault till date
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
   try {
     const id = route.params.id;
@@ -19,6 +18,14 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
           createdAt: true,
           arrivalDate: true,
           faultDescription: true,
+          customerName: true,
+          status: true,
+          technicalDrawingAttachment: true,
+          customer: {
+            select: {
+              company_name: true,
+            },
+          },
         },
       }),
       prisma.process.findUnique({
@@ -29,6 +36,8 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
           shipmentQty: true,
           product_barcode: true,
           status: true,
+          price: true,
+          productCode: true,
         },
       }),
       prisma.faultControl.findUnique({
@@ -40,6 +49,11 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
           frequencyDimension: true,
           remarks: true,
           traceabilityCode: true,
+          quantity: true,
+          image: true,
+          plating: true,
+          dimensionConfirmation: true,
+          quantityConfirmation: true,
         },
       }),
       prisma.applications.findUnique({
