@@ -19,8 +19,11 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
           arrivalDate: true,
           faultDescription: true,
           customerName: true,
+          invoiceDate: true,
+          standard: true,
           status: true,
           technicalDrawingAttachment: true,
+          unacceptable: true,
           customer: {
             select: {
               company_name: true,
@@ -36,6 +39,7 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
           shipmentQty: true,
           product_barcode: true,
           status: true,
+          machineName: true,
           price: true,
           productCode: true,
         },
@@ -54,6 +58,10 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
           plating: true,
           dimensionConfirmation: true,
           quantityConfirmation: true,
+          productBatchNumber: true,
+          productCode: true,
+          result: true,
+          dirtyThreads: true,
         },
       }),
       prisma.applications.findUnique({
@@ -85,6 +93,7 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
           status: true,
           startDate: true,
           totalAmount: true,
+          email: true,
         },
       }),
     ]);
