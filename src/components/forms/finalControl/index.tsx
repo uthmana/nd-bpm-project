@@ -68,7 +68,7 @@ export default function FinalControl(props: {
 
   return (
     <div className="w-full">
-      <ControlHeader data={data} />
+      <ControlHeader data={data} variant="proccess" />
       <ControlBody data={values} onChange={handleChange} variant={variant} />
       <ControlFooter
         data={values}

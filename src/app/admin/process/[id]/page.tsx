@@ -14,7 +14,7 @@ import {
 } from 'app/lib/apiRequest';
 import Button from 'components/button/button';
 import Popup from 'components/popup';
-import { formatDateTime, log } from 'utils';
+import { formatDateTime, log, formatNumberLocale } from 'utils';
 import { useSession } from 'next-auth/react';
 import { MdAdd, MdPrint } from 'react-icons/md';
 import DetailHeader from 'components/detailHeader';
@@ -250,7 +250,11 @@ export default function EntryControl() {
                         <h2 className="font-bold capitalize italic">
                           {infoTranslate[key]}
                         </h2>
-                        <> {value}</>
+                        {key === 'quantity' ? (
+                          <>{formatNumberLocale(value)}</>
+                        ) : (
+                          <> {value}</>
+                        )}
                       </div>
                     );
                   }

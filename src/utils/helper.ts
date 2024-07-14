@@ -213,7 +213,7 @@ export const filterObject = (obj) => {
 export const formatNumberLocale = (num) => {
   if (!num) return num;
   const nFormat = new Intl.NumberFormat(undefined, {
-    minimumFractionDigits: 2,
+    minimumFractionDigits: 0,
   });
   return nFormat.format(num);
 };

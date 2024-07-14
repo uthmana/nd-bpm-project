@@ -20,6 +20,7 @@ import {
   getMonthlySum,
   getMonthAndWeekDates,
   convertToISO8601,
+  formatNumberLocale,
 } from 'utils';
 import { NewDashboardSkeleton } from 'components/skeleton';
 
@@ -81,32 +82,32 @@ const Dashboard = () => {
             <Widget
               icon={<MdOutlineGroups3 className="h-7 w-7" />}
               title={'Müşteri Sayısı'}
-              subtitle={widgetData?.customer}
+              subtitle={formatNumberLocale(widgetData?.customer)}
             />
             <Widget
               icon={<MdOutlineMultilineChart className="h-6 w-6" />}
               title={'Stok Sayısı'}
-              subtitle={widgetData?.stock}
+              subtitle={formatNumberLocale(widgetData?.stock)}
             />
             <Widget
               icon={<MdOutlineBusiness className="h-7 w-7" />}
               title={'Aylık Ürün Girişi'}
-              subtitle={widgetData?.entry}
+              subtitle={formatNumberLocale(widgetData?.entry)}
             />
             <Widget
               icon={<MdGroupWork className="h-6 w-6" />}
               title={'Aylık Proses'}
-              subtitle={widgetData?.process}
+              subtitle={formatNumberLocale(widgetData?.process)}
             />
             <Widget
               icon={<MdTaskAlt className="h-7 w-7" />}
               title={'Toplam İrsaliye'}
-              subtitle={widgetData?.invoice}
+              subtitle={formatNumberLocale(widgetData?.invoice)}
             />
             <Widget
               icon={<MdLocalOffer className="h-6 w-6" />}
               title={'Gönderilen Teklifler'}
-              subtitle={widgetData?.offer}
+              subtitle={formatNumberLocale(widgetData?.offer)}
             />
           </div>
           <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -116,7 +117,7 @@ const Dashboard = () => {
           <div className="mt-5 grid grid-cols-1 gap-5">
             <MiniTable
               variant="process"
-              title="Yeni Proces"
+              title="Yeni Başlayan Procesler"
               tableData={recentProcess}
               key={recentProcess.length}
             />
@@ -125,7 +126,7 @@ const Dashboard = () => {
             <div className="col-span-2">
               <MiniTable
                 variant="customer"
-                title="Yeni Müşteri"
+                title="Son Eklenen Müşteriler"
                 tableData={recentCustomer}
                 key={recentCustomer.length}
               />

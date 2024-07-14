@@ -1,28 +1,15 @@
 import React from 'react';
 import Image from 'next/image';
 import logo from '/public/img/auth/nd.png';
-import { formatDateTime } from 'utils';
+import { formatDateTime, formatNumberLocale } from 'utils';
+import HeaderItem from '../formheaderItem';
 
-function HeaderItem(props: {
-  tilteEn?: string;
-  titleTr?: string;
-  value?: string;
-  className?: string;
+export default function ControlHeader({
+  data,
+  variant = 'entry',
+  title,
+  titleEn,
 }) {
-  const { tilteEn, titleTr, value, className } = props;
-
-  return (
-    <div className="mb-[2px] flex items-center gap-1 text-xs font-medium">
-      <div className="flex w-[110px] flex-col">
-        <span>{titleTr} :</span>
-        <span className="text-[10px] font-normal italic">{tilteEn} :</span>
-      </div>
-      <span className={`max-w-[160px] ${className}`}>{value}</span>
-    </div>
-  );
-}
-
-export default function ControlHeader({ data }) {
   return (
     <div className="w-full">
       <div className="mb-2 flex items-center border-b border-[#000]">
@@ -34,10 +21,8 @@ export default function ControlHeader({ data }) {
           className="mr-[18%]"
         />
         <div>
-          <h1 className="mb-0 text-2xl font-bold leading-5">
-            Final / Çıkış Kontrol Formu
-          </h1>
-          <p className="text-lg italic"> Final / Output Inspection Record </p>
+          <h1 className="mb-0 text-2xl font-bold leading-5">{title}</h1>
+          <p className="text-lg italic"> {titleEn}</p>
         </div>
       </div>
 
@@ -59,12 +44,12 @@ export default function ControlHeader({ data }) {
           <HeaderItem
             tilteEn={'Quantity'}
             titleTr={'Miktar'}
-            value={data?.quantity}
+            value={formatNumberLocale(data?.quantity)}
           />
 
           <HeaderItem
-            tilteEn={'Proses Tarihi'}
-            titleTr={'Process Date'}
+            titleTr={variant !== 'entry' ? 'Proses Tarihi' : 'Giriş Tarihi'}
+            tilteEn={variant !== 'entry' ? 'Process Date' : 'Entry Date'}
             value={formatDateTime(data?.createdAt)}
           />
         </div>
@@ -86,6 +71,15 @@ export default function ControlHeader({ data }) {
             titleTr={'Tarih'}
             value={formatDateTime(data?.createdAt)}
           />
+
+          {data?.technicalDrawingAttachment ? (
+            <HeaderItem
+              titleTr={'İlgili Doküman'}
+              tilteEn={'Attachment File'}
+              value={data?.technicalDrawingAttachment}
+              type="file"
+            />
+          ) : null}
         </div>
       </div>
       <div className="mb-3 flex justify-between gap-3 border-b border-t border-[#ccc]">

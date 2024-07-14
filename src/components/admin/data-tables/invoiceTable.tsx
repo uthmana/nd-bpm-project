@@ -20,7 +20,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import Search from 'components/search/search';
-import { formatDateTime, useDrage } from 'utils';
+import { formatDateTime, useDrage, formatNumberLocale } from 'utils';
 import { InvoiceObj, InvoiceTypeTable } from 'app/localTypes/table-types';
 import TablePagination from './tablePagination';
 
@@ -174,7 +174,7 @@ function InvoiceTable({
         ),
         cell: (info: any) => (
           <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
+            {formatNumberLocale(info.getValue())}
           </p>
         ),
       }),

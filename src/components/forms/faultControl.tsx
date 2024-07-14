@@ -18,10 +18,8 @@ import TextArea from 'components/fields/textArea';
 import Button from 'components/button/button';
 import Select from 'components/select/page';
 import Radio from 'components/radio';
-import { MdOutlineArrowBack } from 'react-icons/md';
-import NextLink from 'next/link';
-import FileViewer from 'components/fileViewer';
 import InputField from 'components/fields/InputField';
+import ControlHeader from './finalControl/controlHeader';
 
 export default function EntryControlForm({
   info,
@@ -111,36 +109,12 @@ export default function EntryControlForm({
   return (
     <>
       <div className="w-full">
-        <NextLink
-          href="/admin/entry"
-          className="mb-3 flex  w-fit items-center gap-2 text-sm dark:text-white"
-        >
-          <span>
-            <MdOutlineArrowBack />
-          </span>
-          Ürün Girişe
-        </NextLink>
-        <h1 className="dark:white mb-8 text-center text-2xl font-bold md:text-4xl">
-          {title}
-        </h1>
-        <div className="mb-10 grid w-full grid-cols-1 gap-2  sm:grid-cols-2 md:grid-cols-3">
-          {Object.entries(fault).map(([key, val]: any, index) => {
-            if (faultInfo.includes(key)) {
-              return (
-                <div key={index} className="mx-2  flex flex-col flex-nowrap">
-                  <h4 className="mb-0 italic">{infoTranslate[key]}</h4>
-                  {key === 'arrivalDate' ? (
-                    <p className="font-bold"> {formatDateTime(val)} </p>
-                  ) : key === 'technicalDrawingAttachment' ? (
-                    <FileViewer file={val} />
-                  ) : (
-                    <p className="font-bold"> {val} </p>
-                  )}
-                </div>
-              );
-            }
-          })}
-        </div>
+        <ControlHeader
+          data={fault}
+          variant="entry"
+          title="Ürün Girişi Kontrol Formu"
+          titleEn="Product Entry Control Form"
+        />
         {error ? (
           <p className="mb-3 w-full rounded-md bg-red-500 p-2 text-center text-sm  font-bold text-white">
             Lütfen ilgili kontrol alanları boş bırakılmamalı.
@@ -149,7 +123,7 @@ export default function EntryControlForm({
 
         <form onSubmit={handleSubmit} className="w-full">
           <h2 className="mb-4 text-sm font-bold">kaplama</h2>
-          <div className="mb-12 grid w-full grid-cols-2 gap-3 sm:grid-cols-3">
+          <div className="mb-8 grid w-full grid-cols-2 gap-3 sm:grid-cols-3">
             {platings.map((item, idx) => {
               return (
                 <label className="flex cursor-pointer items-center" key={idx}>
@@ -169,7 +143,7 @@ export default function EntryControlForm({
             })}
           </div>
 
-          <div className="mb-8 flex flex-col gap-3 sm:flex-row">
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row">
             <Select
               extra="pt-1"
               label="Malzeme Türü"
