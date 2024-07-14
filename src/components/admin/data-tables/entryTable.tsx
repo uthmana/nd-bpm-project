@@ -23,7 +23,7 @@ import {
 } from '@tanstack/react-table';
 import Search from 'components/search/search';
 import Button from 'components/button/button';
-import { formatDateTime, useDrage } from 'utils';
+import { formatDateTime, useDrage, formatNumberLocale } from 'utils';
 import FileViewer from 'components/fileViewer';
 import { FaultObj, MainTable } from 'app/localTypes/table-types';
 import TablePagination from './tablePagination';
@@ -221,7 +221,7 @@ function EntryTable({
         ),
         cell: (info: any) => (
           <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
+            {formatNumberLocale(info.getValue())}
           </p>
         ),
       }),

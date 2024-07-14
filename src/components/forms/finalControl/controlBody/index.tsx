@@ -5,6 +5,7 @@ import TestTable from './table/testTable';
 import { MdCheck } from 'react-icons/md';
 import TestArea from './table/testArea';
 import InputField from 'components/fields/InputField';
+import { formatNumberLocale } from 'utils';
 
 export default function Index({ data, onChange, variant }) {
   const [values, setValues] = useState(data || ({} as any));
@@ -63,42 +64,67 @@ export default function Index({ data, onChange, variant }) {
         variant={variant}
       />
 
-      <div className="mb-5 flex w-full items-center justify-between gap-3">
-        <InputField
-          label="Kontrol Miktar"
-          onChange={handleQuantityValues}
-          type="number"
-          id="kontrol_edilen_miktar"
-          name="kontrol_edilen_miktar"
-          placeholder=""
-          extra="mb-2 !rounded-none h-[32px] !p-1 border-1 !border-[#000]"
-          value={values?.kontrol_edilen_miktar}
-          required={true}
-          disabled={variant !== 'input'}
-        />
-        <InputField
-          label="Nakliye Miktar"
-          onChange={handleQuantityValues}
-          type="number"
-          id="nakliye_miktar"
-          name="nakliye_miktar"
-          placeholder=""
-          extra="mb-2 !rounded-none  h-[32px] !p-1 border-1 !border-[#000]"
-          value={values?.nakliye_miktar}
-          required={true}
-          disabled={variant !== 'input'}
-        />
-        <InputField
-          label="Hatalı Miktar"
-          onChange={handleQuantityValues}
-          type="number"
-          id="hatali_miktar"
-          name="hatali_miktar"
-          placeholder=""
-          extra="mb-2 !rounded-none  h-[32px] !p-1 border-1 !border-[#000]"
-          value={values?.hatali_miktar}
-          disabled={variant !== 'input'}
-        />
+      <div className="mb-5 w-full ">
+        {variant === 'input' ? (
+          <div className="flex w-full items-center justify-between gap-3">
+            <InputField
+              label="Kontrol Miktar"
+              onChange={handleQuantityValues}
+              type="number"
+              id="kontrol_edilen_miktar"
+              name="kontrol_edilen_miktar"
+              placeholder=""
+              extra="mb-2 !rounded-none h-[32px] !p-1 border-1 !border-[#000]"
+              value={values?.kontrol_edilen_miktar}
+              required={true}
+              disabled={variant !== 'input'}
+            />
+            <InputField
+              label="Nakliye Miktar"
+              onChange={handleQuantityValues}
+              type="number"
+              id="nakliye_miktar"
+              name="nakliye_miktar"
+              placeholder=""
+              extra="mb-2 !rounded-none  h-[32px] !p-1 border-1 !border-[#000]"
+              value={values?.nakliye_miktar}
+              required={true}
+              disabled={variant !== 'input'}
+            />
+            <InputField
+              label="Hatalı Miktar"
+              onChange={handleQuantityValues}
+              type="number"
+              id="hatali_miktar"
+              name="hatali_miktar"
+              placeholder=""
+              extra="mb-2 !rounded-none  h-[32px] !p-1 border-1 !border-[#000]"
+              value={values?.hatali_miktar}
+              disabled={variant !== 'input'}
+            />
+          </div>
+        ) : (
+          <div className="flex w-full gap-2 text-sm">
+            <div className="mb-2 grow basis-0 items-center">
+              <div> Kontrol Miktar</div>
+              <div className="flex h-[32px] items-center bg-gray-100 p-1">
+                {formatNumberLocale(values?.kontrol_edilen_miktar)}
+              </div>
+            </div>
+            <div className="mb-2 grow basis-0">
+              <div> Nakliye Miktar</div>
+              <div className="flex h-[32px] items-center bg-gray-100 p-1">
+                {formatNumberLocale(values?.nakliye_miktar)}
+              </div>
+            </div>
+            <div className="mb-2 grow basis-0">
+              <div>Hatalı Miktar</div>
+              <div className="flex h-[32px] items-center bg-gray-100 p-1">
+                {formatNumberLocale(values?.hatali_miktar)}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="mb-7 w-full text-xs">

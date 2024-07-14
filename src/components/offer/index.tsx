@@ -1,17 +1,9 @@
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React from 'react';
 import { formatDateTime, currencySymbol, formatNumberLocale } from 'utils';
 import nd_logo from '/public/img/auth/nd_logo.webp';
 
 export default function OfferDoc({ offer }) {
-  const totalDiscount = () => {
-    const discount = offer?.product?.reduce(
-      (a, b) => parseInt(b.discountPrice) + parseInt(a),
-      0,
-    );
-    return offer?.totalAmount - discount || 0;
-  };
-
   return (
     <div className="page-break min-h-[800px] w-full bg-white px-10  py-8 lg:w-[700px] lg:max-w-[700px] print:absolute  print:top-0 print:z-[99999] print:min-h-screen print:w-full print:pl-0 print:pr-8">
       <div className="mb-4 flex items-center justify-between border-b-2 pb-2">
@@ -111,13 +103,13 @@ export default function OfferDoc({ offer }) {
       </div>
 
       <div className="w-full" key={offer?.product?.length}>
-        <div className="grid w-full grid-cols-10 gap-1 border-b text-sm font-bold">
+        <div className="grid w-full grid-cols-10 gap-1 border-b text-xs font-bold">
           <div className="col-span-2">Ürün</div>
           <div className="col-span-2">Uygulama</div>
           <div className="col-span-2">Standart</div>
           <div className="col-span-1">Miktar</div>
-          <div className="col-span-2">Birim Fiyat</div>
-          <div className="col-span-1">Tutar</div>
+          <div className="col-span-1">Birim Fiyat</div>
+          <div className="col-span-2">Tutar</div>
         </div>
 
         {offer?.product?.length > 0 ? (
@@ -126,7 +118,7 @@ export default function OfferDoc({ offer }) {
               return (
                 <div
                   key={idx}
-                  className="grid w-full grid-cols-10 items-start gap-1 border-b py-2 text-sm font-bold text-navy-700 dark:text-white"
+                  className="grid w-full grid-cols-10 items-start gap-1 border-b py-2 text-xs font-bold"
                 >
                   <div className="col-span-2 grid grid-cols-5">
                     {item?.image ? (
@@ -151,32 +143,11 @@ export default function OfferDoc({ offer }) {
                   <div className="col-span-2">{item?.application}</div>
                   <div className="col-span-2">{item?.standard}</div>
                   <div className="col-span-1">{item?.quantity}</div>
-                  <div className="col-span-2 ">
-                    <div className="flex gap-1">
-                      <span className="col-span-2">
-                        {formatNumberLocale(item?.unitPrice)}
-                      </span>
-                      <span> {currencySymbol[offer?.currency]}</span>
-                    </div>
-                    {/* <div className="flex gap-1">
-                      <span>{item?.discountPrice}</span>
-                      <span> {currencySymbol[offer?.currency]}</span>
-                    </div> */}
-                    {/* <div className="flex gap-1">
-                      <span>
-                        {' '}
-                        {'('}%{' '}
-                        {Math.round(
-                          ((item?.unitPrice - item?.discountPrice) /
-                            item?.unitPrice) *
-                            100,
-                        )}{' '}
-                        indi.
-                        {')'}
-                      </span>
-                    </div> */}
+                  <div className="col-span-1 flex gap-1">
+                    <span>{formatNumberLocale(item?.unitPrice)}</span>
+                    <span> {currencySymbol[offer?.currency]}</span>
                   </div>
-                  <div className="col-span-1">
+                  <div className="col-span-2">
                     {formatNumberLocale(item?.price)}
                     {currencySymbol[offer?.currency]}
                   </div>

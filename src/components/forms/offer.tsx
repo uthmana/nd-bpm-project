@@ -1,7 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { convertToISO8601, generateSKU, currencySymbol } from 'utils';
+import {
+  convertToISO8601,
+  generateSKU,
+  currencySymbol,
+  formatNumberLocale,
+} from 'utils';
 import TextArea from 'components/fields/textArea';
 import Button from 'components/button/button';
 import Select from 'components/select/page';
@@ -234,7 +239,7 @@ export default function OfferForm(props: {
         ) : null}
 
         <form onSubmit={handleSubmit} className="w-full">
-          <h1 className="mb-4 text-center text-2xl font-bold">
+          <h1 className="mb-4 text-center text-2xl font-bold dark:text-white">
             Teklif Oluşturma
           </h1>
           <div className="mb-4 grid grid-cols-2 gap-2">
@@ -362,24 +367,24 @@ export default function OfferForm(props: {
           </div>
 
           <div className="mb-12 min-w-full border-b border-t pl-2">
-            <h3 className="mb-4 mt-8 text-center text-xl">Teklif Ürünleri</h3>
+            <h3 className="mb-4 mt-8 text-center text-xl dark:text-white">
+              Teklif Ürünleri
+            </h3>
             <div className="mb-6 grid w-full grid-cols-1 dark:text-white ">
-              <div className="grid w-full grid-cols-11 gap-1 border-b text-sm font-bold">
+              <div className="grid w-full grid-cols-11 gap-1 border-b text-xs font-bold">
                 <div className="col-span-1"></div>
                 <div className="col-span-2">Ürün</div>
                 <div className="col-span-2">Uygulama</div>
                 <div className="col-span-2">Standart</div>
                 <div className="col-span-1">Miktar</div>
-                <div className="col-span-2">Birim Fiyat</div>
-                <div className="col-span-1 whitespace-nowrap break-keep">
-                  Tutar
-                </div>
+                <div className="col-span-1 min-w-fit">Birim Fiyat</div>
+                <div className="col-span-2">Tutar</div>
               </div>
               {products?.length > 0 ? (
                 products.map((item, idx) => {
                   return (
                     <label className="flex items-center " key={idx}>
-                      <div className="group grid w-full grid-cols-11 items-start gap-2 border-b py-1 text-sm font-bold text-navy-700 dark:text-white">
+                      <div className="group grid w-full grid-cols-11 items-start gap-2 border-b py-1 text-sm font-bold">
                         <div className="col-span-1 flex gap-2 py-1">
                           <div
                             className="flex h-[24px] w-[24px] items-center justify-center rounded-full border p-2 hover:bg-red-400 hover:text-white"
@@ -412,33 +417,16 @@ export default function OfferForm(props: {
 
                         <div className="col-span-2">{item?.application}</div>
                         <div className="col-span-2">{item?.standard}</div>
-                        <div className="col-span-1">{item?.quantity}</div>
-                        <div className="col-span-2  ">
-                          <div className="flex gap-1 ">
-                            <span>{item?.unitPrice}</span>
-                            <span> {currencySymbol[values.currency]}</span>
-                          </div>
-                          {/* <div className="flex gap-1">
-                            <span>{item?.discountPrice}</span>
-                            <span> {currencySymbol[values.currency]}</span>
-                          </div>
-
-                          <div className="flex gap-1">
-                            <span>
-                              {' '}
-                              {'('}%{' '}
-                              {Math.round(
-                                ((item?.unitPrice - item?.discountPrice) /
-                                  item?.unitPrice) *
-                                  100,
-                              )}{' '}
-                              indi.
-                              {')'}
-                            </span>
-                          </div> */}
-                        </div>
                         <div className="col-span-1">
-                          {item?.price} {currencySymbol[values.currency]}
+                          {formatNumberLocale(item?.quantity)}
+                        </div>
+                        <div className="col-span-1 flex gap-1">
+                          <span>{formatNumberLocale(item?.unitPrice)}</span>
+                          <span> {currencySymbol[values.currency]}</span>
+                        </div>
+                        <div className="col-span-2">
+                          {formatNumberLocale(item?.price)}
+                          {currencySymbol[values.currency]}
                         </div>
                       </div>
                     </label>

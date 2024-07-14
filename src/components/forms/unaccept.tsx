@@ -8,6 +8,7 @@ import logo from '/public/img/auth/nd.png';
 import Radio from 'components/radio';
 import { toast } from 'react-toastify';
 import { MdCheck } from 'react-icons/md';
+import FormHeaderItem from './formheaderItem';
 
 type faultInfo = {
   customerName: string;
@@ -99,46 +100,33 @@ export default function Unaccept(props: {
       </div>
 
       <div className="mb-3 flex justify-between gap-3">
-        <div className="flex w-1/2 flex-col gap-1">
-          <div className="flex  text-sm font-semibold">
-            <span className="w-[80px] font-normal">Müşteri :</span>
-            <span className="max-w-[160px] text-xs capitalize">
-              {fault?.customerName?.toLocaleLowerCase()}
-            </span>
-          </div>
-          <div className="flex  text-sm font-semibold">
-            <span className="w-[80px] font-normal">Ürün Adi :</span>
-            <span className="max-w-[160px] text-xs">{fault?.product}</span>
-          </div>
-          <div className="flex  text-sm font-semibold">
-            <span className="w-[80px] font-normal">Miktar :</span>
-            <span className="max-w-[160px] text-xs">{fault?.quantity}</span>
-          </div>
-          <div className="flex  text-sm font-semibold">
-            <span className="w-[80px] font-normal">Uygulama :</span>
-            <span className="max-w-[160px] text-xs">{fault?.application}</span>
-          </div>
+        <div className="flex grow basis-0 flex-col gap-1">
+          <FormHeaderItem
+            titleTr="Müşteri"
+            value={fault?.customerName?.toLocaleLowerCase()}
+            className="max-w-[100px] capitalize"
+          />
+          <FormHeaderItem titleTr="Ürün Adi" value={fault?.product} />
+          <FormHeaderItem
+            titleTr="Miktar"
+            value={fault?.quantity}
+            type="number"
+          />
+          <FormHeaderItem titleTr="Uygulama" value={fault?.application} />
         </div>
-
-        <div className="flex w-1/2 flex-col">
-          <div className="flex  gap-3 text-sm font-semibold">
-            <span className="w-[80px] font-normal">Barkod No :</span>
-            <span className="max-w-[160px] text-xs">
-              {fault?.product_barcode}
-            </span>
-          </div>
-          <div className="flex  gap-3 text-sm font-semibold">
-            <span className="w-[80px] font-normal">Ürün Kodu :</span>
-            <span className="max-w-[160px] text-xs">{fault?.productCode}</span>
-          </div>
-          <div className="flex gap-3 text-sm font-semibold">
-            <span className="w-[80px] font-normal">Tarih :</span>
-            <span className="max-w-[160px] text-xs">{fault?.createdAt}</span>
-          </div>
-          <div className="flex  gap-3 text-sm font-semibold">
-            <span className="w-[80px] font-normal">Renk: </span>
-            <span className="max-w-[160px] text-xs">{fault?.color}</span>
-          </div>
+        <div className="flex grow basis-0 flex-col">
+          <FormHeaderItem
+            titleTr="Barkod No"
+            value={fault?.product_barcode}
+            className="max-w-[100px]"
+          />
+          <FormHeaderItem titleTr="Ürün Kodu" value={fault?.productCode} />
+          <FormHeaderItem
+            titleTr="Tarih"
+            value={fault?.createdAt}
+            type="date"
+          />
+          <FormHeaderItem titleTr="Renk" value={fault?.color} />
         </div>
       </div>
 
