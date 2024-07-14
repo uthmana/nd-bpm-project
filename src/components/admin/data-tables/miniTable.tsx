@@ -2,7 +2,7 @@
 'use client';
 import React, { useMemo, useState } from 'react';
 import Card from 'components/card';
-import { useDrage } from 'utils';
+import { useDrage, formatNumberLocale } from 'utils';
 import {
   ProcessObj,
   ProcessTypeTable,
@@ -285,7 +285,7 @@ function MiniTable({
             ),
             cell: (info: any) => (
               <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {info.getValue()}
+                {formatNumberLocale(info.getValue())}
               </p>
             ),
           }),

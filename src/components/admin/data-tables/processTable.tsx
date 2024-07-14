@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react';
 import Card from 'components/card';
 import Search from 'components/search/search';
 import FileViewer from 'components/fileViewer';
-import { useDrage } from 'utils';
+import { useDrage, formatNumberLocale } from 'utils';
 import { ProcessObj, ProcessTypeTable } from 'app/localTypes/table-types';
 import TablePagination from './tablePagination';
 
@@ -185,7 +185,7 @@ function ProcessTable({
         ),
         cell: (info: any) => (
           <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
+            {formatNumberLocale(info.getValue())}
           </p>
         ),
       }),

@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatDateTime } from 'utils';
+import { formatDateTime, formatNumberLocale } from 'utils';
 import nd_logo from '/public/img/auth/nd_logo.webp';
 import Barcode from 'react-jsbarcode';
 import Image from 'next/image';
@@ -104,7 +104,9 @@ export default function InvoiceDoc({ invoice }) {
                   <div className="col-span-3">{item?.application}</div>
                   <div className="col-span-2">{item?.standard}</div>
                   <div className="col-span-1">{item?.color}</div>
-                  <div className="col-span-1">{item?.shipmentQty}</div>
+                  <div className="col-span-1">
+                    {formatNumberLocale(item?.shipmentQty)}
+                  </div>
                 </div>
               );
             })}
