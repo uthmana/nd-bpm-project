@@ -9,6 +9,7 @@ import {
   updateUnacceptable,
   addUnacceptable,
   deleteUnacceptable,
+  sendNotification,
 } from 'app/lib/apiRequest';
 import { useParams, useRouter } from 'next/navigation';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
@@ -140,7 +141,7 @@ export default function EntryControl() {
       nakliye_miktar: parseInt(values?.nakliye_miktar),
     });
 
-    const { status, response } = resProcess;
+    const { status, response, data } = resProcess;
     if (response?.error) {
       const { message, detail } = response?.error;
       toast.error('Proses final kontrol ekleme işlemi başarısız.' + message);
@@ -151,8 +152,22 @@ export default function EntryControl() {
 
     if (status === 200) {
       toast.success('Ürün final kontrol işlemi başarılı.');
-      router.push('/admin/process');
       setIsSubmitting(false);
+
+      if (data.result === 'ACCEPT') {
+        try {
+          await sendNotification({
+            workflowId: 'process-control',
+            data: {
+              link: `${window?.location.origin}/admin/process/${data.processId}`,
+            },
+          });
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      router.push('/admin/process');
       return;
     }
   };

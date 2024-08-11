@@ -9,6 +9,7 @@ import {
   addUnacceptable,
   updateUnacceptable,
   deleteUnacceptable,
+  sendNotification,
 } from 'app/lib/apiRequest';
 import { useParams, useRouter } from 'next/navigation';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
@@ -111,7 +112,7 @@ export default function EntryControl() {
       ...values,
       ...{ createdBy: session?.user?.name },
     });
-    const { status, response } = resControl;
+    const { status, response, data } = resControl;
     if (response?.error) {
       const { message, detail } = response?.error;
       toast.error('Hata oluştu!.' + message);
@@ -121,8 +122,22 @@ export default function EntryControl() {
     }
     if (status === 200) {
       toast.success('Ürün girişi kontrol işlemi başarılı.');
-      router.push('/admin/entry');
       setIsSubmitting(false);
+      //Notification trigger
+      if (data.result === 'ACCEPT') {
+        try {
+          await sendNotification({
+            workflowId: 'fault-control',
+            data: {
+              link: `${window?.location.origin}/admin/entry/${data.faultId}`,
+            },
+          });
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      router.push('/admin/entry');
       return;
     }
   };

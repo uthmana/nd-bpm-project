@@ -6,7 +6,7 @@ import { checkUserRole } from 'utils/auth';
 //All Faults
 export async function GET(req: NextRequest) {
   try {
-    const allowedRoles = ['NORMAL', 'ADMIN','SUPER'];
+    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
       return NextResponse.json({ error: 'Access forbidden', status: 403 });
@@ -118,14 +118,14 @@ export async function PUT(req: Request) {
     }
 
     //Create Notification
-    const notification = await prisma.notification.create({
-      data: {
-        title: 'Ürün Girişi',
-        description: `Yeni ürün girişi yapıldı.`,
-        receiver: 'SUPER',
-        link: `/admin/entry/${fault.id}`,
-      },
-    });
+    // const notification = await prisma.notification.create({
+    //   data: {
+    //     title: 'Ürün Girişi',
+    //     description: `Yeni ürün girişi yapıldı.`,
+    //     receiver: 'SUPER',
+    //     link: `/admin/entry/${fault.id}`,
+    //   },
+    // });
 
     return NextResponse.json({ fault }, { status: 200 });
   } catch (e) {

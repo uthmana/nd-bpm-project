@@ -348,3 +348,7 @@ export async function deleteUnacceptable(id) {
 export async function getProductList() {
   return fetchAPI(`liste`, 'get');
 }
+
+export async function sendNotification(payload) {
+  return fetchAPI(`notifications`, 'post', payload);
+}

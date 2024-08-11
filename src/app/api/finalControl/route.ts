@@ -120,14 +120,14 @@ export async function PUT(req: Request) {
     }
 
     //Create Notification
-    const notification = await prisma.notification.create({
-      data: {
-        title: 'Ürün Final Kontrolü',
-        description: 'Yeni bir ürün final kontrolü yapıldı',
-        receiver: 'OTHER',
-        link: `/admin/process/${processId}`,
-      },
-    });
+    // const notification = await prisma.notification.create({
+    //   data: {
+    //     title: 'Ürün Final Kontrolü',
+    //     description: 'Yeni bir ürün final kontrolü yapıldı',
+    //     receiver: 'OTHER',
+    //     link: `/admin/process/${processId}`,
+    //   },
+    // });
 
     return NextResponse.json(finalControl, { status: 200 });
   } catch (e) {
