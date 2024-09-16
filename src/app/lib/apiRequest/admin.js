@@ -290,6 +290,10 @@ export async function updateInvoice(payload) {
   return fetchAPI(`invoice/${payload.id}`, 'put', payload);
 }
 
+export async function postlogoDispatch(payload) {
+  return fetchAPI('logoapi/postdata', 'post', payload);
+}
+
 export async function sendInvoice(payload) {
   return fetchAPI('send', 'post', payload);
 }
