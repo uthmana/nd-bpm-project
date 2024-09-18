@@ -66,7 +66,7 @@ const Liste = () => {
     const { status, response } = resFault;
     if (response?.error) {
       const { message, detail } = response?.error;
-      toast.error('Ürün silmeişlemi başarısız.' + message);
+      toast.error('Ürün silme işlemi başarısız.' + message);
       log(detail);
       setIsSubmitting(false);
       return;

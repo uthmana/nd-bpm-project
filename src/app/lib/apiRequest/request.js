@@ -24,7 +24,7 @@ export async function fetchAPI(endpoint, method, data, header, accessToken) {
   } else {
     log('FETCH =>', API_URL + endpoint, headers);
   }
-  console.log(data);
+
   const res = await axios({
     url: API_URL + endpoint,
     method: method || 'get',

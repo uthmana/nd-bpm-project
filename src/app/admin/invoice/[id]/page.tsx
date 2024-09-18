@@ -11,6 +11,7 @@ import DetailHeader from 'components/detailHeader';
 import InputField from 'components/fields/InputField';
 import { toast } from 'react-toastify';
 import { generateAndSendPDF, log } from 'utils';
+import { NextRequest } from 'next/server';
 
 export default function Invoice() {
   const [isLoading, setIsLoading] = useState(false);

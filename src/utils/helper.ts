@@ -237,3 +237,15 @@ export async function validateCustomerSchema(data) {
 
   return errors;
 }
+
+export async function postToLogo(Data) {
+  const res = await fetch('/api/logoapi/postdata', {
+    method: 'POST',
+    body: Data,
+  });
+  if (!res.ok) {
+    return { status: res.status, message: res.text() };
+  }
+  const data = await res.json();
+  return { ...data, status: res.status };
+}

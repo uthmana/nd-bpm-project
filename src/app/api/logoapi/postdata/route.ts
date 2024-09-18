@@ -52,25 +52,21 @@ export async function PUT(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    var logodata = await req.json();
+
     const clientinfo: Clientinfo = {
-      clientId: 'AYZ',
-      clientSecret: '5AGTu3agfs/lBm3+7TuB5WkZrdsMo00z6lLcz96ntEw=',
-      url: 'http://localhost:32001/api/v1',
-      firmno: '36',
-      password: 'TOA013',
-      username: 'MIS',
+      clientId: process.env.LOGOCLIENTID,
+      clientSecret: process.env.LOGOCLIENTSECRETE,
+      url: process.env.LOGOURL,
+      firmno: process.env.LOGOFIRMNR,
+      password: process.env.LOGOPASSWORD,
+      username: process.env.LOGOUSERNAME,
     };
-
-    console.log(req);
-
-    const resp = req.json();
-    console.log(req.json());
 
     const client = new ApiClient(clientinfo);
     client.requestAccessToken('token');
     console.log(client.getacesstoken());
-    console.log(resp);
-    const sales = await client.post('salesDispatches', resp);
+    const sales = await client.post('salesDispatches', logodata);
     return NextResponse.json(sales);
   } catch (e) {
     console.log({ e });

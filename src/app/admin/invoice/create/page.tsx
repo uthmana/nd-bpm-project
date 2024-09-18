@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import InvoiceForm from 'components/forms/invoice';
 import { useRouter } from 'next/navigation';
-import { log } from 'utils';
+import { log, postToLogo } from 'utils';
 import { addInvoice, getFinishedProcess } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
@@ -32,6 +32,7 @@ export default function Edit() {
       ...val,
       ...{ createdBy: session?.user?.name },
     });
+
     const { status, response } = resData;
     if (response?.error) {
       const { message, detail } = response?.error;
@@ -43,6 +44,7 @@ export default function Edit() {
 
     if (status === 200) {
       toast.success('İrsaliye oluşturma işlemi başarılı.');
+
       router.push('/admin/invoice');
       setIsSubmitting(false);
       return;

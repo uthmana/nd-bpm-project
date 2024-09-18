@@ -53,6 +53,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       where: { id: customerId },
     });
     //Create the Logo Object to be posted
+    /*
     const data = {
       INTERNAL_REFERENCE: null,
       GRPCODE: 2,
@@ -100,6 +101,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     const sales = await client.post('salesDispatches', data);
     //Log the token
     console.log(sales);
+    */
     // Handle Invoice complete
     if (id && status === 'PAID') {
       const invoiceData: any = await prisma.invoice.findUnique({
