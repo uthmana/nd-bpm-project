@@ -25,7 +25,6 @@ class ApiClient {
   private password: string;
   private username: string;
   private firmno: string;
-
   constructor(clientinfo: Clientinfo) {
     this.clientId = clientinfo.clientId;
     this.clientSecret = clientinfo.clientSecret;
@@ -36,6 +35,9 @@ class ApiClient {
     this.firmno = clientinfo.firmno;
   }
 
+  getacesstoken(): string {
+    return this.accessToken;
+  }
   async requestAccessToken(path: string): Promise<AccessTokenResponse> {
     try {
       const headers = {
@@ -62,7 +64,6 @@ class ApiClient {
           headers,
         },
       );
-      // console.log(response.data.access_token);
 
       // Store the access token
       this.accessToken = response.data.access_token;
@@ -93,7 +94,6 @@ class ApiClient {
       };
 
       const response = await axios.get(`${this.url}/${path}`, { headers });
-      return response.data;
     } catch (error) {
       throw error;
     }
@@ -101,28 +101,45 @@ class ApiClient {
 
   async post(path: string, data: any): Promise<any> {
     try {
+      // Ensure accessToken is available
       if (!this.accessToken) {
-        const reqtoken = await this.requestAccessToken('token');
-        this.accessToken = reqtoken.access_token;
-      }
-      if (!this.accessToken) {
-        throw new Error(
-          'Access token is not available. Please authenticate first.',
-        );
+        const reqToken = await this.requestAccessToken('token');
+        this.accessToken = reqToken?.access_token;
+        console.log(data);
+        if (!this.accessToken) {
+          throw new Error(
+            'Access token is not available. Please authenticate first.',
+          );
+        }
       }
 
+      // Set headers
       const headers = {
         'Content-Type': 'application/json',
         Accept: 'application/json',
         Authorization: `Bearer ${this.accessToken}`,
       };
 
+      // Send POST request using Axios
       const response = await axios.post(`${this.url}/${path}`, data, {
         headers,
       });
       return response.data;
     } catch (error) {
-      throw error;
+      // Improved error handling
+      if (axios.isAxiosError(error)) {
+        console.error(
+          'Axios error:',
+          error.response?.status,
+          error.response?.data,
+        );
+        throw new Error(
+          `HTTP error: ${error.response?.status} - ${error.response?.data}`,
+        );
+      } else {
+        console.error('Unexpected error:', error);
+        throw error;
+      }
     }
   }
 }
