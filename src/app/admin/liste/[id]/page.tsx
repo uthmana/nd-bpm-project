@@ -39,12 +39,12 @@ export default function History() {
       const { status, data } = await getHistoryById(queryParams.id);
       if (status === 200) {
         setHistory(data);
-        console.log({ data });
         setIsLoading(false);
         return;
       }
       setIsSubmitting(false);
     };
+
     if (queryParams.id) {
       getSinglehistory();
     }
@@ -54,14 +54,5 @@ export default function History() {
     <div className="w-full">
       <HistoryForm formData={history} />
     </div>
-
-    //{isLoading ? (
-    //  <DetailSkeleton />
-    // ) : (
-    //    <>
-    //</>     <DetailHeader {...detailData} />
-    //   </>
-    // )}
-    // */
   );
 }
