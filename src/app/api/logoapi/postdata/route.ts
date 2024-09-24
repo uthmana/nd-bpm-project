@@ -6,13 +6,14 @@ import ApiClient, { Clientinfo } from 'utils/logorequests';
 export async function PUT(req: Request) {
   try {
     const clientinfo: Clientinfo = {
-      clientId: 'AYZ',
-      clientSecret: '5AGTu3agfs/lBm3+7TuB5WkZrdsMo00z6lLcz96ntEw=',
+      clientId: '',
+      clientSecret: '',
       url: 'http://localhost:32001/api/v1',
       firmno: '36',
-      password: 'TOA013',
-      username: 'MIS',
+      password: '',
+      username: '',
     };
+
     /*
     const data = {
       INTERNAL_REFERENCE: null,
@@ -30,6 +31,7 @@ export async function PUT(req: Request) {
         LABEL_LIST: {},
       },
     };*/
+    console.log();
     const resp = req.json();
     const client = new ApiClient(clientinfo);
     client.requestAccessToken('token');
@@ -53,7 +55,7 @@ export async function PUT(req: Request) {
 export async function POST(req: Request) {
   try {
     var logodata = await req.json();
-
+    console.log(logodata);
     const clientinfo: Clientinfo = {
       clientId: process.env.LOGOCLIENTID,
       clientSecret: process.env.LOGOCLIENTSECRETE,
@@ -65,7 +67,7 @@ export async function POST(req: Request) {
 
     const client = new ApiClient(clientinfo);
     client.requestAccessToken('token');
-    console.log(client.getacesstoken());
+    //console.log(client.getacesstoken());
     const sales = await client.post('salesDispatches', logodata);
     return NextResponse.json(sales);
   } catch (e) {

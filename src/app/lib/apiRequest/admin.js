@@ -293,6 +293,9 @@ export async function updateInvoice(payload) {
 export async function postlogoDispatch(payload) {
   return fetchAPI('logoapi/postdata', 'post', payload);
 }
+export async function saveLogoDispatch(payload) {
+  return fetchAPI('logoTransfer', 'post', payload);
+}
 
 export async function sendInvoice(payload) {
   return fetchAPI('send', 'post', payload);
