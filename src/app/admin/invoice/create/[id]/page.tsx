@@ -3,13 +3,10 @@ import React, { useEffect, useState } from 'react';
 import InvoiceForm from 'components/forms/invoice';
 import { useParams, useRouter } from 'next/navigation';
 import { log, postToLogo, removeMillisecondsAndUTC } from 'utils';
-import { LogoDispatchDto, Transaction } from 'utils/logodispatch';
-import { Prisma } from '@prisma/client';
 import {
   getCustomerById,
   getInvoiceById,
   postlogoDispatch,
-  saveLogoDispatch,
   updateInvoice,
 } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
@@ -51,7 +48,6 @@ export default function Edit() {
   const handleSubmit = async (val) => {
     const [formData, isUpdate] = val;
     setIsSubmitting(true);
-
     const resData: any = await updateInvoice({
       ...formData,
       ...{ updatedBy: session?.user?.name },
@@ -68,87 +64,54 @@ export default function Edit() {
 
     if (status === 200) {
       console.log(formData);
+      //Post To LOGO
+      //Get the Customer Code to use for sending to Logo
 
       const customerinfo = await getCustomerById(formData.customerId);
       if (customerinfo.response.status == 200) {
         console.log(customerinfo.response.data);
       }
 
-      const customerData = customerinfo.response
-        .data as Prisma.$CustomerPayload;
-      console.log(customerData);
-      const formDatatp = formData as Prisma.InvoiceGetPayload<{
-        include: { customer: true; process: true };
-      }>;
-      console.log(formDatatp);
-      console.log(formDatatp.process);
-      console.log(formDatatp.customer.code);
-
-      let transactions: Transaction[] = [];
-
-      formDatatp.process.forEach((x) => {
-        if (x.productCode) {
-          transactions.push({
-            Type: 0, // 0 for Material
-            MASTER_CODE: x.productCode, //item (Material Code)
-            PRICE: 100, //Material Price
-            QUANTITY: 1, // Number of materials
-            UNITCODE: 'ADET', // Unit code used
-            //STOCKREF: 0, // MAY BE NEEDED TO BE FILLED
-          });
-        }
-      });
-
-      console.log(transactions);
-
-      const logodata: LogoDispatchDto = {
+      const logodata = {
         INTERNAL_REFERENCE: null,
-        TYPE: 8, // 8 for salesdispatch
-        ARP_CODE: formDatatp.customer.code, //Client Code
-        NOTES1: 'Testing to see', // Açıklama
-        //PAYMENT_CODE: 30, // Odeme Planı (1 month)
-        DOC_DATE: formDatatp.invoiceDate.toString(), //Düzenleme Tarihi
-        NUMBER: `TSET1${formDatatp.barcode}`,
+        GRPCODE: 2,
+        TYPE: 8,
+        IOCODE: 3,
+        NUMBER: `TEST.FromND1${new Date().toISOString()}1`,
+        DATE: '2024-10-02T00:00:00', //formData.invoiceDate
         //NUMBER: '~',
-        DATE: formDatatp.invoiceDate.toString(), //formDatatp.invoiceDate
-        DOC_NUMBER: `SİLMEYİTest${formDatatp.barcode}`,
-        TRANSACTIONS: transactions,
+
+        DOC_NUMBER: `SİLMEYİN11Test${formData.barcode}`,
+
+        ARP_CODE: 'S.00055', //customerinfo.response.data.code
+
+        CANCELLED: 1,
+
+        PRINT_COUNTER: 0,
+
+        CURRSEL_TOTALS: 1,
+
+        TRANSACTIONS: {
+          UPDCURR: 1,
+          UPDTRCURR: 1,
+
+          DISP_STATUS: 1,
+
+          CANCEL_EXP: 'test amaçlı kesilmiştir.',
+
+          VATEXCEPT_REASON: 'bedelsiz',
+          TAX_FREE_CHECK: 0,
+          TOTAL_NET_STR: 'Sıfır TL',
+          IS_OKC_FICHE: 0,
+          LABEL_LIST: {},
+        },
       };
 
-      const logoresponse = await postlogoDispatch(JSON.stringify(logodata));
-
-      if (logoresponse.status == 200) {
-        const logoresponseData = logoresponse.response.data as LogoDispatchDto;
-        //: Prisma.logoTransferGetPayload<{}>
-        const logotransferdata = {
-          DATE: logoresponseData.DATE,
-          DOC_NUMBER: logoresponseData.DOC_NUMBER,
-          INVOICE_NUMBER: formDatatp.id,
-          NUMBER: logoresponseData.NUMBER,
-          TYPE: logoresponseData.TYPE,
-          transferType: 'SALES_DIPATCHES',
-          INTERNAL_REF: logoresponseData.INTERNAL_REFERENCE,
-        };
-
-        console.log(logotransferdata);
-        const savedinvoice = await saveLogoDispatch(
-          JSON.stringify(logotransferdata),
-        );
-        console.log(savedinvoice);
-        if (savedinvoice.response.status == 200) {
-          const savedlog = savedinvoice.response.data;
-
-          //as Prisma.$logoTransferPayload;
-          /*
-          alert(
-            `  Logoya başarıyla ${savedlog.scalars.transferType} aktarıldı ve veri Tabanına Kaydedildi ${savedlog.id}`,
-          );
-          */
-        }
-      }
+      const respponse = await postlogoDispatch(JSON.stringify(logodata));
+      console.log(respponse);
+      //  const resposne = await postToLogo(JSON.stringify(logodata));
 
       toast.success('İrsaliye oluşturma işlemi başarılı.');
-
       router.push(`/admin/invoice`);
       setIsSubmitting(false);
       return;

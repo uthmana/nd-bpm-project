@@ -1,7 +1,6 @@
 import axios from 'axios';
 import qs from 'qs';
 import { Buffer } from 'buffer';
-import { Console } from 'console';
 
 export interface AccessTokenResponse {
   access_token: string;
