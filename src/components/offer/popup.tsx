@@ -57,7 +57,7 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
       !standard ||
       !quantity ||
       !price ||
-      !unitPrice 
+      !unitPrice
       // !discountPrice
     ) {
       return;
@@ -88,14 +88,22 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
   const handleProductValues = (event) => {
     let newVal: any = { [event.target?.name]: event.target?.value };
     if (
-      event.target?.name === 'quantity',
-      event.target?.name === 'unitPrice'
+      (event.target?.name === 'quantity', event.target?.name === 'unitPrice')
     ) {
+      /*
       const price =
         parseInt(newVal?.unitPrice || offer.unitPrice) *
         parseInt(newVal.quantity || offer.quantity);
+       */
+
+      const price =
+        (newVal?.unitPrice || offer.unitPrice) *
+        (newVal.quantity || offer.quantity);
       newVal = { ...newVal, price: price };
     }
+
+    console.log(offer);
+    console.log(newVal);
     setOffer({ ...offer, ...newVal });
   };
 
