@@ -87,19 +87,18 @@ export default function OfferDoc({ offer }) {
 
       <div className="mb-8 grid w-full grid-cols-2">
         <div className="flex flex-col gap-1  text-sm">
-          <h2 className="text-xs font-bold">Fatura Adresi:</h2>
-          <p className="flex items-center gap-4 capitalize">
-            İkitelli OSB Metal-İş San. Sit. 4. <br />
-            Blok No:1 – No: 3 Başakşehir / İstanbul
-          </p>
-        </div>
-
-        <div className="flex flex-col gap-1 text-sm">
-          <h2 className="text-xs font-bold">Sevkiyat Adresi:</h2>
+          <h2 className="text-xs font-bold">Adres:</h2>
           <p className="flex items-center gap-4 capitalize">
             {offer?.address?.toLowerCase()}
           </p>
         </div>
+
+        {/* <div className="flex flex-col gap-1 text-sm">
+          <h2 className="text-xs font-bold">Sevkiyat Adresi:</h2>
+          <p className="flex items-center gap-4 capitalize">
+            {offer?.address?.toLowerCase()}
+          </p>
+        </div> */}
       </div>
 
       <div className="w-full" key={offer?.product?.length}>

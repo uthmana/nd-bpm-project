@@ -27,14 +27,12 @@ export async function POST(request: Request) {
     emailBody.html = `
     <p>Sayın ${formData?.data.rep_name},</p> 
     <br/>
-    <p>Özel kampanyamızı kaçırmayın! Ürünlerimizde cazip indirim fırsatları sizi bekliyor. Detaylar için bizimle iletişime geçebilirsiniz.</p>
-     <br/>
-    <p>Saygılarımızla,</p>
-    <p>ND Industries Türkiye</p>
+    <p>${formData?.data.description}</p>
+    <br/>
     `;
     emailBody.attachments = [
       {
-        filename: 'Teklif.pdf',
+        filename: `${formData?.data.barcode}.pdf`,
         path: formData?.data?.docPath,
       },
     ];
