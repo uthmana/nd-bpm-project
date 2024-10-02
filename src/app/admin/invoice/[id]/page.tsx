@@ -60,7 +60,7 @@ export default function Invoice() {
       email: value.email,
       subject: 'İrsaliye',
       data: invoice,
-      text: 'Kindly find the attached Invoice',
+      text: '',
       docPath: newPdf?.url,
     });
     const { status, response } = invoiceRes;
