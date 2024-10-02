@@ -18,7 +18,6 @@ import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import SignaturePad from 'components/signaturePad';
 import Image from 'next/image';
-import { Console } from 'console';
 
 const OfferPopup = dynamic(() => import('components/offer/popup'), {
   ssr: false,
@@ -174,7 +173,6 @@ export default function OfferForm(props: {
 
   const onAddProduct = async (val) => {
     let updatedOfferItem = val;
-    console.log(updatedOfferItem);
     if (isUpdate) {
       const { status, data } = await addOfferItem({
         ...val,
@@ -192,13 +190,10 @@ export default function OfferForm(props: {
     setResetFile(true);
 
     setProducts(newVal);
-    /* const totalPrice = newVal.reduce(
+    const totalPrice = newVal.reduce(
       (a, b) => parseInt(a) + parseInt(b.price),
       0,
-    );*/
-
-    const totalPrice = newVal.reduce((a, b) => a + b.price, 0);
-
+    );
     setValues({ ...values, totalAmount: totalPrice });
     debounce(
       onChange({
