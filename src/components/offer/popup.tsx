@@ -11,100 +11,101 @@ import { FormSkeleton } from 'components/skeleton';
 export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
   const [file, setFile] = useState('');
   const [loading, setLoading] = useState(false);
-  const [application, setApplication] = useState([]);
-  const [standard, setStandard] = useState([]);
+  const [applicationOptions, setApplicationOptions] = useState([]);
+  const [standardOptions, setStandardOptions] = useState([]);
 
   const [offer, setOffer] = useState({
     name: '',
     application: '',
     standard: '',
     quantity: '',
-    price: '',
     unitPrice: '',
-    // discountPrice: '',
+    price: '',
     description: '',
     image: '',
   });
 
+  // Fetch fault settings on component mount
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchFaultSettings = async () => {
       setLoading(true);
       const { data, status } = await getFaultSettings();
       if (status === 200) {
         const { applications, standards } = data;
-        setApplication(applications);
-        setStandard(standards);
+        setApplicationOptions(applications);
+        setStandardOptions(standards);
       }
       setLoading(false);
     };
 
-    fetchData();
+    fetchFaultSettings();
   }, []);
 
-  const onAddProduct = () => {
-    const {
-      name,
-      application,
-      standard,
-      quantity,
-      price,
-      unitPrice,
-      // discountPrice,
-    } = offer;
-    if (
-      !name ||
-      !application ||
-      !standard ||
-      !quantity ||
-      !price ||
-      !unitPrice
-      // !discountPrice
-    ) {
+  // Format numbers according to Turkish number formatting
+  const formatCurrency = (value) => {
+    if (!value) return '';
+    return parseFloat(value)
+      .toFixed(2) // Ensure 2 decimal places
+      .replace('.', ',') // Replace decimal point with comma
+      .replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Add dots for thousands
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    // Update offer state with formatted values
+    setOffer((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // Use the new values directly from the input fields for calculation
+    let newQuantity = name === 'quantity' ? value : offer.quantity;
+    let newUnitPrice = name === 'unitPrice' ? value : offer.unitPrice;
+
+    // Parse and format input values for Turkish number style
+    newQuantity =
+      parseFloat(newQuantity.replace(/\./g, '').replace(',', '.')) || 0;
+    newUnitPrice =
+      parseFloat(newUnitPrice.replace(/\./g, '').replace(',', '.')) || 0;
+
+    // Calculate price (Tutar)
+    const newPrice = newQuantity * newUnitPrice;
+
+    // Set the formatted price in state
+    setOffer((prev) => ({
+      ...prev,
+      price: formatCurrency(newPrice),
+    }));
+  };
+
+  // Handle adding the offer
+  const handleAddProduct = () => {
+    const { name, application, standard, quantity, price, unitPrice } = offer;
+
+    // Validate form fields
+    if (!name || !application || !standard || !quantity || !price || !unitPrice)
       return;
-    }
 
     onAdd({
       ...offer,
-      quantity: parseFloat(quantity),
-      price: parseFloat(price),
-      unitPrice: parseFloat(unitPrice),
-      // discountPrice: parseFloat(discountPrice),
+      quantity: parseFloat(quantity.replace(/\./g, '').replace(',', '.')),
+      price: parseFloat(price.replace(/\./g, '').replace(',', '.')),
+      unitPrice: parseFloat(unitPrice.replace(/\./g, '').replace(',', '.')),
       image: file,
     });
 
+    // Reset form after submission
     setOffer({
+      ...offer,
       name: '',
-      application: offer.application,
-      standard: offer.standard,
       quantity: '',
       price: '',
       unitPrice: '',
-      // discountPrice: '',
       description: '',
       image: '',
     });
-  };
-
-  const handleProductValues = (event) => {
-    let newVal: any = { [event.target?.name]: event.target?.value };
-    if (
-      (event.target?.name === 'quantity', event.target?.name === 'unitPrice')
-    ) {
-      /*
-      const price =
-        parseInt(newVal?.unitPrice || offer.unitPrice) *
-        parseInt(newVal.quantity || offer.quantity);
-       */
-
-      const price =
-        (newVal?.unitPrice || offer.unitPrice) *
-        (newVal.quantity || offer.quantity);
-      newVal = { ...newVal, price: price };
-    }
-
-    console.log(offer);
-    console.log(newVal);
-    setOffer({ ...offer, ...newVal });
+    setFile('');
   };
 
   return (
@@ -123,7 +124,7 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
             <div className="mb-3 flex flex-col gap-3 sm:flex-row">
               <InputField
                 label="Ürün"
-                onChange={handleProductValues}
+                onChange={handleInputChange}
                 type="text"
                 id="name"
                 name="name"
@@ -135,11 +136,11 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
               <Select
                 extra="pt-1"
                 label="Uygulama"
-                onChange={handleProductValues}
+                onChange={handleInputChange}
                 name="application"
               >
                 <option value=" " selected disabled></option>
-                {application.map((item, idx) => {
+                {applicationOptions.map((item, idx) => {
                   return (
                     <option value={item.name} key={idx}>
                       {item.name}
@@ -151,11 +152,11 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
               <Select
                 extra="pt-1"
                 label="standart"
-                onChange={handleProductValues}
+                onChange={handleInputChange}
                 name="standard"
               >
                 <option value=" " selected disabled></option>
-                {standard.map((item, idx) => {
+                {standardOptions.map((item, idx) => {
                   return (
                     <option value={item.name} key={idx}>
                       {item.name}
@@ -167,8 +168,8 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
             <div className="flex flex-col gap-3 sm:flex-row">
               <InputField
                 label="Miktar"
-                onChange={handleProductValues}
-                type="number"
+                onChange={handleInputChange}
+                type="text"
                 id="quantity"
                 name="quantity"
                 placeholder=""
@@ -178,31 +179,20 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
 
               <InputField
                 label="Birim Fiyat"
-                onChange={handleProductValues}
-                type="number"
+                onChange={handleInputChange}
+                type="text"
                 id="unitPrice"
                 name="unitPrice"
                 placeholder=""
                 extra="!h-[36px]"
                 value={offer.unitPrice}
               />
-
-              {/* <InputField
-                label="İndirimli Fiyat"
-                onChange={handleProductValues}
-                type="number"
-                id="discountPrice"
-                name="discountPrice"
-                placeholder=""
-                extra="!h-[36px]"
-                value={offer.discountPrice}
-              /> */}
             </div>
             <div className="ml-auto w-full max-w-[208px]">
               <InputField
                 label="Tutar"
-                onChange={handleProductValues}
-                type="number"
+                onChange={handleInputChange}
+                type="text"
                 id="price"
                 name="price"
                 placeholder=""
@@ -213,7 +203,7 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
             <div className="col-span-3 w-full">
               <TextArea
                 label="Açıklama"
-                onChange={handleProductValues}
+                onChange={handleInputChange}
                 id="description"
                 name="description"
                 placeholder="Açıklama"
@@ -231,14 +221,13 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
                 multiple={false}
               />
             </div>
-            {/* <Button onClick={addProduct} extra="mt-7 h-[36px]" text="EKLE" /> */}
           </div>
 
           <div className="flex gap-4">
             <Button
               text="EKLE"
               extra="w-[60px]  h-[40px]"
-              onClick={onAddProduct}
+              onClick={handleAddProduct}
             />
             <Button
               text="GERİ"

@@ -117,7 +117,7 @@ const Dashboard = () => {
           <div className="mt-5 grid grid-cols-1 gap-5">
             <MiniTable
               variant="process"
-              title="Yeni Başlayan Procesler"
+              title="Procesler"
               tableData={recentProcess}
               key={recentProcess.length}
             />
