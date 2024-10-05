@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  //directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model User {
@@ -72,10 +73,10 @@ model Customer {
   updatedAt              DateTime? @updatedAt
   createdBy              String?
   updatedBy              String?
-  Fault                  Fault[]
-  Invoice                Invoice[]
   Offers                 Offer[]
+  Fault                  Fault[]
   Stock                  Stock[]
+  Invoice                Invoice[]
 
   @@map("customers")
 }
@@ -101,8 +102,8 @@ model Stock {
   updatedBy          String?
   image              String?
   customerId         String?
-  faultId            String?   @unique
   customer           Customer? @relation(fields: [customerId], references: [id])
+  faultId            String?   @unique
   fault              Fault?    @relation(fields: [faultId], references: [id], onDelete: Cascade)
 }
 
@@ -122,17 +123,17 @@ model Fault {
   faultDescription           String?
   status                     FaultStatus          @default(PENDING)
   technicalDrawingAttachment String?
+  faultControl               FaultControl[]
+  unacceptable               Unacceptable[]
+  defaultTechParameter       TechnicalParameter[]
   customerId                 String?
+  customer                   Customer?            @relation(fields: [customerId], references: [id])
   faultControlId             String?              @unique
   createdAt                  DateTime             @default(now())
   updatedAt                  DateTime?            @updatedAt
   createdBy                  String?
   updatedBy                  String?
-  customer                   Customer?            @relation(fields: [customerId], references: [id])
-  faultControl               FaultControl?
-  Stock                      Stock?
-  defaultTechParameter       TechnicalParameter[]
-  unacceptable               Unacceptable?
+  Stock                      Stock[]
 }
 
 model FaultControl {
@@ -153,7 +154,7 @@ model FaultControl {
   dimensionConfirmation Boolean?
   quantityConfirmation  Boolean?
   dirtyThreads          Boolean?           @default(false)
-  processFrequency      String?
+  processFrequency      String? //yazilsin-yazilmasin
   frequencyDimension    String?
   remarks               String?
   createdAt             DateTime           @default(now())
@@ -175,10 +176,10 @@ model Unacceptable {
   updatedAt               DateTime?               @updatedAt
   createdBy               String?
   updatedBy               String?
-  faultId                 String?                 @unique
-  processId               String?                 @unique
   Fault                   Fault?                  @relation(fields: [faultId], references: [id])
+  faultId                 String?                 @unique
   Process                 Process?                @relation(fields: [processId], references: [id])
+  processId               String?                 @unique
 }
 
 model Process {
@@ -204,11 +205,11 @@ model Process {
   createdBy                  String?
   updatedBy                  String?
   status                     ProcessStatus        @default(PENDING)
-  invoiceId                  String?
-  finalControl               FinalControl[]
-  Invoice                    Invoice?             @relation(fields: [invoiceId], references: [id])
   technicalParams            TechnicalParameter[]
-  unacceptable               Unacceptable?
+  finalControl               FinalControl[]
+  unacceptable               Unacceptable[]
+  Invoice                    Invoice?             @relation(fields: [invoiceId], references: [id])
+  invoiceId                  String?
 }
 
 model FinalControl {
@@ -228,10 +229,10 @@ model FinalControl {
   createdBy             String?
   updatedBy             String?
   result                FaultControlResult
-  processId             String?
   Process               Process?           @relation(fields: [processId], references: [id], onDelete: Cascade)
-  testArea              TestArea[]
+  processId             String?
   testItem              TestItem[]
+  testArea              TestArea[]
 }
 
 model TestArea {
@@ -249,8 +250,8 @@ model TestArea {
   result_4       String?
   result_5       String?
   result_6       String?
-  finalControlId String?
   FinalControl   FinalControl? @relation(fields: [finalControlId], references: [id])
+  finalControlId String?
 }
 
 model TestItem {
@@ -273,8 +274,20 @@ model TestItem {
   updatedAt      DateTime?     @updatedAt
   createdBy      String?
   updatedBy      String?
-  finalControlId String?
   FinalControl   FinalControl? @relation(fields: [finalControlId], references: [id])
+  finalControlId String?
+}
+
+enum UnacceptableStageStatus {
+  ENTRY
+  FINAL
+  PROCESS
+  CUSTOMER
+}
+
+enum FinalItemStatus {
+  OK
+  NOT_OK
 }
 
 model Machine {
@@ -284,11 +297,12 @@ model Machine {
 }
 
 model MachineParams {
-  id           String   @id @default(cuid())
+  id           String  @id @default(cuid())
   param_name   String?
   display_name String?
-  machineId    String?
-  Machine      Machine? @relation(fields: [machineId], references: [id])
+
+  Machine   Machine? @relation(fields: [machineId], references: [id])
+  machineId String?
 }
 
 model TechnicalParameter {
@@ -318,10 +332,10 @@ model TechnicalParameter {
   createdBy              String?
   updatedBy              String?
   machineId              String
-  processId              String?
-  faultId                String?
-  Fault                  Fault?    @relation(fields: [faultId], references: [id])
   Process                Process?  @relation(fields: [processId], references: [id], onDelete: Cascade)
+  processId              String?
+  Fault                  Fault?    @relation(fields: [faultId], references: [id])
+  faultId                String?
 }
 
 model Invoice {
@@ -338,13 +352,13 @@ model Invoice {
   tax_Office  String?
   taxNo       String?
   status      InvoiceStatus @default(PENDING)
+  process     Process[]
+  customer    Customer      @relation(fields: [customerId], references: [id])
   customerId  String
   createdAt   DateTime      @default(now())
   updatedAt   DateTime?     @updatedAt
   createdBy   String?
   updatedBy   String?
-  customer    Customer      @relation(fields: [customerId], references: [id])
-  process     Process[]
 }
 
 model Offer {
@@ -366,6 +380,7 @@ model Offer {
   tax_Office   String?
   taxNo        String?
   docPath      String?
+  product      OfferItem[]
   createdAt    DateTime    @default(now())
   updatedAt    DateTime?   @updatedAt
   createdBy    String?
@@ -373,7 +388,6 @@ model Offer {
   status       OfferStatus @default(PENDING)
   customerId   String?
   Customer     Customer?   @relation(fields: [customerId], references: [id])
-  product      OfferItem[]
 }
 
 model OfferItem {
@@ -392,8 +406,15 @@ model OfferItem {
   updatedAt     DateTime? @updatedAt
   createdBy     String?
   updatedBy     String?
-  offerId       String?
   Offer         Offer?    @relation(fields: [offerId], references: [id])
+  offerId       String?
+}
+
+enum InvoiceStatus {
+  PENDING
+  ACTIVE
+  PAID
+  NOT_PAID
 }
 
 model Notification {
@@ -406,40 +427,6 @@ model Notification {
   receiver    NotifReceiver @default(NORMAL)
   link        String?
   status      NotifStatus   @default(NOT_READ)
-}
-
-model Applications {
-  id   String @id @default(cuid())
-  name String
-}
-
-model Colors {
-  id   String @id @default(cuid())
-  name String
-}
-
-model Standards {
-  id   String @id @default(cuid())
-  name String
-}
-
-enum UnacceptableStageStatus {
-  ENTRY
-  FINAL
-  PROCESS
-  CUSTOMER
-}
-
-enum FinalItemStatus {
-  OK
-  NOT_OK
-}
-
-enum InvoiceStatus {
-  PENDING
-  ACTIVE
-  PAID
-  NOT_PAID
 }
 
 enum NotifStatus {
@@ -467,6 +454,21 @@ enum FaultStatus {
   ACCEPTANCE_WITH_CONDITION
   PRE_PROCESS
   REJECT
+}
+
+model Applications {
+  id   String @id @default(cuid())
+  name String
+}
+
+model Colors {
+  id   String @id @default(cuid())
+  name String
+}
+
+model Standards {
+  id   String @id @default(cuid())
+  name String
 }
 
 enum UserRole {
@@ -504,21 +506,4 @@ enum ProcessStatus {
   PENDING
   PROCESSING
   FINISHED
-}
-
-enum TransferTypes {
-  SALES_DIPATCHES @map("Sales Dispatch")
-}
-
-model logoTransfer {
-  id             String        @id @default(cuid())
-  transferType   TransferTypes
-  DOC_NUMBER     String?
-  INTERNAL_REF   Int
-  NUMBER         String?
-  TYPE           Int
-  DATE           String
-  INVOICE_NUMBER String
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime?     @updatedAt
 }
