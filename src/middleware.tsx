@@ -56,11 +56,11 @@ export default withAuth(
 
     // Extract module and method from pathname
     const pathSegments = req.nextUrl.pathname.split('/');
-    const module = pathSegments[2]; // Extracts 'entry' from '/admin/entry/[id]'
+    const _module = pathSegments[2]; // Extracts 'entry' from '/admin/entry/[id]'
     const method = extractMethod(req.nextUrl.pathname);
 
     // Check if role has permission to access the module and method
-    const allowedMethods = rolePermissions[role][module];
+    const allowedMethods = rolePermissions[role][_module];
     if (!allowedMethods || !allowedMethods.includes(method)) {
       return NextResponse.redirect(new URL('/admin/entry', req.url));
     }
