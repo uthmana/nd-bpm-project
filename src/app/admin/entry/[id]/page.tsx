@@ -11,6 +11,7 @@ import {
   infoTranslate,
   faultControlInfo,
   faultControlTranslate,
+  formatCurrency,
 } from 'utils';
 import Button from 'components/button/button';
 import { MdAdd, MdPrint } from 'react-icons/md';
@@ -41,7 +42,7 @@ export default function Edit() {
       setIsLoading(true);
       const { status, data } = await getFaultById(queryParams.id);
       if (status === 200) {
-        setFault(data);
+        setFault({ ...data, quantity: formatCurrency(data.quantity, 'int') });
         setFaultControl(data?.faultControl[0]);
         setUnacceptable({ fault: data, unacceptable: data?.unacceptable[0] });
         setIsLoading(false);

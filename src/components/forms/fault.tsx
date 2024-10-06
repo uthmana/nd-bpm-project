@@ -16,6 +16,7 @@ import {
   techParameters,
   formatTechParams,
   resetDafaultParams,
+  deformatCurrency,
 } from 'utils';
 import { FaultObj } from '../../app/localTypes/table-types';
 import {
@@ -219,7 +220,7 @@ export default function Fault(props: {
       ...values,
       defaultTechParameter,
       product_barcode,
-      quantity: parseInt(values.quantity.toString()),
+      quantity: deformatCurrency(values.quantity, 'int'),
       technicalDrawingAttachment: file,
       arrivalDate: convertToISO8601(values.arrivalDate),
     });
@@ -344,8 +345,9 @@ export default function Fault(props: {
         <InputField
           label="Miktar"
           onChange={handleValues}
-          type="number"
           id="quantity"
+          type="quantity"
+          format="qty"
           name="quantity"
           placeholder="Miktar"
           extra="mb-2"
