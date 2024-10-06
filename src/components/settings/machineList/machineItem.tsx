@@ -21,7 +21,7 @@ const MachineList = ({
   }
 
   return (
-    <div className="grid grid-cols-1 items-start gap-4 px-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    <div className="grid max-h-[480px] grid-cols-1 items-start gap-4 overflow-y-auto px-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {machines.map((item, idx) => {
         return (
           <div

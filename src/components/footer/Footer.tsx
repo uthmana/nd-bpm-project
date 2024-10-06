@@ -29,7 +29,7 @@ const Footer = () => {
           <li>
             <a
               target="blank"
-              href="https://www.ndindustries.com/terms-and-conditions"
+              href="https://www.ndindustries.com/legal-documents/"
               className="text-base font-medium text-gray-600 hover:text-gray-600"
             >
               Kullanım Şartları
@@ -38,7 +38,7 @@ const Footer = () => {
           <li>
             <a
               target="blank"
-              href="https://www.ndindustries.com/privacy-policy"
+              href="https://www.ndindustries.com/legal-documents/"
               className="text-base font-medium text-gray-600 hover:text-gray-600"
             >
               Gizlilik

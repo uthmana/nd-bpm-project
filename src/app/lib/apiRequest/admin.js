@@ -1,5 +1,10 @@
+import { Prisma } from '@prisma/client';
 import { fetchAPI } from './request';
-
+import { strict } from 'assert';
+import axios from 'axios';
+import { log } from '../../../utils/log';
+import { getSession } from 'next-auth/react';
+//import { Session } from 'inspector';
 //Users
 export async function getUsers() {
   return fetchAPI('user');
@@ -84,6 +89,9 @@ export async function getFaultById(id) {
   return fetchAPI(`entry/${id}`);
 }
 
+export async function getHistoryById(id) {
+  return fetchAPI(`liste/${id}`);
+}
 export async function updateFault(payload) {
   return fetchAPI(`entry/${payload.id}`, 'put', payload);
 }
@@ -282,6 +290,10 @@ export async function updateInvoice(payload) {
   return fetchAPI(`invoice/${payload.id}`, 'put', payload);
 }
 
+export async function postlogoDispatch(payload) {
+  return fetchAPI('logoapi/postdata', 'post', payload);
+}
+
 export async function sendInvoice(payload) {
   return fetchAPI('send', 'post', payload);
 }
@@ -347,4 +359,8 @@ export async function deleteUnacceptable(id) {
 
 export async function getProductList() {
   return fetchAPI(`liste`, 'get');
+}
+
+export async function sendNotification(payload) {
+  return fetchAPI(`notifications`, 'post', payload);
 }

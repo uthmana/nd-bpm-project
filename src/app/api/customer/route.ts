@@ -22,12 +22,14 @@ export async function GET(req: NextRequest) {
         include: { Stock: true },
         orderBy: { company_name: 'asc' },
       });
+
       return NextResponse.json(customers, { status: 200 });
     }
 
     const customers = await prisma.customer.findMany({
       orderBy: { createdAt: 'desc' },
     });
+
     return NextResponse.json(customers, { status: 200 });
   } catch (e) {
     if (

@@ -26,7 +26,7 @@ export const authOptions: NextAuthOptions = {
   // ** Please refer to https://next-auth.js.org/configuration/options#session for more `session` options
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // ** 30 days
+    maxAge: 1 * 24 * 60 * 60, // ** 1 days
   },
   secret: process.env.NEXTAUTH_SECRET,
   // ** Please refer to https://next-auth.js.org/configuration/options#pages for more `pages` options

@@ -59,7 +59,7 @@ export default function Invoice() {
       email: value.email,
       subject: 'İrsaliye',
       data: invoice,
-      text: 'Kindly find the attached Invoice',
+      text: '',
       docPath: newPdf?.url,
     });
     const { status, response } = invoiceRes;
@@ -80,6 +80,7 @@ export default function Invoice() {
   const onInoviceComplete = async () => {
     setIsInvoiceSubmiting(true);
     const { status, data } = await updateInvoice({
+      ...invoice,
       id: queryParams?.id,
       status: 'PAID',
     });

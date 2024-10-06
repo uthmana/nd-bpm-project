@@ -7,6 +7,7 @@ import {
   addProcess,
   updateProcess,
   getMachines,
+  sendNotification,
 } from 'app/lib/apiRequest';
 import { useParams, useRouter } from 'next/navigation';
 import { DetailSkeleton } from 'components/skeleton';
@@ -21,8 +22,6 @@ import Button from 'components/button/button';
 import Popup from 'components/popup';
 import { formatDateTime, log } from 'utils';
 import { useSession } from 'next-auth/react';
-import NextLink from 'next/link';
-import { MdAdd, MdOutlineArrowBack } from 'react-icons/md';
 import Select from 'components/select/page';
 import DetailHeader from 'components/detailHeader';
 
@@ -91,6 +90,32 @@ export default function EntryControl() {
       getSingleProcess();
     }
   }, [queryParams?.id]);
+
+  useEffect(() => {
+    if (process && (!process.machineName || !process.frequency)) {
+      return;
+    }
+    const frequencyDimension = parseInt(process.frequency.split(':')[1]);
+    if (!frequencyDimension) {
+      return;
+    }
+    const intervalId = setInterval(async () => {
+      try {
+        await sendNotification({
+          workflowId: 'process-frequency',
+          data: {
+            link: `${window?.location.origin}/process/create/${process.id}`,
+          },
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    }, frequencyDimension * 60000);
+
+    () => {
+      clearInterval(intervalId);
+    };
+  }, [process]);
 
   const onUpdateData = async (id, val) => {
     if (!id) return;
@@ -184,7 +209,18 @@ export default function EntryControl() {
     if (status === 200) {
       await getSingleProcess();
       setIsShowPopUp(false);
+      try {
+        await sendNotification({
+          workflowId: 'process-completion',
+          data: {
+            link: `${window?.location.origin}/admin/process/${id}`,
+          },
+        });
+      } catch (err) {
+        console.log(err);
+      }
       router.push(`/admin/process/${process.id}`);
+      return;
     }
   };
 

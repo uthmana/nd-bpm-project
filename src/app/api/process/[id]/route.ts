@@ -110,16 +110,16 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     });
 
     //Send Process complete Notification
-    if (result.status === 'FINISHED') {
-      const notification = await prisma.notification.create({
-        data: {
-          title: 'Ürün Final Kontrolü',
-          description: `${updatedProcess?.product} ürünün prosesi tamamalandı.`,
-          receiver: 'SUPER',
-          link: `/admin/process/${id}`,
-        },
-      });
-    }
+    // if (result.status === 'FINISHED') {
+    //   const notification = await prisma.notification.create({
+    //     data: {
+    //       title: 'Ürün Final Kontrolü',
+    //       description: `${updatedProcess?.product} ürünün prosesi tamamalandı.`,
+    //       receiver: 'SUPER',
+    //       link: `/admin/process/${id}`,
+    //     },
+    //   });
+    // }
 
     return NextResponse.json(updatedProcess, { status: 200 });
   } catch (e) {
