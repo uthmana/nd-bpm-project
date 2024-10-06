@@ -5,7 +5,8 @@ import {
   convertToISO8601,
   generateSKU,
   currencySymbol,
-  formatNumberLocale,
+  formatCurrency,
+  deformatCurrency,
 } from 'utils';
 import TextArea from 'components/fields/textArea';
 import Button from 'components/button/button';
@@ -123,13 +124,22 @@ export default function OfferForm(props: {
     if (editData && editData?.Customer?.company_name !== values.company_name) {
       isEdit = false;
     }
+    const _productsFormat = products.map((item) => {
+      return {
+        ...item,
+        quantity: deformatCurrency(item.quantity, 'int'),
+        unitPrice: deformatCurrency(item.unitPrice, 'float'),
+        price: deformatCurrency(item.price, 'float'),
+      };
+    });
+
     onSubmit(
       {
         ...values,
-        totalAmount: parseFloat(values.totalAmount),
+        product: _productsFormat,
+        totalAmount: deformatCurrency(values.totalAmount, 'float'),
         startDate: convertToISO8601(values.startDate),
         endDate: convertToISO8601(values.endDate),
-        product: products,
         barcode: generateSKU('TEK', values.company_name, values.totalAmount),
       },
       isEdit,
@@ -141,25 +151,13 @@ export default function OfferForm(props: {
     e.stopPropagation();
     const newProd = [...products].filter((item, index) => index !== idx);
 
-    if (isUpdate) {
-      const filteredProd = [...products].filter(
-        (item, index) => index === idx,
-      )[0];
-      if (filteredProd && filteredProd?.id) {
-        const { status, data } = await deleteOfferItem(filteredProd?.id);
-        if (status !== 200) {
-          console.log('delete Offer Item beklenmeyen bir hata oluştu.!');
-        }
-      } else {
-        return;
-      }
-    }
-
     setProducts(newProd);
-    const totalPrice = newProd.reduce(
-      (a, b) => parseInt(a) + parseInt(b.price),
+    let totalPrice = newProd.reduce(
+      (a, b) => a + deformatCurrency(b.price, 'float'),
       0,
     );
+    totalPrice = formatCurrency(totalPrice);
+
     setValues({ ...values, totalAmount: totalPrice });
     debounce(
       onChange({
@@ -172,28 +170,18 @@ export default function OfferForm(props: {
   };
 
   const onAddProduct = async (val) => {
-    let updatedOfferItem = val;
-    if (isUpdate) {
-      const { status, data } = await addOfferItem({
-        ...val,
-        offerId: editData?.id,
-        createdBy: session?.user?.name,
-        currency: values.currency,
-      });
-      if (status === 200) {
-        updatedOfferItem = data;
-      }
-    }
-
     const newVal = [...products];
-    newVal.push({ ...updatedOfferItem });
+    newVal.push({ ...val });
     setResetFile(true);
-
     setProducts(newVal);
-    const totalPrice = newVal.reduce(
-      (a, b) => parseInt(a) + parseInt(b.price),
+
+    let totalPrice = newVal.reduce(
+      (a, b) => a + deformatCurrency(b.price, 'float'),
       0,
     );
+
+    totalPrice = formatCurrency(totalPrice);
+
     setValues({ ...values, totalAmount: totalPrice });
     debounce(
       onChange({
@@ -384,7 +372,7 @@ export default function OfferForm(props: {
                 products.map((item, idx) => {
                   return (
                     <label className="flex items-center " key={idx}>
-                      <div className="group grid w-full grid-cols-11 items-start gap-2 border-b py-1 text-sm font-bold">
+                      <div className="group grid w-full grid-cols-11 items-start gap-2 border-b py-1 text-xs font-bold">
                         <div className="col-span-1 flex gap-2 py-1">
                           <div
                             className="flex h-[24px] w-[24px] items-center justify-center rounded-full border p-2 hover:bg-red-400 hover:text-white"
@@ -417,15 +405,13 @@ export default function OfferForm(props: {
 
                         <div className="col-span-2">{item?.application}</div>
                         <div className="col-span-2">{item?.standard}</div>
-                        <div className="col-span-1">
-                          {formatNumberLocale(item?.quantity)}
-                        </div>
+                        <div className="col-span-1">{item?.quantity}</div>
                         <div className="col-span-1 flex gap-1">
-                          <span>{formatNumberLocale(item?.unitPrice)}</span>
+                          <span>{item?.unitPrice}</span>
                           <span> {currencySymbol[values.currency]}</span>
                         </div>
                         <div className="col-span-2">
-                          {formatNumberLocale(item?.price)}
+                          {item?.price}
                           {currencySymbol[values.currency]}
                         </div>
                       </div>
@@ -438,8 +424,8 @@ export default function OfferForm(props: {
                 </div>
               )}
 
-              <div className="flex w-full justify-between">
-                <div className="mb-4  mt-5 max-w-[200px]">
+              <div className="mb-4 mt-3 flex w-full justify-between">
+                <div className=" max-w-[200px]">
                   <Button
                     onClick={(e) => {
                       e.preventDefault();
@@ -450,7 +436,7 @@ export default function OfferForm(props: {
                     icon={<MdAdd className="ml-1 h-6 w-6" />}
                   />
                 </div>
-                <div className="mb-4  mt-5 max-w-[200px]">
+                <div className="max-w-[200px]">
                   <InputField
                     label={`Toplam ${currencySymbol[values.currency]}`}
                     onChange={handleValues}
@@ -460,6 +446,7 @@ export default function OfferForm(props: {
                     placeholder=""
                     extra="mb-2"
                     value={values.totalAmount}
+                    disabled
                   />
                 </div>
               </div>

@@ -1,3 +1,5 @@
+import MainTable from 'components/admin/data-tables/mainTable';
+
 export type FaultObj = {
   id?: string;
   customerName: string;
@@ -184,6 +186,10 @@ export type MainTable = {
   onAdd: (e: any) => void;
   onControl: (e: any) => void;
   searchValue: string;
+};
+
+export type ListeInfo = MainTable & {
+  onHistory: (e: any) => void;
 };
 
 export type UnacceptInfo = {

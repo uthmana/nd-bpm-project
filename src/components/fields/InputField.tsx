@@ -17,6 +17,7 @@ function InputField(props: {
   value?: number | string | any;
   length?: number;
   min?: number;
+  format?: string;
 }) {
   const {
     label,
@@ -33,16 +34,60 @@ function InputField(props: {
     value,
     length,
     min = 0,
+    format = 'tr',
   } = props;
 
   const inputElem = useRef(null);
   const [showPassword, setShowPassword] = useState(false);
+  const inputCustomType = ['currency', 'quantity'];
 
   const handlePassword = (e: any) => {
     e.stopPropagation();
     const inputType = inputElem.current?.type;
     inputElem.current.type = inputType === 'password' ? 'text' : 'password';
     setShowPassword(inputType === 'password' ? true : false);
+  };
+
+  const currencyMask = (e, format) => {
+    let value = e.target.value;
+    const locale = {
+      tr: () => {
+        value = value.replace(/[^0-9,.]/g, '');
+        const parts = value.split(',');
+        parts[0] = parts[0].replace(/\./g, '');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        if (parts[1]) {
+          parts[1] = parts[1].slice(0, 2);
+        }
+        return parts.length > 1 ? parts.join(',') : parts[0];
+      },
+      qty: () => {
+        value = value.replace(/[^0-9]/g, '');
+        value = value.replace(/\./g, '');
+        value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        return value;
+      },
+    };
+
+    if (locale[format]) {
+      e.target.value = locale[format]();
+    }
+    return e;
+  };
+
+  const handleChange = (e, format) => {
+    if (type === 'currency') {
+      const value = currencyMask(e, format);
+      onChange(value);
+      return;
+    }
+    if (type === 'quantity') {
+      const value = currencyMask(e, format);
+      onChange(value);
+      return;
+    }
+
+    onChange(e);
   };
 
   return (
@@ -70,9 +115,9 @@ function InputField(props: {
       <input
         ref={inputElem}
         value={value}
-        onChange={onChange}
+        onChange={(e) => handleChange(e, format)}
         disabled={disabled}
-        type={type}
+        type={inputCustomType.includes(type) ? 'text' : type}
         id={id}
         name={name}
         required={required}

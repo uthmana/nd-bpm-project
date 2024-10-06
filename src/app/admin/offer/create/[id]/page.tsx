@@ -12,7 +12,13 @@ import {
 import { toast } from 'react-toastify';
 import { useParams } from 'next/navigation';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
-import { log, removeMillisecondsAndUTC } from 'utils';
+import {
+  log,
+  removeMillisecondsAndUTC,
+  formatCurrency,
+  deformatCurrency,
+  generateAndSendPDF,
+} from 'utils';
 import { useRouter } from 'next/navigation';
 // import OfferTemplete from 'emails/offer';
 // import ReactDOMServer from 'react-dom/server';
@@ -21,6 +27,7 @@ import Card from 'components/card';
 export default function Create() {
   const [customers, setCustomers] = useState([]);
   const [offerData, setOfferData] = useState({} as any);
+  const [offerItemData, setOfferItemData] = useState([] as any);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const queryParams = useParams();
   const [isLoading, setIsLoading] = useState(false);
@@ -37,13 +44,26 @@ export default function Create() {
       if (offerStatus === 200 && custStatus === 200) {
         setCustomers(custData);
         const customerName = offerData.Customer.company_name;
+        const offerProduct = offerData?.product.map((item) => {
+          return {
+            ...item,
+            price: formatCurrency(item.price),
+            quantity: formatCurrency(item.quantity, 'int'),
+            unitPrice: formatCurrency(parseFloat(item.unitPrice)),
+          };
+        });
+        setOfferItemData(offerProduct);
+
         setOfferData({
           ...offerData,
           customerName,
+          product: offerProduct,
           company_name: customerName,
+          totalAmount: formatCurrency(parseFloat(offerData.totalAmount)),
           startDate: removeMillisecondsAndUTC(offerData.startDate),
           endDate: removeMillisecondsAndUTC(offerData.endDate),
         });
+
         setIsLoading(false);
       }
       setIsLoading(false);
@@ -57,9 +77,22 @@ export default function Create() {
     delete val.customerName;
     delete val.Customer;
 
+    let newPdf = val.docPath;
     setIsSubmitting(true);
+    if (offerItemData?.length !== val.product?.length) {
+      newPdf = await generateAndSendPDF('pdf-content');
+      if (newPdf.status !== 200) {
+        toast.error('PDf Oluşturmada hata oluştu. Daha sonra tekrar deneyin!');
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
     if (isEdit) {
-      const updateOfferResponse: any = await updateOffer(val);
+      const updateOfferResponse: any = await updateOffer({
+        ...val,
+        docPath: newPdf.url,
+      });
       const { status, data, response } = updateOfferResponse;
       if (response?.error) {
         const { message, detail } = response?.error;
@@ -68,7 +101,6 @@ export default function Create() {
         setIsSubmitting(false);
         return;
       }
-
       toast.success('Teklif düzenleme işlemi başarılı.');
       router.push('/admin/offer');
       setIsSubmitting(false);

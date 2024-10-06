@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getFaultById} from 'app/lib/apiRequest';
+import { getFaultById } from 'app/lib/apiRequest';
 import { DetailSkeleton } from 'components/skeleton';
 import { useSession } from 'next-auth/react';
 import Card from 'components/card';
@@ -11,6 +11,7 @@ import {
   infoTranslate,
   faultControlInfo,
   faultControlTranslate,
+  formatCurrency,
 } from 'utils';
 import Button from 'components/button/button';
 import { MdAdd, MdPrint } from 'react-icons/md';
@@ -41,7 +42,7 @@ export default function Edit() {
       setIsLoading(true);
       const { status, data } = await getFaultById(queryParams.id);
       if (status === 200) {
-        setFault(data);
+        setFault({ ...data, quantity: formatCurrency(data.quantity, 'int') });
         setFaultControl(data?.faultControl[0]);
         setUnacceptable({ fault: data, unacceptable: data?.unacceptable[0] });
         setIsLoading(false);

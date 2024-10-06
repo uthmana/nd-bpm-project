@@ -55,45 +55,83 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     }
 
     const id = route.params.id;
-    const result: Offer = await req.json();
+    const result: any = await req.json();
     const offer: Partial<Offer> = await prisma.offer.findUnique({
       where: { id },
     });
 
-    if (offer) {
-      const offerData: any = result;
-      if (offerData.status === 'SENT') {
-        const { status, response }: any = await sendOffer({
-          type: 'offer',
-          email: offerData.email,
-          subject: 'Teklif | ND Industries',
-          data: offerData,
-        });
-        if (response?.error || status !== 200) {
-          return NextResponse.json(
-            { message: response?.error?.message },
-            { status: response.status },
-          );
-        }
-        const updateOffer = await prisma.offer.update({
-          where: {
-            id: id,
-          },
-          data: { status: offer.status },
-        });
-        return NextResponse.json(updateOffer, { status: 200 });
-      }
-
-      delete offerData?.product;
-      delete offerData?.Customer;
-      const updateOffer = await prisma.offer.update({
-        where: {
-          id: id,
-        },
-        data: offerData,
-      });
-      return NextResponse.json(updateOffer, { status: 200 });
+    if (!offer) {
+      return NextResponse.json({ message: 'Offer Not Found' }, { status: 404 });
     }
+
+    const { id: offerId, product, ...rest } = result;
+    const incomingProductIds = product.map((p) => p.id).filter((id) => id);
+    const updatedOffer = await prisma.offer.update({
+      where: { id: offerId },
+      data: {
+        ...rest,
+        product: {
+          deleteMany: {
+            id: {
+              notIn: incomingProductIds,
+            },
+          },
+          upsert: product.map((p) => ({
+            where: { id: p.id || '0' },
+            create: {
+              name: p.name,
+              application: p.application,
+              standard: p.standard,
+              currency: p.currency,
+              quantity: p.quantity,
+              price: p.price,
+              unitPrice: p.unitPrice,
+              description: p.description,
+              image: p.image,
+            },
+            update: {
+              name: p.name,
+              application: p.application,
+              standard: p.standard,
+              currency: p.currency,
+              quantity: p.quantity,
+              price: p.price,
+              unitPrice: p.unitPrice,
+              description: p.description,
+              image: p.image,
+            },
+          })),
+        },
+      },
+      include: {
+        product: true,
+      },
+    });
+
+    if (!updatedOffer) {
+      return NextResponse.json(
+        { message: 'Offer Update Error' },
+        { status: 404 },
+      );
+    }
+
+    //const offerData: any = result;
+    if (updatedOffer.status === 'SENT') {
+      const { status, response }: any = await sendOffer({
+        type: 'offer',
+        email: updatedOffer.email,
+        subject: 'Teklif | ND Industries',
+        data: updatedOffer,
+      });
+      if (response?.error || status !== 200) {
+        return NextResponse.json(
+          { message: response?.error?.message },
+          { status: response.status },
+        );
+      }
+    }
+
+    return NextResponse.json(updatedOffer, { status: 200 });
   } catch (e) {
     console.log(e);
     if (

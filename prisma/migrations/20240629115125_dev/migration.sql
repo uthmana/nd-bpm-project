@@ -67,7 +67,6 @@ CREATE TABLE "Address" (
     CONSTRAINT "Address_pkey" PRIMARY KEY ("id")
 );
 
-
 -- CreateTable
 CREATE TABLE "ContactInfo" (
     "id" TEXT NOT NULL,
@@ -77,7 +76,6 @@ CREATE TABLE "ContactInfo" (
 
     CONSTRAINT "ContactInfo_pkey" PRIMARY KEY ("id")
 );
-
 
 -- CreateTable
 CREATE TABLE "customers" (

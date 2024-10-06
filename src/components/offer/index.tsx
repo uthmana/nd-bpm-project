@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
-import { formatDateTime, currencySymbol, formatNumberLocale } from 'utils';
+import { formatDateTime, currencySymbol } from 'utils';
 import nd_logo from '/public/img/auth/nd_logo.webp';
 
 export default function OfferDoc({ offer }) {
@@ -87,19 +87,18 @@ export default function OfferDoc({ offer }) {
 
       <div className="mb-8 grid w-full grid-cols-2">
         <div className="flex flex-col gap-1  text-sm">
-          <h2 className="text-xs font-bold">Fatura Adresi:</h2>
-          <p className="flex items-center gap-4 capitalize">
-            İkitelli OSB Metal-İş San. Sit. 4. <br />
-            Blok No:1 – No: 3 Başakşehir / İstanbul
-          </p>
-        </div>
-
-        <div className="flex flex-col gap-1 text-sm">
-          <h2 className="text-xs font-bold">Sevkiyat Adresi:</h2>
+          <h2 className="text-xs font-bold">Adres:</h2>
           <p className="flex items-center gap-4 capitalize">
             {offer?.address?.toLowerCase()}
           </p>
         </div>
+
+        {/* <div className="flex flex-col gap-1 text-sm">
+          <h2 className="text-xs font-bold">Sevkiyat Adresi:</h2>
+          <p className="flex items-center gap-4 capitalize">
+            {offer?.address?.toLowerCase()}
+          </p>
+        </div> */}
       </div>
 
       <div className="w-full" key={offer?.product?.length}>
@@ -144,11 +143,11 @@ export default function OfferDoc({ offer }) {
                   <div className="col-span-2">{item?.standard}</div>
                   <div className="col-span-1">{item?.quantity}</div>
                   <div className="col-span-1 flex gap-1">
-                    <span>{formatNumberLocale(item?.unitPrice)}</span>
+                    <span>{item?.unitPrice}</span>
                     <span> {currencySymbol[offer?.currency]}</span>
                   </div>
                   <div className="col-span-2">
-                    {formatNumberLocale(item?.price)}
+                    {item?.price}
                     {currencySymbol[offer?.currency]}
                   </div>
                 </div>
@@ -158,14 +157,12 @@ export default function OfferDoc({ offer }) {
         ) : null}
       </div>
 
-      <div className="mb-5 grid grid-cols-5 justify-between py-2 text-sm">
-        <div className="col-span-4 text-right">
-          {/* Genel Toplam ({totalDiscount()} {currencySymbol[offer?.currency]}{' '}
-          indirim içerir) */}
-        </div>
-        <div className="col-span-1 pr-3 text-right font-bold">
-          {formatNumberLocale(offer.totalAmount)}
-          {currencySymbol[offer?.currency]}
+      <div className="mb-5 mt-3 flex w-full justify-end py-2 text-sm">
+        <div className="flex  pr-3 text-right font-bold">
+          Toplam:
+          <span className="ml-1 inline-block min-w-24">
+            {offer.totalAmount} {currencySymbol[offer?.currency]}
+          </span>
         </div>
       </div>
 

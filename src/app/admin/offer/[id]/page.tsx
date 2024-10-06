@@ -8,7 +8,7 @@ import { useParams } from 'next/navigation';
 import Button from 'components/button/button';
 import { MdOutlinePayment, MdPrint } from 'react-icons/md';
 import { OfferObj } from 'app/localTypes/table-types';
-import { log } from 'utils';
+import { formatCurrency, log } from 'utils';
 // import OfferTemplete from 'emails/offer';
 // import ReactDOMServer from 'react-dom/server';
 
@@ -22,7 +22,20 @@ export default function Create() {
     setIsLoading(true);
     const { status, data } = await getOfferById(id);
     if (status === 200) {
-      setOfferData(data);
+      const offerProduct = data?.product.map((item) => {
+        return {
+          ...item,
+          price: formatCurrency(item.price),
+          quantity: formatCurrency(item.quantity, 'int'),
+          unitPrice: formatCurrency(item.unitPrice),
+        };
+      });
+
+      setOfferData({
+        ...data,
+        product: offerProduct,
+        totalAmount: formatCurrency(parseFloat(data.totalAmount)),
+      });
       setIsLoading(false);
       return;
     }

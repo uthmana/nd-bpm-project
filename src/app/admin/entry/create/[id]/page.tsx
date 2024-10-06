@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import FaultForm from 'components/forms/fault';
 import { useParams, useRouter } from 'next/navigation';
-import { log } from 'utils';
+import { formatCurrency, log } from 'utils';
 import { toast } from 'react-toastify';
 import { getFaultById, updateFault } from 'app/lib/apiRequest';
 import { FormSkeleton } from 'components/skeleton';
@@ -23,7 +23,8 @@ export default function Edit() {
       const { status, data } = await getFaultById(queryParams.id);
       if (status === 200) {
         delete data.faultControl;
-        setFault(data);
+
+        setFault({ ...data, quantity: formatCurrency(data.quantity, 'int') });
         setIsLoading(false);
         return;
       }

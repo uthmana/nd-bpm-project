@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import FaultForm from 'components/forms/fault';
 import { useRouter } from 'next/navigation';
 import { log } from 'utils';
-import { addFault } from 'app/lib/apiRequest';
+import { addFault, sendNotification } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
 import Card from 'components/card';
@@ -19,7 +19,7 @@ export default function Edit() {
       ...val,
       ...{ createdBy: session?.user?.name },
     });
-    const { status, response } = resData;
+    const { status, response, data } = resData;
     if (response?.error) {
       const { message, detail } = response?.error;
       toast.error('Hata oluştu!.' + message);
@@ -29,6 +29,17 @@ export default function Edit() {
     }
 
     if (status === 200) {
+      try {
+        await sendNotification({
+          workflowId: 'fault-entry',
+          data: {
+            link: `${window?.location.origin}/admin/entry/${data.id}`,
+          },
+        });
+      } catch (err) {
+        console.log(err);
+      }
+
       toast.success('Ürün girişi ekleme işlemi başarılı.');
       router.push('/admin/entry');
       setIsSubmitting(false);

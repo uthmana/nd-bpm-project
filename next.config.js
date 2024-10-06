@@ -1,12 +1,5 @@
 /** @type {import('next').NextConfig} */
 
-// const withTM = require('next-transpile-modules')(['@babel/preset-react']);
-//   '@fullcalendar/common',
-//   '@fullcalendar/common',
-//   '@fullcalendar/daygrid',
-//   '@fullcalendar/interaction',
-//   '@fullcalendar/react',
-
 const nextConfig = {
   swcMinify: true,
   assetPrefix: process.env.NEXT_PUBLIC_BASE_PATH,

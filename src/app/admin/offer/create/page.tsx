@@ -20,8 +20,11 @@ export default function Create() {
   useEffect(() => {
     const getAllCustomer = async () => {
       const { status, data } = await getCustomers();
+
       if (status === 200) {
-        setCustomers(data);
+        setCustomers(
+          data.sort((a, b) => (a.company_name > b.company_name ? 1 : -1)),
+        );
       }
     };
     getAllCustomer();

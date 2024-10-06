@@ -8,6 +8,7 @@ import { MdAdd } from 'react-icons/md';
 const AppItem = ({ title, data, onAdd, onEdit, onDelete, isSubmitting }) => {
   const [value, setValue] = useState({} as any);
   const [apps, setApps] = useState(data || ([] as any));
+  const [appsCopy, setAppsCopy] = useState(data || ([] as any));
 
   const handleValue = (event) => {
     const newVal = { [event.target?.name]: event.target?.value };
@@ -25,9 +26,16 @@ const AppItem = ({ title, data, onAdd, onEdit, onDelete, isSubmitting }) => {
     const filteredList = apps.filter(
       (item, idx) => item.id !== id || idx !== index,
     );
+
     const filteredItem = apps.find(
       (item, idx) => item.id === id || idx === index,
     );
+
+    if (value.id) {
+      const _prevValue = appsCopy.find((item) => item.id === value.id);
+      _prevValue && filteredList.push(_prevValue);
+    }
+
     setApps(filteredList);
     setValue({ ...filteredItem, id });
   };
@@ -78,27 +86,26 @@ const AppItem = ({ title, data, onAdd, onEdit, onDelete, isSubmitting }) => {
             );
           })}
         </div>
-
-        <div className="sticky bottom-[28px] h-[30px] bg-white dark:bg-navy-800">
-          <div className="relative bg-white dark:bg-navy-800">
-            <InputField
-              label=""
-              onChange={handleValue}
-              type="text"
-              id="name"
-              name="name"
-              placeholder=""
-              extra="mb-2 font-medium -mt-[26px] h-[30px] bg-white dark:bg-navy-800"
-              value={value.name}
-            />
-            <Button
-              onClick={handleAdd}
-              extra="absolute right-[1px] top-[29px] h-7 rounded-tl-none rounded-bl-none rounded-tr-md rounded-br-md !w-[40px] dark:bg-brandcolor"
-              text=""
-              icon={<MdAdd className="ml-1 h-6 w-6" />}
-              disabled={isSubmitting}
-            />
-          </div>
+      </div>
+      <div className="mt-3 h-[30px] bg-white dark:bg-navy-800">
+        <div className="relative bg-white dark:bg-navy-800">
+          <InputField
+            label=""
+            onChange={handleValue}
+            type="text"
+            id="name"
+            name="name"
+            placeholder=""
+            extra="mb-2 font-medium  h-[30px] bg-white dark:bg-navy-800"
+            value={value.name}
+          />
+          <Button
+            onClick={handleAdd}
+            extra="absolute right-[1px] top-[1px] h-7 rounded-tl-none rounded-bl-none rounded-tr-md rounded-br-md !w-[40px] dark:bg-brandcolor"
+            text=""
+            icon={<MdAdd className="ml-1 h-6 w-6" />}
+            disabled={isSubmitting}
+          />
         </div>
       </div>
     </div>
