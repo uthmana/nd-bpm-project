@@ -48,6 +48,24 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       status,
     } = result;
 
+    if (!customerId || !invoiceDate || !tax_Office || !taxNo || !address) {
+      return NextResponse.json(
+        { message: 'You are missing a required data' },
+        { status: 401 },
+      );
+    }
+    const invoiceData: any = await prisma.invoice.findUnique({
+      where: { id },
+      include: { process: true },
+    });
+
+    if (!invoiceData) {
+      return NextResponse.json(
+        { message: 'Invoice not found' },
+        { status: 404 },
+      );
+    }
+
     // Get the customer ID
     const customer = await prisma.customer.findUnique({
       where: { id: customerId },
@@ -102,67 +120,41 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     //Log the token
     console.log(sales);
     */
+
     // Handle Invoice complete
     if (id && status === 'PAID') {
-      const invoiceData: any = await prisma.invoice.findUnique({
-        where: { id },
-        include: { process: true },
+      const invoice: Invoice = await prisma.invoice.update({
+        where: { id: invoiceData.id },
+        data: { status },
       });
-      if (invoiceData && invoiceData.status !== 'PAID') {
-        const invoice: Invoice = await prisma.invoice.update({
-          where: { id: invoiceData.id },
-          data: { status },
-        });
-
-        if (invoiceData.process && invoiceData.process.length > 0) {
-          const stockUpdate = await Promise.all(
-            invoiceData.process.map(async (item) => {
-              let updatedQty = item.quantity;
-              if (item.shipmentQty > item.quantity) {
-                updatedQty = 0;
-              } else {
-                updatedQty = item.quantity - item.shipmentQty;
-              }
-              const stock = await prisma.stock.update({
-                where: { faultId: item.faultId },
-                data: { inventory: updatedQty },
-              });
-            }),
-          );
-
-          // await prisma.stock.deleteMany({
-          //   where: {
-          //     faultId: {
-          //       in: faultIds,
-          //     },
-          //   },
-          // });
-        }
-        return NextResponse.json(invoice, { status: 200 });
+      // Update stock
+      if (invoiceData.process && invoiceData.process.length > 0) {
+        const stockUpdate = await Promise.all(
+          invoiceData.process.map(async (item) => {
+            let updatedQty = item.quantity;
+            if (item.shipmentQty > item.quantity) {
+              updatedQty = 0;
+            } else {
+              updatedQty = item.quantity - item.shipmentQty;
+            }
+            const stock = await prisma.stock.update({
+              where: { faultId: item.faultId },
+              data: { inventory: updatedQty },
+            });
+          }),
+        );
       }
-
-      return NextResponse.json(invoiceData, { status: 200 });
+      return NextResponse.json(invoice, { status: 200 });
     }
-    // Handle Invoice complete end
 
-    if (!customerId || !invoiceDate || !tax_Office || !taxNo || !address) {
-      return NextResponse.json(
-        { message: 'You are missing a required data' },
-        { status: 401 },
-      );
-    }
-    const invoice: Invoice = await prisma.invoice.findUnique({
-      where: { id },
-    });
-
-    let invoiceBarCode = invoice.barcode;
-    if (!invoice.barcode) {
+    //Generate barcode
+    let invoiceBarCode = invoiceData.barcode;
+    if (!invoiceData.barcode) {
       const barcodeOptions = {
         bcid: 'code128',
-        text: invoice.id,
+        text: invoiceData.id,
         scale: 3,
       };
-
       const pngBuffer = await new Promise<Buffer>((resolve, reject) => {
         bwipjs.toBuffer(barcodeOptions, (err, buffer) => {
           if (err) {
@@ -175,26 +167,18 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       invoiceBarCode = pngBuffer.toString('base64');
     }
 
+    const { process: invoiceProcess, ...rest } = invoiceData;
     const updateInvoice = await prisma.invoice.update({
       where: {
         id: id,
       },
       data: {
-        invoiceDate,
-        updatedBy,
-        tax_Office,
-        taxNo,
-        rep_name,
-        description,
-        totalAmount,
-        vat,
-        amount,
-        address,
-        status,
+        ...rest,
         barcode: invoiceBarCode,
       },
     });
 
+    //Update Process
     if (process.length === 0) {
       const processInvoice = await prisma.process.findMany({
         where: { invoiceId: id },
@@ -212,21 +196,18 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
           }),
         );
       }
-
       return NextResponse.json(updateInvoice, { status: 200 });
     }
-
     const processUpdate = await Promise.all(
       process.map(async (item) => {
         const updatedProcess = await prisma.process.update({
           where: {
             id: item.id,
           },
-          data: { invoiceId: invoice.id, price: item.price },
+          data: { invoiceId: invoiceData.id, price: item.price },
         });
       }),
     );
-
     return NextResponse.json(updateInvoice, { status: 200 });
   } catch (e) {
     if (

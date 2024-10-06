@@ -11,7 +11,6 @@ import DetailHeader from 'components/detailHeader';
 import InputField from 'components/fields/InputField';
 import { toast } from 'react-toastify';
 import { generateAndSendPDF, log } from 'utils';
-import { NextRequest } from 'next/server';
 
 export default function Invoice() {
   const [isLoading, setIsLoading] = useState(false);
@@ -81,6 +80,7 @@ export default function Invoice() {
   const onInoviceComplete = async () => {
     setIsInvoiceSubmiting(true);
     const { status, data } = await updateInvoice({
+      ...invoice,
       id: queryParams?.id,
       status: 'PAID',
     });
@@ -171,7 +171,7 @@ export default function Invoice() {
                 invoice.status !== 'PAID' ? 'TAMAMLA' : 'TAMAMLANDI'
               }`}
               icon={<MdOutlinePayment className="mr-1 h-5 w-5" />}
-              disabled={invoice.status === 'PAID'}
+              disabled={invoice.status === 'PAIDs'}
               loading={isInvoiceSubmiting}
             />
           </div>

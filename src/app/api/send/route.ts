@@ -48,11 +48,16 @@ export async function POST(request: Request) {
   }
 
   if (formData.type === 'invoice') {
+    emailBody.html = `
+    <p>Sayın ${formData?.data?.customer?.rep_name},</p> 
+    <br/>
+    <br/>
+    `;
     formData.data.serverSide = true;
     const pdfPath = formData.docPath;
     emailBody.attachments = [
       {
-        filename: 'Invoice.pdf',
+        filename: `${formData.data?.barcode}.pdf`,
         path: pdfPath,
       },
     ];
