@@ -7,6 +7,7 @@ import Upload from 'components/upload';
 import TextArea from 'components/fields/textArea';
 import { getFaultSettings } from 'app/lib/apiRequest';
 import { FormSkeleton } from 'components/skeleton';
+import { formatCurrency, deformatCurrency } from 'utils';
 
 export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
   const [file, setFile] = useState('');
@@ -41,15 +42,6 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
     fetchFaultSettings();
   }, []);
 
-  // Format numbers according to Turkish number formatting
-  const formatCurrency = (value) => {
-    if (!value) return '';
-    return parseFloat(value)
-      .toFixed(2) // Ensure 2 decimal places
-      .replace('.', ',') // Replace decimal point with comma
-      .replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Add dots for thousands
-  };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -63,19 +55,15 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
     let newQuantity = name === 'quantity' ? value : offer.quantity;
     let newUnitPrice = name === 'unitPrice' ? value : offer.unitPrice;
 
-    // Parse and format input values for Turkish number style
-    newQuantity =
-      parseFloat(newQuantity.replace(/\./g, '').replace(',', '.')) || 0;
-    newUnitPrice =
-      parseFloat(newUnitPrice.replace(/\./g, '').replace(',', '.')) || 0;
-
     // Calculate price (Tutar)
-    const newPrice = newQuantity * newUnitPrice;
+    const newPrice =
+      deformatCurrency(newQuantity, 'int') *
+      deformatCurrency(newUnitPrice, 'float');
 
     // Set the formatted price in state
     setOffer((prev) => ({
       ...prev,
-      price: formatCurrency(newPrice),
+      price: formatCurrency(newPrice.toString()),
     }));
   };
 
@@ -89,9 +77,9 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
 
     onAdd({
       ...offer,
-      quantity: parseFloat(quantity.replace(/\./g, '').replace(',', '.')),
-      price: parseFloat(price.replace(/\./g, '').replace(',', '.')),
-      unitPrice: parseFloat(unitPrice.replace(/\./g, '').replace(',', '.')),
+      quantity,
+      price,
+      unitPrice,
       image: file,
     });
 
@@ -169,8 +157,9 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
               <InputField
                 label="Miktar"
                 onChange={handleInputChange}
-                type="text"
+                type="quantity"
                 id="quantity"
+                format="qty"
                 name="quantity"
                 placeholder=""
                 extra="!h-[36px]"
@@ -180,7 +169,8 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
               <InputField
                 label="Birim Fiyat"
                 onChange={handleInputChange}
-                type="text"
+                type="currency"
+                format="tr"
                 id="unitPrice"
                 name="unitPrice"
                 placeholder=""
@@ -198,6 +188,7 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
                 placeholder=""
                 extra="!h-[36px]"
                 value={offer.price}
+                disabled
               />
             </div>
             <div className="col-span-3 w-full">

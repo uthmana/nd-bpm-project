@@ -1,13 +1,9 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-//import Dropdown from 'components/dropdown';
 import { FiAlignJustify } from 'react-icons/fi';
-//import { BsArrowBarUp } from 'react-icons/bs';
 import { RiMoonFill, RiSunFill } from 'react-icons/ri';
-//import { IoMdNotificationsOutline } from 'react-icons/io';
 import { useSession } from 'next-auth/react';
 import Profile from 'components/profile';
-//import Notification from 'components/notification';
 import NotificationFeed from 'components/notificationFeed';
 
 const Navbar = (props: {

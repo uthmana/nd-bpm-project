@@ -22,7 +22,6 @@ export default function Create() {
       const { status, data } = await getCustomers();
 
       if (status === 200) {
-        console.log(data);
         setCustomers(
           data.sort((a, b) => (a.company_name > b.company_name ? 1 : -1)),
         );

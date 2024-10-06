@@ -210,9 +210,9 @@ export const filterObject = (obj) => {
   return filteredObject;
 };
 
-export const formatNumberLocale = (num) => {
+export const formatNumberLocale = (num, locale = 'tr') => {
   if (!num) return num;
-  const nFormat = new Intl.NumberFormat(undefined, {
+  const nFormat = new Intl.NumberFormat(locale, {
     minimumFractionDigits: 0,
   });
   return nFormat.format(num);
@@ -249,3 +249,26 @@ export async function postToLogo(Data) {
   const data = await res.json();
   return { ...data, status: res.status };
 }
+
+export const formatCurrency = (value, type = 'float') => {
+  if (!value) return '';
+  if (type === 'int') {
+    return formatNumberLocale(value);
+  }
+
+  return parseFloat(value)
+    .toFixed(2)
+    .replace('.', ',')
+    .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+};
+
+export const deformatCurrency = (value, type): number => {
+  if (!value) return 0;
+
+  if (type === 'int') {
+    const val = value?.replaceAll('.', '') || 0;
+    return parseInt(val);
+  }
+  const val = value?.replaceAll('.', '')?.replace(',', '.');
+  return parseFloat(val);
+};
