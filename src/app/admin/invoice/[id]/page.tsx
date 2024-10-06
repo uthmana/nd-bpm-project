@@ -171,7 +171,7 @@ export default function Invoice() {
                 invoice.status !== 'PAID' ? 'TAMAMLA' : 'TAMAMLANDI'
               }`}
               icon={<MdOutlinePayment className="mr-1 h-5 w-5" />}
-              disabled={invoice.status === 'PAIDs'}
+              disabled={invoice.status === 'PAID'}
               loading={isInvoiceSubmiting}
             />
           </div>
