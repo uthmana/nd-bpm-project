@@ -383,7 +383,10 @@ function EntryTable({
             onChange={(val) => setGlobalFilter(val)}
           />
         </div>
-        {variant === 'NORMAL' || variant === 'SUPER' || variant === 'ADMIN' ? (
+        {variant === 'NORMAL' ||
+        variant === 'TECH' ||
+        variant === 'SUPER' ||
+        variant === 'ADMIN' ? (
           <Button
             text="EKLE"
             extra="!w-[140px] h-[38px] font-bold mb-3"

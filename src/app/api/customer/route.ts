@@ -7,7 +7,7 @@ import { checkUserRole } from 'utils/auth';
 //All customers
 export async function GET(req: NextRequest) {
   try {
-    const allowedRoles = ['SUPER', 'ADMIN', 'NORMAL', 'TECH'];
+    const allowedRoles = ['SUPER', 'ADMIN'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
       return NextResponse.json(

@@ -1,10 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/db';
 import { FinalControl, Prisma } from '@prisma/client';
+import { checkUserRole } from 'utils/auth';
 
 //Get single FaultControl
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
   try {
+    const allowedRoles = ['SUPER', 'ADMIN'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
+    }
     const id = route.params.id;
     const finalControl: FinalControl = await prisma.finalControl.findFirst({
       where: { id },

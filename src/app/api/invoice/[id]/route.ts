@@ -5,9 +5,18 @@ import bwipjs from 'bwip-js';
 import { cwd } from 'process';
 import { postlogoDispatch } from 'app/lib/apiRequest';
 import ApiClient, { Clientinfo } from 'utils/logorequests';
+import { checkUserRole } from 'utils/auth';
 //Get single Invoice
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
   try {
+    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
+    }
     const id = route.params.id;
     const invoice: Invoice = await prisma.invoice.findUnique({
       where: { id: id },
