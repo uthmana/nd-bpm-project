@@ -43,12 +43,16 @@ function SidebarHorizon(props: { routes: IRoute[]; [x: string]: any }) {
       <div className={`ml-[30px] mr-[70px] mt-[50px] flex items-center`}>
         <div className="mt-4 flex h-2.5 items-center font-poppins text-[20px] font-bold uppercase text-navy-700 dark:text-white">
           <span className="mr-2 inline-block w-12">
-            <img className="w-inherit" src={nd_logo.src} />
+            <a href="/admin/dashboard" className="">
+              {' '}
+              <img className="w-inherit" src={nd_logo.src} alt="Logo" />
+            </a>
           </span>
           <span className="font-medium">TR Proses</span>
         </div>
       </div>
       <div className="mb-7 mt-[58px] h-px bg-gray-300 dark:bg-white/30" />
+
       {/* Nav item */}
 
       <ul className="mb-auto w-full pt-1">

@@ -6,7 +6,7 @@ import { checkUserRole } from 'utils/auth';
 //Get single Fault
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
   try {
-    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER'];
+    const allowedRoles = ['NORMAL', 'TECH', 'ADMIN', 'SUPER'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
       return NextResponse.json(
@@ -40,8 +40,7 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
 //Update Fault
 export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
-
-      const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER'];
+    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
       return NextResponse.json(

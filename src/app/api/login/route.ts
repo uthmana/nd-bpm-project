@@ -9,7 +9,7 @@ export async function POST(req: Request) {
 
     if (!email || !password) {
       return NextResponse.json(
-        { message: 'Email and password are required' },
+        { message: 'Hatalı E-posta veya Şifre' },
         { status: 400 },
       );
     }
@@ -26,14 +26,14 @@ export async function POST(req: Request) {
       } else {
         // Passwords don't match
         return NextResponse.json(
-          { message: 'Email or password is incorrect' },
+          { message: 'Hatalı E-posta veya Şifre' },
           { status: 401 },
         );
       }
     } else {
       // User not found
       return NextResponse.json(
-        { message: 'Email or password is incorrect' },
+        { message: 'Hatalı E-posta veya Şifre' },
         { status: 401 },
       );
     }

@@ -68,7 +68,12 @@ export default function FinalControl(props: {
 
   return (
     <div className="w-full">
-      <ControlHeader data={data} variant="proccess" />
+      <ControlHeader
+        data={data}
+        variant="proccess"
+        title="Final / Çıkış Kontrol Formu"
+        titleEn="Final / Output Inspection Record"
+      />
       <ControlBody data={values} onChange={handleChange} variant={variant} />
       <ControlFooter
         data={values}

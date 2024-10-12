@@ -2,10 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/db';
 import { Fault, Prisma, Process, Stock } from '@prisma/client';
 import { filterObject } from 'utils';
+import { checkUserRole } from 'utils/auth';
 
 //Get single  Process
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
   try {
+    const allowedRoles = ['NORMAL', 'TECH', 'ADMIN', 'SUPER'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
+    }
     const id = route.params.id;
     const process: Process = await prisma.process.findUnique({
       where: { id: id },

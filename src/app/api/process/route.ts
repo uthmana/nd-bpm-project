@@ -6,7 +6,7 @@ import { Prisma, Process } from '@prisma/client';
 //All  Process
 export async function GET(req: NextRequest) {
   try {
-    const allowedRoles = ['TECH', 'ADMIN', 'SUPER'];
+    const allowedRoles = ['NORMAL', 'TECH', 'ADMIN', 'SUPER'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
       return NextResponse.json(
