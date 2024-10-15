@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
 import { Prisma } from '@prisma/client';
+import { checkUserRole } from 'utils/auth';
 
 export async function GET(req: NextRequest) {
   try {
+    const allowedRoles = ['ADMIN', 'SUPER'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+    }
     const searchParams = req.nextUrl.searchParams;
     const startOfMonth = searchParams.get('start');
     const endOfMonth = searchParams.get('end');

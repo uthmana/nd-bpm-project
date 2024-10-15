@@ -7,11 +7,11 @@ import { CardType, Currency, Customer, Prisma } from '@prisma/client';
 //Get single customer
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
   try {
-    // const allowedRoles = ['ADMIN'];
-    // const hasrole = await checkUserRole(allowedRoles);
-    // if (!hasrole) {
-    //   return NextResponse.json({ error: 'Access forbidden', status: 403 });
-    // }
+    const allowedRoles = ['ADMIN', 'SUPER'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+    }
     const id = route.params.id;
     const customer = await prisma.customer.findUnique({
       where: { id },

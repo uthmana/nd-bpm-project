@@ -26,7 +26,7 @@ export default withAuth(
         dashboard: ['view', 'create', 'edit'],
       },
       NORMAL: {
-        invoice: ['edit'],
+        invoice: ['edit', 'create', 'edit'],
         entry: ['view', 'create', 'edit'],
         liste: ['view', 'create', 'edit'],
         stock: ['view', 'create', 'edit'],

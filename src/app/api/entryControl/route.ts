@@ -6,7 +6,7 @@ import { checkUserRole } from 'utils/auth';
 //All Faults
 export async function GET(req: NextRequest) {
   try {
-    const allowedRoles = ['SUPER'];
+    const allowedRoles = ['ADMIN', 'SUPER'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
       return NextResponse.json({ message: 'Access forbidden', status: 403 });

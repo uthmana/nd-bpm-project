@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/db';
 import { Prisma, Stock } from '@prisma/client';
+import { checkUserRole } from 'utils/auth';
 
 //Get single Stock
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
   try {
+    //check roles and permission of user
+    const allowedRoles = ['SUPER', 'ADMIN', 'NORMAL', 'TECH'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
+    }
     const id = route.params.id;
     const stock: Stock = await prisma.stock.findUnique({
       where: { id: id },
