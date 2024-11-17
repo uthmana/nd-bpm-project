@@ -16,8 +16,8 @@
 
 //**************************CONNECTION FOR DEVELOPMENT ****************************************************** */
 import { PrismaClient } from '@prisma/client';
-//const db_url = 'postgresql://postgres:mau1234@localhost:5433/postgres'; //Uthman
-const db_url = 'postgresql://postgres:majeed123@localhost:5432/postgres'; //Majeed
+const db_url = 'postgresql://postgres:mau1234@localhost:5433/postgres'; //Uthman
+//const db_url = 'postgresql://postgres:majeed123@localhost:5432/postgres'; //Majeed
 
 const prismaClientSingleton = () => {
   if (process.env.NODE_ENV === 'production') {
