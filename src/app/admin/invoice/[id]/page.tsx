@@ -1,6 +1,11 @@
 'use client';
 
-import { getInvoiceById, sendInvoice, updateInvoice } from 'app/lib/apiRequest';
+import {
+  getBarcodeBase64,
+  getInvoiceById,
+  sendInvoice,
+  updateInvoice,
+} from 'app/lib/apiRequest';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -10,7 +15,8 @@ import Button from 'components/button/button';
 import DetailHeader from 'components/detailHeader';
 import InputField from 'components/fields/InputField';
 import { toast } from 'react-toastify';
-import { generateAndSendPDF, log } from 'utils';
+import { log } from 'utils';
+import UploadInvoicePDF from 'components/invoice/invoicePdf';
 
 export default function Invoice() {
   const [isLoading, setIsLoading] = useState(false);
@@ -47,7 +53,18 @@ export default function Invoice() {
 
   const handleSendEmail = async () => {
     setIsSubmiting(true);
-    const newPdf = await generateAndSendPDF('pdf-content');
+
+    if (!invoice.id) return;
+    const { data: barcodeData, status: barcodeStatus } = await getBarcodeBase64(
+      {
+        code: invoice.barcode,
+      },
+    );
+    if (barcodeStatus !== 200) return;
+    const newPdf = await UploadInvoicePDF({
+      invoice: { ...invoice, barcodeImage: barcodeData.code },
+    });
+
     if (newPdf.status !== 200) {
       toast.error('Hata oluştu. Daha sonra tekrar deneyin!');
       setIsSubmiting(false);
