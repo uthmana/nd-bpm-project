@@ -145,6 +145,7 @@ export default function Invoice() {
       toast.success('İrsaliye gönderme işlemi başarılı');
     }
     setIsSubmiting(false);
+    /*
     //Logoya gönderme
     try {
       const logores = await SendDispatchToLogo();
@@ -163,6 +164,7 @@ export default function Invoice() {
       console.error('Logoya gönderme hatası:', error);
       toast.error('Logoya başarıyla içeriye alamadı');
     }
+      */
   };
 
   const onInoviceComplete = async () => {
@@ -175,6 +177,25 @@ export default function Invoice() {
 
     if (status === 200) {
       getSingleInvoice(queryParams?.id);
+    }
+    //send To Logo
+    //Logoya gönderme
+    try {
+      const logores = await SendDispatchToLogo();
+      if (logores.status === 200) {
+        const logoresJson = await logores.json();
+        toast.success('Logoya gönderme işlemi başarılı');
+        console.log(`Logoya gönderme sonucu:`, logoresJson);
+      } else {
+        const logoresText = await logores.text();
+        toast.error(
+          `Logoya başarıyla içeriye alamadı ${logores.response.data}`,
+        );
+        console.error('Logoya gönderme hatası:', logoresText);
+      }
+    } catch (error) {
+      console.error('Logoya gönderme hatası:', error);
+      toast.error('Logoya başarıyla içeriye alamadı');
     }
     setIsInvoiceSubmiting(false);
   };
