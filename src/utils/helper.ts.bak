@@ -261,7 +261,7 @@ export const formatCurrency = (value, type = 'float') => {
     .replace('.', ',')
     .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 };
-/*
+
 export const deformatCurrency = (value, type): number => {
   if (!value) return 0;
 
@@ -271,22 +271,4 @@ export const deformatCurrency = (value, type): number => {
   }
   const val = value?.replace('.', '')?.replace(',', '.');
   return parseFloat(val);
-};
-*/
-
-export const deformatCurrency = (value: string | null | undefined, type: 'int' | 'float'): number => {
-  if (!value) return 0;
-
-  // Normalize the value by removing thousands separators and converting commas to dots
-  const normalizedValue = value.replaceAll('.', '').replaceAll(',', '.');
-
-  if (type === 'int') {
-    return parseInt(normalizedValue, 10) || 0; // Ensure we return a valid integer
-  }
-
-  if (type === 'float') {
-    return parseFloat(normalizedValue) || 0; // Ensure we return a valid float
-  }
-
-  throw new Error(`Invalid type: ${type}. Supported types are 'int' and 'float'.`);
 };

@@ -3,6 +3,7 @@
 import {
   getBarcodeBase64,
   getInvoiceById,
+  postlogoDispatch,
   sendInvoice,
   updateInvoice,
 } from 'app/lib/apiRequest';
@@ -51,6 +52,58 @@ export default function Invoice() {
     setValues({ ...value, ...newVal });
   };
 
+  const SendDispatchToLogo = async () => {
+    if (!invoice) {
+      return;
+    }
+
+    const logodata = {
+      INTERNAL_REFERENCE: null,
+      GRPCODE: 2,
+      TYPE: 8,
+      IOCODE: 3,
+      NUMBER: `TEST.ND1${new Date().toISOString()}1`,
+      DATE: '2024-10-02T00:00:00', //formData.invoiceDate
+      //NUMBER: '~',
+
+      DOC_NUMBER: `SİLMEYİN11Test${invoice.barcode}`,
+
+      ARP_CODE: invoice.customer.code, //'S.00055', //customerinfo.response.data.code
+
+      CANCELLED: 1,
+
+      PRINT_COUNTER: 0,
+
+      CURRSEL_TOTALS: 1,
+      TRANSACTIONS: {
+        items: [
+          {
+            TYPE: 0,
+            QUANTITY: invoice.process[0].quantity,
+            MASTER_CODE: invoice.process[0].productCode,
+            DISP_STATUS: 1,
+            CANCEL_EXP: 'test amaçlı kesilmiştir.',
+            VATEXCEPT_REASON: 'bedelsiz',
+            TAX_FREE_CHECK: 0,
+            TOTAL_NET_STR: 'Sıfır TL',
+            IS_OKC_FICHE: 0,
+            LABEL_LIST: {},
+          },
+        ],
+      },
+      EDESPATCH: 1,
+      EDESPATCH_PROFILEID: 1,
+      EINVOICE: 1,
+      EINVOICE_PROFILEID: 1,
+      EINVOICE_DRIVERNAME1: '.',
+      EINVOICE_DRIVERSURNAME1: '.',
+      EINVOICE_DRIVERTCKNO1: '.',
+      EINVOICE_PLATENUM1: '.',
+      EINVOICE_CHASSISNUM1: '.',
+    };
+    const respponse = await postlogoDispatch(JSON.stringify(logodata));
+    return respponse;
+  };
   const handleSendEmail = async () => {
     setIsSubmiting(true);
 
@@ -92,6 +145,24 @@ export default function Invoice() {
       toast.success('İrsaliye gönderme işlemi başarılı');
     }
     setIsSubmiting(false);
+    //Logoya gönderme
+    try {
+      const logores = await SendDispatchToLogo();
+      if (logores.status === 200) {
+        const logoresJson = await logores.json();
+        toast.success('Logoya gönderme işlemi başarılı');
+        console.log(`Logoya gönderme sonucu:`, logoresJson);
+      } else {
+        const logoresText = await logores.text();
+        toast.error(
+          `Logoya başarıyla içeriye alamadı ${logores.response.data}`,
+        );
+        console.error('Logoya gönderme hatası:', logoresText);
+      }
+    } catch (error) {
+      console.error('Logoya gönderme hatası:', error);
+      toast.error('Logoya başarıyla içeriye alamadı');
+    }
   };
 
   const onInoviceComplete = async () => {
