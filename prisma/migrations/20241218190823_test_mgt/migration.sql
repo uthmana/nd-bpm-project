@@ -183,6 +183,7 @@ CREATE TABLE "FaultControl" (
     "dimensionConfirmation" BOOLEAN,
     "quantityConfirmation" BOOLEAN,
     "dirtyThreads" BOOLEAN DEFAULT false,
+    "deformity" BOOLEAN DEFAULT false,
     "processFrequency" TEXT,
     "frequencyDimension" TEXT,
     "remarks" TEXT,

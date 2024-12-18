@@ -281,7 +281,7 @@ export const deformatCurrency = (
   if (!value) return 0;
 
   // Normalize the value by removing thousands separators and converting commas to dots
-  const normalizedValue = value.replaceAll('.', '').replaceAll(',', '.');
+  const normalizedValue = value?.replaceAll('.', '').replaceAll(',', '.');
 
   if (type === 'int') {
     return parseInt(normalizedValue, 10) || 0; // Ensure we return a valid integer

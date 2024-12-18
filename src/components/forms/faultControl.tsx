@@ -33,9 +33,6 @@ export default function EntryControlForm({
   const [error, setError] = useState(false);
   const [file, setFile] = useState('');
   const [formTouch, setFormTouch] = useState(isUpdate);
-  const [platingsOpt, setPlatingsOpt] = useState(
-    isUpdate && data.plating?.length > 0 ? data.plating : [],
-  );
 
   const [values, setValues] = useState(
     isUpdate
@@ -56,6 +53,7 @@ export default function EntryControlForm({
           remarks: '',
           faultId: info?.id,
           frequencyDimension: '',
+          deformity: '',
         },
   );
 
@@ -82,6 +80,7 @@ export default function EntryControlForm({
         dimensionConfirmation:
           values.dimensionConfirmation?.toString() === 'true',
         dirtyThreads: values.dirtyThreads?.toString() === 'true',
+        deformity: values.deformity?.toString() === 'true',
         quantityConfirmation:
           values.quantityConfirmation?.toString() === 'true',
       },
@@ -114,7 +113,8 @@ export default function EntryControlForm({
                     name="plating"
                     value={item}
                     onChange={handleValues}
-                    checked={isUpdate ? values.plating === item : false}
+                    checked={values.plating === item}
+                    key={item}
                   />
                   <p className="ml-3 text-sm font-bold text-navy-700 dark:text-white">
                     {item}
@@ -207,6 +207,25 @@ export default function EntryControlForm({
                     selected={
                       isUpdate ? values.dirtyThreads === item.value : null
                     }
+                  >
+                    {item.name}
+                  </option>
+                );
+              })}
+            </Select>
+
+            <Select
+              extra="pt-1"
+              label="Ezik/ Kırık Diş"
+              onChange={handleValues}
+              name="deformity"
+            >
+              {dirtyConfirmation.map((item, idx) => {
+                return (
+                  <option
+                    value={item.value.toString()}
+                    key={idx}
+                    selected={isUpdate ? values.deformity === item.value : null}
                   >
                     {item.name}
                   </option>
