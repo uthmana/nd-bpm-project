@@ -1,7 +1,7 @@
 import TextArea from 'components/fields/textArea';
 import React, { useState } from 'react';
 
-export default function Diger({ data, onChange, variant = 'input' }) {
+export default function Diger({ data, onChange, variant = 'input', standard }) {
   const [tableData, setTableData] = useState(data);
 
   const handleValues = (event, index) => {
@@ -24,7 +24,7 @@ export default function Diger({ data, onChange, variant = 'input' }) {
         </div>
         <div className="w-3/4 border border-b-0 border-[#000] p-2 text-sm">
           {variant !== 'input' ? (
-            <div>{tableData[0].description}</div>
+            <div>{tableData[0].description || standard}</div>
           ) : (
             <TextArea
               label=""
@@ -34,7 +34,7 @@ export default function Diger({ data, onChange, variant = 'input' }) {
               placeholder=""
               extra="rounded-none m-0 border-0 "
               rows={2}
-              value={tableData[0].description}
+              value={tableData[0].description || standard}
             />
           )}
         </div>

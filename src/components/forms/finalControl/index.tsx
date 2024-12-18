@@ -16,7 +16,15 @@ export default function FinalControl(props: {
   variant?: string;
 }) {
   const { data, onSubmit, isSubmitting, variant = 'input' } = props;
-  const { faultId, id, paketleme, createdBy, finalControl, machineName } = data;
+  const {
+    faultId,
+    id,
+    paketleme,
+    createdBy,
+    finalControl,
+    machineName,
+    standard,
+  } = data;
 
   const isUpdate = finalControl?.length > 0;
   const [values, setValues] = useState(
@@ -74,7 +82,12 @@ export default function FinalControl(props: {
         title="Final / Çıkış Kontrol Formu"
         titleEn="Final / Output Inspection Record"
       />
-      <ControlBody data={values} onChange={handleChange} variant={variant} />
+      <ControlBody
+        standard={standard}
+        data={values}
+        onChange={handleChange}
+        variant={variant}
+      />
       <ControlFooter
         data={values}
         onChange={handleQcChange}

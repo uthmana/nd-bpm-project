@@ -5,7 +5,13 @@ import Mikrokapsul from '../mikrokapsul';
 import Diger from '../diger';
 import './table.css';
 
-export default function TestTable({ data, onChange, variant, machineName }) {
+export default function TestTable({
+  data,
+  onChange,
+  variant,
+  machineName,
+  standard,
+}) {
   const [values, setValues] = useState(data || ({} as any));
 
   const getApplicationType = (machineName) => {
@@ -46,7 +52,14 @@ export default function TestTable({ data, onChange, variant, machineName }) {
       );
     }
 
-    return <Diger data={values} variant={variant} onChange={handleChange} />;
+    return (
+      <Diger
+        standard={standard}
+        data={values}
+        variant={variant}
+        onChange={handleChange}
+      />
+    );
   };
 
   return (
