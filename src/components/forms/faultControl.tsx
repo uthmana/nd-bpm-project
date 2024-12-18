@@ -12,7 +12,7 @@ import {
   faultInfo,
   infoTranslate,
 } from 'utils';
-import Checkbox from 'components/checkbox';
+
 import Upload from 'components/upload';
 import TextArea from 'components/fields/textArea';
 import Button from 'components/button/button';
@@ -34,7 +34,7 @@ export default function EntryControlForm({
   const [file, setFile] = useState('');
   const [formTouch, setFormTouch] = useState(isUpdate);
   const [platingsOpt, setPlatingsOpt] = useState(
-    isUpdate && data.plating?.length > 0 ? data.plating.split(',') : [],
+    isUpdate && data.plating?.length > 0 ? data.plating : [],
   );
 
   const [values, setValues] = useState(
@@ -66,22 +66,6 @@ export default function EntryControlForm({
     setValues({ ...values, ...newVal });
   };
 
-  const handlePlating = (e) => {
-    setError(false);
-    setFormTouch(false);
-    const value = e.target.value;
-    if (e.target.checked) {
-      if (![...platingsOpt].includes(value)) {
-        setPlatingsOpt([...platingsOpt, value]);
-      }
-      return;
-    }
-    const _plating = [...platingsOpt].filter((item) => {
-      return item !== value;
-    });
-    setPlatingsOpt(_plating);
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     const { result } = values;
@@ -95,7 +79,6 @@ export default function EntryControlForm({
       {
         ...values,
         image: file,
-        plating: platingsOpt.join(','),
         dimensionConfirmation:
           values.dimensionConfirmation?.toString() === 'true',
         dirtyThreads: values.dirtyThreads?.toString() === 'true',
@@ -127,13 +110,11 @@ export default function EntryControlForm({
             {platings.map((item, idx) => {
               return (
                 <label className="flex cursor-pointer items-center" key={idx}>
-                  <Checkbox
+                  <Radio
                     name="plating"
-                    colorscheme="brandScheme"
-                    me="10px"
-                    checked={isUpdate ? values.plating.includes(item) : false}
-                    onChange={handlePlating}
                     value={item}
+                    onChange={handleValues}
+                    checked={isUpdate ? values.plating === item : false}
                   />
                   <p className="ml-3 text-sm font-bold text-navy-700 dark:text-white">
                     {item}
