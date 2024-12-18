@@ -165,7 +165,7 @@ const InvoiceDoc = ({ invoice }) => {
             ]}
           >
             <Text style={[styles.boldText, { fontSize: 14 }]}>Sayın:</Text>
-            <Text>{invoice?.rep_name}</Text>
+            <Text>{invoice?.customer?.company_name}</Text>
             <Text>{invoice?.address}</Text>
             <View style={styles.rowItem}>
               <Text style={styles.boldText}>Vergi Dairesi:</Text>
