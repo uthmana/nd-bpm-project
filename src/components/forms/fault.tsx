@@ -239,7 +239,7 @@ export default function Fault(props: {
 
   return (
     <form onSubmit={handleSubmit} className="w-full">
-      <NextLink
+      {/* <NextLink
         href="/admin/entry"
         className="flex items-center gap-2 text-sm dark:text-white"
       >
@@ -247,7 +247,7 @@ export default function Fault(props: {
           <MdOutlineArrowBack />
         </span>
         Ürün Girişi
-      </NextLink>
+      </NextLink> */}
 
       {title ? (
         <h1 className="dark:white mb-8 text-center text-2xl font-bold md:text-4xl">
