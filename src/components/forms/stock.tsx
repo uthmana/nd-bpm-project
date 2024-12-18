@@ -305,9 +305,7 @@ export default function Stock(props: {
           fileType="all"
           multiple={false}
           _fileName={initialValues.image ? initialValues.image : ''}
-          _filePath={
-            initialValues.image ? '/uploads/' + initialValues.image : ''
-          }
+          _filePath={initialValues.image ? initialValues.image : ''}
         />
       </div>
 
