@@ -274,7 +274,10 @@ export const deformatCurrency = (value, type): number => {
 };
 */
 
-export const deformatCurrency = (value: string | null | undefined, type: 'int' | 'float'): number => {
+export const deformatCurrency = (
+  value: string | null | undefined,
+  type: 'int' | 'float',
+): number => {
   if (!value) return 0;
 
   // Normalize the value by removing thousands separators and converting commas to dots
@@ -288,5 +291,18 @@ export const deformatCurrency = (value: string | null | undefined, type: 'int' |
     return parseFloat(normalizedValue) || 0; // Ensure we return a valid float
   }
 
-  throw new Error(`Invalid type: ${type}. Supported types are 'int' and 'float'.`);
+  throw new Error(
+    `Invalid type: ${type}. Supported types are 'int' and 'float'.`,
+  );
+};
+
+export const generateProductCode = (name, index) => {
+  const companyName = name?.toUpperCase() || '';
+  const firstLetter = companyName.charAt(0);
+  const middleLetter = companyName.charAt(Math.floor(companyName.length / 2)); // Middle letter
+  const lastLetter = companyName.charAt(companyName.length - 1); // Last letter
+
+  return `${firstLetter}${middleLetter}${lastLetter}.${
+    !index ? '000' : String(index + 1).padStart(3, '0')
+  }`;
 };

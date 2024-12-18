@@ -7,7 +7,7 @@ import Button from 'components/button/button';
 import Select from 'components/select/page';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import TextArea from 'components/fields/textArea';
-import { log } from 'utils';
+import { generateProductCode, log } from 'utils';
 import Upload from 'components/upload';
 import DataList from 'components/fields/dataList';
 
@@ -77,7 +77,17 @@ export default function Stock(props: {
         customerId: _customer?.id,
         company_name: _customer?.company_name,
       };
-      setValues({ ...values, ...seletecCustomer });
+
+      const customerIndex = customerData?.findIndex(
+        (item) => item.company_name === event.target?.value,
+      );
+
+      const product_code = generateProductCode(
+        _customer?.company_name?.split(' ')[0],
+        customerIndex,
+      );
+
+      setValues({ ...values, ...seletecCustomer, product_code });
       return;
     }
 
