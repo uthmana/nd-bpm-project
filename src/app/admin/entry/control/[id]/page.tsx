@@ -124,7 +124,7 @@ export default function EntryControl() {
       toast.success('Ürün girişi kontrol işlemi başarılı.');
       setIsSubmitting(false);
       //Notification trigger
-      if (data.result === 'ACCEPT') {
+      if (data.result !== 'REJECT') {
         try {
           await sendNotification({
             workflowId: 'fault-control',

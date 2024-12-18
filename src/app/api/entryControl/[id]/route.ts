@@ -70,7 +70,8 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         });
       }
     }
-    if (result === 'ACCEPT') {
+
+    if (result !== 'REJECT') {
       const processData: Process = await prisma.process.findUnique({
         where: { faultId },
       });
@@ -84,6 +85,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
           productCode,
           application,
           standard,
+          product_barcode,
           color,
           technicalDrawingAttachment,
           customerId,
@@ -97,6 +99,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
             productCode,
             application,
             standard,
+            product_barcode,
             color,
             technicalDrawingAttachment,
             faultId: id,

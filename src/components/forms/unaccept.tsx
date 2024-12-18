@@ -266,11 +266,15 @@ export default function Unaccept(props: {
         <div className="flex gap-4">
           <Button
             loading={isSubmittingUnaccept}
-            text="Kaydet"
-            extra="w-[60px] bg-red-700 h-[40px]"
+            text="KAYDET"
+            extra="w-[60px] h-[40px]"
             onClick={handleSubmit}
           />
-          <Button text="GERİ" extra="w-[60px] h-[40px]" onClick={handleClose} />
+          <Button
+            text="GERİ"
+            extra="w-[60px] bg-red-700  h-[40px]"
+            onClick={handleClose}
+          />
         </div>
       ) : null}
     </div>
