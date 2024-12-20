@@ -220,7 +220,7 @@ export default function Fault(props: {
       ...values,
       defaultTechParameter,
       product_barcode,
-      quantity: deformatCurrency(values.quantity, 'int'),
+      quantity: deformatCurrency(values.quantity.toString(), 'int'),
       technicalDrawingAttachment: file,
       arrivalDate: convertToISO8601(values.arrivalDate),
     });
@@ -288,10 +288,10 @@ export default function Fault(props: {
                   <option value={item.id} key={idx} selected={idx === 0}>
                     {item.product_name}
                   </option>
-                  <option value={'NEW_ENTRY'}>---Yeni Ürün Ekle</option>
                 </>
               );
             })}
+            <option value={'NEW_ENTRY'}>---Yeni Ürün Ekle</option>
           </Select>
         ) : (
           <InputField
