@@ -16,7 +16,7 @@ export async function POST(request: Request) {
   const formData = await request.json();
 
   const emailBody: any = {
-    from: 'ND Industries<info@ndindustriesbmp.com>',
+    from: 'ND Industries<info@ndindustries.com.tr>',
     to: formData.email,
     subject: formData.subject,
     text: formData.text,
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
   if (formData.type === 'offer') {
     //emailBody.react = OfferTemplete({ offer: formData.data });
     emailBody.html = `
-    <p>Sayın ${formData?.data.rep_name},</p> 
+    <p>Sayın <br/> ${formData?.data?.customer?.company_name},</p>  
     <br/>
     <p>${formData?.data.description}</p>
     <br/>
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
 
   if (formData.type === 'invoice') {
     emailBody.html = `
-    <p>Sayın ${formData?.data?.customer?.rep_name},</p> 
+    <p>Sayın <br/> ${formData?.data?.customer?.company_name},</p> 
     <br/>
     <br/>
     `;
