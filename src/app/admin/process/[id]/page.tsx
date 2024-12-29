@@ -251,9 +251,9 @@ export default function EntryControl() {
                           {infoTranslate[key]}
                         </h2>
                         {key === 'quantity' ? (
-                          <>{formatNumberLocale(value)}</>
+                          <span>{formatNumberLocale(value)}<span/>
                         ) : (
-                          <> {value}</>
+                          <span> {value}<span/>
                         )}
                       </div>
                     );
