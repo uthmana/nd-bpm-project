@@ -157,6 +157,7 @@ model FaultControl {
   dimensionConfirmation Boolean?
   quantityConfirmation  Boolean?
   dirtyThreads          Boolean?           @default(false)
+  deformity             Boolean?           @default(false)
   processFrequency      String? //yazilsin-yazilmasin
   frequencyDimension    String?
   remarks               String?

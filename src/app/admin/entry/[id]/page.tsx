@@ -106,6 +106,9 @@ export default function Edit() {
     if (key === 'dirtyThreads') {
       return <p className="font-bold"> {val ? 'VAR' : 'YOK'} </p>;
     }
+    if (key === 'deformity') {
+      return <p className="font-bold"> {val ? 'VAR' : 'YOK'} </p>;
+    }
 
     if (key === 'processFrequency') {
       return <p className="font-bold"> {val?.toUpperCase()} </p>;

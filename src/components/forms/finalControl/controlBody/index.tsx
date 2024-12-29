@@ -7,7 +7,7 @@ import TestArea from './table/testArea';
 import InputField from 'components/fields/InputField';
 import { formatNumberLocale } from 'utils';
 
-export default function Index({ data, onChange, variant }) {
+export default function Index({ data, onChange, variant, standard }) {
   const [values, setValues] = useState(data || ({} as any));
 
   const handleResultValues = (event) => {
@@ -61,6 +61,7 @@ export default function Index({ data, onChange, variant }) {
         onChange={(val) => handleTestTableChange(val)}
         machineName={values?.machineName}
         data={values?.testItem}
+        standard={standard}
         variant={variant}
       />
 

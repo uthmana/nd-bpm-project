@@ -364,3 +364,6 @@ export async function getProductList() {
 export async function sendNotification(payload) {
   return fetchAPI(`notifications`, 'post', payload);
 }
+export async function getBarcodeBase64(payload) {
+  return fetchAPI(`barcode`, 'post', payload);
+}

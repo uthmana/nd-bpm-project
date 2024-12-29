@@ -220,7 +220,7 @@ export default function Fault(props: {
       ...values,
       defaultTechParameter,
       product_barcode,
-      quantity: deformatCurrency(values.quantity, 'int'),
+      quantity: deformatCurrency(values.quantity.toString(), 'int'),
       technicalDrawingAttachment: file,
       arrivalDate: convertToISO8601(values.arrivalDate),
     });
@@ -239,7 +239,7 @@ export default function Fault(props: {
 
   return (
     <form onSubmit={handleSubmit} className="w-full">
-      <NextLink
+      {/* <NextLink
         href="/admin/entry"
         className="flex items-center gap-2 text-sm dark:text-white"
       >
@@ -247,7 +247,7 @@ export default function Fault(props: {
           <MdOutlineArrowBack />
         </span>
         Ürün Girişi
-      </NextLink>
+      </NextLink> */}
 
       {title ? (
         <h1 className="dark:white mb-8 text-center text-2xl font-bold md:text-4xl">
@@ -288,10 +288,10 @@ export default function Fault(props: {
                   <option value={item.id} key={idx} selected={idx === 0}>
                     {item.product_name}
                   </option>
-                  <option value={'NEW_ENTRY'}>---Yeni Ürün Ekle</option>
                 </>
               );
             })}
+            <option value={'NEW_ENTRY'}>---Yeni Ürün Ekle</option>
           </Select>
         ) : (
           <InputField

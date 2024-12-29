@@ -1,36 +1,24 @@
 import { Prisma } from '@prisma/client';
 import { NextApiRequest } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
+import { env } from 'process';
 import ApiClient, { Clientinfo } from 'utils/logorequests';
 
 export async function PUT(req: Request) {
   try {
-    const clientinfo: Clientinfo = {
-      clientId: 'AYZ',
-      clientSecret: '5AGTu3agfs/lBm3+7TuB5WkZrdsMo00z6lLcz96ntEw=',
-      url: 'http://localhost:32001/api/v1',
-      firmno: '36',
-      password: 'TOA013',
-      username: 'MIS',
-    };
-    /*
-    const data = {
-      INTERNAL_REFERENCE: null,
-      TYPE: 8,
-      NUMBER: 'TEST.FromND1',
-      DATE: '2024-10-02T00:00:00',
-
-      DOC_NUMBER: 'SİLMEYİN11',
-
-      ARP_CODE: 'S.00055',
-
-      TRANSACTIONS: {
-        CANCEL_EXP: 'test amaçlı kesilmiştir.',
-
-        LABEL_LIST: {},
-      },
-    };*/
     const resp = req.json();
+
+    const clientinfo: Clientinfo = {
+      clientId: env.LOGO_CLIENT_ID, // 'AYZ',
+      clientSecret: env.LOGO_CLIENT_SECRET, // '5AGTu3agfs/lBm3+7TuB5WkZrdsMo00z6lLcz96ntEw=',
+      url: env.LOGO_ENDPOINT, // 'http://localhost:32001/api/v1',
+      firmno: env.LOGO_FIRMANO,
+      password: env.LOGO_PASSWORD,
+      username: env.LOGO_USERNAME,
+    };
+
+    console.log(clientinfo);
+
     const client = new ApiClient(clientinfo);
     client.requestAccessToken('token');
     console.log(client.getacesstoken());
@@ -55,13 +43,15 @@ export async function POST(req: Request) {
     var logodata = await req.json();
 
     const clientinfo: Clientinfo = {
-      clientId: process.env.LOGOCLIENTID,
-      clientSecret: process.env.LOGOCLIENTSECRETE,
-      url: process.env.LOGOURL,
-      firmno: process.env.LOGOFIRMNR,
-      password: process.env.LOGOPASSWORD,
-      username: process.env.LOGOUSERNAME,
+      clientId: env.LOGO_CLIENT_ID, // 'AYZ',
+      clientSecret: env.LOGO_CLIENT_SECRET, // '5AGTu3agfs/lBm3+7TuB5WkZrdsMo00z6lLcz96ntEw=',
+      url: env.LOGO_ENDPOINT, // 'http://localhost:32001/api/v1',
+      firmno: env.LOGO_FIRMANO,
+      password: env.LOGO_USERNAME,
+      username: env.LOGO_PASSWORD,
     };
+
+    console.log(clientinfo);
 
     const client = new ApiClient(clientinfo);
     client.requestAccessToken('token');

@@ -12,7 +12,7 @@ import {
   faultInfo,
   infoTranslate,
 } from 'utils';
-import Checkbox from 'components/checkbox';
+
 import Upload from 'components/upload';
 import TextArea from 'components/fields/textArea';
 import Button from 'components/button/button';
@@ -33,9 +33,6 @@ export default function EntryControlForm({
   const [error, setError] = useState(false);
   const [file, setFile] = useState('');
   const [formTouch, setFormTouch] = useState(isUpdate);
-  const [platingsOpt, setPlatingsOpt] = useState(
-    isUpdate && data.plating?.length > 0 ? data.plating.split(',') : [],
-  );
 
   const [values, setValues] = useState(
     isUpdate
@@ -56,6 +53,7 @@ export default function EntryControlForm({
           remarks: '',
           faultId: info?.id,
           frequencyDimension: '',
+          deformity: '',
         },
   );
 
@@ -64,22 +62,6 @@ export default function EntryControlForm({
     setFormTouch(false);
     const newVal = { [event.target?.name]: event.target?.value };
     setValues({ ...values, ...newVal });
-  };
-
-  const handlePlating = (e) => {
-    setError(false);
-    setFormTouch(false);
-    const value = e.target.value;
-    if (e.target.checked) {
-      if (![...platingsOpt].includes(value)) {
-        setPlatingsOpt([...platingsOpt, value]);
-      }
-      return;
-    }
-    const _plating = [...platingsOpt].filter((item) => {
-      return item !== value;
-    });
-    setPlatingsOpt(_plating);
   };
 
   const handleSubmit = (e) => {
@@ -95,10 +77,10 @@ export default function EntryControlForm({
       {
         ...values,
         image: file,
-        plating: platingsOpt.join(','),
         dimensionConfirmation:
           values.dimensionConfirmation?.toString() === 'true',
         dirtyThreads: values.dirtyThreads?.toString() === 'true',
+        deformity: values.deformity?.toString() === 'true',
         quantityConfirmation:
           values.quantityConfirmation?.toString() === 'true',
       },
@@ -127,13 +109,12 @@ export default function EntryControlForm({
             {platings.map((item, idx) => {
               return (
                 <label className="flex cursor-pointer items-center" key={idx}>
-                  <Checkbox
+                  <Radio
                     name="plating"
-                    colorscheme="brandScheme"
-                    me="10px"
-                    checked={isUpdate ? values.plating.includes(item) : false}
-                    onChange={handlePlating}
                     value={item}
+                    onChange={handleValues}
+                    checked={values.plating === item}
+                    key={item}
                   />
                   <p className="ml-3 text-sm font-bold text-navy-700 dark:text-white">
                     {item}
@@ -226,6 +207,25 @@ export default function EntryControlForm({
                     selected={
                       isUpdate ? values.dirtyThreads === item.value : null
                     }
+                  >
+                    {item.name}
+                  </option>
+                );
+              })}
+            </Select>
+
+            <Select
+              extra="pt-1"
+              label="Ezik/ Kırık Diş"
+              onChange={handleValues}
+              name="deformity"
+            >
+              {dirtyConfirmation.map((item, idx) => {
+                return (
+                  <option
+                    value={item.value.toString()}
+                    key={idx}
+                    selected={isUpdate ? values.deformity === item.value : null}
                   >
                     {item.name}
                   </option>

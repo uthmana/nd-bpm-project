@@ -49,7 +49,7 @@ export default function InvoiceDoc({ invoice }) {
       <div className="mb-12 flex justify-between gap-2">
         <div className="max-w-[360px]">
           <h2 className="mb-3 text-4xl">Sayın:</h2>
-          <p className="mb-3 text-sm">{invoice?.rep_name}</p>
+          <p className="mb-3 text-sm">{invoice?.customer?.company_name}</p>
           <p className="mb-4 text-sm capitalize">{invoice?.address}</p>
 
           <div className="flex justify-between gap-2 text-sm">

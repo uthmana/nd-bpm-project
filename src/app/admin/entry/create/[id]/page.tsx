@@ -8,6 +8,7 @@ import { getFaultById, updateFault } from 'app/lib/apiRequest';
 import { FormSkeleton } from 'components/skeleton';
 import { useSession } from 'next-auth/react';
 import Card from 'components/card';
+import DetailHeader from 'components/detailHeader';
 
 export default function Edit() {
   const router = useRouter();
@@ -60,19 +61,30 @@ export default function Edit() {
       return;
     }
   };
+  const detailData = {
+    title: '',
+    seeAllLink: '/admin/entry',
+    seeAllText: 'Tüm Ürünler Girişleri',
+  };
 
   return (
-    <Card extra="mt-12 mx-auto mt-4 max-w-[780px] rounded-2xl px-8 py-10 bg-white dark:bg-[#111c44] dark:text-white">
-      {isLoading ? (
-        <FormSkeleton />
-      ) : (
-        <FaultForm
-          title="Ürün Düzenle"
-          onSubmit={(val) => handleSubmit(val)}
-          editData={fault as any}
-          loading={isSubmitting}
-        />
-      )}
-    </Card>
+    <div>
+      <div className="mx-auto max-w-[780px]  bg-white  dark:bg-[#111c44] dark:text-white">
+        <DetailHeader {...detailData} />
+      </div>
+
+      <Card extra="mt-12 mx-auto mt-4 max-w-[780px] rounded-2xl px-8 py-10 bg-white dark:bg-[#111c44] dark:text-white">
+        {isLoading ? (
+          <FormSkeleton />
+        ) : (
+          <FaultForm
+            title="Ürün Düzenle"
+            onSubmit={(val) => handleSubmit(val)}
+            editData={fault as any}
+            loading={isSubmitting}
+          />
+        )}
+      </Card>
+    </div>
   );
 }

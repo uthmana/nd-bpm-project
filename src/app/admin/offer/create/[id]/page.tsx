@@ -23,6 +23,7 @@ import { useRouter } from 'next/navigation';
 // import OfferTemplete from 'emails/offer';
 // import ReactDOMServer from 'react-dom/server';
 import Card from 'components/card';
+import UploadOfferPDF from 'components/offer/pdfDoc';
 
 export default function Create() {
   const [customers, setCustomers] = useState([]);
@@ -80,7 +81,8 @@ export default function Create() {
     let newPdf = val.docPath;
     setIsSubmitting(true);
     if (offerItemData?.length !== val.product?.length) {
-      newPdf = await generateAndSendPDF('pdf-content');
+      const newPdf = await UploadOfferPDF({ offer: val });
+
       if (newPdf.status !== 200) {
         toast.error('PDf Oluşturmada hata oluştu. Daha sonra tekrar deneyin!');
         setIsSubmitting(false);

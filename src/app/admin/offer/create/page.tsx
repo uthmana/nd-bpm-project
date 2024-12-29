@@ -6,10 +6,12 @@ import OfferForm from 'components/forms/offer';
 import { getCustomers, addOffer } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
-import { log, generateAndSendPDF } from 'utils';
+import { log } from 'utils';
 import Card from 'components/card';
 // import OfferTemplete from 'emails/offer';
 // import ReactDOMServer from 'react-dom/server';
+
+import UploadOfferPDF from 'components/offer/pdfDoc';
 
 export default function Create() {
   const [customers, setCustomers] = useState([]);
@@ -32,7 +34,7 @@ export default function Create() {
 
   const handleSubmit = async (val) => {
     setIsSubmitting(true);
-    const newPdf = await generateAndSendPDF('pdf-content');
+    const newPdf = await UploadOfferPDF({ offer: val });
     if (newPdf.status !== 200) {
       toast.error('Hata oluştu. Daha sonra tekrar deneyin!');
       setIsSubmitting(false);
