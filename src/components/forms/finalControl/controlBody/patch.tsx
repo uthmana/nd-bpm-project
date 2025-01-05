@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import TableHeader from './table/tableHeader';
 import TextArea from 'components/fields/textArea';
 
@@ -40,7 +40,7 @@ export default function Patch({ data, onChange, variant = 'input' }) {
                   if (index === 0) {
                     return (
                       <td key={index} colSpan={2}>
-                        <> {value} </>
+                        <> {value as ReactNode} </>
                       </td>
                     );
                   }
@@ -48,7 +48,7 @@ export default function Patch({ data, onChange, variant = 'input' }) {
                   return (
                     <td key={index} className={`patch-${variant}`}>
                       {variant !== 'input' ? (
-                        <> {value} </>
+                        <> {value as ReactNode} </>
                       ) : (
                         <TextArea
                           label=""

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import TableHeader from './table/tableHeader';
 import TextArea from 'components/fields/textArea';
 
@@ -39,14 +39,14 @@ export default function EzDrive({ data, variant = 'input', onChange }) {
                   if (index === 0) {
                     return (
                       <td key={index} colSpan={2}>
-                        <> {value} </>
+                        <> {value as ReactNode} </>
                       </td>
                     );
                   }
                   return (
                     <td key={index} className={`ez-drive-${variant}`}>
                       {variant !== 'input' ? (
-                        <> {value} </>
+                        <> {value as ReactNode} </>
                       ) : (
                         <TextArea
                           label=""

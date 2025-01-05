@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import TableHeader from './table/tableHeader';
 import TextArea from 'components/fields/textArea';
 
@@ -52,7 +52,7 @@ export default function Mikrokapsul({ data, variant = 'input', onChange }) {
                   return (
                     <td key={index} className={`mikrokapsul-${variant}`}>
                       {variant !== 'input' ? (
-                        <> {value} </>
+                        <> {value as ReactNode} </>
                       ) : (
                         <TextArea
                           label=""

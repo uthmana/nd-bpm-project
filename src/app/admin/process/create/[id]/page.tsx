@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import {
   getProcessById,
@@ -274,7 +274,7 @@ export default function EntryControl() {
                       <h2 className="font-bold capitalize italic">
                         {infoTranslate[key]}
                       </h2>
-                      <> {value}</>
+                      <> {value as ReactNode}</>
                     </div>
                   );
                 }

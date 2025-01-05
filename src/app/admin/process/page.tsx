@@ -3,7 +3,7 @@
 import ProcessTable from 'components/admin/data-tables/processTable';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { log } from 'utils';
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import {
   deleteProcess,
   getProcess,
@@ -178,7 +178,7 @@ const Process = () => {
                   <h2 className="font-bold capitalize italic">
                     {infoTranslate[key]}
                   </h2>
-                  <> {value}</>
+                  <> {value as ReactNode}</>
                 </div>
               );
             }
