@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { getProcessById, updateProcess } from 'app/lib/apiRequest';
 import { useParams, useRouter } from 'next/navigation';
@@ -253,7 +253,7 @@ export default function EntryControl() {
                         {key === 'quantity' ? (
                           <>{formatNumberLocale(value)}</>
                         ) : (
-                          <> {value}</>
+                          <> {value as ReactNode}</>
                         )}
                       </div>
                     );
