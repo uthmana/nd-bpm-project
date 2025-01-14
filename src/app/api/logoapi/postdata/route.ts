@@ -6,7 +6,7 @@ import ApiClient, { Clientinfo } from 'utils/logorequests';
 
 export async function PUT(req: Request) {
   try {
-    const resp = req.json();
+    const resp = await req.json();
 
     const clientinfo: Clientinfo = {
       clientId: env.LOGO_CLIENT_ID, // 'AYZ',
