@@ -4,7 +4,7 @@ import { Fault, Invoice, Prisma, Process, Stock } from '@prisma/client';
 import bwipjs from 'bwip-js';
 import { cwd } from 'process';
 import { postlogoDispatch } from 'app/lib/apiRequest';
-import ApiClient, { Clientinfo } from 'utils/logorequests';
+import ApiClient, { ClientInfo } from 'utils/logorequests';
 import { checkUserRole } from 'utils/auth';
 //Get single Invoice
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
@@ -79,56 +79,6 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     const customer = await prisma.customer.findUnique({
       where: { id: customerId },
     });
-    //Create the Logo Object to be posted
-    /*
-    const data = {
-      INTERNAL_REFERENCE: null,
-      GRPCODE: 2,
-      TYPE: 8,
-      IOCODE: 3,
-      NUMBER: `TEST.FromND1${Date.now}`,
-      DATE: '2024-10-02T00:00:00',
-
-      DOC_NUMBER: `SİLMEYİN11${customer.code}`,
-
-      ARP_CODE: 'S.00055', //customer.code
-
-      CANCELLED: 1,
-
-      PRINT_COUNTER: 0,
-
-      CURRSEL_TOTALS: 1,
-
-      TRANSACTIONS: {
-        UPDCURR: 1,
-        UPDTRCURR: 1,
-
-        DISP_STATUS: 1,
-
-        CANCEL_EXP: 'test amaçlı kesilmiştir.',
-
-        VATEXCEPT_REASON: 'bedelsiz',
-        TAX_FREE_CHECK: 0,
-        TOTAL_NET_STR: 'Sıfır TL',
-        IS_OKC_FICHE: 0,
-        LABEL_LIST: {},
-      },
-    };
-
-    const clientinfo: Clientinfo = {
-      clientId: 'dss',
-      clientSecret: 'sdsd',
-      url: 'fdd',
-      firmno: '36',
-      password: 'Tsfd',
-      username: 'sds',
-    };
-    const client = new ApiClient(clientinfo);
-    client.requestAccessToken('token');
-    const sales = await client.post('salesDispatches', data);
-    //Log the token
-    console.log(sales);
-    */
 
     // Handle Invoice complete
     if (id && status === 'PAID') {
