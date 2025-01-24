@@ -57,12 +57,20 @@ export default function Invoice() {
       return;
     }
 
+    //At maximum it accepts 10 characters. the Invoice number needs to be unique. It will be changed to use their invoice scheme if all is ready to be used
+    function generateUniqueId() {
+      const prefix = 'TES';
+      const timestamp = Date.now().toString(); // Current time in milliseconds
+      const randomSuffix = Math.floor(100 + Math.random() * 900); // Random 3-digit number
+      return `${prefix}${timestamp.slice(-7)}${randomSuffix}`;
+    }
+
     const logodata = {
       INTERNAL_REFERENCE: null,
       GRPCODE: 2,
       TYPE: 8,
       IOCODE: 3,
-      NUMBER: `TEST.ND1${new Date().toISOString()}1`,
+      NUMBER: `${generateUniqueId()}`,
       DATE: '2024-10-02T00:00:00', //formData.invoiceDate
       //NUMBER: '~',
 
@@ -84,6 +92,7 @@ export default function Invoice() {
             DISP_STATUS: 1,
             CANCEL_EXP: 'test amaçlı kesilmiştir.',
             VATEXCEPT_REASON: 'bedelsiz',
+            UNIT_CODE: 'ADET',
             TAX_FREE_CHECK: 0,
             TOTAL_NET_STR: 'Sıfır TL',
             IS_OKC_FICHE: 0,
@@ -101,6 +110,7 @@ export default function Invoice() {
       EINVOICE_PLATENUM1: '.',
       EINVOICE_CHASSISNUM1: '.',
     };
+
     const respponse = await postlogoDispatch(JSON.stringify(logodata));
     return respponse;
   };
@@ -145,26 +155,6 @@ export default function Invoice() {
       toast.success('İrsaliye gönderme işlemi başarılı');
     }
     setIsSubmiting(false);
-    /*
-    //Logoya gönderme
-    try {
-      const logores = await SendDispatchToLogo();
-      if (logores.status === 200) {
-        const logoresJson = await logores.json();
-        toast.success('Logoya gönderme işlemi başarılı');
-        console.log(`Logoya gönderme sonucu:`, logoresJson);
-      } else {
-        const logoresText = await logores.text();
-        toast.error(
-          `Logoya başarıyla içeriye alamadı ${logores.response.data}`,
-        );
-        console.error('Logoya gönderme hatası:', logoresText);
-      }
-    } catch (error) {
-      console.error('Logoya gönderme hatası:', error);
-      toast.error('Logoya başarıyla içeriye alamadı');
-    }
-      */
   };
 
   const onInoviceComplete = async () => {
@@ -182,20 +172,23 @@ export default function Invoice() {
     //Logoya gönderme
     try {
       const logores = await SendDispatchToLogo();
-      if (logores.status === 200) {
-        const logoresJson = await logores.json();
-        toast.success('Logoya gönderme işlemi başarılı');
-        console.log(`Logoya gönderme sonucu:`, logoresJson);
+
+      console.log('Logo sonucu' + logores);
+      if (logores != null) {
+        // const logoresJson = await logores.json();
+        console.log(logores.NUMBER);
+        toast.success(`Logoya gönderme işlemi başarılı ${logores.NUMBER}`);
+        console.log(`Logoya gönderme sonucu:`);
       } else {
-        const logoresText = await logores.text();
+        //const logoresText = await logores.text();
+        const logoresJson = await logores.json();
         toast.error(
-          `Logoya başarıyla içeriye alamadı ${logores.response.data}`,
+          `Logoya başarıyla içeriye alamadı ${logoresJson.response.data}`,
         );
-        console.error('Logoya gönderme hatası:', logoresText);
       }
     } catch (error) {
       console.error('Logoya gönderme hatası:', error);
-      toast.error('Logoya başarıyla içeriye alamadı');
+      toast.error(`Logoya başarıyla içeriye alamadı: ${error}`);
     }
     setIsInvoiceSubmiting(false);
   };
