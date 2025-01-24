@@ -64,51 +64,6 @@ export default function Edit() {
 
     if (status === 200) {
       console.log(formData);
-      //Post To LOGO
-      //Get the Customer Code to use for sending to Logo
-
-      const customerinfo = await getCustomerById(formData.customerId);
-      if (customerinfo.response.status == 200) {
-        console.log(customerinfo.response.data);
-      }
-
-      const logodata = {
-        INTERNAL_REFERENCE: null,
-        GRPCODE: 2,
-        TYPE: 8,
-        IOCODE: 3,
-        NUMBER: `TEST.FromND1${new Date().toISOString()}1`,
-        DATE: '2024-10-02T00:00:00', //formData.invoiceDate
-        //NUMBER: '~',
-
-        DOC_NUMBER: `SİLMEYİN11Test${formData.barcode}`,
-
-        ARP_CODE: 'S.00055', //customerinfo.response.data.code
-
-        CANCELLED: 1,
-
-        PRINT_COUNTER: 0,
-
-        CURRSEL_TOTALS: 1,
-
-        TRANSACTIONS: {
-          UPDCURR: 1,
-          UPDTRCURR: 1,
-
-          DISP_STATUS: 1,
-
-          CANCEL_EXP: 'test amaçlı kesilmiştir.',
-
-          VATEXCEPT_REASON: 'bedelsiz',
-          TAX_FREE_CHECK: 0,
-          TOTAL_NET_STR: 'Sıfır TL',
-          IS_OKC_FICHE: 0,
-          LABEL_LIST: {},
-        },
-      };
-
-      const respponse = await postlogoDispatch(JSON.stringify(logodata));
-      console.log(respponse);
       //  const resposne = await postToLogo(JSON.stringify(logodata));
 
       toast.success('İrsaliye oluşturma işlemi başarılı.');
