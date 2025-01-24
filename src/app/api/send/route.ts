@@ -3,12 +3,6 @@ import { NextResponse } from 'next/server';
 import ResetPassword from '../../../emails/resetPassword';
 import prisma from 'app/lib/db';
 import crypto from 'crypto';
-//import InvoiceDoc from 'components/invoice';
-// import createPDF from 'utils/generatePDF';
-// import OfferDoc from 'components/offer';
-// import OfferTemplete from '../../../emails/offer';
-// import fs from 'fs';
-// import path from 'path';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -23,7 +17,6 @@ export async function POST(request: Request) {
   };
 
   if (formData.type === 'offer') {
-    //emailBody.react = OfferTemplete({ offer: formData.data });
     emailBody.html = `
     <p>Sayın <br/> ${formData?.data?.customer?.company_name},</p>  
     <br/>
