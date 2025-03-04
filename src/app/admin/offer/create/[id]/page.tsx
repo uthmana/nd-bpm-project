@@ -12,16 +12,8 @@ import {
 import { toast } from 'react-toastify';
 import { useParams } from 'next/navigation';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
-import {
-  log,
-  removeMillisecondsAndUTC,
-  formatCurrency,
-  deformatCurrency,
-  generateAndSendPDF,
-} from 'utils';
+import { log, removeMillisecondsAndUTC, formatCurrency } from 'utils';
 import { useRouter } from 'next/navigation';
-// import OfferTemplete from 'emails/offer';
-// import ReactDOMServer from 'react-dom/server';
 import Card from 'components/card';
 import UploadOfferPDF from 'components/offer/pdfDoc';
 

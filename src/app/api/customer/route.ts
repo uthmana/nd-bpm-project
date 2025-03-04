@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
-import { Prisma } from '@prisma/client';
+import { Customer, Prisma } from '@prisma/client';
 import { validateCustomerSchema } from 'utils';
 import { checkUserRole } from 'utils/auth';
 
 //All customers
 export async function GET(req: NextRequest) {
   try {
-    const allowedRoles = ['SUPER', 'ADMIN'];
+    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER', 'TECH'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
       return NextResponse.json(
@@ -19,7 +19,13 @@ export async function GET(req: NextRequest) {
     const stock = searchParams.get('stock');
     if (stock && stock === 'true') {
       const customers = await prisma.customer.findMany({
-        include: { Stock: true },
+        include: {
+          Stock: {
+            include: {
+              defaultTechParameter: true,
+            },
+          },
+        },
         orderBy: { company_name: 'asc' },
       });
 
@@ -44,10 +50,37 @@ export async function GET(req: NextRequest) {
   }
 }
 
+export async function POST(req: NextRequest) {
+  try {
+    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER', 'TECH'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
+    }
+    const filters: Customer | any = await req.json();
+    const customers = await prisma.customer.findMany(filters);
+
+    return NextResponse.json(customers, { status: 200 });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
+  }
+}
+
 // Create Customer
 export async function PUT(req: Request) {
   try {
-    const allowedRoles = ['SUPER', 'ADMIN'];
+    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER', 'TECH'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
       return NextResponse.json(

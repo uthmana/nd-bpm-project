@@ -2,20 +2,19 @@
 
 import ProcessTable from 'components/admin/data-tables/processTable';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { log } from 'utils';
 import { ReactNode, useEffect, useState } from 'react';
 import {
   deleteProcess,
-  getProcess,
   updateProcess,
   getMachines,
+  getEntryWithFilters,
 } from 'app/lib/apiRequest';
 import { TableSkeleton } from 'components/skeleton';
 import { toast } from 'react-toastify';
 import Popup from 'components/popup';
-import Button from 'components/button/button';
+import Button from 'components/button';
 import { useSession } from 'next-auth/react';
-import Select from 'components/select/page';
+import Select from 'components/select';
 
 const Process = () => {
   const router = useRouter();
@@ -58,9 +57,33 @@ const Process = () => {
 
   const getAllProcess = async () => {
     setIsLoading(true);
-    const { status, data } = await getProcess();
+    const { status, data } = await getEntryWithFilters({
+      where: {
+        status: {
+          in: ['PROSES_ISLENIYOR', 'FINAL_KONTROL_BEKLIYOR'],
+        },
+      },
+      include: {
+        process: true,
+      },
+      orderBy: {
+        updatedAt: 'desc',
+      },
+    });
+
     if (status === 200) {
-      setProcess(data);
+      const formatedData = data.map((item) => {
+        if (item.process[0]) {
+          return {
+            ...item,
+            processId: item.process?.[0]?.id,
+            machineName: item.process?.[0]?.machineName,
+          };
+        }
+        return item;
+      });
+
+      setProcess(formatedData);
     }
     setIsLoading(false);
   };
@@ -110,7 +133,6 @@ const Process = () => {
     if (status === 200) {
       toast.success('Makine ekleme işlemi başarılı.');
       router.push(`/admin/process/create/${processId}`);
-      //setIsShowPopUp(false);
       return;
     }
     toast.error('Bir hata oluştu, tekrar deneyin !');
@@ -125,17 +147,22 @@ const Process = () => {
     setIsShowPopUp(false);
   };
 
-  const onComfirm = async (val) => {
-    setProcessId(val);
+  const onComfirm = async (faultId) => {
+    const _processId = process?.find((item) => item.id === faultId)?.processId;
+    if (!_processId) return;
+    setProcessId(_processId);
     setIsShowProcessPopUp(true);
   };
 
-  const onControl = (val) => {
-    router.push(`/admin/process/${val}`);
+  const onControl = (faultId) => {
+    const _processId = process?.find((item) => item.id === faultId)?.processId;
+    if (!_processId) return;
+    router.push(`/admin/process/create/${_processId}`);
   };
 
   const onDelete = async () => {
     setIsSubmitting(true);
+
     const { status } = await deleteProcess(processId);
     if (status === 200) {
       toast.success('Proses silme işlemi başarılı.');

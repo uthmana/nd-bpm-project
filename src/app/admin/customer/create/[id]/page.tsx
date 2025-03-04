@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import CustomerForm from 'components/forms/customer';
 import { useParams, useRouter } from 'next/navigation';
-import { log } from 'utils';
 import { getCustomerById, updateCustomer } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import { FormSkeleton } from 'components/skeleton';

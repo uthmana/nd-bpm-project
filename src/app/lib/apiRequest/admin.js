@@ -55,6 +55,10 @@ export async function getCustomers() {
   return fetchAPI('customer');
 }
 
+export async function getCustomersWithFilter(payload) {
+  return fetchAPI('customer', 'post', payload);
+}
+
 export async function getCustomersWithStock() {
   return fetchAPI('customer?stock=true');
 }
@@ -87,6 +91,10 @@ export async function getFaults() {
 
 export async function getFaultById(id) {
   return fetchAPI(`entry/${id}`);
+}
+
+export async function getFaultByIdWithFilter(payload) {
+  return fetchAPI(`entry/${payload.id}`, 'post', payload.filters);
 }
 
 export async function getHistoryById(id) {
@@ -123,6 +131,10 @@ export async function getEntryControlByfaultId(id) {
 }
 export async function updateFaultControl(payload) {
   return fetchAPI(`entryControl/${payload.id}`, 'put', payload);
+}
+
+export async function getEntryWithFilters(payload) {
+  return fetchAPI('entry', 'post', payload);
 }
 
 // Process
@@ -260,7 +272,7 @@ export async function getFaultSettings() {
 }
 
 // Final Control
-export async function addProcessControl(payload) {
+export async function addFinalControl(payload) {
   return fetchAPI('finalControl', 'put', payload);
 }
 

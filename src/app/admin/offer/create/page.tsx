@@ -8,9 +8,6 @@ import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { log } from 'utils';
 import Card from 'components/card';
-// import OfferTemplete from 'emails/offer';
-// import ReactDOMServer from 'react-dom/server';
-
 import UploadOfferPDF from 'components/offer/pdfDoc';
 
 export default function Create() {

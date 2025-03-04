@@ -1,7 +1,7 @@
 import TextArea from 'components/fields/textArea';
 import React, { useState } from 'react';
 
-export default function Diger({ data, onChange, variant = 'input', standard }) {
+export default function Diger({ data, onChange, variant = 'input', fault }) {
   const [tableData, setTableData] = useState(data);
 
   const handleValues = (event, index) => {
@@ -20,11 +20,11 @@ export default function Diger({ data, onChange, variant = 'input', standard }) {
     <div className="mb-8 flex w-full  flex-col">
       <div className="flex w-full">
         <div className=" flex min-h-11 w-1/4 items-center border border-b-0  border-r-0 border-[#000] p-2 text-sm">
-          {tableData[0].standard}
+          {tableData[0]?.standard}
         </div>
         <div className="w-3/4 border border-b-0 border-[#000] p-2 text-sm">
           {variant !== 'input' ? (
-            <div>{tableData[0].description || standard}</div>
+            <div>{tableData[0]?.description || fault?.standard}</div>
           ) : (
             <TextArea
               label=""
@@ -34,18 +34,18 @@ export default function Diger({ data, onChange, variant = 'input', standard }) {
               placeholder=""
               extra="rounded-none m-0 border-0 "
               rows={2}
-              value={tableData[0].description || standard}
+              value={tableData[0]?.description || fault?.standard}
             />
           )}
         </div>
       </div>
       <div className="flex w-full">
         <div className="flex min-h-11 w-1/4 items-center border border-r-0  border-[#000] p-2 text-sm">
-          {tableData[1].standard}
+          {tableData[1]?.standard}
         </div>
         <div className="w-3/4 border border-[#000] p-2 text-sm">
           {variant !== 'input' ? (
-            <div>{tableData[1].description}</div>
+            <div>{tableData[1]?.description}</div>
           ) : (
             <TextArea
               label=""
@@ -55,7 +55,7 @@ export default function Diger({ data, onChange, variant = 'input', standard }) {
               placeholder=""
               extra="rounded-none m-0 border-0 "
               rows={2}
-              value={tableData[1].description}
+              value={tableData[1]?.description}
             />
           )}
         </div>

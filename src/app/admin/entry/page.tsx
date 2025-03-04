@@ -4,28 +4,40 @@ import EntryTable from 'components/admin/data-tables/entryTable';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { log } from 'utils';
 import { useEffect, useState } from 'react';
-import { deleteFault, getFaults } from 'app/lib/apiRequest';
+import { deleteFault, getEntryWithFilters } from 'app/lib/apiRequest';
 import { TableSkeleton } from 'components/skeleton';
 import { toast } from 'react-toastify';
 import Popup from 'components/popup';
-import Button from 'components/button/button';
+import Button from 'components/button';
 import { useSession } from 'next-auth/react';
 
 const Entry = () => {
   const router = useRouter();
+  const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const searchVal = searchParams.get('q');
   const [faults, setFaults] = useState([]);
   const [isShowPopUp, setIsShowPopUp] = useState(false);
   const [faultId, setFaultId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { data: session } = useSession();
-  const searchParams = useSearchParams();
-  const searchVal = searchParams.get('q');
   const [searchText, setSearchText] = useState(searchVal || '');
 
   const getAllFaults = async () => {
     setIsLoading(true);
-    const { status, data } = await getFaults();
+    const { status, data } = await getEntryWithFilters({
+      where: {
+        status: {
+          in: ['PROSES_BEKLIYOR', 'GIRIS_KONTROL_BEKLIYOR'],
+        },
+      },
+      include: {
+        customer: true,
+      },
+      orderBy: {
+        updatedAt: 'desc',
+      },
+    });
     if (status === 200) {
       setFaults(data);
     }

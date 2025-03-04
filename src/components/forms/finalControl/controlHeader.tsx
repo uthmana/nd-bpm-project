@@ -31,7 +31,10 @@ export default function ControlHeader({
           <HeaderItem
             tilteEn={'Customer '}
             titleTr={'Müşteri'}
-            value={data?.customerName?.toLocaleLowerCase()}
+            value={
+              data?.customerName?.toLocaleLowerCase() ||
+              data?.customer?.company_name
+            }
             className="max-w-[160px] capitalize"
           />
 
@@ -50,7 +53,9 @@ export default function ControlHeader({
           <HeaderItem
             titleTr={variant !== 'entry' ? 'Proses Tarihi' : 'Giriş Tarihi'}
             tilteEn={variant !== 'entry' ? 'Process Date' : 'Entry Date'}
-            value={formatDateTime(data?.createdAt)}
+            value={formatDateTime(
+              data?.process ? data?.process[0]?.updatedAt : data?.createdAt,
+            )}
           />
         </div>
         <div className="flex w-1/2 flex-col">

@@ -10,7 +10,7 @@ export default function TestTable({
   onChange,
   variant,
   machineName,
-  standard,
+  fault,
 }) {
   const [values, setValues] = useState(data || ({} as any));
 
@@ -54,7 +54,7 @@ export default function TestTable({
 
     return (
       <Diger
-        standard={standard}
+        fault={fault}
         data={values}
         variant={variant}
         onChange={handleChange}

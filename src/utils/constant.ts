@@ -170,6 +170,7 @@ export const faultInfo = [
   'arrivalDate',
   'technicalDrawingAttachment',
   'faultDescription',
+  'status',
 ];
 
 export const infoTranslate = {
@@ -185,6 +186,7 @@ export const infoTranslate = {
   arrivalDate: 'Giriş Tarihi',
   technicalDrawingAttachment: 'İlgili Doküman',
   faultDescription: 'Açıklama',
+  status: 'DURUM',
 };
 
 export const faultControlInfo = [

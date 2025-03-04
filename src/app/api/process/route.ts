@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../lib/db';
 import { checkUserRole } from 'utils/auth';
 import { Prisma, Process } from '@prisma/client';
-
+import { connect } from 'http2';
 //All  Process
 export async function GET(req: NextRequest) {
   try {
@@ -15,51 +15,50 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const searchParams = req.nextUrl.searchParams;
-    const status = searchParams.get('status');
-    const result = searchParams.get('result');
+    //const searchParams = req.nextUrl.searchParams;
+    // const status = searchParams.get('status');
+    // const result = searchParams.get('result');
+    // if (status && status === 'finished' && result && result === 'accept') {
+    //   const _process = await prisma.process.findMany({
+    //     where: { status: 'FINISHED' },
+    //     include: {
+    //       finalControl: {
+    //         where: { result: 'ACCEPT' },
+    //       },
+    //     },
+    //   });
 
-    if (status && status === 'finished' && result && result === 'accept') {
-      const _process = await prisma.process.findMany({
-        where: { status: 'FINISHED' },
-        include: {
-          finalControl: {
-            where: { result: 'ACCEPT' },
-          },
-        },
-      });
+    //   if (_process.length > 0) {
+    //     const customerIds = [];
+    //     _process.map((item) => {
+    //       if (!customerIds.includes(item.customerId)) {
+    //         customerIds.push(item.customerId);
+    //       }
+    //     });
+    //     const finishedProcess = [];
+    //     if (customerIds.length > 0) {
+    //       const data = await Promise.all(
+    //         customerIds.map(async (item) => {
+    //           const customer = await prisma.customer.findUnique({
+    //             where: { id: item },
+    //           });
+    //           const process = _process.filter((pro) => {
+    //             return (
+    //               pro.customerId === item &&
+    //               pro.invoiceId === null &&
+    //               pro.finalControl?.length > 0
+    //             );
+    //           });
 
-      if (_process.length > 0) {
-        const customerIds = [];
-        _process.map((item) => {
-          if (!customerIds.includes(item.customerId)) {
-            customerIds.push(item.customerId);
-          }
-        });
-        const finishedProcess = [];
-        if (customerIds.length > 0) {
-          const data = await Promise.all(
-            customerIds.map(async (item) => {
-              const customer = await prisma.customer.findUnique({
-                where: { id: item },
-              });
-              const process = _process.filter((pro) => {
-                return (
-                  pro.customerId === item &&
-                  pro.invoiceId === null &&
-                  pro.finalControl?.length > 0
-                );
-              });
-
-              if (process.length > 0) {
-                finishedProcess.push({ customer, process });
-              }
-            }),
-          );
-        }
-        return NextResponse.json(finishedProcess, { status: 200 });
-      }
-    }
+    //           if (process.length > 0) {
+    //             finishedProcess.push({ customer, process });
+    //           }
+    //         }),
+    //       );
+    //     }
+    //     return NextResponse.json(finishedProcess, { status: 200 });
+    //   }
+    // }
 
     // const process = await prisma.process.findMany({
     //   include: { technicalParams: true },
@@ -114,7 +113,7 @@ export async function GET(req: NextRequest) {
 // Create  Process
 export async function PUT(req: Request) {
   try {
-    const allowedRoles = ['TECH'];
+    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER', 'TECH'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
       return NextResponse.json(
@@ -122,14 +121,38 @@ export async function PUT(req: Request) {
         { status: 403 },
       );
     }
-    const reqBody: Process = await req.json();
-    //TODO: validate reqBody
-    const process = await prisma.process.create({
-      data: reqBody,
+
+    const reqBody: Process | any = await req.json();
+    // const faultId = reqBody.faultId;
+    const processData = { ...reqBody };
+
+    // delete processData.machineId;
+    //delete processData.faultId;
+
+    const newProcess = await prisma.process.create({
+      data: {
+        ...processData,
+        machine: { connect: { id: reqBody.machineId } },
+      },
     });
 
-    return NextResponse.json(process, { status: 200 });
+    const updatedMachine = await prisma.machine.update({
+      where: { id: reqBody.machineId },
+      data: {
+        processId: newProcess.id,
+      },
+    });
+
+    const updatedFault = await prisma.fault.update({
+      where: { id: reqBody.faultId },
+      data: {
+        status: 'PROSES_ISLENIYOR',
+      },
+    });
+
+    return NextResponse.json(newProcess, { status: 200 });
   } catch (e) {
+    console.log(e);
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
       e instanceof Prisma.PrismaClientUnknownRequestError ||

@@ -40,14 +40,15 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
     const id = route.params.id;
     const result: Stock = await req.json();
-    const { product_name, product_code, curency } = result;
+    const { product_name, product_code } = result;
 
-    if (!product_name || !product_code || !curency) {
+    if (!product_name || !product_code) {
       return NextResponse.json(
         { message: 'You are missing a required data' },
         { status: 401 },
       );
     }
+    console.log(result);
 
     const stock: Stock = await prisma.stock.findUnique({
       where: { id },

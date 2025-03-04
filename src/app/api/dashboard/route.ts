@@ -82,6 +82,13 @@ export async function GET(req: NextRequest) {
           orderBy: {
             createdAt: 'desc',
           },
+          include: {
+            Fault: {
+              include: {
+                customer: true,
+              },
+            },
+          },
         }),
         query.customer.findMany({
           take: 5,

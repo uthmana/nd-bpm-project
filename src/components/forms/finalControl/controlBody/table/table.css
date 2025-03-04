@@ -3,7 +3,7 @@
 }
 
 .test-table tbody {
-  @apply max-w-[800px];
+  @apply w-full max-w-[1024px];
 }
 
 .test-table thead tr td,

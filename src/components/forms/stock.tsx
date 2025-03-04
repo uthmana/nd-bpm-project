@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import NextLink from 'next/link';
 import InputField from 'components/fields/InputField';
-import Button from 'components/button/button';
-import Select from 'components/select/page';
+import Button from 'components/button';
+import Select from 'components/select';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import TextArea from 'components/fields/textArea';
 import { generateProductCode, log } from 'utils';
@@ -24,7 +24,7 @@ type StockObj = {
   group2: string;
   brand: string;
   unit: string;
-  curency: string;
+  currency: string;
   image: string;
   customerId: string;
   company_name: string;
@@ -55,7 +55,7 @@ export default function Stock(props: {
         group2: '',
         brand: '',
         unit: '',
-        curency: 'TRY',
+        currency: 'TL',
         image: '',
         customerId: '',
         company_name: '',
@@ -63,9 +63,6 @@ export default function Stock(props: {
 
   const [values, setValues] = useState(initialValues);
   const [error, setError] = useState(false);
-  const [file, setFile] = useState(
-    initialValues.image ? initialValues.image : '',
-  );
 
   const handleValues = (event) => {
     setError(false);
@@ -118,7 +115,6 @@ export default function Stock(props: {
     onSubmit({
       ...values,
       inventory: parseInt(values.inventory.toString()),
-      image: file,
     });
   };
 
@@ -292,7 +288,7 @@ export default function Stock(props: {
           extra="pt-1"
           label="Para Birimi"
           onChange={handleValues}
-          name="curency"
+          name="currency"
           required={true}
         >
           {currency.map((item, idx) => {
@@ -300,7 +296,7 @@ export default function Stock(props: {
               <option
                 value={item}
                 key={idx}
-                selected={data ? data?.curency === item : idx === 0}
+                selected={data ? data?.currency === item : idx === 0}
               >
                 {item}
               </option>
@@ -311,11 +307,11 @@ export default function Stock(props: {
 
       <div className="my-3 mb-8">
         <Upload
-          onChange={(val) => setFile(val)}
-          fileType="all"
-          multiple={false}
-          _fileName={initialValues.image ? initialValues.image : ''}
-          _filePath={initialValues.image ? initialValues.image : ''}
+          label="İlgili Doküman"
+          id="image"
+          name="image"
+          onChange={handleValues}
+          value={values.image}
         />
       </div>
 

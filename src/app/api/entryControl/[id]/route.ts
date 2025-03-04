@@ -37,11 +37,23 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
     const id = route.params.id;
     const data: FaultControl = await req.json();
-    const { faultId, result, processFrequency } = data;
+    const {
+      faultId,
+      result: controlReult,
+      processFrequency,
+      frequencyDimension,
+    } = data;
 
     const faultControl: FaultControl = await prisma.faultControl.findUnique({
       where: { id },
     });
+
+    if (!faultControl) {
+      return NextResponse.json(
+        { message: 'Content not found' },
+        { status: 401 },
+      );
+    }
 
     const updateFaultControl = await prisma.faultControl.update({
       where: {
@@ -52,93 +64,56 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       },
     });
 
+    const faultControlAccepted =
+      controlReult === 'ACCEPT' ||
+      controlReult === 'ACCEPTANCE_WITH_CONDITION' ||
+      controlReult === 'PRE_PROCESS';
+
     const updateFault: Fault = await prisma.fault.update({
       where: {
         id: faultId,
       },
-      data: { status: result },
+      data: {
+        status: faultControlAccepted ? 'PROSES_BEKLIYOR' : 'GIRIS_KONTROL_RET',
+      },
     });
 
-    //Create Process starts
-    if (result !== 'ACCEPT') {
-      const processData: Process = await prisma.process.findFirst({
-        where: { faultId },
-      });
-      if (processData) {
-        const processDel = await prisma.process.delete({
-          where: { id: processData.id },
-        });
-      }
-    }
+    //Handle Process
+    // if (result !== 'ACCEPT') {
+    //   const processData: Process = await prisma.process.findFirst({
+    //     where: { faultId },
+    //   });
+    //   if (processData) {
+    //     const processDel = await prisma.process.delete({
+    //       where: { id: processData.id },
+    //     });
+    //   }
+    // }
 
-    if (result !== 'REJECT') {
-      const processData: Process = await prisma.process.findUnique({
-        where: { faultId },
-      });
+    // if (result !== 'REJECT') {
+    //   const processData: Process = await prisma.process.findUnique({
+    //     where: { faultId },
+    //   });
 
-      if (!processData && updateFault) {
-        const {
-          id,
-          customerName,
-          product,
-          quantity,
-          productCode,
-          application,
-          standard,
-          product_barcode,
-          color,
-          technicalDrawingAttachment,
-          customerId,
-        } = updateFault;
-        const processCreate = await prisma.process.create({
-          data: {
-            customerName,
-            customerId,
-            product,
-            quantity,
-            productCode,
-            application,
-            standard,
-            product_barcode,
-            color,
-            technicalDrawingAttachment,
-            faultId: id,
-            frequency: processFrequency,
-          },
-        });
-      } else {
-        if (updateFault) {
-          const {
-            customerName,
-            customerId,
-            product,
-            quantity,
-            productCode,
-            application,
-            standard,
-            color,
-            technicalDrawingAttachment,
-          } = updateFault;
+    //   if (!processData && updateFault) {
+    //     const processCreate = await prisma.process.create({
+    //       data: {
+    //         frequency: frequencyDimension,
+    //         Fault: { connect: { id: faultId } },
+    //       },
+    //     });
+    //   } else {
+    //     if (updateFault) {
+    //       const processUpdate = await prisma.process.update({
+    //         where: { id: processData.id },
+    //         data: {
+    //           frequency: frequencyDimension,
+    //         },
+    //       });
+    //     }
+    //   }
+    // }
 
-          const processUpdate = await prisma.process.update({
-            where: { id: processData.id },
-            data: {
-              customerId,
-              customerName,
-              product,
-              quantity,
-              productCode,
-              application,
-              standard,
-              color,
-              technicalDrawingAttachment,
-              frequency: processFrequency,
-            },
-          });
-        }
-      }
-    }
-    //Create Process ends
     return NextResponse.json(updateFaultControl, { status: 200 });
   } catch (e) {
     if (

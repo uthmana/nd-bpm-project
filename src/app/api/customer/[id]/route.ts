@@ -7,7 +7,7 @@ import { CardType, Currency, Customer, Prisma } from '@prisma/client';
 //Get single customer
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
   try {
-    const allowedRoles = ['ADMIN', 'SUPER'];
+    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER', 'TECH'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
       return NextResponse.json({ error: 'Access forbidden', status: 403 });
@@ -15,8 +15,11 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     const id = route.params.id;
     const customer = await prisma.customer.findUnique({
       where: { id },
+      include: {
+        Fault: true,
+      },
     });
-    return NextResponse.json({ ...customer });
+    return NextResponse.json(customer);
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
@@ -33,6 +36,12 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
 //Update Customer
 export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
+    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER', 'TECH'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json({ error: 'Access forbidden', status: 403 });
+    }
+
     const id = route.params.id;
     const newCustomerData: Customer = await req.json();
 

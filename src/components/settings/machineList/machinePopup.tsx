@@ -1,7 +1,7 @@
 'use client';
 
 import { addMachineParam, deleteMachineParam } from 'app/lib/apiRequest';
-import Button from 'components/button/button';
+import Button from 'components/button';
 import InputField from 'components/fields/InputField';
 import Popup from 'components/popup';
 import { useState } from 'react';

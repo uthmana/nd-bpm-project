@@ -5,7 +5,7 @@ import { formatDateTime, formatNumberLocale } from 'utils';
 export default function FormHeaderItem(props: {
   tilteEn?: string;
   titleTr?: string;
-  value?: string;
+  value?: string | number | any;
   className?: string;
   type?: string;
 }) {

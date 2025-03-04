@@ -2,7 +2,7 @@ import Box from 'components/Box';
 import React, { useState } from 'react';
 import { testAreaData } from './defaultData';
 import InputField from 'components/fields/InputField';
-import Select from 'components/select/page';
+import Select from 'components/select';
 
 export default function TestArea(props: {
   onChange?: (v) => void;

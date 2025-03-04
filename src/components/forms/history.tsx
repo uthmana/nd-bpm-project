@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import { convertToISO8601, generateSKU, currencySymbol } from 'utils';
 import TextArea from 'components/fields/textArea';
-import Button from 'components/button/button';
-import Select from 'components/select/page';
+import Button from 'components/button';
+import Select from 'components/select';
 import { MdAdd } from 'react-icons/md';
 import InputField from 'components/fields/InputField';
 import DataList from 'components/fields/dataList';

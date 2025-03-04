@@ -15,11 +15,12 @@ import {
 
 import Upload from 'components/upload';
 import TextArea from 'components/fields/textArea';
-import Button from 'components/button/button';
-import Select from 'components/select/page';
+import Button from 'components/button';
+import Select from 'components/select';
 import Radio from 'components/radio';
 import InputField from 'components/fields/InputField';
 import ControlHeader from './finalControl/controlHeader';
+import { useSession } from 'next-auth/react';
 
 export default function EntryControlForm({
   info,
@@ -31,9 +32,8 @@ export default function EntryControlForm({
   const isUpdate = data && data?.id ? true : false;
   const [fault, setFault] = useState(info || {});
   const [error, setError] = useState(false);
-  const [file, setFile] = useState('');
   const [formTouch, setFormTouch] = useState(isUpdate);
-
+  const { data: session } = useSession();
   const [values, setValues] = useState(
     isUpdate
       ? data
@@ -42,18 +42,21 @@ export default function EntryControlForm({
           result: '',
           plating: '',
           product: '',
-          quantity: 0,
+          deformity: '',
+          remarks: '',
           productCode: '',
+          dirtyThreads: '',
           productDimension: '',
           productBatchNumber: '',
           processFrequency: '',
           dimensionConfirmation: '',
-          dirtyThreads: '',
           quantityConfirmation: '',
-          remarks: '',
           faultId: info?.id,
-          frequencyDimension: '',
-          deformity: '',
+          quantity: 0,
+          frequencyDimension: 1,
+          createdBy: session?.user?.name,
+          createdAt: new Date(),
+          updatedBy: session?.user?.name,
         },
   );
 
@@ -76,13 +79,15 @@ export default function EntryControlForm({
     onSubmit(
       {
         ...values,
-        image: file,
-        dimensionConfirmation:
-          values.dimensionConfirmation?.toString() === 'true',
-        dirtyThreads: values.dirtyThreads?.toString() === 'true',
-        deformity: values.deformity?.toString() === 'true',
-        quantityConfirmation:
-          values.quantityConfirmation?.toString() === 'true',
+        dimensionConfirmation: values.dimensionConfirmation === true.toString(),
+        dirtyThreads: values.dirtyThreads === true.toString(),
+        deformity: values.deformity === true.toString(),
+        quantityConfirmation: values.quantityConfirmation === true.toString(),
+        frequencyDimension:
+          values.processFrequency === 'Yazılmasın'
+            ? 1
+            : parseInt(values.frequencyDimension),
+        updatedBy: session?.user?.name,
       },
       isUpdate,
     );
@@ -256,9 +261,9 @@ export default function EntryControlForm({
 
             {values.processFrequency === 'Yazılsın' ? (
               <InputField
-                label="Frekans Aralığı"
+                label="Frekans Aralığı (dk)"
                 onChange={handleValues}
-                type="text"
+                type="number"
                 id="frequencyDimension"
                 name="frequencyDimension"
                 placeholder="0"
@@ -270,15 +275,12 @@ export default function EntryControlForm({
           </div>
 
           <div className="mb-6">
-            <h2 className="mb-3 ml-3  block w-full text-sm font-bold">
-              İlgili Doküman
-            </h2>
             <Upload
-              onChange={(val) => setFile(val)}
-              fileType="all"
-              multiple={false}
-              _fileName={values.image}
-              _filePath={isUpdate ? '/uploads/' + values.image : ''}
+              label="İlgili Doküman"
+              id="image"
+              name="image"
+              onChange={handleValues}
+              value={values.image}
             />
           </div>
 
@@ -325,23 +327,6 @@ export default function EntryControlForm({
             text="KAYDET"
           />
         </form>
-      </div>
-
-      <div className="mt-8 flex justify-between text-sm font-bold opacity-40">
-        <div>
-          <p>Oluşturan: {data?.createdBy}</p>
-          <p>
-            Oluşturulma Tarihi:{' '}
-            {data?.createdAt ? formatDateTime(data?.createdAt) : ''}
-          </p>
-        </div>
-        <div>
-          <p>Güncelleyen: {data?.updatedBy}</p>
-          <p>
-            Güncelleme Tarihi:{' '}
-            {data?.updatedAt ? formatDateTime(data?.updatedAt) : ''}
-          </p>
-        </div>
       </div>
     </>
   );

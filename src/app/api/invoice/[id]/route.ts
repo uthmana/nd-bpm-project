@@ -9,7 +9,7 @@ import { checkUserRole } from 'utils/auth';
 //Get single Invoice
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
   try {
-    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER'];
+    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER', 'TECH'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
       return NextResponse.json(
@@ -20,7 +20,7 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     const id = route.params.id;
     const invoice: Invoice = await prisma.invoice.findUnique({
       where: { id: id },
-      include: { process: true, customer: true },
+      include: { Fault: true, customer: true },
     });
     return NextResponse.json(invoice, { status: 200 });
   } catch (e) {
@@ -40,32 +40,24 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
 export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
     const id = route.params.id;
-    const result: any = await req.json();
+    const result: Invoice | any = await req.json();
     const {
-      invoiceDate,
-      updatedBy,
+      Fault,
+      customer,
+      barcode,
+      id: invoiceId,
       customerId,
-      tax_Office,
-      taxNo,
-      process,
-      rep_name,
-      description,
-      totalAmount,
-      vat,
-      amount,
-      address,
-      status,
+      ...rest
     } = result;
 
-    if (!customerId || !invoiceDate || !tax_Office || !taxNo || !address) {
+    if (!Fault || !customer) {
       return NextResponse.json(
         { message: 'You are missing a required data' },
         { status: 401 },
       );
     }
-    const invoiceData: any = await prisma.invoice.findUnique({
+    const invoiceData = await prisma.invoice.findUnique({
       where: { id },
-      include: { process: true },
     });
 
     if (!invoiceData) {
@@ -74,101 +66,58 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         { status: 404 },
       );
     }
-
-    // Get the customer ID
-    const customer = await prisma.customer.findUnique({
-      where: { id: customerId },
-    });
-
-    // Handle Invoice complete
-    if (id && status === 'PAID') {
-      const invoice: Invoice = await prisma.invoice.update({
-        where: { id: invoiceData.id },
-        data: { status },
-      });
-      // Update stock
-      if (invoiceData.process && invoiceData.process.length > 0) {
-        const stockUpdate = await Promise.all(
-          invoiceData.process.map(async (item) => {
-            let updatedQty = item.quantity;
-            if (item.shipmentQty > item.quantity) {
-              updatedQty = 0;
-            } else {
-              updatedQty = item.quantity - item.shipmentQty;
-            }
-            const stock = await prisma.stock.update({
-              where: { faultId: item.faultId },
-              data: { inventory: updatedQty },
-            });
-          }),
-        );
-      }
-      return NextResponse.json(invoice, { status: 200 });
-    }
-
-    //Generate barcode
-    let invoiceBarCode = invoiceData.barcode;
-    if (!invoiceData.barcode) {
-      const barcodeOptions = {
-        bcid: 'code128',
-        text: invoiceData.id,
-        scale: 3,
-      };
-      const pngBuffer = await new Promise<Buffer>((resolve, reject) => {
-        bwipjs.toBuffer(barcodeOptions, (err, buffer) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(buffer);
-          }
-        });
-      });
-      invoiceBarCode = pngBuffer.toString('base64');
-    }
-
-    const { process: invoiceProcess, ...rest } = invoiceData;
-    const updateInvoice = await prisma.invoice.update({
-      where: {
-        id: id,
-      },
+    const invoice = await prisma.invoice.update({
+      where: { id },
       data: {
         ...rest,
-        barcode: invoiceBarCode,
+        customer: { connect: { id: customer.id } },
+        Fault: { connect: Fault.map((item) => ({ id: item.id })) },
       },
     });
 
-    //Update Process
-    if (process.length === 0) {
-      const processInvoice = await prisma.process.findMany({
-        where: { invoiceId: id },
+    if (invoice) {
+      const updateFault = await prisma.fault.updateMany({
+        where: {
+          id: { in: Fault.map((item) => item.id) },
+        },
+        data: {
+          status: 'SEVKIYAT_TAMAMLANDI',
+        },
       });
 
-      if (processInvoice?.length > 0) {
-        const processUpdate = await Promise.all(
-          processInvoice.map(async (item) => {
-            const updatedProcess = await prisma.process.update({
-              where: {
-                id: item.id,
-              },
-              data: { invoiceId: null },
-            });
-          }),
-        );
-      }
-      return NextResponse.json(updateInvoice, { status: 200 });
-    }
-    const processUpdate = await Promise.all(
-      process.map(async (item) => {
-        const updatedProcess = await prisma.process.update({
-          where: {
-            id: item.id,
-          },
-          data: { invoiceId: invoiceData.id, price: item.price },
+      // Handle Stock Updates
+      for (const faultItem of Fault) {
+        const { id: faultId, shipmentQty, quantity, productCode } = faultItem;
+
+        if (!shipmentQty || !quantity || !productCode) continue;
+
+        const stock = await prisma.stock.findUnique({
+          where: { faultId },
         });
-      }),
-    );
-    return NextResponse.json(updateInvoice, { status: 200 });
+
+        if (stock) {
+          if (shipmentQty < quantity) {
+            // Update stock inventory
+            await prisma.stock.update({
+              where: { id: stock.id },
+              data: {
+                inventory: stock.inventory ? stock.inventory - shipmentQty : 0,
+              },
+            });
+          } else {
+            // Delete stock if shipmentQty >= quantity
+            await prisma.stock.delete({
+              where: { id: stock.id },
+            });
+          }
+        }
+      }
+    }
+
+    return NextResponse.json(invoice, { status: 200 });
   } catch (e) {
+    console.error('Error updating invoice:', e);
+
     if (
       e instanceof Prisma.PrismaClientKnownRequestError ||
       e instanceof Prisma.PrismaClientUnknownRequestError ||

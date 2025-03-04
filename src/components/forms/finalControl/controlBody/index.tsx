@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from 'components/Box';
 import Radio from 'components/radio';
 import TestTable from './table/testTable';
 import { MdCheck } from 'react-icons/md';
 import TestArea from './table/testArea';
 import InputField from 'components/fields/InputField';
-import { formatNumberLocale } from 'utils';
+import { deformatCurrency, formatNumberLocale } from 'utils';
 
-export default function Index({ data, onChange, variant, standard }) {
+export default function Index({ data, onChange, variant, fault }) {
   const [values, setValues] = useState(data || ({} as any));
+
+  const [error, setError] = useState({ control: '', nakliye: '' });
 
   const handleResultValues = (event) => {
     const newVal = { [event.target?.name]: event.target?.value };
@@ -27,6 +29,12 @@ export default function Index({ data, onChange, variant, standard }) {
   };
 
   const handleQuantityValues = (event) => {
+    const eventValue = deformatCurrency(event.target?.value, 'int');
+
+    if (eventValue > fault?.quantity) {
+      return;
+    }
+
     const newVal = { [event.target?.name]: event.target?.value };
     setValues({ ...values, ...newVal });
     onChange({ ...values, ...newVal });
@@ -40,6 +48,20 @@ export default function Index({ data, onChange, variant, standard }) {
     },
     { value: 'REJECT', name: 'Red / <br /> Rejection' },
   ];
+
+  useEffect(() => {
+    if (!values?.result) return;
+    const isNakliyeZero =
+      deformatCurrency(values.nakliye_miktar?.toString(), 'int') === 0;
+    const isKontrolZero =
+      deformatCurrency(values.kontrol_edilen_miktar?.toString(), 'int') === 0;
+    const errorBorder = '!border-red-400 border-2';
+
+    setError({
+      control: isKontrolZero ? errorBorder : '',
+      nakliye: isNakliyeZero ? errorBorder : '',
+    });
+  }, [values]);
 
   return (
     <div className="w-full">
@@ -61,7 +83,7 @@ export default function Index({ data, onChange, variant, standard }) {
         onChange={(val) => handleTestTableChange(val)}
         machineName={values?.machineName}
         data={values?.testItem}
-        standard={standard}
+        fault={fault}
         variant={variant}
       />
 
@@ -69,33 +91,36 @@ export default function Index({ data, onChange, variant, standard }) {
         {variant === 'input' ? (
           <div className="flex w-full items-center justify-between gap-3">
             <InputField
-              label="Kontrol Miktar"
+              label="Kontrol Miktarı"
               onChange={handleQuantityValues}
-              type="number"
+              type="quantity"
+              format="qty"
               id="kontrol_edilen_miktar"
               name="kontrol_edilen_miktar"
               placeholder=""
-              extra="mb-2 !rounded-none h-[32px] !p-1 border-1 !border-[#000]"
+              extra={`mb-2 !rounded-none h-[32px] !p-1 border-1 !border-[#000] ${error.control}`}
               value={values?.kontrol_edilen_miktar}
               required={true}
               disabled={variant !== 'input'}
             />
             <InputField
-              label="Nakliye Miktar"
+              label="Nakliye Miktarı"
               onChange={handleQuantityValues}
-              type="number"
+              type="quantity"
+              format="qty"
               id="nakliye_miktar"
               name="nakliye_miktar"
               placeholder=""
-              extra="mb-2 !rounded-none  h-[32px] !p-1 border-1 !border-[#000]"
+              extra={`mb-2 !rounded-none  h-[32px] !p-1 border-1 !border-[#000] ${error.nakliye}`}
               value={values?.nakliye_miktar}
               required={true}
               disabled={variant !== 'input'}
             />
             <InputField
-              label="Hatalı Miktar"
+              label="Hatalı Miktarı"
               onChange={handleQuantityValues}
-              type="number"
+              type="quantity"
+              format="qty"
               id="hatali_miktar"
               name="hatali_miktar"
               placeholder=""

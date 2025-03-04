@@ -1,10 +1,9 @@
 'use client';
 
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import {
   getProcessById,
-  addProcess,
   updateProcess,
   getMachines,
   sendNotification,
@@ -18,12 +17,14 @@ import {
   updateTechParams,
   deleteTechParams,
 } from 'app/lib/apiRequest';
-import Button from 'components/button/button';
+import Button from 'components/button';
 import Popup from 'components/popup';
-import { formatDateTime, log } from 'utils';
+import { faultInfo, formatDateTime, infoTranslate, log } from 'utils';
 import { useSession } from 'next-auth/react';
-import Select from 'components/select/page';
+import Select from 'components/select';
 import DetailHeader from 'components/detailHeader';
+import FileViewer from 'components/fileViewer';
+import Barcode from 'react-jsbarcode';
 
 export default function EntryControl() {
   const router = useRouter();
@@ -41,43 +42,21 @@ export default function EntryControl() {
   const { data: session } = useSession();
   const [isFrequencyPopUp, setIsFrequencyPopUp] = useState(false);
   const [defaultTechParams, setDefaultTechParams] = useState({});
-
-  const productInfo = [
-    'faultId',
-    'customerName',
-    'product',
-    'quantity',
-    'application',
-    'standard',
-    'color',
-    'machineName',
-  ];
-
-  const infoTranslate = {
-    customerName: 'Müşteri',
-    product: 'Ürün adı',
-    quantity: 'Miktar',
-    application: 'Uygulama',
-    standard: 'Standart',
-    color: 'Renk',
-    machineName: 'Makine',
-    faultId: 'Takıp Kodu',
-  };
-
-  const detailData = {
-    title: 'Proses Detayi',
-    seeAllLink: '/admin/process',
-    seeAllText: 'Tüm Proses',
-  };
+  const [fault, setFault] = useState({} as any);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const getSingleProcess = async () => {
     setIsloading(true);
     const { status, data } = await getProcessById(queryParams.id);
     if (status === 200) {
+      const { Fault, machine, technicalParams } = data;
+      setFault(Fault);
       setProcess(data);
-      setTechParams(data?.technicalParams);
-      setMachineParams(data.machineParams.map((item) => item.param_name));
-      setDefaultTechParams(data?.defaultTechParam || {});
+      setTechParams(technicalParams);
+      setMachineParams(
+        machine[0]?.machineParams?.map((item) => item.param_name),
+      );
+      setDefaultTechParams(Fault?.defaultTechParameter[0] || {});
       setIsloading(false);
       return;
     }
@@ -92,14 +71,12 @@ export default function EntryControl() {
   }, [queryParams?.id]);
 
   useEffect(() => {
-    if (process && (!process.machineName || !process.frequency)) {
+    // TODO:  Refactor Notification
+    if (!process.id || !process.frequency) {
       return;
     }
-    const frequencyDimension = parseInt(process.frequency.split(':')[1]);
-    if (!frequencyDimension) {
-      return;
-    }
-    const intervalId = setInterval(async () => {
+
+    intervalRef.current = setInterval(async () => {
       try {
         await sendNotification({
           workflowId: 'process-frequency',
@@ -110,10 +87,12 @@ export default function EntryControl() {
       } catch (err) {
         console.log(err);
       }
-    }, frequencyDimension * 60000);
+    }, process.frequency * 60000);
 
-    () => {
-      clearInterval(intervalId);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
     };
   }, [process]);
 
@@ -207,20 +186,18 @@ export default function EntryControl() {
     }
 
     if (status === 200) {
-      await getSingleProcess();
       setIsShowPopUp(false);
       try {
         await sendNotification({
           workflowId: 'process-completion',
           data: {
-            link: `${window?.location.origin}/admin/process/${id}`,
+            link: `${window?.location.origin}/admin/entry/${faultId}`,
           },
         });
+        router.push(`/admin/entry/${faultId}`);
       } catch (err) {
         console.log(err);
       }
-      router.push(`/admin/process/${process.id}`);
-      return;
     }
   };
 
@@ -249,12 +226,43 @@ export default function EntryControl() {
   };
 
   const handleOnFinish = () => {
-    if (process?.frequency === 'Yazılsın' && techParams.length === 0) {
+    if (process?.frequency && techParams.length === 0) {
       setIsFrequencyPopUp(true);
       return;
     }
-
     setIsShowPopUp(true);
+  };
+
+  const renderProductInfo = (key, val) => {
+    if (key === 'arrivalDate') {
+      return <p className="font-bold"> {formatDateTime(val)} </p>;
+    }
+    if (key === 'technicalDrawingAttachment') {
+      return <FileViewer file={val} />;
+    }
+    if (key === 'arrivalDate') {
+      return <p className="font-bold"> {formatDateTime(val)} </p>;
+    }
+    if (key === 'product_barcode') {
+      return (
+        <div id="product_barcode" className="max-w-[200px]">
+          <Barcode
+            className="h-full w-full"
+            value={val}
+            options={{ format: 'code128' }}
+          />
+        </div>
+      );
+    }
+    return <p className="break-all font-bold"> {val} </p>;
+  };
+
+  const detailData = {
+    title: 'Detay',
+    seeAllLink: '/admin/process',
+    seeAllText: 'Tüm Proses',
+    actionText: 'ÜRÜN DETAY',
+    actionLink: `/admin/entry/${fault?.id}`,
   };
 
   return (
@@ -267,18 +275,28 @@ export default function EntryControl() {
           <Card extra="w-full px-4 pt-4 pb-8">
             <h2 className="my-5 text-2xl font-bold">Ürün Bilgileri</h2>
             <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-              {Object.entries(process).map(([key, value], idx) => {
-                if (productInfo.includes(key)) {
-                  return (
-                    <div className="" key={idx}>
-                      <h2 className="font-bold capitalize italic">
-                        {infoTranslate[key]}
-                      </h2>
-                      <> {value as ReactNode}</>
-                    </div>
-                  );
-                }
-              })}
+              {fault && fault.id
+                ? Object.entries(fault).map(([key, val]: any, index) => {
+                    if (faultInfo.includes(key)) {
+                      return (
+                        <div
+                          key={index}
+                          className="mb-5 flex flex-col flex-nowrap"
+                        >
+                          <h4 className="mx-1 italic">{infoTranslate[key]}</h4>
+                          {renderProductInfo(key, val)}
+                        </div>
+                      );
+                    }
+                  })
+                : null}
+              <div className="mb-5 flex flex-col flex-nowrap">
+                <h4 className="mx-1 italic">Frekans Aralığı</h4>
+                <p className="text-lg font-bold text-brand-500">
+                  {' '}
+                  {process.frequency}
+                </p>
+              </div>
             </div>
           </Card>
           <Card extra="w-full px-4 pt-4 pb-8">

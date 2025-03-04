@@ -12,7 +12,7 @@ import {
   faultControlInfo,
   faultControlTranslate,
 } from 'utils';
-import Button from 'components/button/button';
+import Button from 'components/button';
 import { MdAdd, MdPrint } from 'react-icons/md';
 import FileViewer from 'components/fileViewer';
 import DetailHeader from 'components/detailHeader';

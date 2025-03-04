@@ -4,11 +4,11 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  //url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 
   //Uncomment the below for production database connection
-  url       = env("POSTGRES_PRISMA_URL")
-  directUrl = env("POSTGRES_URL_NON_POOLING")
+  //url       = env("POSTGRES_PRISMA_URL")
+  //directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model User {
@@ -85,64 +85,64 @@ model Customer {
 }
 
 model Stock {
-  id                 String    @id @default(cuid())
-  product_code       String    @unique
-  product_name       String
-  product_barcode    String?
-  productBatchNumber String?
-  description        String?
-  main_group         String?
-  group1             String?
-  group2             String?
-  inventory          Int?
-  unit               String?
-  current_price      String
-  curency            String
-  brand              String?
-  date               DateTime? @default(now())
-  updatedAt          DateTime? @updatedAt
-  createdBy          String?
-  updatedBy          String?
-  image              String?
-  customerId         String?
-  customer           Customer? @relation(fields: [customerId], references: [id])
-  faultId            String?   @unique
-  fault              Fault?    @relation(fields: [faultId], references: [id], onDelete: Cascade)
+  id                   String               @id @default(cuid())
+  product_code         String
+  product_name         String
+  product_barcode      String?
+  productBatchNumber   String?
+  description          String?
+  main_group           String?
+  group1               String?
+  group2               String?
+  inventory            Int?
+  unit                 String?
+  current_price        String?
+  currency             Currency             @default(TL)
+  brand                String?
+  date                 DateTime?            @default(now())
+  updatedAt            DateTime?            @updatedAt
+  createdBy            String?
+  updatedBy            String?
+  image                String?
+  customerId           String?
+  customer             Customer?            @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  defaultTechParameter TechnicalParameter[]
+  faultId              String?              @unique
 }
 
 model Fault {
   id                         String               @id @default(cuid())
-  customerName               String?
+  customerId                 String?
+  customer                   Customer?            @relation(fields: [customerId], references: [id], onDelete: Cascade)
   arrivalDate                DateTime?            @default(now())
   invoiceDate                DateTime?
   product                    String?
   product_barcode            String?
   quantity                   Int?
+  shipmentQty                Int?
   productCode                String?
   productBatchNumber         String?
   application                String?
   standard                   String?
   color                      String?
   faultDescription           String?
-  status                     FaultStatus          @default(PENDING)
   technicalDrawingAttachment String?
+  status                     FaultStatus          @default(GIRIS_KONTROL_BEKLIYOR)
   faultControl               FaultControl[]
   unacceptable               Unacceptable[]
+  process                    Process[]
+  finalControl               FinalControl[]
   defaultTechParameter       TechnicalParameter[]
-  customerId                 String?
-  customer                   Customer?            @relation(fields: [customerId], references: [id])
-  faultControlId             String?              @unique
   createdAt                  DateTime             @default(now())
   updatedAt                  DateTime?            @updatedAt
   createdBy                  String?
   updatedBy                  String?
-  Stock                      Stock[]
+  Invoice                    Invoice?             @relation(fields: [invoiceId], references: [id])
+  invoiceId                  String?
 }
 
 model FaultControl {
   id                    String             @id @default(cuid())
-  faultId               String             @unique
-  customerName          String?
   traceabilityCode      String?
   arrivalDate           DateTime?
   invoiceDate           DateTime?
@@ -158,20 +158,20 @@ model FaultControl {
   quantityConfirmation  Boolean?
   dirtyThreads          Boolean?           @default(false)
   deformity             Boolean?           @default(false)
-  processFrequency      String? //yazilsin-yazilmasin
-  frequencyDimension    String?
+  processFrequency      String?
+  frequencyDimension    Int?
   remarks               String?
   createdAt             DateTime           @default(now())
   updatedAt             DateTime?          @updatedAt
   createdBy             String?
   updatedBy             String?
   result                FaultControlResult
+  faultId               String             @unique
   Fault                 Fault              @relation(fields: [faultId], references: [id], onDelete: Cascade)
 }
 
 model Unacceptable {
   id                      String                  @id @default(cuid())
-  unacceptableStage       UnacceptableStageStatus @default(ENTRY)
   unacceptableDescription String?
   unacceptableAction      String?
   result                  String?
@@ -181,26 +181,13 @@ model Unacceptable {
   createdBy               String?
   updatedBy               String?
   Fault                   Fault?                  @relation(fields: [faultId], references: [id])
-  faultId                 String?                 @unique
-  Process                 Process?                @relation(fields: [processId], references: [id])
-  processId               String?                 @unique
+  faultId                 String?
+  unacceptableStage       UnacceptableStageStatus @default(ENTRY)
 }
 
 model Process {
   id                         String               @id @default(cuid())
-  faultId                    String?              @unique
-  customerName               String?
-  customerId                 String?
-  product                    String?
-  quantity                   Int?
-  shipmentQty                Int?
-  productCode                String?
-  application                String?
-  standard                   String?
-  product_barcode            String?
-  color                      String?
-  frequency                  String?
-  price                      Float?
+  frequency                  Int?
   technicalDrawingAttachment String?
   machineName                String?
   machineId                  String?
@@ -208,17 +195,15 @@ model Process {
   updatedAt                  DateTime             @updatedAt
   createdBy                  String?
   updatedBy                  String?
+  Fault                      Fault?               @relation(fields: [faultId], references: [id])
+  faultId                    String?
   status                     ProcessStatus        @default(PENDING)
   technicalParams            TechnicalParameter[]
-  finalControl               FinalControl[]
-  unacceptable               Unacceptable[]
-  Invoice                    Invoice?             @relation(fields: [invoiceId], references: [id])
-  invoiceId                  String?
+  machine                    Machine[]
 }
 
 model FinalControl {
   id                    String             @id @default(cuid())
-  faultId               String             @unique
   olcu_Kontrol          FinalItemStatus?
   gorunum_kontrol       FinalItemStatus?
   tork_Kontrol          FinalItemStatus?
@@ -233,10 +218,10 @@ model FinalControl {
   createdBy             String?
   updatedBy             String?
   result                FaultControlResult
-  Process               Process?           @relation(fields: [processId], references: [id], onDelete: Cascade)
-  processId             String?
   testItem              TestItem[]
   testArea              TestArea[]
+  faultId               String             @unique
+  Fault                 Fault              @relation(fields: [faultId], references: [id])
 }
 
 model TestArea {
@@ -298,15 +283,16 @@ model Machine {
   id            String          @id @default(cuid())
   machine_Name  String
   machineParams MachineParams[]
+  Process       Process?        @relation(fields: [processId], references: [id])
+  processId     String?
 }
 
 model MachineParams {
-  id           String  @id @default(cuid())
+  id           String   @id @default(cuid())
   param_name   String?
   display_name String?
-
-  Machine   Machine? @relation(fields: [machineId], references: [id])
-  machineId String?
+  Machine      Machine? @relation(fields: [machineId], references: [id])
+  machineId    String?
 }
 
 model TechnicalParameter {
@@ -340,6 +326,8 @@ model TechnicalParameter {
   processId              String?
   Fault                  Fault?    @relation(fields: [faultId], references: [id])
   faultId                String?
+  Stock                  Stock?    @relation(fields: [stockId], references: [id])
+  stockId                String?
 }
 
 model Invoice {
@@ -347,16 +335,13 @@ model Invoice {
   barcode     String?
   invoiceDate DateTime
   currency    Currency?     @default(TL)
+  docPath     String?
   amount      Float?
   vat         Float?
   totalAmount Float?
-  address     String?
   description String?
-  rep_name    String?
-  tax_Office  String?
-  taxNo       String?
+  Fault       Fault[]
   status      InvoiceStatus @default(PENDING)
-  process     Process[]
   customer    Customer      @relation(fields: [customerId], references: [id])
   customerId  String
   createdAt   DateTime      @default(now())
@@ -391,7 +376,7 @@ model Offer {
   updatedBy    String?
   status       OfferStatus @default(PENDING)
   customerId   String?
-  Customer     Customer?   @relation(fields: [customerId], references: [id])
+  Customer     Customer?   @relation(fields: [customerId], references: [id], onDelete: Cascade)
 }
 
 model OfferItem {
@@ -453,6 +438,14 @@ enum FaultControlResult {
 }
 
 enum FaultStatus {
+  GIRIS_KONTROL_BEKLIYOR
+  PROSES_BEKLIYOR
+  PROSES_ISLENIYOR
+  FINAL_KONTROL_BEKLIYOR
+  IRSALIYE_KESIMI_BEKLIYOR
+  SEVKIYAT_TAMAMLANDI
+  GIRIS_KONTROL_RET
+  FINAL_KONTROL_RET
   PENDING
   ACCEPT
   ACCEPTANCE_WITH_CONDITION

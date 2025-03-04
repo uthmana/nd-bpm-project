@@ -1,6 +1,6 @@
 'use client';
 
-import Button from 'components/button/button';
+import Button from 'components/button';
 import { Suspense, useEffect, useState } from 'react';
 
 import {

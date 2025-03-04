@@ -1,7 +1,6 @@
 'use client';
 import Card from 'components/card';
 import MachineList from 'components/settings/machineList';
-import { log } from 'utils';
 import ApplicationList from 'components/settings/applicationList';
 import StandardList from 'components/settings/standardList';
 import ColorList from 'components/settings/colorList';

@@ -1,31 +1,46 @@
 'use client';
 
 import {
+  addInvoice,
   getBarcodeBase64,
+  getCustomersWithFilter,
   getInvoiceById,
-  postlogoDispatch,
   sendInvoice,
   updateInvoice,
 } from 'app/lib/apiRequest';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
-import { useParams } from 'next/navigation';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { MdOutlinePayment, MdPrint } from 'react-icons/md';
 import InvoiceDoc from 'components/invoice';
-import Button from 'components/button/button';
+import Button from 'components/button';
 import DetailHeader from 'components/detailHeader';
 import InputField from 'components/fields/InputField';
 import { toast } from 'react-toastify';
-import { log } from 'utils';
+import { generateSKU, log } from 'utils';
 import UploadInvoicePDF from 'components/invoice/invoicePdf';
+import { useSession } from 'next-auth/react';
+import { sendDispatchToLogo } from 'app/lib/logoRequest';
+import { Invoice } from 'app/localTypes/types';
 
-export default function Invoice() {
+export default function Invoices() {
   const [isLoading, setIsLoading] = useState(false);
-  const [invoice, setInvoice] = useState({} as any);
-  const [value, setValues] = useState({} as any);
+  const [invoice, setInvoice] = useState({} as Invoice | any);
+  const [value, setValues] = useState({} as { email: String });
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [isInvoiceSubmiting, setIsInvoiceSubmiting] = useState(false);
+
+  const router = useRouter();
+  const { data: session } = useSession();
+  const searchParams = useSearchParams();
   const queryParams = useParams();
+  const newinvoice = searchParams.get('newinvoice');
+
+  const detailData = {
+    title: 'İrsaliye Detayi',
+    seeAllLink: '/admin/invoice',
+    seeAllText: 'Tüm İrsaliye',
+  };
 
   const getSingleInvoice = async (id) => {
     setIsLoading(true);
@@ -36,168 +51,159 @@ export default function Invoice() {
     }
     setIsLoading(false);
   };
+  const getNewInvoice = async (id) => {
+    try {
+      const { data } = await getCustomersWithFilter({
+        where: {
+          id: id,
+        },
+        include: {
+          Fault: {
+            where: { status: 'IRSALIYE_KESIMI_BEKLIYOR' },
+          },
+        },
+      });
+      const { Fault, ...rest } = data[0];
+      setInvoice({
+        customer: rest,
+        Fault,
+        createdAt: new Date(),
+        invoiceDate: new Date(),
+        barcode: generateSKU('IRS', rest.company_name, Fault?.length),
+      });
+      setValues({ email: rest?.email });
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   useEffect(() => {
-    if (queryParams?.id) {
+    if (!queryParams?.id) return;
+    if (newinvoice && newinvoice === 'true') {
+      getNewInvoice(queryParams?.id);
+    } else {
       getSingleInvoice(queryParams?.id);
     }
-  }, [queryParams?.id]);
+  }, [queryParams?.id, newinvoice]);
 
   const handlePrint = () => {
     window.print();
   };
-
   const handleValues = (event) => {
     const newVal = { [event.target?.name]: event.target?.value };
     setValues({ ...value, ...newVal });
   };
 
-  const SendDispatchToLogo = async () => {
-    if (!invoice) {
-      return;
-    }
-
-    //At maximum it accepts 10 characters. the Invoice number needs to be unique. It will be changed to use their invoice scheme if all is ready to be used
-    function generateUniqueId() {
-      const prefix = 'TES';
-      const timestamp = Date.now().toString(); // Current time in milliseconds
-      const randomSuffix = Math.floor(100 + Math.random() * 900); // Random 3-digit number
-      return `${prefix}${timestamp.slice(-7)}${randomSuffix}`;
-    }
-
-    const logodata = {
-      INTERNAL_REFERENCE: null,
-      GRPCODE: 2,
-      TYPE: 8,
-      IOCODE: 3,
-      NUMBER: `${generateUniqueId()}`,
-      DATE: '2024-10-02T00:00:00', //formData.invoiceDate
-      //NUMBER: '~',
-
-      DOC_NUMBER: `SİLMEYİN11Test${invoice.barcode}`,
-
-      ARP_CODE: invoice.customer.code, //'S.00055', //customerinfo.response.data.code
-
-      CANCELLED: 1,
-
-      PRINT_COUNTER: 0,
-
-      CURRSEL_TOTALS: 1,
-      TRANSACTIONS: {
-        items: [
-          {
-            TYPE: 0,
-            QUANTITY: invoice.process[0].quantity,
-            MASTER_CODE: invoice.process[0].productCode,
-            DISP_STATUS: 1,
-            CANCEL_EXP: 'test amaçlı kesilmiştir.',
-            VATEXCEPT_REASON: 'bedelsiz',
-            UNIT_CODE: 'ADET',
-            TAX_FREE_CHECK: 0,
-            TOTAL_NET_STR: 'Sıfır TL',
-            IS_OKC_FICHE: 0,
-            LABEL_LIST: {},
-          },
-        ],
-      },
-      EDESPATCH: 1,
-      EDESPATCH_PROFILEID: 1,
-      EINVOICE: 1,
-      EINVOICE_PROFILEID: 1,
-      EINVOICE_DRIVERNAME1: '.',
-      EINVOICE_DRIVERSURNAME1: '.',
-      EINVOICE_DRIVERTCKNO1: '.',
-      EINVOICE_PLATENUM1: '.',
-      EINVOICE_CHASSISNUM1: '.',
-    };
-
-    const respponse = await postlogoDispatch(JSON.stringify(logodata));
-    return respponse;
-  };
   const handleSendEmail = async () => {
-    setIsSubmiting(true);
+    try {
+      setIsSubmiting(true);
 
-    if (!invoice.id) return;
-    const { data: barcodeData, status: barcodeStatus } = await getBarcodeBase64(
-      {
-        code: invoice.barcode,
-      },
-    );
-    if (barcodeStatus !== 200) return;
-    const newPdf = await UploadInvoicePDF({
-      invoice: { ...invoice, barcodeImage: barcodeData.code },
-    });
+      if (!invoice.id || !value.email) {
+        setIsSubmiting(false);
+        return;
+      }
+      let docPath = invoice?.docPath;
+      if (!invoice?.docPath) {
+        const { data: barcodeData } = await getBarcodeBase64({
+          code: invoice.barcode,
+        });
+        const newPdf = await UploadInvoicePDF({
+          invoice: { ...invoice, barcodeImage: barcodeData.code },
+        });
 
-    if (newPdf.status !== 200) {
-      toast.error('Hata oluştu. Daha sonra tekrar deneyin!');
+        docPath = newPdf?.url;
+        const { data } = await updateInvoice({
+          ...invoice,
+          docPath,
+          updatedBy: session?.user?.name,
+        });
+        setInvoice(data);
+      }
+
+      const invoiceRes: any = await sendInvoice({
+        type: 'invoice',
+        email: value.email,
+        subject: 'İrsaliye',
+        data: invoice,
+        text: '',
+        docPath: docPath,
+      });
+      toast.success('İrsaliye e-posta gönderme işlemi başarılı');
       setIsSubmiting(false);
-      return;
-    }
-
-    const invoiceRes: any = await sendInvoice({
-      type: 'invoice',
-      email: value.email,
-      subject: 'İrsaliye',
-      data: invoice,
-      text: '',
-      docPath: newPdf?.url,
-    });
-    const { status, response } = invoiceRes;
-
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Hata oluştu!.' + message);
-      log(detail);
+      router.push(`/admin/invoice`);
+    } catch (error) {
+      toast.error('Hata oluştu!.' + error);
       setIsSubmiting(false);
-      return;
     }
-    if (status === 200) {
-      toast.success('İrsaliye gönderme işlemi başarılı');
-    }
-    setIsSubmiting(false);
   };
-
   const onInoviceComplete = async () => {
     setIsInvoiceSubmiting(true);
-    const { status, data } = await updateInvoice({
-      ...invoice,
-      id: queryParams?.id,
-      status: 'PAID',
-    });
 
-    if (status === 200) {
-      getSingleInvoice(queryParams?.id);
+    try {
+      let data;
+      let docPath = invoice?.docPath;
+
+      const invoiceData = {
+        ...invoice,
+        status: 'PAID',
+      };
+
+      if (!invoice?.docPath) {
+        const { data: barcodeData } = await getBarcodeBase64({
+          code: invoice.barcode,
+        });
+        const newPdf = await UploadInvoicePDF({
+          invoice: { ...invoice, barcodeImage: barcodeData.code },
+        });
+        docPath = newPdf?.url;
+      }
+
+      if (!invoice?.id) {
+        // Add invoice
+        ({ data } = await addInvoice({
+          ...invoiceData,
+          createdBy: session?.user?.name,
+          docPath,
+        }));
+      } else {
+        // Update invoice
+        ({ data } = await updateInvoice({
+          ...invoiceData,
+          id: queryParams?.id,
+          docPath,
+          updatedBy: session?.user?.name,
+        }));
+      }
+      setInvoice(data);
+      setIsInvoiceSubmiting(false);
+      router.push(`/admin/invoice/${data?.id}`);
+    } catch (err) {
+      console.error(err);
+      setIsInvoiceSubmiting(false);
+    }
+
+    if (invoice) {
+      return;
     }
     //send To Logo
-    //Logoya gönderme
     try {
-      const logores = await SendDispatchToLogo();
-
+      const logores: any = await sendDispatchToLogo(invoice);
       console.log('Logo sonucu' + logores);
       if (logores != null) {
-        // const logoresJson = await logores.json();
-        console.log(logores.NUMBER);
+        console.log(logores);
         toast.success(`Logoya gönderme işlemi başarılı ${logores.NUMBER}`);
-        console.log(`Logoya gönderme sonucu:`);
       } else {
-        //const logoresText = await logores.text();
         const logoresJson = await logores.json();
         toast.error(
           `Logoya başarıyla içeriye alamadı ${logoresJson.response.data}`,
         );
       }
+      router.push(`/admin/invoice${invoice?.id}`);
     } catch (error) {
       console.error('Logoya gönderme hatası:', error);
       toast.error(`Logoya başarıyla içeriye alamadı: ${error}`);
     }
     setIsInvoiceSubmiting(false);
-  };
-
-  const detailData = {
-    title: 'İrsaliye Detayi',
-    seeAllLink: '/admin/invoice',
-    seeAllText: 'Tüm İrsaliye',
-    actionLink: '/admin/invoice/create/' + queryParams?.id,
   };
 
   return (
@@ -216,7 +222,7 @@ export default function Invoice() {
             <InvoiceDoc invoice={invoice} />
           </div>
 
-          <div className="flex min-h-[200px] w-full flex-col gap-3 self-start bg-white px-2 py-4 lg:w-[calc(100%-700px)]">
+          <div className="flex min-h-[200px] w-[400px] flex-col gap-3 self-start bg-white px-2 py-4 lg:w-[calc(100%-700px)]">
             <div className="flex w-full flex-col gap-3 border-b px-3 py-4 text-sm">
               <h3 className="mb-2 border-b text-lg">Müşteri Bilgileri</h3>
               <div className="flex flex-col flex-nowrap">

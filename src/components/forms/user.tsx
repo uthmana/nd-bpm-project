@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import NextLink from 'next/link';
 import InputField from 'components/fields/InputField';
-import Button from 'components/button/button';
-import Select from 'components/select/page';
+import Button from 'components/button';
+import Select from 'components/select';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import { log } from 'utils';
 

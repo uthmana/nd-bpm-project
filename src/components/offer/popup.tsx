@@ -1,8 +1,8 @@
 import Popup from 'components/popup';
 import React, { useEffect, useState } from 'react';
-import Button from 'components/button/button';
+import Button from 'components/button';
 import InputField from 'components/fields/InputField';
-import Select from 'components/select/page';
+import Select from 'components/select';
 import Upload from 'components/upload';
 import TextArea from 'components/fields/textArea';
 import { getFaultSettings } from 'app/lib/apiRequest';
@@ -72,15 +72,22 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
     const { name, application, standard, quantity, price, unitPrice } = offer;
 
     // Validate form fields
-    if (!name || !application || !standard || !quantity || !price || !unitPrice)
+    if (
+      !name ||
+      !application ||
+      !standard ||
+      !quantity ||
+      !price ||
+      !unitPrice
+    ) {
       return;
+    }
 
     onAdd({
       ...offer,
       quantity,
       price,
       unitPrice,
-      image: file,
     });
 
     // Reset form after submission
@@ -93,7 +100,6 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
       description: '',
       image: '',
     });
-    setFile('');
   };
 
   return (
@@ -203,13 +209,12 @@ export default function OfferPopup({ isShowPopUp, onClose, onAdd, extra }) {
               />
             </div>
             <div className="my-8 w-full">
-              <label className="ml-3 text-sm font-bold text-navy-700 dark:text-white">
-                İlgili Doküman
-              </label>
               <Upload
-                onChange={(val) => setFile(val)}
-                fileType="all"
-                multiple={false}
+                label="İlgili Doküman"
+                id="image"
+                name="image"
+                onChange={handleInputChange}
+                value={offer.image}
               />
             </div>
           </div>

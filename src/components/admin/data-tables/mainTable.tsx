@@ -20,7 +20,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import Search from 'components/search/search';
-import Button from 'components/button/button';
+import Button from 'components/button';
 import { formatDateTime, useDrage, formatNumberLocale } from 'utils';
 import TablePagination from './tablePagination';
 import {
@@ -29,6 +29,7 @@ import {
   CustomerObj,
   UserObj,
 } from '../../../app/localTypes/table-types';
+import TableEmpty from './tableEmpty';
 
 function MainTable({
   tableData,
@@ -52,7 +53,7 @@ function MainTable({
             id: 'id',
             header: () => (
               <p className="group relative max-w-fit whitespace-nowrap  break-keep text-sm font-bold text-gray-600 dark:text-white">
-                SİRA NO.
+                #
                 <span className="absolute right-0 top-0 hidden group-hover:block">
                   <MdOutlineKeyboardDoubleArrowDown />
                 </span>
@@ -62,6 +63,30 @@ function MainTable({
               <p className="text-sm font-bold text-navy-700 dark:text-white">
                 {row.index + 1}
               </p>
+            ),
+          }),
+          columnHelper.accessor('id', {
+            id: 'id',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                DÜZENLE
+              </p>
+            ),
+            cell: (info) => (
+              <div className="flex gap-1">
+                <button
+                  className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
+                  onClick={() => onEdit(info.getValue())}
+                >
+                  <MdModeEdit className="h-5 w-5 text-white" />
+                </button>
+                <button
+                  className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
+                  onClick={() => onDelete(info.getValue())}
+                >
+                  <MdOutlineDelete className="h-5 w-5 text-white" />
+                </button>
+              </div>
             ),
           }),
           columnHelper.accessor('code', {
@@ -134,7 +159,6 @@ function MainTable({
               </p>
             ),
           }),
-
           columnHelper.accessor('address', {
             id: 'address',
             header: () => (
@@ -170,7 +194,6 @@ function MainTable({
               </p>
             ),
           }),
-
           columnHelper.accessor('postalCode', {
             id: 'postalCode',
             header: () => (
@@ -187,7 +210,6 @@ function MainTable({
               </p>
             ),
           }),
-
           columnHelper.accessor('country_code', {
             id: 'country_code',
             header: () => (
@@ -220,7 +242,6 @@ function MainTable({
               </p>
             ),
           }),
-
           columnHelper.accessor('district_code', {
             id: 'district_code',
             header: () => (
@@ -253,7 +274,6 @@ function MainTable({
               </p>
             ),
           }),
-
           columnHelper.accessor('tax_Office', {
             id: 'tax_Office',
             header: () => (
@@ -289,7 +309,6 @@ function MainTable({
               </p>
             ),
           }),
-
           columnHelper.accessor('cardType', {
             id: 'cardType',
             header: () => (
@@ -342,11 +361,27 @@ function MainTable({
               </p>
             ),
           }),
-
+        ];
+        break;
+      case 'stock':
+        col = [
           columnHelper.accessor('id', {
             id: 'id',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className=" whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
+                #{' '}
+              </p>
+            ),
+            cell: ({ row }) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {row.index + 1}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('id', {
+            id: 'id',
+            header: () => (
+              <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
                 DÜZENLE
               </p>
             ),
@@ -365,23 +400,6 @@ function MainTable({
                   <MdOutlineDelete className="h-5 w-5 text-white" />
                 </button>
               </div>
-            ),
-          }),
-        ];
-        break;
-      case 'stock':
-        col = [
-          columnHelper.accessor('id', {
-            id: 'id',
-            header: () => (
-              <p className="min-w-[70px] whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
-                Sira No.
-              </p>
-            ),
-            cell: ({ row }) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {row.index + 1}
-              </p>
             ),
           }),
           columnHelper.accessor('product_code', {
@@ -505,15 +523,32 @@ function MainTable({
               </p>
             ),
           }),
+        ];
+        break;
+      case 'user':
+        col = [
           columnHelper.accessor('id', {
             id: 'id',
             header: () => (
-              <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+              <p className="whitespace-nowrap break-keep text-sm font-bold text-gray-600 dark:text-white">
+                #
+              </p>
+            ),
+            cell: ({ row }) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {row.index + 1}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('id', {
+            id: 'id',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
                 DÜZENLE
               </p>
             ),
             cell: (info) => (
-              <div className="flex gap-1">
+              <div className="flex gap-2">
                 <button
                   className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
                   onClick={() => onEdit(info.getValue())}
@@ -527,23 +562,6 @@ function MainTable({
                   <MdOutlineDelete className="h-5 w-5 text-white" />
                 </button>
               </div>
-            ),
-          }),
-        ];
-        break;
-      case 'user':
-        col = [
-          columnHelper.accessor('id', {
-            id: 'id',
-            header: () => (
-              <p className="whitespace-nowrap break-keep text-sm font-bold text-gray-600 dark:text-white">
-                Sira No.
-              </p>
-            ),
-            cell: ({ row }) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {row.index + 1}
-              </p>
             ),
           }),
           columnHelper.accessor('name', {
@@ -609,30 +627,6 @@ function MainTable({
               <p className="text-sm font-bold text-navy-700 dark:text-white">
                 {formatDateTime(info.getValue())}
               </p>
-            ),
-          }),
-          columnHelper.accessor('id', {
-            id: 'id',
-            header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                DÜZENLE
-              </p>
-            ),
-            cell: (info) => (
-              <div className="flex gap-2">
-                <button
-                  className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
-                  onClick={() => onEdit(info.getValue())}
-                >
-                  <MdModeEdit className="h-5 w-5 text-white" />
-                </button>
-                <button
-                  className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
-                  onClick={() => onDelete(info.getValue())}
-                >
-                  <MdOutlineDelete className="h-5 w-5 text-white" />
-                </button>
-              </div>
             ),
           }),
         ];
@@ -745,6 +739,7 @@ function MainTable({
                 })}
             </tbody>
           </table>
+          {data.length === 0 ? <TableEmpty /> : null}
           <TablePagination table={table} />
         </div>
       </Card>

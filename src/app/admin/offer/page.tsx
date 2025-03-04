@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { deleteOffer, getOffer } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import Popup from 'components/popup';
-import Button from 'components/button/button';
+import Button from 'components/button';
 import { useSession } from 'next-auth/react';
 
 const Offer = () => {

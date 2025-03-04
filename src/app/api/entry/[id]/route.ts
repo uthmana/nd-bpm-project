@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '../../../lib/db';
-import { Fault, Prisma, Process, Stock } from '@prisma/client';
+import { Fault, Prisma, Stock } from '@prisma/client';
 import { checkUserRole } from 'utils/auth';
+import prisma from '../../../lib/db';
 
 //Get single Fault
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
@@ -21,8 +21,44 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
         faultControl: true,
         unacceptable: true,
         defaultTechParameter: true,
+        customer: true,
       },
     });
+    return NextResponse.json(fault, { status: 200 });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError ||
+      e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientValidationError ||
+      e instanceof Prisma.PrismaClientRustPanicError
+    ) {
+      return NextResponse.json(e, { status: 403 });
+    }
+    return NextResponse.json(e, { status: 500 });
+  }
+}
+
+export async function POST(
+  req: NextRequest,
+  route: { params: { id: string } },
+) {
+  try {
+    const allowedRoles = ['NORMAL', 'TECH', 'ADMIN', 'SUPER'];
+    const hasrole = await checkUserRole(allowedRoles);
+    if (!hasrole) {
+      return NextResponse.json(
+        { message: 'Access forbidden' },
+        { status: 403 },
+      );
+    }
+
+    const filters: Fault | any = await req.json();
+    const id = route.params.id;
+    const fault: Fault = await prisma.fault.findUnique({
+      where: { id: id },
+      include: filters,
+    });
+
     return NextResponse.json(fault, { status: 200 });
   } catch (e) {
     if (
@@ -73,64 +109,78 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       return NextResponse.json({ message: 'No such fault' }, { status: 401 });
     }
 
-    const { unacceptable, defaultTechParameter, ...updatedData } = result;
-    const updateFault = await prisma.fault.update({
+    const {
+      unacceptable,
+      process,
+      finalControl,
+      defaultTechParameter,
+      ...updatedData
+    } = result;
+
+    const faultData = { ...updatedData };
+    delete faultData.customerId;
+    delete faultData.customerName;
+
+    const updatedFault = await prisma.fault.update({
       where: {
         id: id,
       },
       data: {
-        ...updatedData,
+        ...faultData,
         defaultTechParameter: {
-          update: {
-            where: { id: defaultTechParameter.id },
-            data: defaultTechParameter,
-          },
+          ...(defaultTechParameter.id
+            ? {
+                update: {
+                  where: { id: defaultTechParameter.id },
+                  data: defaultTechParameter,
+                },
+              }
+            : {
+                create: defaultTechParameter,
+              }),
         },
       },
     });
 
     //Tracking Stock
-    if (updateFault) {
+    if (updatedFault) {
       const {
         customerId,
         productCode,
         product,
+        quantity,
         technicalDrawingAttachment,
         productBatchNumber,
-      } = updateFault;
+      } = updatedFault;
 
       const stockData = await prisma.stock.findUnique({
         where: {
-          product_code: updateFault.productCode,
-          customerId: updateFault.customerId,
+          faultId: updatedFault.id,
         },
       });
 
       if (stockData) {
-        let qty = stockData.inventory;
-        if (fault.quantity !== quantity) {
-          const _qtyDiff = fault.quantity - quantity;
-          qty = _qtyDiff < 0 ? qty + _qtyDiff * -1 : qty - _qtyDiff;
-        }
         const stock: Stock = await prisma.stock.update({
           where: {
-            product_code: updateFault.productCode,
+            faultId: updatedFault.id,
           },
           data: {
             product_code: productCode,
             product_name: product,
-            inventory: qty,
+            inventory: quantity,
             current_price: '',
-            curency: '',
             image: technicalDrawingAttachment,
             customerId: customerId,
             product_barcode,
             productBatchNumber,
+            defaultTechParameter: {
+              connect: defaultTechParameter,
+            },
           },
         });
       }
     }
-    return NextResponse.json(updateFault, { status: 200 });
+    return NextResponse.json(updatedFault, { status: 200 });
   } catch (e) {
     console.log(e);
     if (
@@ -151,8 +201,7 @@ export async function DELETE(
   route: { params: { id: string } },
 ) {
   try {
-    //TODO: restrict unathorized user : only normal and admin allowed
-    const allowedRoles = ['ADMIN'];
+    const allowedRoles = ['NORMAL', 'TECH', 'ADMIN', 'SUPER'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
       return NextResponse.json(
@@ -171,18 +220,15 @@ export async function DELETE(
     if (deletedFault) {
       const stockData = await prisma.stock.findUnique({
         where: {
-          product_code: deletedFault.productCode,
-          customerId: deletedFault.customerId,
+          faultId: id,
         },
       });
       if (stockData) {
-        const diffQty = stockData.inventory - deletedFault.quantity;
-        const qty = diffQty > stockData.inventory ? 0 : diffQty;
         const updateStock = await prisma.stock.update({
           where: {
-            product_code: deletedFault.productCode,
+            faultId: id,
           },
-          data: { inventory: qty },
+          data: { inventory: 0 },
         });
       }
     }

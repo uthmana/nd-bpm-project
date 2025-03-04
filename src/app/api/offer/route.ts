@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../lib/db';
-import { OfferItem, Prisma } from '@prisma/client';
+import { Offer, OfferItem, Prisma } from '@prisma/client';
 import { checkUserRole } from 'utils/auth';
 import { sendOffer } from 'app/lib/apiRequest';
 
@@ -30,9 +30,18 @@ export async function PUT(req: NextRequest) {
         { status: 401 },
       );
     }
-    const offerData = { ...offerTemp };
+    const offerData: Offer | any = { ...offerTemp };
+    const customerId = offerData.customerId;
+
     delete offerData.product;
-    const offer = await prisma.offer.create({ data: { ...offerData } });
+    delete offerData.customerId;
+
+    const offer = await prisma.offer.create({
+      data: {
+        ...offerData,
+        Customer: { connect: { id: customerId } },
+      },
+    });
 
     if (offer) {
       const offerItemData: any = product;

@@ -1,6 +1,6 @@
 'use client';
 
-import Button from 'components/button/button';
+import Button from 'components/button';
 import InputField from 'components/fields/InputField';
 import { useState } from 'react';
 import { MdAdd } from 'react-icons/md';

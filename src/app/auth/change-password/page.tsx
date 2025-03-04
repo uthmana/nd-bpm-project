@@ -2,7 +2,7 @@
 import InputField from 'components/fields/InputField';
 import Default from 'components/auth/variants/DefaultAuthLayout';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Button from 'components/button/button';
+import Button from 'components/button';
 import nd_logo from '/public/img/auth/nd_logo.webp';
 import { useState } from 'react';
 import { changePassword } from 'app/lib/apiRequest';

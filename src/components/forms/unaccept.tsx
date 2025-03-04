@@ -2,13 +2,14 @@
 
 import React, { useState } from 'react';
 import TextArea from 'components/fields/textArea';
-import Button from 'components/button/button';
+import Button from 'components/button';
 import Image from 'next/image';
 import logo from '/public/img/auth/nd.png';
 import Radio from 'components/radio';
 import { toast } from 'react-toastify';
 import { MdCheck } from 'react-icons/md';
 import FormHeaderItem from './formheaderItem';
+import { Fault } from 'app/localTypes/types';
 
 type faultInfo = {
   customerName: string;
@@ -20,6 +21,7 @@ type faultInfo = {
   createdAt: string;
   createdBy: string;
   color: string;
+  customer: any;
 };
 
 type UnacceptInfo = {
@@ -33,26 +35,41 @@ type UnacceptInfo = {
 };
 
 type UnacceptObj = {
-  fault: faultInfo;
+  fault: Fault;
   unacceptable: UnacceptInfo;
 };
 
 export default function Unaccept(props: {
   onSaveUnacceptable?: (e: any) => void;
   handleClose?: (e: any) => void;
-  formData?: UnacceptObj;
+  formData?: UnacceptInfo;
+  fault: Fault;
   isSubmittingUnaccept?: boolean;
   variant?: string;
 }) {
   const {
     formData,
+    fault,
     variant = 'input',
     onSaveUnacceptable,
     handleClose,
     isSubmittingUnaccept,
   } = props;
-  const { fault, unacceptable } = formData;
-  const [values, setValues] = useState(unacceptable as UnacceptInfo);
+  // const { fault, unacceptable } = formData;
+  const isUpdate = formData?.id != undefined;
+  const [values, setValues] = useState(
+    isUpdate
+      ? formData
+      : ({
+          unacceptableStage: 'ENTRY',
+          unacceptableDescription: '',
+          unacceptableAction: '',
+          result: '',
+          description: '',
+          createdBy: '',
+          ...formData,
+        } as UnacceptInfo),
+  );
 
   const handleValues = (event) => {
     const newVal = { [event.target?.name]: event.target?.value };
@@ -73,17 +90,17 @@ export default function Unaccept(props: {
       value: 'ENTRY',
     },
     {
-      label: 'Proses Kontrol',
-      value: 'PROCESS',
-    },
-    {
       label: 'Final Kontrol',
       value: 'FINAL',
     },
-    {
-      label: 'Müşteri',
-      value: 'CUSTOMER',
-    },
+    // {
+    //   label: 'Proses Kontrol',
+    //   value: 'PROCESS',
+    // },
+    // {
+    //   label: 'Müşteri',
+    //   value: 'CUSTOMER',
+    // },
   ];
 
   return (
@@ -103,7 +120,7 @@ export default function Unaccept(props: {
         <div className="flex grow basis-0 flex-col gap-1">
           <FormHeaderItem
             titleTr="Müşteri"
-            value={fault?.customerName?.toLocaleLowerCase()}
+            value={fault?.customer?.company_name}
             className="max-w-[100px] capitalize"
           />
           <FormHeaderItem titleTr="Ürün Adi" value={fault?.product} />
@@ -130,20 +147,20 @@ export default function Unaccept(props: {
         </div>
       </div>
 
-      <div className="w-full">
+      <div className="w-full pb-3">
         <div className="p-1 text-center text-sm font-bold underline">
           Uygunsuzluk Tespit Aşaması
         </div>
 
-        <div className="mb-4 w-full">
-          <div className="grid w-full grid-cols-2 justify-center gap-2">
+        <div className="my-5 w-full">
+          <div className="flex w-full flex-wrap justify-center gap-7">
             {unsuitableStages.map((item, idx) => {
               return (
                 <div
                   key={idx + 'qwe'}
-                  className="flex items-center gap-3 text-sm font-semibold"
+                  className="flex flex-1 justify-center gap-3 text-sm font-semibold"
                 >
-                  <span className="w-[100px] font-normal">{item.label}</span>
+                  <span className="font-normal">{item.label}</span>
                   {variant && variant === 'value' ? (
                     <div className="border border-[#000] px-3 py-1">
                       {values?.unacceptableStage === item.value ? (
@@ -258,7 +275,7 @@ export default function Unaccept(props: {
       <div className="mb-5 flex w-full justify-end">
         <div className="mr-5 flex flex-col gap-2 text-sm">
           <div>Onaylayan / QC</div>
-          <div className="font-bold">{unacceptable?.createdBy}</div>
+          <div className="font-bold">{values?.createdBy}</div>
         </div>
       </div>
 

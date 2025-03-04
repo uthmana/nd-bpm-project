@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { log } from 'utils';
 import { toast } from 'react-toastify';
 import { getCustomers, getStockById, updateStock } from 'app/lib/apiRequest';
-import { FormSkeleton, UserFormSkeleton } from 'components/skeleton';
+import { FormSkeleton } from 'components/skeleton';
 import Card from 'components/card';
 
 export default function Edit() {

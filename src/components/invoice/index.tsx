@@ -3,8 +3,13 @@ import { formatDateTime, formatNumberLocale } from 'utils';
 import nd_logo from '/public/img/auth/nd_logo.webp';
 import Barcode from 'react-jsbarcode';
 import Image from 'next/image';
+import { Invoice } from 'app/localTypes/types';
 
-export default function InvoiceDoc({ invoice }) {
+interface InvoiceDocProps {
+  invoice: Invoice;
+}
+
+export default function InvoiceDoc({ invoice }: InvoiceDocProps) {
   return (
     <div className="page-break mx-auto  min-h-[800px] w-full bg-white px-10  py-12 lg:w-[680px] lg:max-w-[680px] print:absolute  print:top-0 print:z-[99999] print:min-h-screen print:w-full print:pl-0 print:pr-8">
       <div className="mb-8 flex justify-between border-b-2">
@@ -50,16 +55,18 @@ export default function InvoiceDoc({ invoice }) {
         <div className="max-w-[360px]">
           <h2 className="mb-3 text-4xl">Sayın:</h2>
           <p className="mb-3 text-sm">{invoice?.customer?.company_name}</p>
-          <p className="mb-4 text-sm capitalize">{invoice?.address}</p>
+          <p className="mb-4 text-sm capitalize">
+            {invoice?.customer?.address}
+          </p>
 
           <div className="flex justify-between gap-2 text-sm">
             <div className="pr-1">
               <h2 className="font-bold">Vergi Dairesi</h2>
-              <p>{invoice?.tax_Office} </p>
+              <p>{invoice?.customer?.tax_Office} </p>
             </div>
             <div className="w-32">
               <h2 className="font-bold">Vergi No</h2>
-              <p>{invoice?.taxNo}</p>
+              <p>{invoice?.customer?.taxNo}</p>
             </div>
           </div>
         </div>
@@ -83,7 +90,7 @@ export default function InvoiceDoc({ invoice }) {
 
       <div className="mb-12 w-full">
         <div className="grid w-full grid-cols-10 gap-1 border-b font-bold">
-          <div className="col-span-1">No</div>
+          <div className="col-span-1">#</div>
           <div className="col-span-2">Ürün</div>
           <div className="col-span-3">Uygulama</div>
           <div className="col-span-2">Standart</div>
@@ -91,9 +98,9 @@ export default function InvoiceDoc({ invoice }) {
           <div className="col-span-1">Miktar</div>
         </div>
 
-        {invoice?.process?.length > 0 ? (
-          <>
-            {invoice.process.map((item, idx) => {
+        {invoice?.Fault?.length > 0 ? (
+          <div className="w-full">
+            {invoice.Fault.map((item, idx) => {
               return (
                 <div
                   key={idx}
@@ -105,12 +112,12 @@ export default function InvoiceDoc({ invoice }) {
                   <div className="col-span-2">{item?.standard}</div>
                   <div className="col-span-1">{item?.color}</div>
                   <div className="col-span-1">
-                    {formatNumberLocale(item?.shipmentQty)}
+                    {formatNumberLocale(item?.shipmentQty || item?.quantity)}
                   </div>
                 </div>
               );
             })}
-          </>
+          </div>
         ) : null}
       </div>
 

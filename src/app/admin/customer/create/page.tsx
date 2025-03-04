@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import CustomerForm from 'components/forms/customer';
 import { useRouter } from 'next/navigation';
-import { log } from 'utils';
 import { addCustomer } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import Card from 'components/card';

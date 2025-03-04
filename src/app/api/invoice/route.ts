@@ -6,7 +6,7 @@ import { checkUserRole } from 'utils/auth';
 //All Faults
 export async function GET(req: NextRequest) {
   try {
-    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER'];
+    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER', 'TECH'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
       return NextResponse.json(
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
       );
     }
     const invoice = await prisma.invoice.findMany({
-      include: { customer: true, process: true },
+      include: { customer: true, Fault: true },
       orderBy: { createdAt: 'desc' },
     });
 
@@ -36,8 +36,7 @@ export async function GET(req: NextRequest) {
 // Create Fault
 export async function PUT(req: Request) {
   try {
-    //TODO: restrict unathorized user : only normal and admin allowed
-    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER'];
+    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER', 'TECH'];
     const hasrole = await checkUserRole(allowedRoles);
     if (!hasrole) {
       return NextResponse.json(
@@ -46,31 +45,10 @@ export async function PUT(req: Request) {
       );
     }
 
-    //TODO: set process type
     const result: any = await req.json();
-    const {
-      invoiceDate,
-      createdBy,
-      customerId,
-      tax_Office,
-      taxNo,
-      process,
-      rep_name,
-      description,
-      totalAmount,
-      vat,
-      amount,
-      address,
-    } = result;
+    const { Fault, customer, ...rest } = result;
 
-    if (
-      process.length === 0 ||
-      !customerId ||
-      !invoiceDate ||
-      !tax_Office ||
-      !taxNo ||
-      !address
-    ) {
+    if (Fault.length === 0 || !customer) {
       return NextResponse.json(
         { message: 'You are missing a required data' },
         { status: 401 },
@@ -79,31 +57,50 @@ export async function PUT(req: Request) {
 
     const invoice = await prisma.invoice.create({
       data: {
-        invoiceDate,
-        createdBy,
-        customerId,
-        tax_Office,
-        taxNo,
-        rep_name,
-        description,
-        totalAmount,
-        vat,
-        amount,
+        ...rest,
+        customer: { connect: { id: customer.id } },
+        Fault: { connect: Fault.map((item) => ({ id: item.id })) },
       },
     });
 
-    const processUpdate = await Promise.all(
-      process.map(async (item) => {
-        const updatedProcess = await prisma.process.update({
-          where: {
-            id: item.id,
-          },
-          data: { invoiceId: invoice.id, price: item.price },
-        });
-      }),
-    );
+    if (invoice) {
+      const updateFault = await prisma.fault.updateMany({
+        where: {
+          id: { in: Fault.map((item) => item.id) },
+        },
+        data: {
+          status: 'SEVKIYAT_TAMAMLANDI',
+        },
+      });
 
-    //TODO: Create Notification for invoice
+      // Handle Stock Updates
+      for (const faultItem of Fault) {
+        const { id: faultId, shipmentQty, quantity, productCode } = faultItem;
+
+        if (!shipmentQty || !quantity || !productCode) continue;
+
+        const stock = await prisma.stock.findUnique({
+          where: { faultId },
+        });
+
+        if (stock) {
+          if (shipmentQty < quantity) {
+            // Update stock inventory
+            await prisma.stock.update({
+              where: { id: stock.id },
+              data: {
+                inventory: stock.inventory ? stock.inventory - shipmentQty : 0,
+              },
+            });
+          } else {
+            // Delete stock if shipmentQty >= quantity
+            await prisma.stock.delete({
+              where: { id: stock.id },
+            });
+          }
+        }
+      }
+    }
 
     return NextResponse.json(invoice, { status: 200 });
   } catch (e) {

@@ -3,13 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import {
-  getProcessById,
-  addProcessControl,
   updateProcessControl,
   updateUnacceptable,
   addUnacceptable,
   deleteUnacceptable,
   sendNotification,
+  getFaultByIdWithFilter,
+  addFinalControl,
 } from 'app/lib/apiRequest';
 import { useParams, useRouter } from 'next/navigation';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
@@ -32,33 +32,60 @@ type UnacceptInfo = {
 
 export default function EntryControl() {
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const queryParams = useParams();
-  const [isLoading, setIsloading] = useState(false);
-  const [process, setProcess] = useState({} as any);
-  const [processControl, setProcessControl] = useState({} as any);
   const { data: session } = useSession();
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsloading] = useState(false);
   const [isShowPopUp, setIsShowPopUp] = useState(false);
-  const [controlValues, setControlValues] = useState([]);
-  const [unacceptable, setUnacceptable] = useState({} as UnacceptInfo);
-  const [unacceptableFormData, setUnacceptableFormData] = useState({});
   const [isSubmitControl, setIsSubmitControl] = useState(false);
   const [isSubmittingUnaccept, setIsSubmittingUnaccept] = useState(false);
+  const [fault, setFault] = useState({} as any);
+  const [finalControlData, setFinalControlData] = useState({} as any);
+  const [unacceptable, setUnacceptable] = useState({} as UnacceptInfo);
+  const [controlValues, setControlValues] = useState([]);
 
   useEffect(() => {
-    const getSingleProcess = async () => {
+    const getFaultById = async () => {
       setIsloading(true);
-      const { status, data } = await getProcessById(queryParams.id);
+      const { status, data } = await getFaultByIdWithFilter({
+        id: queryParams.id,
+        filters: {
+          customer: true,
+          unacceptable: true,
+          process: {
+            include: {
+              technicalParams: true,
+              machine: {
+                include: {
+                  machineParams: true,
+                },
+              },
+            },
+          },
+          finalControl: {
+            include: {
+              testItem: true,
+              testArea: true,
+            },
+          },
+        },
+      });
       if (status === 200) {
-        setProcess(data);
-        setProcessControl(data?.finalControl[0]);
-        setUnacceptable(data?.unacceptable[0]);
-        setUnacceptableFormData({
+        setFault(data);
+        setFinalControlData({
           fault: data,
-          unacceptable: data?.unacceptable[0],
+          finalControl: data?.finalControl?.[0] || {},
+          machineName: data?.process?.[0]?.machine?.[0]?.machine_Name || '',
         });
 
+        const defaultUnacceptable = {
+          unacceptableStage: 'FINAL',
+          createdBy: session?.user?.name,
+        };
+        const finalUnacceptable = data?.unacceptable?.find(
+          (item) => item.unacceptableStage === 'FINAL',
+        );
+        setUnacceptable(finalUnacceptable || defaultUnacceptable);
         setIsloading(false);
         return;
       }
@@ -66,7 +93,7 @@ export default function EntryControl() {
       //TODO: handle error
     };
     if (queryParams.id) {
-      getSingleProcess();
+      getFaultById();
     }
   }, [queryParams?.id]);
 
@@ -80,16 +107,12 @@ export default function EntryControl() {
     const [values, isUpdate] = val;
 
     if (!values?.kontrol_edilen_miktar || !values?.nakliye_miktar) {
-      toast.error('Lütfen Miktar bilgilerini giriniz.');
+      toast.error('Lütfen (Kontrol / Nakliye) doldurmalısınız.');
       return;
     }
 
     if (values.result !== 'ACCEPT' && !isSubmitControl) {
       setControlValues(val);
-      setUnacceptableFormData({
-        fault: process,
-        unacceptable: { ...unacceptable, createdBy: session?.user?.name },
-      });
       setIsShowPopUp(true);
       return;
     }
@@ -104,14 +127,13 @@ export default function EntryControl() {
 
     setIsSubmitting(true);
     if (isUpdate) {
-      const resData: any = await updateProcessControl({
+      let controlUpdateValues = {
         ...values,
-        id: processControl.id,
+        faultId: fault?.id,
         updatedBy: session?.user?.name,
-        kontrol_edilen_miktar: parseInt(values?.kontrol_edilen_miktar),
-        hatali_miktar: parseInt(values?.hatali_miktar),
-        nakliye_miktar: parseInt(values?.nakliye_miktar),
-      });
+      };
+
+      const resData: any = await updateProcessControl(controlUpdateValues);
 
       const { status, response } = resData;
       if (response?.error) {
@@ -124,22 +146,20 @@ export default function EntryControl() {
 
       if (status === 200) {
         toast.success('Proses final kontrol güncelleme işlemi başarılı.');
-        router.push('/admin/process');
+        router.push(`/admin/entry/${fault.id}`);
         setIsSubmitting(false);
         return;
       }
     }
 
     // add new final control
-    const resProcess: any = await addProcessControl({
+    const _controlValues = {
       ...values,
-      processId: process.id,
-      faultId: process.faultId,
+      faultId: fault?.id,
       createdBy: session?.user?.name,
-      kontrol_edilen_miktar: parseInt(values?.kontrol_edilen_miktar),
-      hatali_miktar: parseInt(values?.hatali_miktar),
-      nakliye_miktar: parseInt(values?.nakliye_miktar),
-    });
+    };
+
+    const resProcess: any = await addFinalControl(_controlValues);
 
     const { status, response, data } = resProcess;
     if (response?.error) {
@@ -159,7 +179,7 @@ export default function EntryControl() {
           await sendNotification({
             workflowId: 'process-control',
             data: {
-              link: `${window?.location.origin}/admin/process/${data.processId}`,
+              link: `${window?.location.origin}/admin/entry/${fault.id}`,
             },
           });
         } catch (err) {
@@ -167,7 +187,7 @@ export default function EntryControl() {
         }
       }
 
-      router.push('/admin/process');
+      router.push(`/admin/entry/${fault.id}`);
       return;
     }
   };
@@ -175,39 +195,37 @@ export default function EntryControl() {
   const onSaveUnacceptable = async (val) => {
     setIsSubmitControl(false);
     setIsSubmittingUnaccept(true);
-
     //handle Update
     if (unacceptable?.id) {
       const { status, data } = await updateUnacceptable({
         ...val,
-        processId: process.id,
-        id: unacceptable?.id,
+        faultId: fault.id,
         updatedBy: session?.user?.name,
       });
 
       if (status === 200) {
+        setUnacceptable(data);
         setIsShowPopUp(false);
-        toast.success('Uygunsuz kayıt güncelleme işlemi başarılı.');
         setIsSubmitControl(true);
         setIsSubmittingUnaccept(false);
+        toast.success('Uygunsuz kayıt güncelleme işlemi başarılı.');
       }
-
       return;
     }
 
     //handle new Unacceptable
     const { status, data } = await addUnacceptable({
       ...val,
-      processId: process.id,
+      faultId: fault.id,
       createdBy: session?.user?.name,
     });
     if (status === 200) {
+      setUnacceptable(data);
       setIsShowPopUp(false);
-      toast.success('Uygunsuz kayıt işlemi başarılı.');
       setIsSubmitControl(true);
       setIsSubmittingUnaccept(false);
+      toast.success('Uygunsuz kayıt işlemi başarılı.');
     }
-
     return;
   };
 
@@ -232,24 +250,19 @@ export default function EntryControl() {
           <LatestInvoicesSkeleton />
         ) : (
           <FinalControl
-            key={process.id}
-            data={{
-              ...process,
-              inspector: session?.user?.name,
-              updatedBy: session?.user?.name,
-            }}
+            data={finalControlData}
             onSubmit={(...val) => handleSubmit(val)}
             isSubmitting={isSubmitting}
           />
         )}
       </div>
-
       <Popup
         show={isShowPopUp}
-        extra="flex flex-col gap-3 !top-[50%] py-6 px-8 !w-[90%] md:!w-[600px] !rounded-sm"
+        extra="flex flex-col gap-3 !top-[50%] py-6 px-8 !w-[90%] md:!w-[700px] !rounded-sm"
       >
         <UnacceptForm
-          formData={unacceptableFormData as any}
+          fault={fault}
+          formData={unacceptable as any}
           handleClose={handleClose}
           onSaveUnacceptable={(val) => onSaveUnacceptable(val)}
           isSubmittingUnaccept={isSubmittingUnaccept}

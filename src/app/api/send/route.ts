@@ -9,6 +9,8 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(request: Request) {
   const formData = await request.json();
 
+  console.log(formData);
+
   const emailBody: any = {
     from: 'ND Industries<info@ndindustries.com.tr>',
     to: formData.email,

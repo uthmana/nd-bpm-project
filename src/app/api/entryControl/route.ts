@@ -35,13 +35,8 @@ export async function PUT(req: Request) {
     if (!hasrole) {
       return NextResponse.json({ error: 'Access forbidden', status: 403 });
     }
-    const result: FaultControl = await req.json();
-    const {
-      faultId,
-      result: controlReult,
-      processFrequency,
-      frequencyDimension,
-    } = result;
+    const result: FaultControl | any = await req.json();
+    const { faultId, result: controlReult } = result;
 
     if (!faultId || !controlReult) {
       return NextResponse.json(
@@ -50,55 +45,31 @@ export async function PUT(req: Request) {
       );
     }
 
+    const faultControlAccepted =
+      controlReult === 'ACCEPT' ||
+      controlReult === 'ACCEPTANCE_WITH_CONDITION' ||
+      controlReult === 'PRE_PROCESS';
+
+    const faultControlData = { ...result };
+    delete faultControlData.faultId;
+
     const faultControl = await prisma.faultControl.create({
-      data: result,
+      data: {
+        ...faultControlData,
+        ...(faultControlAccepted && {
+          Fault: { connect: { id: faultId } },
+        }),
+      },
     });
 
     const updateFault = await prisma.fault.update({
       where: {
         id: faultId,
       },
-      data: { status: controlReult },
+      data: {
+        status: faultControlAccepted ? 'PROSES_BEKLIYOR' : 'GIRIS_KONTROL_RET',
+      },
     });
-
-    //Create Process when faultControl is accepted
-    if (
-      controlReult === 'ACCEPT' ||
-      controlReult === 'ACCEPTANCE_WITH_CONDITION' ||
-      controlReult === 'PRE_PROCESS'
-    ) {
-      if (updateFault) {
-        const {
-          id,
-          customerName,
-          customerId,
-          product,
-          quantity,
-          productCode,
-          product_barcode,
-          application,
-          standard,
-          color,
-          technicalDrawingAttachment,
-        } = updateFault;
-        const process = await prisma.process.create({
-          data: {
-            customerName,
-            customerId,
-            product,
-            quantity,
-            productCode,
-            application,
-            standard,
-            color,
-            technicalDrawingAttachment,
-            frequency: `${processFrequency}:${frequencyDimension}`,
-            faultId: id,
-            product_barcode,
-          },
-        });
-      }
-    }
 
     return NextResponse.json(faultControl, { status: 200 });
   } catch (e) {

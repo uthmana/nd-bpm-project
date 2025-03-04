@@ -96,15 +96,42 @@ body.dark::-webkit-scrollbar {
   transform: scale(1);
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
-.custom-scrollbar--hidden::-webkit-scrollbar {
-  display: none;
+.custom-scrollbar--hidden {
+  overflow: auto;
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: transparent transparent; /* Invisible by default */
+  -ms-overflow-style: none; /* IE and Edge */
 }
 
-/* Hide scrollbar for IE, Edge and Firefox */
-.custom-scrollbar--hidden {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+/* WebKit Browsers (Chrome, Safari) */
+.custom-scrollbar--hidden::-webkit-scrollbar {
+  width: 6px;
+  background: transparent;
+}
+
+/* Ensure scrollbar track remains invisible initially */
+.custom-scrollbar--hidden::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Hide scrollbar thumb initially */
+.custom-scrollbar--hidden::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+/* Show scrollbar on hover */
+.custom-scrollbar--hidden:hover {
+  scrollbar-color: #888 #f1f1f1; /* Firefox: thumb and track */
+}
+
+.custom-scrollbar--hidden:hover::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+.custom-scrollbar--hidden:hover::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 .shim-blue {

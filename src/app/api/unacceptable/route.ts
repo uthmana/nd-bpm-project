@@ -19,16 +19,23 @@ export async function GET(req: NextRequest) {
 // Create unacceptableStage
 export async function PUT(req: NextRequest) {
   try {
-    const unacceptable: Unacceptable = await req.json();
-    const { unacceptableStage } = unacceptable;
-    if (!unacceptableStage) {
+    const unacceptable: Unacceptable | any = await req.json();
+    const { unacceptableStage, faultId } = unacceptable;
+
+    if (!unacceptableStage || !faultId) {
       return NextResponse.json(
         { message: 'You are missing a required data' },
         { status: 401 },
       );
     }
+
+    const unacceptableData = { ...unacceptable };
+    delete unacceptableData.faultId;
     const unacceptableStageItem = await prisma.unacceptable.create({
-      data: unacceptable,
+      data: {
+        ...unacceptableData,
+        Fault: { connect: { id: faultId } },
+      },
     });
     return NextResponse.json(unacceptableStageItem, { status: 200 });
   } catch (e) {

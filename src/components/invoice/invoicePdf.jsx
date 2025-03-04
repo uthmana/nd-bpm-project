@@ -127,8 +127,6 @@ const styles = StyleSheet.create({
 });
 
 const InvoiceDoc = ({ invoice }) => {
-  console.log({ invoice });
-
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -166,14 +164,14 @@ const InvoiceDoc = ({ invoice }) => {
           >
             <Text style={[styles.boldText, { fontSize: 14 }]}>Sayın:</Text>
             <Text>{invoice?.customer?.company_name}</Text>
-            <Text>{invoice?.address}</Text>
+            <Text>{invoice?.customer?.address}</Text>
             <View style={styles.rowItem}>
               <Text style={styles.boldText}>Vergi Dairesi:</Text>
-              <Text>{invoice?.tax_Office || 'N/A'}</Text>
+              <Text>{invoice?.customer?.tax_Office || 'N/A'}</Text>
             </View>
             <View style={styles.rowItem}>
               <Text style={styles.boldText}>Vergi No:</Text>
-              <Text>{invoice?.taxNo || 'N/A'}</Text>
+              <Text>{invoice?.customer?.taxNo || 'N/A'}</Text>
             </View>
           </View>
 
@@ -207,7 +205,7 @@ const InvoiceDoc = ({ invoice }) => {
             <Text style={[styles.tableCell, { flex: 1 }]}>Renk</Text>
             <Text style={[styles.tableCell, { flex: 1 }]}>Miktar</Text>
           </View>
-          {invoice?.process?.map((item, idx) => (
+          {invoice?.Fault?.map((item, idx) => (
             <View key={idx} style={styles.tableRow}>
               <Text style={[styles.tableCell, { flex: 1 }]}>{idx + 1}</Text>
               <Text style={[styles.tableCell, { flex: 2 }]}>
@@ -221,7 +219,7 @@ const InvoiceDoc = ({ invoice }) => {
               </Text>
               <Text style={[styles.tableCell, { flex: 1 }]}>{item?.color}</Text>
               <Text style={[styles.tableCell, { flex: 1 }]}>
-                {formatCurrency(item?.shipmentQty || 0)}
+                {formatCurrency(item?.shipmentQty || item?.quantity || 0)}
               </Text>
             </View>
           ))}

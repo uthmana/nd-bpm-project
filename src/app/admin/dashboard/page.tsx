@@ -1,5 +1,5 @@
 'use client';
-import MiniCalendar from 'components/calendar/MiniCalendar';
+import MiniCalendar from 'components/calendar';
 import WeeklyRevenue from 'components/weeklyRevenue';
 import TotalSpent from 'components/totalSpent';
 import {
@@ -62,7 +62,20 @@ const Dashboard = () => {
             color: '#6AD2Fa',
           },
         ]);
-        setRecentProcess(data?.recentProcess);
+
+        console.log(
+          data?.recentProcess?.map((item) => {
+            const { Fault, ...rest } = item;
+            return { ...Fault, ...rest };
+          }),
+        );
+
+        setRecentProcess(
+          data?.recentProcess?.map((item) => {
+            const { Fault, ...rest } = item;
+            return { ...Fault, ...rest };
+          }),
+        );
         setRecentCustomer(data?.recentCustomer);
         setLoading(false);
         return;
