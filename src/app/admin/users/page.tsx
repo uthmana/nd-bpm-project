@@ -31,11 +31,6 @@ const Users = () => {
     getAllUsers();
   }, []);
 
-  const onAdd = () => {
-    router.push('/admin/users/create');
-    log('onAdd');
-  };
-
   const onComfirm = async (val) => {
     setUserId(val);
     setIsShowPopUp(true);
@@ -68,19 +63,14 @@ const Users = () => {
     setIsShowPopUp(false);
   };
 
-  const onEdit = (val: string) => {
-    router.push(`/admin/users/create/${val}`);
-  };
-
   return (
     <div className="mt-3 w-full">
       {isLoading ? (
         <TableSkeleton />
       ) : (
         <MainTable
-          onAdd={onAdd}
+          addLink={'/admin/users/create'}
           onDelete={onComfirm}
-          onEdit={onEdit}
           tableData={users}
           variant="user"
         />

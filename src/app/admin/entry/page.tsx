@@ -28,7 +28,11 @@ const Entry = () => {
     const { status, data } = await getEntryWithFilters({
       where: {
         status: {
-          in: ['PROSES_BEKLIYOR', 'GIRIS_KONTROL_BEKLIYOR'],
+          in: [
+            'PROSES_BEKLIYOR',
+            'GIRIS_KONTROL_BEKLIYOR',
+            'GIRIS_KONTROL_RET',
+          ],
         },
       },
       include: {
@@ -51,14 +55,6 @@ const Entry = () => {
   useEffect(() => {
     setSearchText(searchVal || '');
   }, [searchVal]);
-
-  const onAdd = () => {
-    router.push('/admin/entry/create');
-  };
-
-  const onEdit = (val) => {
-    router.push(`/admin/entry/create/${val}`);
-  };
 
   const onControl = (val) => {
     router.push(`/admin/entry/${val}`);
@@ -102,14 +98,13 @@ const Entry = () => {
         <TableSkeleton />
       ) : (
         <EntryTable
-          onAdd={onAdd}
           onDelete={onComfirm}
-          onEdit={onEdit}
           tableData={faults as any}
           variant={session?.user?.role}
           onControl={onControl}
           searchValue={searchText}
           key={searchVal}
+          addLink={'/admin/entry/create'}
         />
       )}
 

@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import axios from 'axios';
 import qs from 'qs';
 import { Buffer } from 'buffer';
 
@@ -127,7 +127,8 @@ class ApiClient {
       });
       return response.data;
     } catch (error) {
-      throw new Error(`${await this.handleRequestError(error)}`);
+      const handlederror = await this.handleRequestError(error);
+      throw new Error(handlederror);
     }
   }
 
@@ -139,9 +140,9 @@ class ApiClient {
         case 400:
           return this.parseErrorResponse(error.response?.data);
         case 401:
-          return 'Unauthorized. Please check your credentials.';
+          return `Unauthorized. Please check your credentials: ${error.message}`;
         case 404:
-          return 'Resource not found.';
+          return `Resource not found: ${error.message}`;
         default:
           return `Unexpected error occurred: ${error.message}`;
       }

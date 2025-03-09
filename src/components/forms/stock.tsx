@@ -7,9 +7,14 @@ import Button from 'components/button';
 import Select from 'components/select';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import TextArea from 'components/fields/textArea';
-import { generateProductCode, log } from 'utils';
+import {
+  generateProductCode,
+  generateRandomThreeDigitNumber,
+  log,
+} from 'utils';
 import Upload from 'components/upload';
 import DataList from 'components/fields/dataList';
+import { getCustomers } from 'app/lib/apiRequest';
 
 type StockObj = {
   product_code: string;
@@ -35,9 +40,8 @@ export default function Stock(props: {
   data?: StockObj;
   title: string;
   loading: boolean;
-  customerData?: any;
 }) {
-  const { onSubmit, data, title, loading, customerData } = props;
+  const { onSubmit, data, title, loading } = props;
   const currency = ['TL', 'USD', 'EUR'];
 
   const initialValues = data
@@ -67,24 +71,21 @@ export default function Stock(props: {
   const handleValues = (event) => {
     setError(false);
     if (event.target?.name === 'company_name') {
-      const _customer = customerData.filter(
-        (item) => item.company_name === event.target?.value,
-      )[0];
-      const seletecCustomer = {
+      if (!event.selectedData) return;
+      const _customer = event.selectedData;
+      log(_customer);
+      const selectedCustomer = {
         customerId: _customer?.id,
         company_name: _customer?.company_name,
       };
 
-      const customerIndex = customerData?.findIndex(
-        (item) => item.company_name === event.target?.value,
-      );
-
+      const customerIndex = generateRandomThreeDigitNumber();
       const product_code = generateProductCode(
         _customer?.company_name?.split(' ')[0],
         customerIndex,
       );
 
-      setValues({ ...values, ...seletecCustomer, product_code });
+      setValues({ ...values, ...selectedCustomer, product_code });
       return;
     }
 
@@ -149,7 +150,7 @@ export default function Stock(props: {
           id="company_name"
           name="company_name"
           listId="stock_company_name_list"
-          list={customerData}
+          loadOptions={getCustomers}
           required={true}
           value={values.company_name}
           onChange={handleValues}

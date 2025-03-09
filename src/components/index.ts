@@ -1,6 +1,6 @@
 export { toast } from 'react-toastify';
 
-export * from './dataTables';
+export * from './dataTables/index';
 export * from './forms';
 export * from './card';
 export * from './charts';

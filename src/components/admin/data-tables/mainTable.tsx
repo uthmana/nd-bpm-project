@@ -7,6 +7,7 @@ import {
   MdOutlineDelete,
   MdAdd,
   MdOutlineKeyboardDoubleArrowDown,
+  MdSync,
 } from 'react-icons/md';
 
 import {
@@ -30,12 +31,16 @@ import {
   UserObj,
 } from '../../../app/localTypes/table-types';
 import TableEmpty from './tableEmpty';
+import NextLink from 'next/link';
 
 function MainTable({
   tableData,
   onEdit,
   onDelete,
   onAdd,
+  onSync,
+  addLink,
+  syncLoading,
   variant = 'user',
 }: PrimaryTable) {
   let defaultData = tableData;
@@ -74,12 +79,24 @@ function MainTable({
             ),
             cell: (info) => (
               <div className="flex gap-1">
-                <button
-                  className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
-                  onClick={() => onEdit(info.getValue())}
-                >
-                  <MdModeEdit className="h-5 w-5 text-white" />
-                </button>
+                {addLink != undefined ? (
+                  <NextLink
+                    href={`${addLink}/${info.getValue()}`}
+                    className="flex items-center gap-2 text-sm dark:text-white"
+                  >
+                    <button className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700">
+                      <MdModeEdit className="h-5 w-5 text-white" />
+                    </button>
+                  </NextLink>
+                ) : (
+                  <button
+                    className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
+                    onClick={() => onEdit(info.getValue())}
+                  >
+                    <MdModeEdit className="h-5 w-5 text-white" />
+                  </button>
+                )}
+
                 <button
                   className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
                   onClick={() => onDelete(info.getValue())}
@@ -387,12 +404,23 @@ function MainTable({
             ),
             cell: (info) => (
               <div className="flex gap-1">
-                <button
-                  className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
-                  onClick={() => onEdit(info.getValue())}
-                >
-                  <MdModeEdit className="h-5 w-5 text-white" />
-                </button>
+                {addLink != undefined ? (
+                  <NextLink
+                    href={`${addLink}/${info.getValue()}`}
+                    className="flex items-center gap-2 text-sm dark:text-white"
+                  >
+                    <button className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700">
+                      <MdModeEdit className="h-5 w-5 text-white" />
+                    </button>
+                  </NextLink>
+                ) : (
+                  <button
+                    className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
+                    onClick={() => onEdit(info.getValue())}
+                  >
+                    <MdModeEdit className="h-5 w-5 text-white" />
+                  </button>
+                )}
                 <button
                   className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
                   onClick={() => onDelete(info.getValue())}
@@ -405,7 +433,7 @@ function MainTable({
           columnHelper.accessor('product_code', {
             id: 'product_code',
             header: () => (
-              <p className="group relative min-w-[100px] whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
+              <p className="group relative min-w-fit whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
                 Ürün Kodu{' '}
                 <span className="absolute right-0 top-0 hidden group-hover:block">
                   <MdOutlineKeyboardDoubleArrowDown />
@@ -413,7 +441,7 @@ function MainTable({
               </p>
             ),
             cell: (info: any) => (
-              <p className="min-w-[180px] text-sm font-bold text-navy-700 dark:text-white">
+              <p className="min-w-fit whitespace-nowrap break-keep text-sm font-bold text-navy-700 dark:text-white">
                 {info.getValue()}
               </p>
             ),
@@ -421,7 +449,7 @@ function MainTable({
           columnHelper.accessor('product_barcode', {
             id: 'product_barcode',
             header: () => (
-              <p className="group relative min-w-[180px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+              <p className="group relative min-w-fit text-sm font-bold uppercase text-gray-600 dark:text-white">
                 Barkodu{' '}
                 <span className="absolute right-0 top-0 hidden group-hover:block">
                   <MdOutlineKeyboardDoubleArrowDown />
@@ -429,7 +457,7 @@ function MainTable({
               </p>
             ),
             cell: (info: any) => (
-              <p className="max-w-[180px] text-sm font-bold  text-navy-700 dark:text-white">
+              <p className="max-w-fit whitespace-nowrap break-keep text-sm font-bold  text-navy-700 dark:text-white">
                 {info.getValue()}
               </p>
             ),
@@ -549,12 +577,23 @@ function MainTable({
             ),
             cell: (info) => (
               <div className="flex gap-2">
-                <button
-                  className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
-                  onClick={() => onEdit(info.getValue())}
-                >
-                  <MdModeEdit className="h-5 w-5 text-white" />
-                </button>
+                {addLink != undefined ? (
+                  <NextLink
+                    href={`${addLink}/${info.getValue()}`}
+                    className="flex items-center gap-2 text-sm dark:text-white"
+                  >
+                    <button className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700">
+                      <MdModeEdit className="h-5 w-5 text-white" />
+                    </button>
+                  </NextLink>
+                ) : (
+                  <button
+                    className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
+                    onClick={() => onEdit(info.getValue())}
+                  >
+                    <MdModeEdit className="h-5 w-5 text-white" />
+                  </button>
+                )}
                 <button
                   className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
                   onClick={() => onDelete(info.getValue())}
@@ -667,12 +706,37 @@ function MainTable({
           />
         </div>
 
-        <Button
-          text="EKLE"
-          extra="!w-[140px] h-[38px] font-bold mb-3"
-          onClick={onAdd}
-          icon={<MdAdd className="ml-1 h-6 w-6" />}
-        />
+        <div className="flex gap-2">
+          {onSync ? (
+            <Button
+              text="SYNC"
+              extra="!w-[140px] h-[38px] font-bold mb-3"
+              onClick={() => onSync(variant)}
+              loading={syncLoading}
+              icon={<MdSync className="ml-1 h-6 w-6" />}
+            />
+          ) : null}
+
+          {addLink ? (
+            <NextLink
+              href={addLink}
+              className="flex items-center gap-2 text-sm dark:text-white"
+            >
+              <Button
+                text="EKLE"
+                extra="!w-[140px] h-[38px] font-bold mb-3"
+                icon={<MdAdd className="ml-1 h-6 w-6" />}
+              />
+            </NextLink>
+          ) : onAdd ? (
+            <Button
+              text="EKLE"
+              extra="!w-[140px] h-[38px] font-bold mb-3"
+              onClick={onAdd}
+              icon={<MdAdd className="ml-1 h-6 w-6" />}
+            />
+          ) : null}
+        </div>
       </header>
       <Card extra={'w-full h-full sm:overflow-auto px-6 pb-3'}>
         <div

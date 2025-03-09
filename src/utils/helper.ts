@@ -293,3 +293,7 @@ export const generateProductCode = (name, index) => {
     !index ? '000' : String(index + 1).padStart(3, '0')
   }`;
 };
+
+export const generateRandomThreeDigitNumber = () => {
+  return Math.floor(Math.random() * 900) + 100;
+};

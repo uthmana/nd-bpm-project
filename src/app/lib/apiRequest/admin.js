@@ -1,11 +1,5 @@
-import { Prisma } from '@prisma/client';
 import { fetchAPI } from './request';
-import { strict } from 'assert';
-import axios from 'axios';
-import { log } from '../../../utils/log';
-import { getSession } from 'next-auth/react';
-//import { Session } from 'inspector';
-//Users
+
 export async function getUsers() {
   return fetchAPI('user');
 }

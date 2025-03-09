@@ -22,13 +22,16 @@ import InputField from 'components/fields/InputField';
 import ControlHeader from './finalControl/controlHeader';
 import { useSession } from 'next-auth/react';
 
-export default function EntryControlForm({
-  info,
-  data,
-  title,
-  onSubmit,
-  isSubmitting,
+export default function EntryControlForm(props: {
+  info: any;
+  data: any;
+  title?: string;
+  onSubmit?: (e: any, f: boolean) => void;
+  isSubmitting?: boolean;
+  variant?: string;
 }) {
+  const { info, data, title, onSubmit, isSubmitting, variant = 'form' } = props;
+
   const isUpdate = data && data?.id ? true : false;
   const [fault, setFault] = useState(info || {});
   const [error, setError] = useState(false);
@@ -75,7 +78,6 @@ export default function EntryControlForm({
       window.scroll(100, 0);
       return;
     }
-
     onSubmit(
       {
         ...values,
@@ -95,7 +97,9 @@ export default function EntryControlForm({
 
   return (
     <>
-      <div className="w-full">
+      <div
+        className={`w-full ${variant != 'form' ? 'pointer-events-none' : ''}`}
+      >
         <ControlHeader
           data={fault}
           variant="entry"
@@ -319,13 +323,14 @@ export default function EntryControlForm({
               })}
             </div>
           </div>
-
-          <Button
-            disabled={formTouch}
-            loading={isSubmitting}
-            extra="mt-4"
-            text="KAYDET"
-          />
+          {variant != 'form' ? null : (
+            <Button
+              disabled={formTouch}
+              loading={isSubmitting}
+              extra="mt-4"
+              text="KAYDET"
+            />
+          )}
         </form>
       </div>
     </>

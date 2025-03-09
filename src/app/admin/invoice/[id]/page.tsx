@@ -93,7 +93,6 @@ export default function Invoices() {
     const newVal = { [event.target?.name]: event.target?.value };
     setValues({ ...value, ...newVal });
   };
-
   const handleSendEmail = async () => {
     try {
       setIsSubmiting(true);
@@ -182,28 +181,28 @@ export default function Invoices() {
       setIsInvoiceSubmiting(false);
     }
 
-    if (invoice) {
-      return;
-    }
     //send To Logo
     try {
       const logores: any = await sendDispatchToLogo(invoice);
-      console.log('Logo sonucu' + logores);
-      if (logores != null) {
-        console.log(logores);
-        toast.success(`Logoya gönderme işlemi başarılı ${logores.NUMBER}`);
-      } else {
-        const logoresJson = await logores.json();
-        toast.error(
-          `Logoya başarıyla içeriye alamadı ${logoresJson.response.data}`,
-        );
+      const { status: logoStatus, data: logoResData, response } = logores;
+
+      if (logoStatus === 200) {
+        toast.success(`Logoya gönderme işlemi başarılı ${logoResData.NUMBER}`);
+        router.push(`/admin/invoice/${invoice?.id}`);
+        setIsInvoiceSubmiting(false);
       }
-      router.push(`/admin/invoice${invoice?.id}`);
+
+      if (response?.error) {
+        const { message, detail } = response?.error;
+        toast.error(`Logoya başarıyla içeriye alamadı ${message}`);
+        log(detail);
+        setIsInvoiceSubmiting(false);
+        return;
+      }
     } catch (error) {
       console.error('Logoya gönderme hatası:', error);
       toast.error(`Logoya başarıyla içeriye alamadı: ${error}`);
     }
-    setIsInvoiceSubmiting(false);
   };
 
   return (

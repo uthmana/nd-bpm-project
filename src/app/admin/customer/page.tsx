@@ -8,6 +8,8 @@ import { toast } from 'react-toastify';
 import Popup from 'components/popup';
 import Button from 'components/button';
 import { TableSkeleton } from 'components/skeleton';
+import { customerSync } from 'app/lib/logoRequest';
+import { log } from 'utils';
 
 const Customers = () => {
   const router = useRouter();
@@ -16,6 +18,7 @@ const Customers = () => {
   const [customerId, setCustomerId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsloading] = useState(false);
+  const [syncLoading, setSyncLoading] = useState(false);
 
   const getAllCustomers = async () => {
     setIsloading(true);
@@ -54,12 +57,18 @@ const Customers = () => {
     setIsShowPopUp(false);
   };
 
-  const onAdd = () => {
-    router.push('/admin/customer/create');
-  };
-
-  const onEdit = (val: string) => {
-    router.push(`/admin/customer/create/${val}`);
+  const onSync = async (val: string) => {
+    if (!val) return;
+    setSyncLoading(true);
+    try {
+      const data = await customerSync();
+      log(data);
+      getAllCustomers();
+      setSyncLoading(false);
+    } catch (error) {
+      log(error);
+      setSyncLoading(false);
+    }
   };
 
   return (
@@ -68,9 +77,10 @@ const Customers = () => {
         <TableSkeleton />
       ) : (
         <MainTable
-          onAdd={onAdd}
+          addLink={'/admin/customer/create'}
           onDelete={onComfirm}
-          onEdit={onEdit}
+          onSync={onSync}
+          syncLoading={syncLoading}
           tableData={customers}
           variant="customer"
         />

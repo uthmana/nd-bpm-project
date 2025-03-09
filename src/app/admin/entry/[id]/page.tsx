@@ -13,8 +13,6 @@ import {
   formatDateTime,
   faultInfo,
   infoTranslate,
-  faultControlInfo,
-  faultControlTranslate,
   formatCurrency,
   techParameters,
   formatTechParams,
@@ -29,6 +27,7 @@ import Popup from 'components/popup';
 import Select from 'components/select';
 import TechParamsTable from 'components/admin/data-tables/techParamsTable';
 import FinalControl from 'components/forms/finalControl';
+import EntryControlForm from 'components/forms/faultControl';
 
 export default function Edit() {
   const router = useRouter();
@@ -133,47 +132,6 @@ export default function Edit() {
       );
     }
     return <p className="break-all font-bold"> {val} </p>;
-  };
-  const renderValues = (key, val) => {
-    //TODO: need refactor
-    const results = {
-      ACCEPT: 'Kabul',
-      ACCEPTANCE_WITH_CONDITION: 'Şartlı Kabul',
-      PRE_PROCESS: 'Ön İşlem gerekli',
-      REJECT: 'Ret',
-    };
-
-    if (['createdAt', 'updatedAt'].includes(key)) {
-      return <p className="font-bold"> {formatDateTime(val)} </p>;
-    }
-
-    if (key === 'dimensionConfirmation') {
-      return <p className="font-bold"> {val ? 'UYGUN' : 'UYGUNSUZ'} </p>;
-    }
-
-    if (key === 'quantityConfirmation') {
-      return <p className="font-bold"> {val ? 'UYGUN' : 'UYGUNSUZ'} </p>;
-    }
-
-    if (key === 'dirtyThreads') {
-      return <p className="font-bold"> {val ? 'VAR' : 'YOK'} </p>;
-    }
-    if (key === 'deformity') {
-      return <p className="font-bold"> {val ? 'VAR' : 'YOK'} </p>;
-    }
-
-    if (key === 'processFrequency') {
-      return <p className="font-bold"> {val?.toUpperCase()} </p>;
-    }
-
-    if (key === 'result') {
-      return <p className="font-bold uppercase"> {results[val]} </p>;
-    }
-    if (key === 'image') {
-      return <FileViewer file={val} />;
-    }
-
-    return <p className="break-all font-bold "> {val} </p>;
   };
 
   const handleProcessStart = async () => {
@@ -324,36 +282,24 @@ export default function Edit() {
                   Ürün Giriş Kontrol Bilgileri
                 </h2>
 
-                {session?.user?.role === 'SUPER' ||
+                {(fault?.status != 'SEVKIYAT_TAMAMLANDI' &&
+                  session?.user?.role === 'SUPER') ||
                 session?.user?.role === 'ADMIN' ? (
                   <Button
                     icon={<MdAdd className="mr-1 h-5 w-5" />}
                     extra="max-w-fit px-4  h-[40px]"
-                    text={faultControl?.id ? 'DÜZENLE' : 'KONTROLÜ YAP'}
+                    text={faultControl?.id ? 'DÜZENLE' : 'KONTROL YAP'}
                     onClick={handlefaultControl}
                   />
                 ) : null}
               </div>
               {faultControl?.id ? (
-                <div className="mb-10 grid w-full grid-cols-2 gap-2  md:grid-cols-3 lg:grid-cols-4">
-                  {Object.entries(faultControl).map(
-                    ([key, val]: any, index) => {
-                      if (faultControlInfo.includes(key)) {
-                        return (
-                          <div
-                            key={index}
-                            className="mb-5 flex flex-col flex-nowrap"
-                          >
-                            <h4 className="mb-0 italic">
-                              {faultControlTranslate[key]}
-                            </h4>
-                            {renderValues(key, val)}
-                          </div>
-                        );
-                      }
-                    },
-                  )}
-                </div>
+                <EntryControlForm
+                  variant="data"
+                  title={'Ürün Girişi Kontrol Formu'}
+                  info={fault}
+                  data={faultControl}
+                />
               ) : (
                 <div className="flex h-32 w-full items-center justify-center opacity-75">
                   Henüz Ürün Kontrolü yapılmadı
@@ -367,7 +313,8 @@ export default function Edit() {
                   Proses Frekans Bilgileri
                 </h2>
 
-                {process?.status !== 'FINISHED' ? (
+                {fault?.status != 'GIRIS_KONTROL_RET' &&
+                process?.status !== 'FINISHED' ? (
                   <Button
                     extra={`px-4 h-[40px] max-w-fit`}
                     onClick={
@@ -383,7 +330,7 @@ export default function Edit() {
                   <Button
                     extra={`px-4 h-[40px] max-w-fit`}
                     onClick={handleProcessPrint}
-                    text="PROSES FREKANSI YAZDIR"
+                    text=" "
                     icon={<MdPrint className="mr-1 h-5 w-5" />}
                   />
                 )}
@@ -453,7 +400,7 @@ export default function Edit() {
                       icon={<MdAdd className="mr-1 h-5 w-5" />}
                       extra="max-w-fit px-4  h-[40px]"
                       text={`${
-                        finalControl?.length > 0 ? 'DÜZENLE' : 'KONTROLÜ YAP'
+                        finalControl?.length > 0 ? 'DÜZENLE' : 'KONTROL YAP'
                       } `}
                       onClick={handleProcessControl}
                     />
@@ -479,7 +426,6 @@ export default function Edit() {
           </div>
         </div>
       )}
-
       <Popup
         key={1}
         show={isShowMachinePopUp}

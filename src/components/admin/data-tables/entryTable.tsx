@@ -28,6 +28,7 @@ import FileViewer from 'components/fileViewer';
 import { FaultObj, MainTable } from 'app/localTypes/table-types';
 import TablePagination from './tablePagination';
 import TableEmpty from './tableEmpty';
+import NextLink from 'next/link';
 
 function EntryTable({
   tableData,
@@ -35,6 +36,7 @@ function EntryTable({
   onDelete,
   onAdd,
   onControl,
+  addLink,
   variant,
 }: MainTable) {
   let defaultData = tableData;
@@ -92,15 +94,33 @@ function EntryTable({
               >
                 <MdPreview className="h-5 w-5 text-white" />
               </button>
-              <button
-                className={`rounded-md bg-green-600 px-2 py-1 hover:bg-green-700 ${
-                  isAccept ? 'disabled:opacity-25' : ''
-                }`}
-                onClick={() => onEdit(info.getValue())}
-                disabled={isAccept}
-              >
-                <MdModeEdit className="h-5 w-5 text-white" />
-              </button>
+
+              {addLink != undefined ? (
+                <NextLink
+                  href={`${addLink}/${info.getValue()}`}
+                  className="flex items-center gap-2 text-sm dark:text-white"
+                >
+                  <button
+                    className={`rounded-md bg-green-600 px-2 py-1 hover:bg-green-700 ${
+                      isAccept ? 'disabled:opacity-25' : ''
+                    }`}
+                    disabled={isAccept}
+                  >
+                    <MdModeEdit className="h-5 w-5 text-white" />
+                  </button>
+                </NextLink>
+              ) : (
+                <button
+                  className={`rounded-md bg-green-600 px-2 py-1 hover:bg-green-700 ${
+                    isAccept ? 'disabled:opacity-25' : ''
+                  }`}
+                  onClick={() => onEdit(info.getValue())}
+                  disabled={isAccept}
+                >
+                  <MdModeEdit className="h-5 w-5 text-white" />
+                </button>
+              )}
+
               <button
                 className={`rounded-md bg-red-600 px-2 py-1 hover:bg-red-700 ${
                   isAccept ? 'disabled:opacity-25' : ''
@@ -113,6 +133,22 @@ function EntryTable({
             </div>
           );
         },
+      }),
+      columnHelper.accessor('status', {
+        id: 'status',
+        header: () => (
+          <p className="min-w-fit whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
+            DURUMU
+          </p>
+        ),
+        cell: (info: any) => (
+          <div className="flex items-center">
+            {statusbgColor(info.getValue())}
+            <p className="text-xs font-bold text-blue-700 dark:text-white">
+              {info.getValue()}
+            </p>
+          </div>
+        ),
       }),
       columnHelper.accessor('product', {
         id: 'product',
@@ -136,7 +172,7 @@ function EntryTable({
       columnHelper.accessor('product_barcode', {
         id: 'product_barcode',
         header: () => (
-          <p className="group relative min-w-[150px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="group relative min-w-fit text-sm font-bold uppercase text-gray-600 dark:text-white">
             BARKOD{' '}
             <span className="absolute right-0 top-0 hidden group-hover:block">
               <MdOutlineKeyboardDoubleArrowDown />
@@ -144,7 +180,7 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="min-w-[180px]  text-sm font-bold text-navy-700 dark:text-white">
+          <p className="min-w-fit whitespace-nowrap break-keep text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -168,7 +204,7 @@ function EntryTable({
       columnHelper.accessor('productBatchNumber', {
         id: 'productBatchNumber',
         header: () => (
-          <p className="group relative min-w-[100px] whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="group relative min-w-fit whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
             Parti No.{' '}
             <span className="absolute right-0 top-0 hidden group-hover:block">
               <MdOutlineKeyboardDoubleArrowDown />
@@ -176,7 +212,7 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="min-w-[180px] text-sm font-bold text-navy-700 dark:text-white">
+          <p className="min-w-fit whitespace-nowrap break-keep text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -270,22 +306,6 @@ function EntryTable({
           </p>
         ),
       }),
-      columnHelper.accessor('status', {
-        id: 'status',
-        header: () => (
-          <p className="min-w-[130px] whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
-            KONTROL DURUMU
-          </p>
-        ),
-        cell: (info: any) => (
-          <div className="flex items-center">
-            {statusbgColor(info.getValue())}
-            <p className="text-xs font-bold text-blue-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          </div>
-        ),
-      }),
       columnHelper.accessor('faultDescription', {
         id: 'faultDescription',
         header: () => (
@@ -354,10 +374,20 @@ function EntryTable({
             onChange={(val) => setGlobalFilter(val)}
           />
         </div>
-        {variant === 'NORMAL' ||
-        variant === 'TECH' ||
-        variant === 'SUPER' ||
-        variant === 'ADMIN' ? (
+
+        {addLink ? (
+          <NextLink
+            href={addLink}
+            className="flex items-center gap-2 text-sm dark:text-white"
+          >
+            <Button
+              text="EKLE"
+              extra="!w-[140px] h-[38px] font-bold mb-3"
+              onClick={onAdd}
+              icon={<MdAdd className="ml-1 h-6 w-6" />}
+            />
+          </NextLink>
+        ) : onAdd ? (
           <Button
             text="EKLE"
             extra="!w-[140px] h-[38px] font-bold mb-3"

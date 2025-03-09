@@ -7,6 +7,7 @@ import {
   MdOutlineDelete,
   MdAdd,
   MdOutlineKeyboardDoubleArrowDown,
+  MdSync,
 } from 'react-icons/md';
 
 import {
@@ -36,6 +37,7 @@ function MainTable({
   onEdit,
   onDelete,
   onAdd,
+  onSync,
   variant = 'user',
 }: PrimaryTable) {
   let defaultData = tableData;
@@ -667,12 +669,25 @@ function MainTable({
           />
         </div>
 
-        <Button
-          text="EKLE"
-          extra="!w-[140px] h-[38px] font-bold mb-3"
-          onClick={onAdd}
-          icon={<MdAdd className="ml-1 h-6 w-6" />}
-        />
+        <div className="flex gap-2">
+          {onSync ? (
+            <Button
+              text="Async"
+              extra="!w-[140px] h-[38px] font-bold mb-3"
+              onClick={() => onSync(variant)}
+              icon={<MdSync className="ml-1 h-6 w-6" />}
+            />
+          ) : null}
+
+          {onAdd ? (
+            <Button
+              text="EKLE"
+              extra="!w-[140px] h-[38px] font-bold mb-3"
+              onClick={onAdd}
+              icon={<MdAdd className="ml-1 h-6 w-6" />}
+            />
+          ) : null}
+        </div>
       </header>
       <Card extra={'w-full h-full sm:overflow-auto px-6 pb-3'}>
         <div

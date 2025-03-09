@@ -222,9 +222,8 @@ const Entry = () => {
         <TableSkeleton />
       ) : (
         <EntryTable
-          onAdd={onAdd}
+          addLink={'/admin/entry/create'}
           onDelete={onComfirm}
-          onEdit={onEdit}
           tableData={faults as any}
           variant={session?.user?.role}
           onControl={onControl}

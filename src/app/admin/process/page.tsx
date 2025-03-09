@@ -60,7 +60,11 @@ const Process = () => {
     const { status, data } = await getEntryWithFilters({
       where: {
         status: {
-          in: ['PROSES_ISLENIYOR', 'FINAL_KONTROL_BEKLIYOR'],
+          in: [
+            'PROSES_ISLENIYOR',
+            'FINAL_KONTROL_BEKLIYOR',
+            'FINAL_KONTROL_RET',
+          ],
         },
       },
       include: {

@@ -56,9 +56,7 @@ export async function PUT(req: Request) {
     const faultControl = await prisma.faultControl.create({
       data: {
         ...faultControlData,
-        ...(faultControlAccepted && {
-          Fault: { connect: { id: faultId } },
-        }),
+        Fault: { connect: { id: faultId } },
       },
     });
 

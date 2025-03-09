@@ -98,36 +98,35 @@ function ProcessTable({
           </div>
         ),
       }),
+      columnHelper.accessor('status', {
+        id: 'status',
+        header: () => (
+          <p className="whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
+            DURUM
+          </p>
+        ),
+        cell: (info: any) => (
+          <div className="flex min-w-[100px] items-center">
+            {statusbgColor(info.getValue())}
+            <p className="whitespace-nowrap  break-keep   text-xs font-bold text-blue-700 dark:text-white">
+              {info.getValue()}
+            </p>
+          </div>
+        ),
+      }),
       columnHelper.accessor('product_barcode', {
         id: 'product_barcode',
         header: () => (
-          <p className="min-w-[150px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-fit text-sm font-bold uppercase text-gray-600 dark:text-white">
             BARKODU
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p className="min-w-fit whitespace-nowrap break-keep text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
       }),
-      // columnHelper.accessor('faultId', {
-      //   id: 'faultId',
-      //   header: () => (
-      //     <p className="min-w-[150px] text-sm font-bold text-gray-600 dark:text-white">
-      //       BARKOD
-      //     </p>
-      //   ),
-      //   cell: (info: any) => (
-      //     <p className="text-sm font-bold text-navy-700 dark:text-white">
-      //       <Barcode
-      //         className="h-full w-full"
-      //         value={info.getValue()}
-      //         options={{ format: 'code128' }}
-      //       />
-      //     </p>
-      //   ),
-      // }),
       columnHelper.accessor('productCode', {
         id: 'productCode',
         header: () => (
@@ -141,22 +140,6 @@ function ProcessTable({
           </p>
         ),
       }),
-      // columnHelper.accessor('customerName', {
-      //   id: 'customerName',
-      //   header: () => (
-      //     <p className="min-w-[200px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-      //       Müşteri
-      //     </p>
-      //   ),
-      //   cell: (info: any) => (
-      //     <p
-      //       title={info.getValue()}
-      //       className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white"
-      //     >
-      //       {info.getValue()}
-      //     </p>
-      //   ),
-      // }),
       columnHelper.accessor('product', {
         id: 'product',
         header: () => (
@@ -239,59 +222,6 @@ function ProcessTable({
           >
             {info.getValue()}
           </p>
-        ),
-      }),
-      // columnHelper.accessor('technicalDrawingAttachment', {
-      //   id: 'technicalDrawingAttachment',
-      //   header: () => (
-      //     <p className="min-w-[110px]  whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
-      //       İLGİLİ DOKÜMAN
-      //     </p>
-      //   ),
-      //   cell: (info: any) => (
-      //     <p className="text-sm font-bold text-navy-700 dark:text-white">
-      //       {info.getValue() ? <FileViewer file={info.getValue()} /> : null}
-      //     </p>
-      //   ),
-      // }),
-      // columnHelper.accessor('newtechparam', {
-      //   id: 'newtechparam',
-      //   header: () => (
-      //     <p className="min-w-[110px]  whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
-      //       İLGİLİ DOKÜMAN
-      //     </p>
-      //   ),
-      //   cell: (info: any) => (
-      //     <div className="flex">
-      //       {info
-      //         .getValue()
-      //         ?.toString()
-      //         ?.split(';')
-      //         ?.map((url, index) => (
-      //           <span
-      //             key={index}
-      //             className="text-sm font-bold text-navy-700 dark:text-white"
-      //           >
-      //             {info.getValue() ? <FileViewer file={url} /> : null}
-      //           </span>
-      //         ))}
-      //     </div>
-      //   ),
-      // }),
-      columnHelper.accessor('status', {
-        id: 'status',
-        header: () => (
-          <p className="whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
-            DURUM
-          </p>
-        ),
-        cell: (info: any) => (
-          <div className="flex min-w-[100px] items-center">
-            {statusbgColor(info.getValue())}
-            <p className="whitespace-nowrap  break-keep  text-sm font-bold text-navy-700 dark:text-white">
-              {info.getValue()}
-            </p>
-          </div>
         ),
       }),
     ];

@@ -5,7 +5,7 @@ import StockForm from 'components/forms/stock';
 import { useParams, useRouter } from 'next/navigation';
 import { log } from 'utils';
 import { toast } from 'react-toastify';
-import { getCustomers, getStockById, updateStock } from 'app/lib/apiRequest';
+import { getStockById, updateStock } from 'app/lib/apiRequest';
 import { FormSkeleton } from 'components/skeleton';
 import Card from 'components/card';
 
@@ -15,29 +15,16 @@ export default function Edit() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [stock, setStock] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [customers, setCustomers] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const [stockResponse, customersResponse] = await Promise.all([
-          getStockById(queryParams.id),
-          getCustomers(),
-        ]);
-
-        const { status: stockStatus, data } = stockResponse;
-        const { status, data: customerData } = customersResponse;
-
-        if (stockStatus === 200 && status === 200) {
-          setStock({ ...data, company_name: data.customer?.company_name });
-          setCustomers(customerData);
-        } else {
-          setIsSubmitting(false);
-        }
+        const { data } = await getStockById(queryParams.id);
+        setStock({ ...data, company_name: data.customer?.company_name });
+        setIsLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
-      } finally {
         setIsLoading(false);
       }
     };
@@ -78,7 +65,6 @@ export default function Edit() {
         <StockForm
           title="Stok Düzenle"
           onSubmit={(val) => handleSubmit(val)}
-          customerData={customers}
           data={stock as any}
           loading={isSubmitting}
         />

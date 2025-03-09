@@ -52,7 +52,7 @@ export default function EntryControl() {
       });
 
       if (status === 200) {
-        console.log(data);
+        log(data);
         setFault(data);
         setFaultcontrol(
           data?.faultControl.length > 0 ? data?.faultControl[0] : {},

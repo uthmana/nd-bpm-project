@@ -1,8 +1,8 @@
 import { Prisma } from '@prisma/client';
-import { NextApiRequest } from 'next';
-import { NextRequest, NextResponse } from 'next/server';
+import { ClientInfo } from 'app/lib/logoRequest';
+import ApiClient from 'app/lib/logoRequest/request';
+import { NextResponse } from 'next/server';
 import { env } from 'process';
-import ApiClient, { ClientInfo } from 'utils/logorequests';
 
 export async function PUT(req: Request) {
   try {
@@ -49,17 +49,16 @@ export async function POST(req: Request) {
       clientSecret: env.LOGO_CLIENT_SECRET,
       url: env.LOGO_ENDPOINT,
       firmno: env.LOGO_FIRMANO,
-      password: env.LOGO_USERNAME,
-      username: env.LOGO_PASSWORD,
+      username: env.LOGO_USERNAME,
+      password: env.LOGO_PASSWORD,
     };
 
     const client = new ApiClient(clientinfo);
     await client.requestAccessToken('token');
 
     const sales = await client.post('salesDispatches', logodata);
-    const number = sales['NUMBER'];
     /*************  ✨ Codeium Command 🌟  *************/
-    return NextResponse.json(number, { status: 200 });
+    return NextResponse.json({ NUMBER: sales['NUMBER'] }, { status: 200 });
   } catch (e) {
     console.log({ e });
     if (
