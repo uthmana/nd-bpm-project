@@ -2,12 +2,12 @@
 import React, { useState } from 'react';
 import FaultForm from 'components/forms/fault';
 import { useRouter } from 'next/navigation';
-import { log } from 'utils';
 import { addFault, sendNotification } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
 import Card from 'components/card';
 import DetailHeader from 'components/detailHeader';
+import { getResError } from 'utils/responseError';
 
 export default function Edit() {
   const router = useRouter();
@@ -16,35 +16,28 @@ export default function Edit() {
 
   const handleSubmit = async (val) => {
     setIsSubmitting(true);
-    const resData: any = await addFault({
-      ...val,
-      ...{ createdBy: session?.user?.name },
-    });
-    const { status, response, data } = resData;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Hata oluştu!.' + message);
-      log(detail);
-      setIsSubmitting(false);
-      return;
-    }
 
-    if (status === 200) {
-      try {
-        await sendNotification({
-          workflowId: 'fault-entry',
-          data: {
-            link: `${window?.location.origin}/admin/entry/${data.id}`,
-          },
-        });
-      } catch (err) {
-        console.log(err);
-      }
+    try {
+      const { data } = await addFault({
+        ...val,
+        ...{ createdBy: session?.user?.name },
+      });
+
+      //Handle notification
+      await sendNotification({
+        workflowId: 'fault-entry',
+        data: {
+          link: `${window?.location.origin}/admin/entry/${data.id}`,
+        },
+      });
 
       toast.success('Ürün girişi ekleme işlemi başarılı.');
       router.push('/admin/entry');
       setIsSubmitting(false);
-      return;
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
     }
   };
 

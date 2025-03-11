@@ -17,7 +17,7 @@ const Button = ({ extra, onClick, text, disabled, icon, loading }: Button) => {
       onClick={onClick}
       className={`linear flex h-12 w-full items-center justify-center rounded-xl bg-brand-500 py-3 text-base font-medium text-white transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200 ${
         disabled ? 'opacity-10' : ''
-      } ${extra}`}
+      } ${extra} ${disabled ? 'opacity-25' : ''}`}
     >
       {loading ? (
         <Image

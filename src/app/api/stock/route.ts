@@ -1,21 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
-import { Prisma, Stock } from '@prisma/client';
-import { checkUserRole } from 'utils/auth';
+import { Stock } from '@prisma/client';
+import { extractPrismaErrorMessage } from 'utils/prismaError';
 
 //All Stocks
 export async function GET(req: NextRequest) {
   try {
-    //check roles and permission of user
-    const allowedRoles = ['SUPER', 'ADMIN', 'NORMAL', 'TECH'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json(
-        { message: 'Access forbidden' },
-        { status: 403 },
-      );
-    }
-
     const inventory = req.nextUrl.searchParams.get('inventory') === 'true';
 
     let stocks;
@@ -37,15 +27,15 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(stocks, { status: 200 });
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -74,14 +64,14 @@ export async function PUT(req: Request) {
 
     return NextResponse.json(stock, { status: 200 });
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }

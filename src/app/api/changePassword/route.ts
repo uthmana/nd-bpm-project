@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { hash } from 'bcryptjs';
-import { Prisma } from '@prisma/client';
+import { extractPrismaErrorMessage } from 'utils/prismaError';
+import { User } from '@prisma/client';
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -11,7 +12,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const user = await prisma.user.findUnique({
+    const user: User = await prisma.user.findUnique({
       where: { token: token },
     });
 
@@ -33,14 +34,14 @@ export async function POST(req: Request) {
       { status: 200 },
     );
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }

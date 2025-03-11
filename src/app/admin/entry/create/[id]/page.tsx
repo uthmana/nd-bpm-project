@@ -9,6 +9,7 @@ import { FormSkeleton } from 'components/skeleton';
 import { useSession } from 'next-auth/react';
 import Card from 'components/card';
 import DetailHeader from 'components/detailHeader';
+import { getResError } from 'utils/responseError';
 
 export default function Edit() {
   const router = useRouter();
@@ -26,9 +27,9 @@ export default function Edit() {
 
   useEffect(() => {
     const getSingleFault = async () => {
-      setIsLoading(true);
-      const { status, data } = await getFaultById(queryParams.id);
-      if (status === 200) {
+      try {
+        setIsLoading(true);
+        const { data } = await getFaultById(queryParams.id);
         const customerName = data?.customer.company_name;
         const customerId = data?.customer.id;
 
@@ -43,9 +44,11 @@ export default function Edit() {
           arrivalDate: removeMillisecondsAndUTC(data.arrivalDate),
         });
         setIsLoading(false);
-        return;
+      } catch (error) {
+        const message = getResError(error?.message);
+        toast.error(`${message}`);
+        setIsLoading(true);
       }
-      setIsSubmitting(false);
     };
     if (queryParams.id) {
       getSingleFault();
@@ -57,24 +60,19 @@ export default function Edit() {
     if (!val) return;
     const newVal = { ...val, ...{ updatedBy: session?.user?.name } };
 
-    const resData: any = await updateFault({
-      ...newVal,
-      id: queryParams?.id,
-    });
-    const { status, response } = resData;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Ürün güncelleme başarısız.' + message);
-      log(detail);
-      setIsSubmitting(false);
-      return;
-    }
+    try {
+      await updateFault({
+        ...newVal,
+        id: queryParams?.id,
+      });
 
-    if (status === 200) {
       toast.success('Ürün güncelleme başarılı.');
       router.push(`/admin/entry/${queryParams?.id}`);
       setIsSubmitting(false);
-      return;
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
     }
   };
 

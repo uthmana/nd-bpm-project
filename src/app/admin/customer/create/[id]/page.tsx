@@ -6,6 +6,7 @@ import { getCustomerById, updateCustomer } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import { FormSkeleton } from 'components/skeleton';
 import Card from 'components/card';
+import { getResError } from 'utils/responseError';
 
 export default function Edit() {
   const router = useRouter();
@@ -17,14 +18,15 @@ export default function Edit() {
   useEffect(() => {
     const getSingleCustomer = async () => {
       setIsloading(true);
-      const { status, data } = await getCustomerById(queryParams.id);
-      if (status === 200) {
+      try {
+        const { data } = await getCustomerById(queryParams.id);
         setCustomer(data);
         setIsloading(false);
-        return;
+      } catch (error) {
+        const message = getResError(error?.message);
+        toast.error(`${message}`);
+        setIsloading(false);
       }
-      setIsloading(false);
-      //TODO: handle error
     };
     if (queryParams.id) {
       getSingleCustomer();
@@ -34,18 +36,19 @@ export default function Edit() {
   const handleSubmit = async (val: any) => {
     setIsSubmitting(true);
     if (!val) return;
-    const { status, data } = await updateCustomer({
-      ...val,
-      id: queryParams?.id,
-    });
-    if (status === 200) {
+    try {
+      await updateCustomer({
+        ...val,
+        id: queryParams?.id,
+      });
       toast.success('Müşteri bilgi güncelleme başarılı.');
       router.push('/admin/customer');
       setIsSubmitting(false);
-      return;
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
-    toast.error('Müşteri bilgi güncelleme başarısız.');
   };
 
   return (

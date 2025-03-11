@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import Popup from 'components/popup';
 import Button from 'components/button';
 import { stockSync } from 'app/lib/logoRequest';
+import { getResError } from 'utils/responseError';
 
 const Stock = () => {
   const [stocks, setStocks] = useState([]);
@@ -19,16 +20,20 @@ const Stock = () => {
   const [syncLoading, setSyncLoading] = useState(false);
 
   const getAllStocks = async () => {
-    setIsLoading(true);
-    const { status, data } = await getStocks();
-    if (status === 200) {
+    try {
+      setIsLoading(true);
+      const { data } = await getStocks();
       setStocks(
         data?.map((item) => {
           return { ...item, customerName: item?.customer?.company_name };
         }),
       );
+      setIsLoading(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -41,25 +46,20 @@ const Stock = () => {
   };
 
   const onDelete = async () => {
-    setIsSubmitting(true);
-    const resData: any = await deleteStock(stockId);
+    try {
+      setIsSubmitting(true);
+      await deleteStock(stockId);
 
-    const { status, response } = resData;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Ürün silme işlemi başarısız.' + message);
-      log(detail);
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (status === 200) {
-      toast.success('Ürün silme işlemi başarılı.');
-      setIsSubmitting(false);
-      setIsShowPopUp(false);
       setStocks([]);
       getAllStocks();
-      return;
+      setIsSubmitting(false);
+      setIsShowPopUp(false);
+
+      toast.success('Ürün silme işlemi başarılı.');
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
     }
   };
 
@@ -76,7 +76,8 @@ const Stock = () => {
       getAllStocks();
       setSyncLoading(false);
     } catch (error) {
-      console.log(error);
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
       setSyncLoading(false);
     }
   };

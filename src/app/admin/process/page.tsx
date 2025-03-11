@@ -15,6 +15,7 @@ import Popup from 'components/popup';
 import Button from 'components/button';
 import { useSession } from 'next-auth/react';
 import Select from 'components/select';
+import { getResError } from 'utils/responseError';
 
 const Process = () => {
   const router = useRouter();
@@ -56,26 +57,25 @@ const Process = () => {
   };
 
   const getAllProcess = async () => {
-    setIsLoading(true);
-    const { status, data } = await getEntryWithFilters({
-      where: {
-        status: {
-          in: [
-            'PROSES_ISLENIYOR',
-            'FINAL_KONTROL_BEKLIYOR',
-            'FINAL_KONTROL_RET',
-          ],
+    try {
+      setIsLoading(true);
+      const { data } = await getEntryWithFilters({
+        where: {
+          status: {
+            in: [
+              'PROSES_ISLENIYOR',
+              'FINAL_KONTROL_BEKLIYOR',
+              'FINAL_KONTROL_RET',
+            ],
+          },
         },
-      },
-      include: {
-        process: true,
-      },
-      orderBy: {
-        updatedAt: 'desc',
-      },
-    });
-
-    if (status === 200) {
+        include: {
+          process: true,
+        },
+        orderBy: {
+          updatedAt: 'desc',
+        },
+      });
       const formatedData = data.map((item) => {
         if (item.process[0]) {
           return {
@@ -86,10 +86,13 @@ const Process = () => {
         }
         return item;
       });
-
       setProcess(formatedData);
+      setIsLoading(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {

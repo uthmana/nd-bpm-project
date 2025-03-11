@@ -12,40 +12,22 @@ datasource db {
 }
 
 model User {
-  id              String       @id @default(cuid())
+  id              String     @id @default(cuid())
   name            String
-  email           String?      @unique
+  email           String?    @unique
+  contactNumber   String?    @unique
   password        String?
-  role            UserRole     @default(NORMAL)
-  status          UserStatus   @default(ACTIVE)
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime?    @updatedAt
+  role            UserRole   @default(NORMAL)
+  status          UserStatus @default(ACTIVE)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime?  @updatedAt
   createdBy       String?
   updatedBy       String?
-  token           String?      @unique
+  token           String?    @unique
   tokenExpiryDate DateTime?
-  address         Address?
-  contactInfo     ContactInfo?
+  address         String?
 
   @@map("users")
-}
-
-model Address {
-  id      String  @id @default(cuid())
-  street  String
-  city    String
-  state   String
-  zipCode String
-  userId  String? @unique @default(cuid())
-  user    User?   @relation(fields: [userId], references: [id])
-}
-
-model ContactInfo {
-  id     String @id @default(cuid())
-  phone  String
-  email  String
-  userId String @unique @default(cuid())
-  user   User   @relation(fields: [userId], references: [id])
 }
 
 model Customer {

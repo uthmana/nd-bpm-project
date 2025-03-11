@@ -2,34 +2,30 @@
 import React, { useState } from 'react';
 import StockForm from 'components/forms/stock';
 import { useRouter } from 'next/navigation';
-import { log } from 'utils';
 import { addStock } from '../../../lib/apiRequest';
 import { toast } from 'react-toastify';
 import Card from 'components/card';
+import { getResError } from 'utils/responseError';
 
 export default function Edit() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (val) => {
-    setIsSubmitting(true);
-    const resData: any = await addStock({
-      ...val,
-      inventory: parseInt(val.inventory),
-    });
-    const { status, response } = resData;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Ürün ekleme işlemi başarısız.' + message);
-      log(detail);
-      setIsSubmitting(false);
-      return;
-    }
-    if (status === 200) {
+    try {
+      setIsSubmitting(true);
+      await addStock({
+        ...val,
+        inventory: parseInt(val.inventory),
+      });
+
       toast.success('Stok ekleme işlemi başarılı.');
       router.push('/admin/stock');
       setIsSubmitting(false);
-      return;
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
     }
   };
 

@@ -8,6 +8,7 @@ import { getUserById, updateUser } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import { FormSkeleton } from 'components/skeleton';
 import Card from 'components/card';
+import { getResError } from 'utils/responseError';
 
 export default function Edit() {
   const router = useRouter();
@@ -18,15 +19,18 @@ export default function Edit() {
 
   useEffect(() => {
     const getSingleUser = async () => {
-      setIsloading(true);
-      const { status, data } = await getUserById(queryParams.id);
-      if (status === 200) {
+      try {
+        setIsloading(true);
+        const { data } = await getUserById(queryParams.id);
         setUser(data);
         setIsloading(false);
-        return;
+        setIsSubmitting(false);
+      } catch (error) {
+        const message = getResError(error?.message);
+        toast.error(`${message}`);
+        setIsloading(false);
+        setIsSubmitting(false);
       }
-      setIsSubmitting(false);
-      //TODO: handle error
     };
     if (queryParams.id) {
       getSingleUser();
@@ -34,22 +38,18 @@ export default function Edit() {
   }, [queryParams?.id]);
 
   const handleSubmit = async (val) => {
-    setIsSubmitting(true);
     if (!val) return;
-    const resData: any = await updateUser({ ...val, id: queryParams?.id });
-    const { status, response } = resData;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Kullanıcı güncelleme başarısız.' + message);
-      log(detail);
-      setIsSubmitting(false);
-      return;
-    }
-    if (status === 200) {
+    try {
+      setIsSubmitting(true);
+      await updateUser({ ...val, id: queryParams?.id });
+
       toast.success('Kullanıcı güncelleme başarılı.');
       router.push('/admin/users');
       setIsSubmitting(false);
-      return;
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
     }
   };
 

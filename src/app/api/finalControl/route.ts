@@ -1,47 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
-import { FinalControl, Prisma } from '@prisma/client';
-import { checkUserRole } from 'utils/auth';
+import { FinalControl } from '@prisma/client';
+import { extractPrismaErrorMessage } from 'utils/prismaError';
 
 //All Final Control
 export async function GET(req: NextRequest) {
   try {
-    const allowedRoles = ['SUPER', 'ADMIN'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json(
-        { message: 'Access forbidden' },
-        { status: 403 },
-      );
-    }
     const finalControl = await prisma.finalControl.findMany();
-
     return NextResponse.json(finalControl, { status: 200 });
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }
 
 // Create Final Control
 export async function PUT(req: Request) {
   try {
-    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER', 'TECH'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json(
-        { message: 'Access forbidden' },
-        { status: 403 },
-      );
-    }
-
     const result: FinalControl | any = await req.json();
     const { faultId, result: controlReult } = result;
 
@@ -81,16 +63,14 @@ export async function PUT(req: Request) {
 
     return NextResponse.json(finalControl, { status: 200 });
   } catch (e) {
-    console.log(e);
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      console.log({ e });
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }

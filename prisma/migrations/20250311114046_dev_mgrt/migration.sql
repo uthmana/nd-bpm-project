@@ -42,6 +42,7 @@ CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT,
+    "contactNumber" TEXT,
     "password" TEXT,
     "role" "UserRole" NOT NULL DEFAULT 'NORMAL',
     "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
@@ -51,30 +52,9 @@ CREATE TABLE "users" (
     "updatedBy" TEXT,
     "token" TEXT,
     "tokenExpiryDate" TIMESTAMP(3),
+    "address" TEXT,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Address" (
-    "id" TEXT NOT NULL,
-    "street" TEXT NOT NULL,
-    "city" TEXT NOT NULL,
-    "state" TEXT NOT NULL,
-    "zipCode" TEXT NOT NULL,
-    "userId" TEXT,
-
-    CONSTRAINT "Address_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "ContactInfo" (
-    "id" TEXT NOT NULL,
-    "phone" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-
-    CONSTRAINT "ContactInfo_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -468,13 +448,10 @@ CREATE TABLE "Standards" (
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "users_contactNumber_key" ON "users"("contactNumber");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "users_token_key" ON "users"("token");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Address_userId_key" ON "Address"("userId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "ContactInfo_userId_key" ON "ContactInfo"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Stock_faultId_key" ON "Stock"("faultId");
@@ -484,12 +461,6 @@ CREATE UNIQUE INDEX "FaultControl_faultId_key" ON "FaultControl"("faultId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "FinalControl_faultId_key" ON "FinalControl"("faultId");
-
--- AddForeignKey
-ALTER TABLE "Address" ADD CONSTRAINT "Address_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ContactInfo" ADD CONSTRAINT "ContactInfo_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Stock" ADD CONSTRAINT "Stock_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE CASCADE ON UPDATE CASCADE;

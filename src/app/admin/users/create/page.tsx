@@ -6,26 +6,23 @@ import { log } from 'utils';
 import { register } from '../../../lib/apiRequest';
 import { toast } from 'react-toastify';
 import Card from 'components/card';
+import { getResError } from 'utils/responseError';
 
 export default function Create() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const handleSubmit = async (val) => {
-    setIsSubmitting(true);
-    const resData: any = await register(val);
-    const { status, response } = resData;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Yeni kullanıncı ekleme işlemi başarısız.' + message);
-      log(detail);
-      setIsSubmitting(false);
-      return;
-    }
-    if (status === 200) {
+    try {
+      setIsSubmitting(true);
+      await register(val);
+
       router.push('/admin/users');
       toast.success('Yeni kullanıncı ekleme işlemi başarılı.');
       setIsSubmitting(false);
-      return;
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
     }
   };
 

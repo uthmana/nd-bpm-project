@@ -616,6 +616,19 @@ function MainTable({
               </p>
             ),
           }),
+          columnHelper.accessor('contactNumber', {
+            id: 'contactNumber',
+            header: () => (
+              <p className="whitespace-nowrap break-keep text-sm font-bold text-gray-600 dark:text-white">
+                TELEFON
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
           columnHelper.accessor('email', {
             id: 'email',
             header: () => (
@@ -786,11 +799,10 @@ function MainTable({
                     <tr
                       key={row.id}
                       className="border-b border-gray-100 hover:bg-lightPrimary dark:border-gray-900 dark:hover:bg-navy-700"
-                      // onDoubleClick={() => onDoubleClick(row.original.id)}
                     >
                       {row.getVisibleCells().map((cell, indx) => {
                         return (
-                          <td key={cell.id + indx} className="p-2">
+                          <td key={cell.id + indx} className="py-2 pr-2">
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext(),

@@ -1,12 +1,10 @@
-import { authOptions } from '../../lib/authOptions';
-import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
-import { Prisma } from '@prisma/client';
 import prisma from 'app/lib/db';
+import { extractPrismaErrorMessage } from 'utils/prismaError';
 
 export async function GET(req: NextRequest) {
   try {
-    const [applications, standards, color] = await Promise.all([
+    const [applications, standards, color] = await prisma.$transaction([
       prisma.applications.findMany(),
       prisma.standards.findMany(),
       prisma.colors.findMany(),
@@ -21,15 +19,14 @@ export async function GET(req: NextRequest) {
       { status: 200 },
     );
   } catch (e) {
-    console.log({ e });
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }

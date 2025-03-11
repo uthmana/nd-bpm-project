@@ -135,6 +135,7 @@ import { toast } from 'react-toastify';
 import Popup from 'components/popup';
 import Button from 'components/button';
 import { useSession } from 'next-auth/react';
+import { getResError } from 'utils/responseError';
 
 const Entry = () => {
   const router = useRouter();
@@ -149,19 +150,24 @@ const Entry = () => {
   const [searchText, setSearchText] = useState(searchVal || '');
 
   const getAllFaults = async () => {
-    setIsLoading(true);
-    const { status, data } = await getEntryWithFilters({
-      include: {
-        customer: true,
-      },
-      orderBy: {
-        updatedAt: 'desc',
-      },
-    });
-    if (status === 200) {
+    try {
+      setIsLoading(true);
+      const { data } = await getEntryWithFilters({
+        include: {
+          customer: true,
+        },
+        orderBy: {
+          updatedAt: 'desc',
+        },
+      });
+
       setFaults(data);
+      setIsLoading(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -171,14 +177,6 @@ const Entry = () => {
   useEffect(() => {
     setSearchText(searchVal || '');
   }, [searchVal]);
-
-  const onAdd = () => {
-    router.push('/admin/entry/create');
-  };
-
-  const onEdit = (val) => {
-    router.push(`/admin/entry/create/${val}`);
-  };
 
   const onControl = (val) => {
     router.push(`/admin/entry/${val}`);
@@ -190,25 +188,20 @@ const Entry = () => {
   };
 
   const onDelete = async () => {
-    setIsSubmitting(true);
-    const resFault: any = await deleteFault(faultId);
+    try {
+      setIsSubmitting(true);
+      await deleteFault(faultId);
 
-    const { status, response } = resFault;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Ürün silmeişlemi başarısız.' + message);
-      log(detail);
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (status === 200) {
-      toast.success('Ürün silme işlemi başarılı.');
-      setIsSubmitting(false);
-      setIsShowPopUp(false);
       setFaults([]);
       getAllFaults();
-      return;
+      toast.success('Ürün silme işlemi başarılı.');
+      setIsShowPopUp(false);
+      setIsSubmitting(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsShowPopUp(false);
+      setIsSubmitting(false);
     }
   };
 

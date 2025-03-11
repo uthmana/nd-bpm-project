@@ -154,6 +154,7 @@ export type UserObj = {
   id: string;
   name: string;
   email: string;
+  contactNumber: string;
   role: string;
   status: string;
   createdAt: string;

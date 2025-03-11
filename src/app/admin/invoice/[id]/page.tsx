@@ -22,6 +22,7 @@ import UploadInvoicePDF from 'components/invoice/invoicePdf';
 import { useSession } from 'next-auth/react';
 import { sendDispatchToLogo } from 'app/lib/logoRequest';
 import { Invoice } from 'app/localTypes/types';
+import { getResError } from 'utils/responseError';
 
 export default function Invoices() {
   const [isLoading, setIsLoading] = useState(false);
@@ -44,12 +45,16 @@ export default function Invoices() {
 
   const getSingleInvoice = async (id) => {
     setIsLoading(true);
-    const { status, data } = await getInvoiceById(id);
-    if (status === 200) {
+    try {
+      const { data } = await getInvoiceById(id);
       setInvoice(data);
       setValues({ email: data?.customer?.email });
+      setIsLoading(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(message);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
   const getNewInvoice = async (id) => {
     try {
@@ -73,7 +78,8 @@ export default function Invoices() {
       });
       setValues({ email: rest?.email });
     } catch (err) {
-      console.log(err);
+      const message = getResError(err?.message);
+      toast.error(message);
     }
   };
 
@@ -137,16 +143,16 @@ export default function Invoices() {
   };
   const onInoviceComplete = async () => {
     setIsInvoiceSubmiting(true);
+    let currentInvoice: Invoice;
 
     try {
-      let data;
       let docPath = invoice?.docPath;
-
       const invoiceData = {
         ...invoice,
         status: 'PAID',
       };
 
+      // create invoice pdf
       if (!invoice?.docPath) {
         const { data: barcodeData } = await getBarcodeBase64({
           code: invoice.barcode,
@@ -159,49 +165,33 @@ export default function Invoices() {
 
       if (!invoice?.id) {
         // Add invoice
-        ({ data } = await addInvoice({
+        const { data } = await addInvoice({
           ...invoiceData,
           createdBy: session?.user?.name,
           docPath,
-        }));
+        });
+        setInvoice(data);
       } else {
         // Update invoice
-        ({ data } = await updateInvoice({
+        const { data } = await updateInvoice({
           ...invoiceData,
           id: queryParams?.id,
           docPath,
           updatedBy: session?.user?.name,
-        }));
+        });
+        setInvoice(data);
       }
-      setInvoice(data);
+      //send To Logo
+      const { data }: any = await sendDispatchToLogo(invoice);
+
+      toast.success(`Logoya gönderme işlemi başarılı ${data.NUMBER}`);
+      router.push(`/admin/invoice/${invoice?.id}`);
       setIsInvoiceSubmiting(false);
-      router.push(`/admin/invoice/${data?.id}`);
     } catch (err) {
-      console.error(err);
+      const message = getResError(err?.message);
+      toast.error(`Logoya başarıyla içeriye alamadı ${message}`);
       setIsInvoiceSubmiting(false);
-    }
-
-    //send To Logo
-    try {
-      const logores: any = await sendDispatchToLogo(invoice);
-      const { status: logoStatus, data: logoResData, response } = logores;
-
-      if (logoStatus === 200) {
-        toast.success(`Logoya gönderme işlemi başarılı ${logoResData.NUMBER}`);
-        router.push(`/admin/invoice/${invoice?.id}`);
-        setIsInvoiceSubmiting(false);
-      }
-
-      if (response?.error) {
-        const { message, detail } = response?.error;
-        toast.error(`Logoya başarıyla içeriye alamadı ${message}`);
-        log(detail);
-        setIsInvoiceSubmiting(false);
-        return;
-      }
-    } catch (error) {
-      console.error('Logoya gönderme hatası:', error);
-      toast.error(`Logoya başarıyla içeriye alamadı: ${error}`);
+      return;
     }
   };
 
@@ -270,15 +260,13 @@ export default function Invoices() {
               icon={<MdPrint className="mr-1 h-5 w-5" />}
             />
             <Button
-              extra={`px-8 h-[40px] max-w-[300px] ${
-                invoice.status === 'PAID' ? 'opacity-25' : ''
-              }`}
+              extra={`px-8 h-[40px] max-w-[300px]`}
               onClick={onInoviceComplete}
               text={`SEVKİYAT ${
                 invoice.status !== 'PAID' ? 'TAMAMLA' : 'TAMAMLANDI'
               }`}
               icon={<MdOutlinePayment className="mr-1 h-5 w-5" />}
-              disabled={invoice.status === 'PAID'}
+              disabled={invoice.status === 'PAIDS'}
               loading={isInvoiceSubmiting}
             />
           </div>

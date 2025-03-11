@@ -1,20 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '../../../lib/db';
-import { Prisma, Stock } from '@prisma/client';
-import { checkUserRole } from 'utils/auth';
+import prisma from 'app/lib/db';
+import { Stock } from '@prisma/client';
+import { extractPrismaErrorMessage } from 'utils/prismaError';
 
 //Get single Stock
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
   try {
-    //check roles and permission of user
-    const allowedRoles = ['SUPER', 'ADMIN', 'NORMAL', 'TECH'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json(
-        { message: 'Access forbidden' },
-        { status: 403 },
-      );
-    }
     const id = route.params.id;
     const stock: Stock = await prisma.stock.findUnique({
       where: { id: id },
@@ -22,16 +13,15 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     });
     return NextResponse.json(stock, { status: 200 });
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      console.log(e);
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -48,7 +38,6 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         { status: 401 },
       );
     }
-    console.log(result);
 
     const stock: Stock = await prisma.stock.findUnique({
       where: { id },
@@ -65,16 +54,15 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
 
     return NextResponse.json(updateStock, { status: 200 });
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      console.log(e);
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -92,14 +80,14 @@ export async function DELETE(
     });
     return NextResponse.json(deletedStock, { status: 200 });
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }

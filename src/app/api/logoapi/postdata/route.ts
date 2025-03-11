@@ -1,8 +1,8 @@
-import { Prisma } from '@prisma/client';
 import { ClientInfo } from 'app/lib/logoRequest';
 import ApiClient from 'app/lib/logoRequest/request';
 import { NextResponse } from 'next/server';
 import { env } from 'process';
+import { extractPrismaErrorMessage } from 'utils/prismaError';
 
 export async function PUT(req: Request) {
   try {
@@ -17,8 +17,6 @@ export async function PUT(req: Request) {
       username: env.LOGO_USERNAME,
     };
 
-    console.log(clientinfo);
-
     const client = new ApiClient(clientinfo);
     client.requestAccessToken('token');
     console.log(client.getAccessToken());
@@ -26,23 +24,21 @@ export async function PUT(req: Request) {
     const sales = await client.post('salesDispatches', resp['data']);
     return NextResponse.json(sales);
   } catch (e) {
-    console.log({ e });
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }
-/*************  ✨ Codeium Command 🌟  *************/
 
 export async function POST(req: Request) {
   try {
-    var logodata = await req.json();
+    const logodata = await req.json();
 
     const clientinfo: ClientInfo = {
       clientId: env.LOGO_CLIENT_ID,
@@ -55,20 +51,18 @@ export async function POST(req: Request) {
 
     const client = new ApiClient(clientinfo);
     await client.requestAccessToken('token');
-
     const sales = await client.post('salesDispatches', logodata);
-    /*************  ✨ Codeium Command 🌟  *************/
+
     return NextResponse.json({ NUMBER: sales['NUMBER'] }, { status: 200 });
   } catch (e) {
-    console.log({ e });
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }

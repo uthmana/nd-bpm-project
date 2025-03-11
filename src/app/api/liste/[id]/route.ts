@@ -1,5 +1,5 @@
-import { Prisma } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
+import { extractPrismaErrorMessage } from 'utils/prismaError';
 
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
   try {
@@ -18,7 +18,6 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
           createdAt: true,
           arrivalDate: true,
           faultDescription: true,
-          customerName: true,
           invoiceDate: true,
           standard: true,
           status: true,
@@ -31,17 +30,13 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
           },
         },
       }),
-      prisma.process.findUnique({
+      prisma.process.findFirst({
         where: { faultId: id },
         select: {
           createdAt: true,
           createdBy: true,
-          shipmentQty: true,
-          product_barcode: true,
           status: true,
           machineName: true,
-          price: true,
-          productCode: true,
         },
       }),
       prisma.faultControl.findUnique({
@@ -69,15 +64,12 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
         select: { name: true, id: true },
       }),
       prisma.invoice.findMany({
-        where: { process: { some: { faultId: id } } },
-
+        where: { Fault: { some: { id } } },
         select: {
           invoiceDate: true,
           amount: true,
-          address: true,
           createdAt: true,
           createdBy: true,
-          tax_Office: true,
           status: true,
           totalAmount: true,
         },
@@ -110,14 +102,14 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
       { status: 200 },
     );
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }

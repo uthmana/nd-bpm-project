@@ -7,18 +7,24 @@ import ColorList from 'components/settings/colorList';
 import { useEffect, useState } from 'react';
 import { getFaultSettings } from 'app/lib/apiRequest';
 import { SettingsSkeleton } from 'components/skeleton';
+import { getResError } from 'utils/responseError';
+import { toast } from 'react-toastify';
 
 const Setting = () => {
   const [apps, setApps] = useState([] as any);
   const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
-      const { status, data } = await getFaultSettings();
-      if (status === 200) {
+      try {
+        setIsLoading(true);
+        const { data } = await getFaultSettings();
         setApps(data);
+        setIsLoading(false);
+      } catch (error) {
+        const message = getResError(error?.message);
+        toast.error(`${message}`);
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
     fetchData();
   }, []);

@@ -297,3 +297,10 @@ export const generateProductCode = (name, index) => {
 export const generateRandomThreeDigitNumber = () => {
   return Math.floor(Math.random() * 900) + 100;
 };
+
+export const generateUniqueId = () => {
+  const prefix = 'TES';
+  const timestamp = Date.now().toString();
+  const randomSuffix = Math.floor(100 + Math.random() * 900);
+  return `${prefix}${timestamp.slice(-7)}${randomSuffix}`;
+};

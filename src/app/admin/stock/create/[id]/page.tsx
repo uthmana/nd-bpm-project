@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { getStockById, updateStock } from 'app/lib/apiRequest';
 import { FormSkeleton } from 'components/skeleton';
 import Card from 'components/card';
+import { getResError } from 'utils/responseError';
 
 export default function Edit() {
   const router = useRouter();
@@ -18,13 +19,14 @@ export default function Edit() {
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
       try {
+        setIsLoading(true);
         const { data } = await getStockById(queryParams.id);
         setStock({ ...data, company_name: data.customer?.company_name });
         setIsLoading(false);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        const message = getResError(error?.message);
+        toast.error(`${message}`);
         setIsLoading(false);
       }
     };
@@ -35,23 +37,19 @@ export default function Edit() {
   }, [queryParams?.id]);
 
   const handleSubmit = async (val) => {
-    setIsSubmitting(true);
     if (!val) return;
     delete val.customer;
-    const resData: any = await updateStock({ ...val, id: queryParams?.id });
-    const { status, response } = resData;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Ürün güncelleme başarısız.' + message);
-      log(detail);
-      setIsSubmitting(false);
-      return;
-    }
-    if (status === 200) {
-      toast.success('Ürün güncelleme başarılı.');
+    try {
+      setIsSubmitting(true);
+      await updateStock({ ...val, id: queryParams?.id });
+
       router.push('/admin/stock');
       setIsSubmitting(false);
-      return;
+      toast.success('Ürün güncelleme başarılı.');
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
     }
   };
 

@@ -12,6 +12,7 @@ type data = {
   name: string;
   email: string;
   password: string;
+  contactNumber: string;
   role: string;
   status: string;
 };
@@ -23,14 +24,23 @@ type userForm = {
   loading: boolean;
 };
 
-export default function User({ onSubmit, data, title, loading }: userForm) {
+export default function User(props: userForm) {
+  const { onSubmit, data, title, loading } = props;
+
   const role = ['ADMIN', 'SUPER', 'NORMAL', 'TECH'];
   const status = ['ACTIVE', 'PASSIVE'];
   const [error, setError] = useState(false);
 
   const initialValues = data
     ? data
-    : { name: '', email: '', password: '', role: 'NORMAL', status: 'ACTIVE' };
+    : {
+        name: '',
+        email: '',
+        contactNumber: '',
+        password: '',
+        role: 'NORMAL',
+        status: 'ACTIVE',
+      };
   const [values, setValues] = useState(initialValues);
 
   const handleValues = (event) => {
@@ -51,7 +61,7 @@ export default function User({ onSubmit, data, title, loading }: userForm) {
       setError(true);
       return;
     }
-
+    log(values);
     onSubmit(values);
   };
 
@@ -90,6 +100,18 @@ export default function User({ onSubmit, data, title, loading }: userForm) {
         value={values.name}
         required={true}
       />
+      <InputField
+        label="Telefon"
+        onChange={handleValues}
+        type="phone"
+        id="phone"
+        name="contactNumber"
+        placeholder="(5XX) XXX XX XX"
+        extra="mb-2"
+        value={values.contactNumber}
+        required={true}
+      />
+
       <InputField
         label="E-posta"
         onChange={handleValues}

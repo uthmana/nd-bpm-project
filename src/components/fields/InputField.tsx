@@ -75,14 +75,29 @@ function InputField(props: {
     return e;
   };
 
+  const formatTurkishPhone = (e) => {
+    let value = e.target.value;
+    let cleaned = value.replace(/\D/g, '');
+    if (cleaned.length > 10) cleaned = cleaned.substring(0, 10);
+
+    let formatted = '';
+    if (cleaned.length > 0) formatted += `(${cleaned.substring(0, 3)}`;
+    if (cleaned.length >= 4) formatted += `) ${cleaned.substring(3, 6)}`;
+    if (cleaned.length >= 7) formatted += ` ${cleaned.substring(6, 8)}`;
+    if (cleaned.length >= 9) formatted += ` ${cleaned.substring(8, 10)}`;
+    e.target.value = formatted;
+
+    return e;
+  };
+
   const handleChange = (e, format) => {
-    if (type === 'currency') {
+    if (type === 'currency' || type === 'quantity') {
       const value = currencyMask(e, format);
       onChange(value);
       return;
     }
-    if (type === 'quantity') {
-      const value = currencyMask(e, format);
+    if (type === 'phone') {
+      const value = formatTurkishPhone(e);
       onChange(value);
       return;
     }

@@ -1,9 +1,6 @@
 import { Invoice } from 'app/localTypes/types';
 import { fetchAPI } from '../apiRequest/request';
-
-export async function postlogoDispatch(payload) {
-  return fetchAPI('logoapi/postdata', 'post', payload);
-}
+import { generateUniqueId } from 'utils';
 
 export async function customerSync() {
   return fetchAPI('logoapi/customersync', 'post');
@@ -11,13 +8,6 @@ export async function customerSync() {
 
 export async function stockSync() {
   return fetchAPI('logoapi/stocksync', 'post');
-}
-
-function generateUniqueId() {
-  const prefix = 'TES';
-  const timestamp = Date.now().toString(); // Current time in milliseconds
-  const randomSuffix = Math.floor(100 + Math.random() * 900); // Random 3-digit number
-  return `${prefix}${timestamp.slice(-7)}${randomSuffix}`;
 }
 
 export const sendDispatchToLogo = async (invoice: Invoice) => {
@@ -64,11 +54,5 @@ export const sendDispatchToLogo = async (invoice: Invoice) => {
     EINVOICE_PLATENUM1: '.',
     EINVOICE_CHASSISNUM1: '.',
   };
-
-  try {
-    const respponse = await postlogoDispatch(JSON.stringify(logodata));
-    return respponse;
-  } catch (err) {
-    return err;
-  }
+  return fetchAPI('logoapi/postdata', 'post', JSON.stringify(logodata));
 };

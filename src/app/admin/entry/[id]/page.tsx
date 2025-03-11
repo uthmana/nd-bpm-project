@@ -28,6 +28,8 @@ import Select from 'components/select';
 import TechParamsTable from 'components/admin/data-tables/techParamsTable';
 import FinalControl from 'components/forms/finalControl';
 import EntryControlForm from 'components/forms/faultControl';
+import { getResError } from 'utils/responseError';
+import { toast } from 'react-toastify';
 
 export default function Edit() {
   const router = useRouter();
@@ -44,7 +46,6 @@ export default function Edit() {
   const [isPrecessSubmitting, setIsPrecessSubmitting] = useState(false);
   const [finalControl, setFinalControl] = useState([] as any);
   const [finalControlFormData, setFinalControlFormData] = useState({} as any);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const detailData = {
     title: 'Ürün Detayi',
@@ -56,33 +57,34 @@ export default function Edit() {
 
   useEffect(() => {
     const getSingleFault = async () => {
-      setIsLoading(true);
-      const { status, data } = await getFaultByIdWithFilter({
-        id: queryParams.id,
-        filters: {
-          faultControl: true,
-          unacceptable: true,
-          finalControl: {
-            include: {
-              testItem: true,
-              testArea: true,
+      try {
+        setIsLoading(true);
+        const { data } = await getFaultByIdWithFilter({
+          id: queryParams.id,
+          filters: {
+            faultControl: true,
+            unacceptable: true,
+            finalControl: {
+              include: {
+                testItem: true,
+                testArea: true,
+              },
             },
-          },
-          defaultTechParameter: true,
-          customer: true,
-          process: {
-            include: {
-              technicalParams: true,
-              machine: {
-                include: {
-                  machineParams: true,
+            defaultTechParameter: true,
+            customer: true,
+            process: {
+              include: {
+                technicalParams: true,
+                machine: {
+                  include: {
+                    machineParams: true,
+                  },
                 },
               },
             },
           },
-        },
-      });
-      if (status === 200) {
+        });
+
         setFault({
           customerName: data?.customer?.company_name,
           ...data,
@@ -99,11 +101,12 @@ export default function Edit() {
           finalControl: data?.finalControl?.[0] || {},
           machineName: data?.process?.[0]?.machine?.[0]?.machine_Name || '',
         });
-
         setIsLoading(false);
-        return;
+      } catch (error) {
+        const message = getResError(error?.message);
+        toast.error(`${message}`);
+        setIsLoading(false);
       }
-      setIsSubmitting(false);
     };
     if (queryParams.id) {
       getSingleFault();
@@ -135,11 +138,15 @@ export default function Edit() {
   };
 
   const handleProcessStart = async () => {
-    const { status, data } = await getMachines();
-    if (status === 200) {
+    try {
+      const { data } = await getMachines();
       setMachines(data);
       setIsShowMachinePopUp(true);
       return;
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsShowMachinePopUp(false);
     }
   };
 
@@ -153,11 +160,12 @@ export default function Edit() {
       if (data.id) {
         router.push(`/admin/process/create/${data.id}`);
       }
-    } catch (err) {
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
       setIsShowMachinePopUp(false);
       setIsPrecessSubmitting(false);
     }
-    return;
   };
 
   const handleMachineSelect = (event) => {

@@ -101,7 +101,6 @@ function MiniTable({
               </p>
             ),
           }),
-
           columnHelper.accessor('rep_name', {
             id: 'rep_name',
             header: () => (
@@ -203,6 +202,22 @@ function MiniTable({
               </p>
             ),
           }),
+          columnHelper.accessor('status', {
+            id: 'status',
+            header: () => (
+              <p className="min-w-[120px]  whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
+                PROSES DURUMU
+              </p>
+            ),
+            cell: (info: any) => (
+              <div className="flex min-w-[100px] items-center">
+                {statusbgColor(info.getValue())}
+                <p className="text-sm font-bold text-navy-700 dark:text-white">
+                  {entryStatus[info.getValue()]}
+                </p>
+              </div>
+            ),
+          }),
           columnHelper.accessor('product', {
             id: 'product',
             header: () => (
@@ -290,22 +305,6 @@ function MiniTable({
               </p>
             ),
           }),
-          columnHelper.accessor('status', {
-            id: 'status',
-            header: () => (
-              <p className="min-w-[120px]  whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
-                PROSES DURUMU
-              </p>
-            ),
-            cell: (info: any) => (
-              <div className="flex min-w-[100px] items-center">
-                {statusbgColor(info.getValue())}
-                <p className="text-sm font-bold text-navy-700 dark:text-white">
-                  {entryStatus[info.getValue()]}
-                </p>
-              </div>
-            ),
-          }),
         ];
         break;
     }
@@ -339,7 +338,6 @@ function MiniTable({
       <h2 className="text-lg font-bold text-navy-700 dark:text-white">
         {title}
       </h2>
-
       <div
         className="custom-scrollbar--hidden mt-2 overflow-x-scroll"
         onMouseDown={handleMouseDown}

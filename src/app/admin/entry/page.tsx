@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import Popup from 'components/popup';
 import Button from 'components/button';
 import { useSession } from 'next-auth/react';
+import { getResError } from 'utils/responseError';
 
 const Entry = () => {
   const router = useRouter();
@@ -24,28 +25,32 @@ const Entry = () => {
   const [searchText, setSearchText] = useState(searchVal || '');
 
   const getAllFaults = async () => {
-    setIsLoading(true);
-    const { status, data } = await getEntryWithFilters({
-      where: {
-        status: {
-          in: [
-            'PROSES_BEKLIYOR',
-            'GIRIS_KONTROL_BEKLIYOR',
-            'GIRIS_KONTROL_RET',
-          ],
+    try {
+      setIsLoading(true);
+      const { data } = await getEntryWithFilters({
+        where: {
+          status: {
+            in: [
+              'PROSES_BEKLIYOR',
+              'GIRIS_KONTROL_BEKLIYOR',
+              'GIRIS_KONTROL_RET',
+            ],
+          },
         },
-      },
-      include: {
-        customer: true,
-      },
-      orderBy: {
-        updatedAt: 'desc',
-      },
-    });
-    if (status === 200) {
+        include: {
+          customer: true,
+        },
+        orderBy: {
+          updatedAt: 'desc',
+        },
+      });
       setFaults(data);
+      setIsLoading(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {

@@ -1,17 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '../../../lib/db';
-import { checkUserRole } from 'utils/auth';
+import prisma from 'app/lib/db';
 import { validateCustomerSchema } from 'utils';
-import { CardType, Currency, Customer, Prisma } from '@prisma/client';
+import { Customer } from '@prisma/client';
+import { extractPrismaErrorMessage } from 'utils/prismaError';
 
 //Get single customer
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
   try {
-    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER', 'TECH'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
-    }
     const id = route.params.id;
     const customer = await prisma.customer.findUnique({
       where: { id },
@@ -21,27 +16,21 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     });
     return NextResponse.json(customer);
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }
 
 //Update Customer
 export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
-    const allowedRoles = ['NORMAL', 'ADMIN', 'SUPER', 'TECH'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json({ error: 'Access forbidden', status: 403 });
-    }
-
     const id = route.params.id;
     const newCustomerData: Customer = await req.json();
 
@@ -69,15 +58,15 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
     });
     return NextResponse.json(updateCustomer, { status: 200 });
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -87,15 +76,6 @@ export async function DELETE(
   route: { params: { id: string } },
 ) {
   try {
-    const allowedRoles = ['ADMIN'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json(
-        { message: 'Access forbidden' },
-        { status: 403 },
-      );
-    }
-
     const id = route.params.id;
     const deletedCustomer = await prisma.customer.delete({
       where: {
@@ -104,14 +84,14 @@ export async function DELETE(
     });
     return NextResponse.json(deletedCustomer, { status: 200 });
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }

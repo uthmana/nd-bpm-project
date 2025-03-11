@@ -1,17 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '../../lib/db';
-import { Offer, OfferItem, Prisma } from '@prisma/client';
-import { checkUserRole } from 'utils/auth';
+import prisma from 'app/lib/db';
+import { Offer, Prisma } from '@prisma/client';
 import { sendOffer } from 'app/lib/apiRequest';
+import { extractPrismaErrorMessage } from 'utils/prismaError';
 
 //All offers
 export async function GET(req: NextRequest) {
-  const allowedRoles = ['ADMIN'];
-  const hasrole = await checkUserRole(allowedRoles);
-  if (!hasrole) {
-    return NextResponse.json({ message: 'Access forbidden' }, { status: 403 });
-  }
-
   const offers = await prisma.offer.findMany({
     include: { Customer: true, product: true },
     orderBy: { createdAt: 'desc' },
@@ -73,15 +67,14 @@ export async function PUT(req: NextRequest) {
     }
     return NextResponse.json(offer, { status: 200 });
   } catch (e) {
-    console.log({ e });
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }

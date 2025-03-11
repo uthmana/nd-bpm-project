@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
+import { hash } from 'bcryptjs';
+import { User } from '@prisma/client';
 import { extractPrismaErrorMessage } from 'utils/prismaError';
 
-//All  machine
+//All users
 export async function GET(req: NextRequest) {
   try {
-    const machine = await prisma.machine.findMany({
-      include: { machineParams: true },
+    const users = await prisma.user.findMany({
+      orderBy: { createdAt: 'desc' },
     });
-
-    return NextResponse.json(machine, { status: 200 });
+    return NextResponse.json(users, { status: 200 });
   } catch (e) {
     console.error('Prisma Error:', e);
     const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
@@ -23,27 +24,29 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// Create  machine
+// Create user
 export async function PUT(req: Request) {
   try {
-    const reqBody: any = await req.json();
-    const { machine: machineData, params } = reqBody;
-    if (!machineData.machine_Name) {
-      throw new Error('Missing required field');
+    const result: User = await req.json();
+    if (!result.name || !result.email || !result.password) {
+      return NextResponse.json(
+        { message: 'You are missing a required data' },
+        { status: 401 },
+      );
     }
-    const machine = await prisma.machine.create({
-      data: machineData,
+    const { name, role, status, email, password, contactNumber } = result;
+    const hashed_password = await hash(password, 12);
+    const user = await prisma.user.create({
+      data: {
+        name,
+        role,
+        status,
+        contactNumber,
+        email,
+        password: hashed_password,
+      },
     });
-
-    const machineParamsData = params.map((item) => {
-      return { machineId: machine.id, param_name: item.param_name };
-    });
-
-    const machineParams = await prisma.machineParams.createMany({
-      data: machineParamsData,
-    });
-
-    return NextResponse.json(machineParams, { status: 200 });
+    return NextResponse.json({ user }, { status: 200 });
   } catch (e) {
     console.error('Prisma Error:', e);
     const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);

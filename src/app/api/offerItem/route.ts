@@ -1,19 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '../../lib/db';
-import { OfferItem, Prisma } from '@prisma/client';
-import { checkUserRole } from 'utils/auth';
+import prisma from 'app/lib/db';
+import { OfferItem } from '@prisma/client';
+import { extractPrismaErrorMessage } from 'utils/prismaError';
 
 //All offers
 export async function GET(req: NextRequest) {
-  const allowedRoles = [ 'ADMIN'];
-  const hasrole = await checkUserRole(allowedRoles);
-  if (!hasrole) {
-    return NextResponse.json({ message: 'Access forbidden' }, { status: 403 });
+  try {
+    const offers = await prisma.offerItem.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+    return NextResponse.json(offers, { status: 200 });
+  } catch (e) {
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
-  const offers = await prisma.offerItem.findMany({
-    orderBy: { createdAt: 'desc' },
-  });
-  return NextResponse.json(offers, { status: 200 });
 }
 
 export async function PUT(req: NextRequest) {
@@ -31,15 +38,14 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json(offerItem, { status: 200 });
   } catch (e) {
-    console.log(e);
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }

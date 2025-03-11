@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { env } from 'process';
 import ApiClient, { ClientInfo } from 'app/lib/logoRequest/request';
 import prisma from 'app/lib/db';
+import { extractPrismaErrorMessage } from 'utils/prismaError';
 
 export async function POST(req: Request) {
   try {
@@ -117,19 +118,13 @@ export async function POST(req: Request) {
       { status: 200 },
     );
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      console.error('Prisma Error:', e);
-      return NextResponse.json({ message: e.message }, { status: 403 });
-    }
-
-    console.error('Unknown Error:', e);
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
     return NextResponse.json(
-      { message: 'Internal Server Error' },
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
       { status: 500 },
     );
   }

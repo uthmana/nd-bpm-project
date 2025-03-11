@@ -1,26 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkUserRole } from 'utils/auth';
-import { Offer, Prisma } from '@prisma/client';
+import { Offer } from '@prisma/client';
 import { sendOffer } from 'app/lib/apiRequest';
-import prisma from '../../../lib/db';
+import prisma from 'app/lib/db';
+import { extractPrismaErrorMessage } from 'utils/prismaError';
 
 //Get single offer
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
   try {
-    const allowedRoles = ['ADMIN'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json(
-        { message: 'Access forbidden' },
-        { status: 403 },
-      );
-    }
-    //TODO: findUnique is not working in prod
-    //const id = route.params.id;
-    // const offer: Offer = await prisma.offer.findUnique({
-    //   where: { id: id },
-    //   include: { product: true, Customer: true },
-    // });
     const id = route.params.id;
     const offer = await prisma.offer.findUnique({
       where: { id },
@@ -29,31 +15,21 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
 
     return NextResponse.json(offer, { status: 200 });
   } catch (e) {
-    console.error('Error fetching offer:', e);
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json({ message: e }, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }
 
 //Update offer
 export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
-    const allowedRoles = ['ADMIN'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json(
-        { message: 'Access forbidden' },
-        { status: 403 },
-      );
-    }
-
     const id = route.params.id;
     const result: any = await req.json();
     const offer: Partial<Offer> = await prisma.offer.findUnique({
@@ -133,16 +109,15 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
 
     return NextResponse.json(updatedOffer, { status: 200 });
   } catch (e) {
-    console.log(e);
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -152,15 +127,6 @@ export async function DELETE(
   route: { params: { id: string } },
 ) {
   try {
-    const allowedRoles = ['ADMIN'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json(
-        { message: 'Access forbidden' },
-        { status: 403 },
-      );
-    }
-
     const id = route.params.id;
     const deletedOffer = await prisma.offer.delete({
       where: {
@@ -171,14 +137,14 @@ export async function DELETE(
       return NextResponse.json({ deletedOffer }, { status: 200 });
     }
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }

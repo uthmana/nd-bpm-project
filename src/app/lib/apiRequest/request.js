@@ -40,7 +40,7 @@ export async function fetchAPI(endpoint, method, data, header, accessToken) {
     if (response?.status) {
       log(`API return ${response?.status}`, response);
     }
-    return {
+    const errorDetails = {
       status: response?.status,
       data: [],
       response: response?.data,
@@ -49,6 +49,7 @@ export async function fetchAPI(endpoint, method, data, header, accessToken) {
         detail: response?.config?.data || response?.data?.meta?.field_name,
       },
     };
+    throw new Error(JSON.stringify(errorDetails));
   });
 
   return {

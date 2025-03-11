@@ -1,7 +1,6 @@
 'use client';
 
 import MainTable from 'components/admin/data-tables/mainTable';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { deleteCustomer, getCustomers } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
@@ -10,9 +9,9 @@ import Button from 'components/button';
 import { TableSkeleton } from 'components/skeleton';
 import { customerSync } from 'app/lib/logoRequest';
 import { log } from 'utils';
+import { getResError } from 'utils/responseError';
 
 const Customers = () => {
-  const router = useRouter();
   const [customers, setCustomers] = useState([]);
   const [isShowPopUp, setIsShowPopUp] = useState(false);
   const [customerId, setCustomerId] = useState('');
@@ -22,11 +21,15 @@ const Customers = () => {
 
   const getAllCustomers = async () => {
     setIsloading(true);
-    const { status, data } = await getCustomers();
-    if (status === 200) {
+    try {
+      const { data } = await getCustomers();
       setCustomers(data);
+      setIsloading(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsloading(false);
     }
-    setIsloading(false);
   };
 
   useEffect(() => {
@@ -40,16 +43,17 @@ const Customers = () => {
 
   const onDelete = async () => {
     setIsSubmitting(true);
-    const { status, data } = await deleteCustomer(customerId);
-    if (status === 200) {
+    try {
+      await deleteCustomer(customerId);
       toast.success('Kullanıcı silme işlemi başarılı.');
       setIsSubmitting(false);
       setIsShowPopUp(false);
       setCustomers([]);
       getAllCustomers();
-      return;
-    } else {
-      toast.error('Bir hata oluştu, tekrar deneyin !');
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
     }
   };
 
@@ -66,7 +70,8 @@ const Customers = () => {
       getAllCustomers();
       setSyncLoading(false);
     } catch (error) {
-      log(error);
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
       setSyncLoading(false);
     }
   };

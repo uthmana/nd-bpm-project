@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
 import { compare } from 'bcryptjs';
-import { Prisma } from '@prisma/client';
+import { extractPrismaErrorMessage } from 'utils/prismaError';
 
 export async function POST(req: Request) {
   try {
@@ -38,14 +38,14 @@ export async function POST(req: Request) {
       );
     }
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }

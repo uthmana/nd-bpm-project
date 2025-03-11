@@ -1,18 +1,18 @@
 import { fetchAPI } from './request';
 
 export async function getUsers() {
-  return fetchAPI('user');
+  return fetchAPI('users');
 }
 export async function getUserById(id) {
-  return fetchAPI(`user/${id}`);
+  return fetchAPI(`users/${id}`);
 }
 
 export async function updateUser(payload) {
-  return fetchAPI(`user/${payload.id}`, 'put', payload);
+  return fetchAPI(`users/${payload.id}`, 'put', payload);
 }
 
 export async function deleteUser(id) {
-  return fetchAPI(`user/${id}`, 'delete');
+  return fetchAPI(`users/${id}`, 'delete');
 }
 
 //Stocks

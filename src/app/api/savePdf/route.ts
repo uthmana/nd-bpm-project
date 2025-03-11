@@ -1,4 +1,4 @@
-import { writeFile, unlink } from 'fs/promises';
+import { writeFile } from 'fs/promises';
 import { NextRequest, NextResponse } from 'next/server';
 import { extname } from 'path';
 import { v4 as uuidv4 } from 'uuid';
