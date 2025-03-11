@@ -119,31 +119,36 @@ const Process = () => {
     setCurrentProcess(val);
     if (!machineId) {
       setProcessInfo({ customerName, product, application, standard, color });
-      const { status, data } = await getMachines();
-      if (status === 200) {
+      try {
+        const { data } = await getMachines();
         setMachines(data);
         setIsShowPopUp(true);
-        return;
+      } catch (error) {
+        const message = getResError(error?.message);
+        toast.error(`${message}`);
+        setIsShowPopUp(false);
       }
-      return;
     }
     router.push(`/admin/process/create/${id}`);
   };
   const onAddMachine = async () => {
     if (!values?.machineId) return;
-    setIsSubmitting(true);
-    const { status } = await updateProcess({
-      ...currentProcess,
-      ...values,
-      createdBy: session?.user?.name,
-    });
-    if (status === 200) {
+    try {
+      setIsSubmitting(true);
+      await updateProcess({
+        ...currentProcess,
+        ...values,
+        createdBy: session?.user?.name,
+      });
+
       toast.success('Makine ekleme işlemi başarılı.');
       router.push(`/admin/process/create/${processId}`);
-      return;
+      setIsSubmitting(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
     }
-    toast.error('Bir hata oluştu, tekrar deneyin !');
-    return;
   };
 
   const handleValues = (event) => {
@@ -168,17 +173,17 @@ const Process = () => {
   };
 
   const onDelete = async () => {
-    setIsSubmitting(true);
-
-    const { status } = await deleteProcess(processId);
-    if (status === 200) {
-      toast.success('Proses silme işlemi başarılı.');
+    try {
+      setIsSubmitting(true);
+      await deleteProcess(processId);
       await getAllProcess();
       setIsSubmitting(false);
       setIsShowProcessPopUp(false);
-      return;
-    } else {
-      toast.error('Bir hata oluştu, tekrar deneyin !');
+      toast.success('Proses silme işlemi başarılı.');
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
     }
   };
 

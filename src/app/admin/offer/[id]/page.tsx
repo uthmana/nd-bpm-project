@@ -9,6 +9,7 @@ import Button from 'components/button';
 import { MdOutlinePayment, MdPrint } from 'react-icons/md';
 import { OfferObj } from 'app/localTypes/table-types';
 import { formatCurrency, log } from 'utils';
+import { getResError } from 'utils/responseError';
 
 export default function Create() {
   const [offerData, setOfferData] = useState({} as OfferObj);
@@ -17,9 +18,9 @@ export default function Create() {
   const [isLoading, setIsLoading] = useState(false);
 
   const getSingleOffer = async (id) => {
-    setIsLoading(true);
-    const { status, data } = await getOfferById(id);
-    if (status === 200) {
+    try {
+      setIsLoading(true);
+      const { data } = await getOfferById(id);
       const offerProduct = data?.product.map((item) => {
         return {
           ...item,
@@ -35,7 +36,10 @@ export default function Create() {
         totalAmount: formatCurrency(parseFloat(data.totalAmount)),
       });
       setIsLoading(false);
-      return;
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsLoading(false);
     }
   };
 
@@ -50,22 +54,21 @@ export default function Create() {
   };
 
   const onOfferComplete = async () => {
-    setIsSubmitting(true);
-    const updateResponse: any = await updateOffer({
-      ...offerData,
-      status: 'SENT',
-    });
-    const { status, data, response } = updateResponse;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Hata oluştu!.' + message);
-      log(detail);
+    try {
+      setIsSubmitting(true);
+      const { data } = await updateOffer({
+        ...offerData,
+        status: 'SENT',
+      });
+
+      getSingleOffer(data?.id);
       setIsSubmitting(false);
-      return;
+      toast.success('Teklif gönderme işlemi başarılı');
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
     }
-    toast.success('Teklif gönderme işlemi başarılı');
-    getSingleOffer(data?.id);
-    return;
   };
 
   let detailData = {

@@ -22,12 +22,7 @@ import {
 } from '@tanstack/react-table';
 import Search from 'components/search/search';
 import Button from 'components/button';
-import {
-  formatDateTime,
-  useDrage,
-  formatNumberLocale,
-  formatCurrency,
-} from 'utils';
+import { formatDateTime, useDrage, formatCurrency } from 'utils';
 import { OfferObj, OfferTypeTable } from 'app/localTypes/table-types';
 import TablePagination from './tablePagination';
 import TableEmpty from './tableEmpty';
@@ -146,8 +141,9 @@ function OfferTable({
         ),
         cell: (info: any) => (
           <p
-            className="text-sm font-bold text-navy-700 dark:text-white"
+            className="line-clamp-2  whitespace-nowrap break-keep text-sm font-bold text-navy-700 dark:text-white"
             dangerouslySetInnerHTML={{ __html: info.getValue() }}
+            title={info.getValue()}
           ></p>
         ),
       }),

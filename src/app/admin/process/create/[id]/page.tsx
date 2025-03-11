@@ -19,12 +19,13 @@ import {
 } from 'app/lib/apiRequest';
 import Button from 'components/button';
 import Popup from 'components/popup';
-import { faultInfo, formatDateTime, infoTranslate, log } from 'utils';
+import { faultInfo, formatDateTime, infoTranslate } from 'utils';
 import { useSession } from 'next-auth/react';
 import Select from 'components/select';
 import DetailHeader from 'components/detailHeader';
 import FileViewer from 'components/fileViewer';
 import Barcode from 'react-jsbarcode';
+import { getResError } from 'utils/responseError';
 
 export default function EntryControl() {
   const router = useRouter();
@@ -46,9 +47,9 @@ export default function EntryControl() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const getSingleProcess = async () => {
-    setIsloading(true);
-    const { status, data } = await getProcessById(queryParams.id);
-    if (status === 200) {
+    try {
+      setIsloading(true);
+      const { data } = await getProcessById(queryParams.id);
       const { Fault, machine, technicalParams } = data;
       setFault(Fault);
       setProcess(data);
@@ -58,10 +59,11 @@ export default function EntryControl() {
       );
       setDefaultTechParams(Fault?.defaultTechParameter[0] || {});
       setIsloading(false);
-      return;
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsloading(false);
     }
-    setIsloading(false);
-    //TODO: handle error
   };
 
   useEffect(() => {
@@ -71,10 +73,7 @@ export default function EntryControl() {
   }, [queryParams?.id]);
 
   useEffect(() => {
-    // TODO:  Refactor Notification
-    if (!process.id || !process.frequency) {
-      return;
-    }
+    if (!process.id || !process.frequency) return;
 
     intervalRef.current = setInterval(async () => {
       try {
@@ -84,8 +83,9 @@ export default function EntryControl() {
             link: `${window?.location.origin}/process/create/${process.id}`,
           },
         });
-      } catch (err) {
-        console.log(err);
+      } catch (error) {
+        const message = getResError(error?.message);
+        toast.error(`${message}`);
       }
     }, process.frequency * 60000);
 
@@ -98,127 +98,114 @@ export default function EntryControl() {
 
   const onUpdateData = async (id, val) => {
     if (!id) return;
-    setIsTechParams(true);
-    const resData: any = await updateTechParams(val);
-    const { status, data, response } = resData;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Ürün güncelleme başarısız.' + message);
-      log(detail);
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (status === 200) {
+    try {
+      setIsTechParams(true);
+      const { data } = await updateTechParams(val);
       setTechParams(data);
       setIsTechParams(false);
-      return;
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsTechParams(false);
     }
   };
 
   const onAddRow = async (val) => {
     if (!process?.machineId) {
-      const { status, data } = await getMachines();
-      if (status === 200) {
+      try {
+        const { data } = await getMachines();
         setMachines(data);
         setIsShowMachinePopUp(true);
-        return;
+      } catch (error) {
+        const message = getResError(error?.message);
+        toast.error(`${message}`);
+        setIsShowMachinePopUp(false);
       }
-    }
-
-    setIsTechParams(true);
-    const resData: any = await addTechParams({
-      ...val,
-      processId: queryParams.id,
-      machineId: process.machineId,
-    });
-
-    const { status, data, response } = resData;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Parametre ekleme işlemi başarısız.' + message);
-      log(detail);
-      setIsSubmitting(false);
       return;
     }
 
-    if (status === 200) {
+    try {
+      setIsTechParams(true);
+      const { data } = await addTechParams({
+        ...val,
+        processId: queryParams.id,
+        machineId: process.machineId,
+      });
+
       setTechParams(data);
       setIsTechParams(false);
-      return;
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsTechParams(false);
     }
   };
   const onRemoveRow = async (val) => {
-    const resData: any = await deleteTechParams(val);
-    const { status, data, response } = resData;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Parametre silme işlemi başarısız.' + message);
-      log(detail);
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (status === 200) {
+    try {
+      setIsSubmitting(true);
+      const { data } = await deleteTechParams(val);
       setTechParams(data);
-      return;
+      setIsSubmitting(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
     }
   };
 
   const onFinish = async () => {
     const { id, faultId } = process;
     if (!id || !faultId) return;
+    try {
+      setIsSubmitting(true);
+      await updateProcess({
+        id,
+        faultId,
+        status: 'FINISHED',
+        updatedBy: session?.user?.name,
+      });
 
-    setIsSubmitting(true);
-    const resData: any = await updateProcess({
-      id,
-      faultId,
-      status: 'FINISHED',
-      updatedBy: session?.user?.name,
-    });
-    const { status, response } = resData;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Proses güncelleme işlemi başarısız.' + message);
-      log(detail);
-      setIsSubmitting(false);
-      return;
-    }
+      await sendNotification({
+        workflowId: 'process-completion',
+        data: {
+          link: `${window?.location.origin}/admin/entry/${faultId}`,
+        },
+      });
 
-    if (status === 200) {
       setIsShowPopUp(false);
-      try {
-        await sendNotification({
-          workflowId: 'process-completion',
-          data: {
-            link: `${window?.location.origin}/admin/entry/${faultId}`,
-          },
-        });
-        router.push(`/admin/entry/${faultId}`);
-      } catch (err) {
-        console.log(err);
-      }
+      setIsSubmitting(false);
+      router.push(`/admin/entry/${faultId}`);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
+      setIsShowPopUp(false);
     }
   };
 
   const onAddMachine = async () => {
     if (!values?.machineId) return;
-    setIsSubmitting(true);
-    const { status } = await updateProcess({
-      id: process.id,
-      faultId: process.faultId,
-      ...values,
-      createdBy: session?.user?.name,
-    });
-    if (status === 200) {
+    try {
+      setIsSubmitting(true);
+
+      await updateProcess({
+        id: process.id,
+        faultId: process.faultId,
+        ...values,
+        createdBy: session?.user?.name,
+      });
+
       await getSingleProcess();
+
       toast.success('Makine ekleme işlemi başarılı.');
       setIsShowMachinePopUp(false);
       setIsSubmitting(false);
-      return;
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsShowMachinePopUp(false);
+      setIsSubmitting(false);
     }
-    toast.error('Bir hata oluştu, tekrar deneyin !');
-    return;
   };
 
   const handleValues = (event) => {

@@ -3,13 +3,13 @@
 import { TableSkeleton } from 'components/skeleton';
 import OfferTable from 'components/admin/data-tables/offerTable';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { log } from 'utils';
 import { useEffect, useState } from 'react';
 import { deleteOffer, getOffer } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import Popup from 'components/popup';
 import Button from 'components/button';
 import { useSession } from 'next-auth/react';
+import { getResError } from 'utils/responseError';
 
 const Offer = () => {
   const router = useRouter();
@@ -24,9 +24,9 @@ const Offer = () => {
   const [searchText, setSearchText] = useState(searchVal || '');
 
   const getAllOffer = async () => {
-    setIsLoading(true);
-    const { status, data } = await getOffer();
-    if (status === 200) {
+    try {
+      setIsLoading(true);
+      const { data } = await getOffer();
       const formatedData = data.map((item) => {
         return {
           ...item,
@@ -41,8 +41,12 @@ const Offer = () => {
         };
       });
       setOffers(formatedData);
+      setIsLoading(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -67,25 +71,20 @@ const Offer = () => {
   };
 
   const onDelete = async () => {
-    setIsSubmitting(true);
-    const resInvoice: any = await deleteOffer(offerId);
+    try {
+      setIsSubmitting(true);
+      await deleteOffer(offerId);
 
-    const { status, response } = resInvoice;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Teklif silme işlemi başarısız.' + message);
-      log(detail);
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (status === 200) {
-      toast.success('Teklif silme işlemi başarılı.');
-      setIsSubmitting(false);
-      setIsShowPopUp(false);
       setOffers([]);
       getAllOffer();
-      return;
+      setIsSubmitting(false);
+      setIsShowPopUp(false);
+      toast.success('Teklif silme işlemi başarılı.');
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
+      setIsShowPopUp(false);
     }
   };
 
