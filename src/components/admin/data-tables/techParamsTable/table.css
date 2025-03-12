@@ -72,3 +72,9 @@ select {
 .tech-table .remove-button {
   color: #e44747;
 }
+
+.Ort_Uretim_saat input {
+  pointer-events: none;
+  width: 80px;
+  border: none;
+}

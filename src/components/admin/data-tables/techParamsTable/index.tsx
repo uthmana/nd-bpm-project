@@ -160,11 +160,18 @@ const TechParamsTable = (props: {
               key={row.id}
               className="border-b border-gray-100 hover:bg-lightPrimary dark:border-gray-900 dark:hover:bg-navy-700"
             >
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="disabled min-w-[70px] p-1">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
+              {row.getVisibleCells().map((cell) => {
+                return (
+                  <td
+                    key={cell.id}
+                    className={`min-w-[70px] p-1 ${
+                      cell.getContext()?.column.id
+                    }`}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>

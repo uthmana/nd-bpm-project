@@ -139,7 +139,7 @@ export default function EntryControl() {
       }
 
       toast.success('Ürün girişi kontrol işlemi başarılı.');
-      router.push('/admin/entry');
+      router.push(`/admin/entry/${data.faultId}`);
       setIsSubmitting(false);
     } catch (error) {
       const message = getResError(error?.message);
@@ -197,13 +197,13 @@ export default function EntryControl() {
     <>
       <div className="mx-auto flex max-w-[800px] justify-end">
         <NextLink
-          href="/admin/entry"
+          href={`/admin/entry/${fault?.id}`}
           className="mb-3 flex w-fit items-center gap-2 text-sm dark:text-white"
         >
           <span>
             <MdOutlineArrowBack />
           </span>
-          Ürün Girişe
+          Ürün Detay
         </NextLink>
       </div>
 

@@ -43,6 +43,10 @@ export async function PUT(req: Request) {
         customer: { connect: { id: customer.id } },
         Fault: { connect: Fault.map((item) => ({ id: item.id })) },
       },
+      include: {
+        Fault: true,
+        customer: true,
+      },
     });
 
     if (invoice) {

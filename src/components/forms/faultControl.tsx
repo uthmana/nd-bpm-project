@@ -56,7 +56,7 @@ export default function EntryControlForm(props: {
           quantityConfirmation: '',
           faultId: info?.id,
           quantity: 0,
-          frequencyDimension: 1,
+          frequencyDimension: 0,
           createdBy: session?.user?.name,
           createdAt: new Date(),
           updatedBy: session?.user?.name,
@@ -72,8 +72,11 @@ export default function EntryControlForm(props: {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { result } = values;
-    if (!result) {
+    const { result, processFrequency, frequencyDimension } = values;
+    if (
+      !result ||
+      (processFrequency === 'Yazılsın' && parseInt(frequencyDimension) === 0)
+    ) {
       setError(true);
       window.scroll(100, 0);
       return;
@@ -87,7 +90,7 @@ export default function EntryControlForm(props: {
         quantityConfirmation: values.quantityConfirmation === true.toString(),
         frequencyDimension:
           values.processFrequency === 'Yazılmasın'
-            ? 1
+            ? 0
             : parseInt(values.frequencyDimension),
         updatedBy: session?.user?.name,
       },
@@ -108,7 +111,7 @@ export default function EntryControlForm(props: {
         />
         {error ? (
           <p className="mb-3 w-full rounded-md bg-red-500 p-2 text-center text-sm  font-bold text-white">
-            Lütfen ilgili kontrol alanları boş bırakılmamalı.
+            Lütfen Frekans Aralığını doldurun.
           </p>
         ) : null}
 

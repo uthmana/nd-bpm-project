@@ -121,6 +121,22 @@ function InvoiceTable({
           );
         },
       }),
+      columnHelper.accessor('status', {
+        id: 'status',
+        header: () => (
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            DURUM
+          </p>
+        ),
+        cell: (info: any) => (
+          <div className="flex min-w-[90px] items-center">
+            {statusbgColor(info.getValue())}
+            <p className="text-sm font-bold text-navy-700 dark:text-white">
+              {invoiceStatus[info.getValue()]}
+            </p>
+          </div>
+        ),
+      }),
       columnHelper.accessor('barcode', {
         id: 'barcode',
         header: () => (
@@ -129,7 +145,7 @@ function InvoiceTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p className="min-w-fit whitespace-nowrap  break-keep text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -166,19 +182,6 @@ function InvoiceTable({
           </p>
         ),
       }),
-      // columnHelper.accessor('tolalQty', {
-      //   id: 'tolalQty',
-      //   header: () => (
-      //     <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-      //       Miktar
-      //     </p>
-      //   ),
-      //   cell: (info: any) => (
-      //     <p className="text-sm font-bold text-navy-700 dark:text-white">
-      //       {formatNumberLocale(info.getValue())}
-      //     </p>
-      //   ),
-      // }),
       columnHelper.accessor('createdAt', {
         id: 'createdAt',
         header: () => (
@@ -219,38 +222,6 @@ function InvoiceTable({
           >
             {info.getValue()}
           </p>
-        ),
-      }),
-      // columnHelper.accessor('description', {
-      //   id: 'description',
-      //   header: () => (
-      //     <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-      //       Açıklama
-      //     </p>
-      //   ),
-      //   cell: (info: any) => (
-      //     <p
-      //       title={info.getValue()}
-      //       className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white"
-      //     >
-      //       {info.getValue()}
-      //     </p>
-      //   ),
-      // }),
-      columnHelper.accessor('status', {
-        id: 'status',
-        header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            DURUM
-          </p>
-        ),
-        cell: (info: any) => (
-          <div className="flex min-w-[90px] items-center">
-            {statusbgColor(info.getValue())}
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {invoiceStatus[info.getValue()]}
-            </p>
-          </div>
         ),
       }),
     ];

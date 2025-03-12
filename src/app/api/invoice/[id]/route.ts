@@ -55,12 +55,16 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         { status: 404 },
       );
     }
-    const invoice = await prisma.invoice.update({
+    const invoice: Invoice = await prisma.invoice.update({
       where: { id },
       data: {
         ...rest,
         customer: { connect: { id: customer.id } },
         Fault: { connect: Fault.map((item) => ({ id: item.id })) },
+      },
+      include: {
+        Fault: true,
+        customer: true,
       },
     });
 

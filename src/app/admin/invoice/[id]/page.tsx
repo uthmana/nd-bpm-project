@@ -143,9 +143,9 @@ export default function Invoices() {
   };
   const onInoviceComplete = async () => {
     setIsInvoiceSubmiting(true);
-    let currentInvoice: Invoice;
 
     try {
+      let currentInvoice: Invoice;
       let docPath = invoice?.docPath;
       const invoiceData = {
         ...invoice,
@@ -170,7 +170,7 @@ export default function Invoices() {
           createdBy: session?.user?.name,
           docPath,
         });
-        setInvoice(data);
+        currentInvoice = data;
       } else {
         // Update invoice
         const { data } = await updateInvoice({
@@ -179,14 +179,14 @@ export default function Invoices() {
           docPath,
           updatedBy: session?.user?.name,
         });
-        setInvoice(data);
+        currentInvoice = data;
       }
-      //send To Logo
-      const { data }: any = await sendDispatchToLogo(invoice);
 
-      toast.success(`Logoya gönderme işlemi başarılı ${data.NUMBER}`);
-      router.push(`/admin/invoice/${invoice?.id}`);
+      //send To Logo
+      const { data }: any = await sendDispatchToLogo(currentInvoice);
       setIsInvoiceSubmiting(false);
+      toast.success(`Logoya gönderme işlemi başarılı ${data.NUMBER}`);
+      router.push(`/admin/invoice/${currentInvoice?.id}`);
     } catch (err) {
       const message = getResError(err?.message);
       toast.error(`Logoya başarıyla içeriye alamadı ${message}`);
@@ -263,10 +263,10 @@ export default function Invoices() {
               extra={`px-8 h-[40px] max-w-[300px]`}
               onClick={onInoviceComplete}
               text={`SEVKİYAT ${
-                invoice.status !== 'PAID' ? 'TAMAMLA' : 'TAMAMLANDI'
+                invoice?.status !== 'PAID' ? 'TAMAMLA' : 'TAMAMLANDI'
               }`}
               icon={<MdOutlinePayment className="mr-1 h-5 w-5" />}
-              disabled={invoice.status === 'PAIDS'}
+              disabled={invoice?.status === 'PAIDS'}
               loading={isInvoiceSubmiting}
             />
           </div>

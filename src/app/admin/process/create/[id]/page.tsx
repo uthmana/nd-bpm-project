@@ -278,10 +278,9 @@ export default function EntryControl() {
                   })
                 : null}
               <div className="mb-5 flex flex-col flex-nowrap">
-                <h4 className="mx-1 italic">Frekans Aralığı</h4>
+                <h4 className="mx-1 italic">Frekans Aralığı (dk)</h4>
                 <p className="text-lg font-bold text-brand-500">
-                  {' '}
-                  {process.frequency}
+                  {process.frequency ? process.frequency : 'Yazılmasın'}
                 </p>
               </div>
             </div>
