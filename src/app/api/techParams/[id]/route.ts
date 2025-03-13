@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
-import { Prisma, TechnicalParameter } from '@prisma/client';
+import { TechnicalParameter } from '@prisma/client';
+import { extractPrismaErrorMessage } from 'utils/prismaError';
 
 //Get single  TechParams
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
@@ -12,15 +13,15 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
       });
     return NextResponse.json(techParams, { status: 200 });
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -43,7 +44,14 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         where: { id },
       });
 
-    const updatedtechParams = await prisma.technicalParameter.update({
+    if (!techParams) {
+      return NextResponse.json(
+        { message: 'TechnicalParameter could nıt be found' },
+        { status: 401 },
+      );
+    }
+
+    await prisma.technicalParameter.update({
       where: {
         id: id,
       },
@@ -59,15 +67,15 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
 
     return NextResponse.json(techParamsData, { status: 200 });
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -77,26 +85,34 @@ export async function DELETE(
   route: { params: { id: string } },
 ) {
   try {
-    //TODO: restrict unathorized user : only normal and admin allowed
     const id = route.params.id;
+
     const deletedTechParams = await prisma.technicalParameter.delete({
       where: {
         id: id,
       },
     });
+
+    if (!deletedTechParams) {
+      return NextResponse.json(
+        { message: 'You are missing a required data' },
+        { status: 401 },
+      );
+    }
+
     const techParamsData = await prisma.technicalParameter.findMany({
-      where: { machineId: deletedTechParams.machineId },
+      where: { processId: deletedTechParams.processId },
     });
     return NextResponse.json(techParamsData, { status: 200 });
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }

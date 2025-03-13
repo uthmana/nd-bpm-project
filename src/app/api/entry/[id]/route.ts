@@ -103,16 +103,10 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       data: {
         ...faultData,
         defaultTechParameter: {
-          ...(defaultTechParameter.id
-            ? {
-                update: {
-                  where: { id: defaultTechParameter.id },
-                  data: defaultTechParameter,
-                },
-              }
-            : {
-                create: defaultTechParameter,
-              }),
+          update: {
+            where: { id: defaultTechParameter.id },
+            data: defaultTechParameter,
+          },
         },
       },
     });

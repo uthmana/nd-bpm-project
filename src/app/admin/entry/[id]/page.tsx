@@ -157,9 +157,7 @@ export default function Edit() {
     setIsPrecessSubmitting(true);
     try {
       const { data } = await addProcess(val);
-      if (data.id) {
-        router.push(`/admin/process/create/${data.id}`);
-      }
+      router.push(`/admin/process/create/${data.id}`);
     } catch (error) {
       const message = getResError(error?.message);
       toast.error(`${message}`);

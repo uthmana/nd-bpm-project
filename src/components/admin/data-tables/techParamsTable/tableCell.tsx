@@ -43,5 +43,7 @@ export const TableCell = ({ getValue, row, column, table }) => {
       />
     );
   }
-  return <span>{value}</span>;
+  return (
+    <span className="block whitespace-nowrap break-keep py-1">{value}</span>
+  );
 };

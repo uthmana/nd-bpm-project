@@ -10,7 +10,9 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     const process: Process = await prisma.process.findUnique({
       where: { id: id },
       include: {
-        technicalParams: true,
+        technicalParams: {
+          orderBy: { createdAt: 'asc' },
+        },
         machine: {
           include: {
             machineParams: true,

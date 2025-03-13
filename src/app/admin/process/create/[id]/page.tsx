@@ -96,20 +96,6 @@ export default function EntryControl() {
     };
   }, [process]);
 
-  const onUpdateData = async (id, val) => {
-    if (!id) return;
-    try {
-      setIsTechParams(true);
-      const { data } = await updateTechParams(val);
-      setTechParams(data);
-      setIsTechParams(false);
-    } catch (error) {
-      const message = getResError(error?.message);
-      toast.error(`${message}`);
-      setIsTechParams(false);
-    }
-  };
-
   const onAddRow = async (val) => {
     if (!process?.machineId) {
       try {
@@ -126,6 +112,7 @@ export default function EntryControl() {
 
     try {
       setIsTechParams(true);
+
       const { data } = await addTechParams({
         ...val,
         processId: queryParams.id,
@@ -140,10 +127,29 @@ export default function EntryControl() {
       setIsTechParams(false);
     }
   };
-  const onRemoveRow = async (val) => {
+
+  const onUpdateData = async (id, val) => {
+    if (!id) return;
+    try {
+      setIsTechParams(true);
+      const { data } = await updateTechParams({
+        ...val,
+        processId: queryParams.id,
+        machineId: process.machineId,
+      });
+      setTechParams(data);
+      setIsTechParams(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsTechParams(false);
+    }
+  };
+
+  const onRemoveRow = async (id) => {
     try {
       setIsSubmitting(true);
-      const { data } = await deleteTechParams(val);
+      const { data } = await deleteTechParams(id);
       setTechParams(data);
       setIsSubmitting(false);
     } catch (error) {
@@ -300,10 +306,11 @@ export default function EntryControl() {
 
               <TechParamsTable
                 key={isTechParams as any}
-                fields={machineParams}
                 techParams={techParams}
+                fields={machineParams}
                 defaultTechParams={defaultTechParams}
                 status={process?.status}
+                frequency={process.frequency}
                 onUpdateData={(id, val) => onUpdateData(id, val)}
                 onAddRow={(val) => onAddRow(val)}
                 onRemoveRow={(val) => onRemoveRow(val)}
