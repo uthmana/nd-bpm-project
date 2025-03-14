@@ -21,6 +21,8 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
         Fault: {
           include: {
             defaultTechParameter: true,
+            faultControl: true,
+            customer: true,
           },
         },
       },

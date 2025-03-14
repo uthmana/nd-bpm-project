@@ -279,7 +279,7 @@ model MachineParams {
 
 model TechnicalParameter {
   id                     String    @id @default(cuid())
-  Ort_Uretim_saat        String?
+  Ort_Uretim_saat        DateTime?
   Viskozite              String?
   Besleme_Tipi           String?
   Besleme_Hizi           String?

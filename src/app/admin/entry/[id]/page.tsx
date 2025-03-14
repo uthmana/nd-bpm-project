@@ -153,7 +153,13 @@ export default function Edit() {
   const onAddMachine = async () => {
     const frequency = faultControl?.frequencyDimension;
     const { machineName, machineId } = values;
-    const val = { frequency, machineName, machineId, faultId: queryParams.id };
+    const val = {
+      frequency,
+      machineName,
+      machineId,
+      faultId: queryParams.id,
+      createdBy: session?.user?.name,
+    };
     setIsPrecessSubmitting(true);
     try {
       const { data } = await addProcess(val);
@@ -287,17 +293,24 @@ export default function Edit() {
                 <h2 className="text-2xl font-bold">
                   Ürün Giriş Kontrol Bilgileri
                 </h2>
-
-                {(fault?.status != 'SEVKIYAT_TAMAMLANDI' &&
-                  session?.user?.role === 'SUPER') ||
-                session?.user?.role === 'ADMIN' ? (
+                <div className="flex gap-2">
+                  {(fault?.status != 'SEVKIYAT_TAMAMLANDI' &&
+                    session?.user?.role === 'SUPER') ||
+                  session?.user?.role === 'ADMIN' ? (
+                    <Button
+                      icon={<MdAdd className="mr-1 h-5 w-5" />}
+                      extra="max-w-fit px-4  h-[40px]"
+                      text={faultControl?.id ? 'DÜZENLE' : 'KONTROL YAP'}
+                      onClick={handlefaultControl}
+                    />
+                  ) : null}
                   <Button
-                    icon={<MdAdd className="mr-1 h-5 w-5" />}
-                    extra="max-w-fit px-4  h-[40px]"
-                    text={faultControl?.id ? 'DÜZENLE' : 'KONTROL YAP'}
-                    onClick={handlefaultControl}
+                    extra={`px-4 h-[40px] max-w-fit`}
+                    onClick={handleProcessPrint}
+                    text=" "
+                    icon={<MdPrint className="mr-1 h-5 w-5" />}
                   />
-                ) : null}
+                </div>
               </div>
               {faultControl?.id ? (
                 <EntryControlForm
@@ -319,27 +332,28 @@ export default function Edit() {
                   Proses Frekans Bilgileri
                 </h2>
 
-                {fault?.status != 'GIRIS_KONTROL_RET' &&
-                process?.status !== 'FINISHED' ? (
-                  <Button
-                    extra={`px-4 h-[40px] max-w-fit`}
-                    onClick={
-                      process?.id ? handleProcessUpdate : handleProcessStart
-                    }
-                    text={process?.id ? 'FREKANSI EKLE' : 'PROSES BAŞLAT'}
-                    icon={<MdGroupWork className="mr-1 h-5 w-5" />}
-                    disabled={
-                      !faultControl?.result || faultControl.result === 'REJECT'
-                    }
-                  />
-                ) : (
+                <div className="flex gap-2">
+                  {fault?.status != 'GIRIS_KONTROL_RET' ? (
+                    <Button
+                      extra={`px-4 h-[40px] max-w-fit`}
+                      onClick={
+                        process?.id ? handleProcessUpdate : handleProcessStart
+                      }
+                      text={process?.id ? 'PROSESE GİT' : 'PROSES BAŞLAT'}
+                      icon={<MdGroupWork className="mr-1 h-5 w-5" />}
+                      disabled={
+                        !faultControl?.result ||
+                        faultControl.result === 'REJECT'
+                      }
+                    />
+                  ) : null}
                   <Button
                     extra={`px-4 h-[40px] max-w-fit`}
                     onClick={handleProcessPrint}
                     text=" "
                     icon={<MdPrint className="mr-1 h-5 w-5" />}
                   />
-                )}
+                </div>
               </div>
               {process?.id ? (
                 <TechParamsTable

@@ -304,3 +304,10 @@ export const generateUniqueId = () => {
   const randomSuffix = Math.floor(100 + Math.random() * 900);
   return `${prefix}${timestamp.slice(-7)}${randomSuffix}`;
 };
+
+export const getProcesstimeByFrequency = (time, freq) => {
+  const parsedDate = new Date(time);
+  const now = time && !isNaN(parsedDate.getTime()) ? parsedDate : new Date();
+  const updateDate = new Date(now.getTime() + (freq || 0) * 60000);
+  return convertToISO8601(updateDate);
+};

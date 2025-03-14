@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import FaultForm from 'components/forms/fault';
 import { useParams, useRouter } from 'next/navigation';
-import { formatCurrency, log, removeMillisecondsAndUTC } from 'utils';
+import { formatCurrency, removeMillisecondsAndUTC } from 'utils';
 import { toast } from 'react-toastify';
 import { getFaultById, updateFault } from 'app/lib/apiRequest';
 import { FormSkeleton } from 'components/skeleton';

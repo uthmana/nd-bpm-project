@@ -25,7 +25,6 @@ const TechParamsTable = (props: {
   onAddRow?: (a) => void;
   onRemoveRow?: (a) => void;
   status?: string;
-  frequency?: number;
 }) => {
   const {
     techParams = [],
@@ -35,7 +34,6 @@ const TechParamsTable = (props: {
     onAddRow,
     onRemoveRow,
     status,
-    frequency,
   } = props;
 
   const [data, setData] = useState(() => [...techParams]);
@@ -95,26 +93,11 @@ const TechParamsTable = (props: {
       addRow: () => {
         let val: Record<string, unknown> = {};
 
-        const lastItem = data?.at(-1);
-        const now = lastItem?.createdAt
-          ? new Date(lastItem.createdAt)
-          : new Date();
-
         filteredColumns.forEach((item: any) => {
           let defaultVal: string | unknown = '';
 
           if (item.accessorKey) {
-            if (item.accessorKey === 'Ort_Uretim_saat') {
-              const updatedDate = new Date(
-                now.getTime() + (frequency || 0) * 60000,
-              );
-              defaultVal = formatDateTime(updatedDate)?.slice(11);
-            }
-
-            if (
-              Object.keys(defaultTechParams).length > 0 &&
-              item.accessorKey !== 'Ort_Uretim_saat'
-            ) {
+            if (Object.keys(defaultTechParams).length > 0) {
               const techValue = defaultTechParams[item.accessorKey];
               if (techValue !== undefined) {
                 defaultVal = techValue;

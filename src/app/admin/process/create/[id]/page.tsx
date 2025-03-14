@@ -19,7 +19,13 @@ import {
 } from 'app/lib/apiRequest';
 import Button from 'components/button';
 import Popup from 'components/popup';
-import { faultInfo, formatDateTime, infoTranslate } from 'utils';
+import {
+  faultInfo,
+  formatDateTime,
+  getProcesstimeByFrequency,
+  infoTranslate,
+  log,
+} from 'utils';
 import { useSession } from 'next-auth/react';
 import Select from 'components/select';
 import DetailHeader from 'components/detailHeader';
@@ -44,6 +50,7 @@ export default function EntryControl() {
   const [isFrequencyPopUp, setIsFrequencyPopUp] = useState(false);
   const [defaultTechParams, setDefaultTechParams] = useState({});
   const [fault, setFault] = useState({} as any);
+  const [techAttachment, setTechAttachment] = useState([]);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const getSingleProcess = async () => {
@@ -51,14 +58,22 @@ export default function EntryControl() {
       setIsloading(true);
       const { data } = await getProcessById(queryParams.id);
       const { Fault, machine, technicalParams } = data;
-      setFault(Fault);
+      setFault({ customerName: Fault?.customer?.company_name, ...Fault });
       setProcess(data);
       setTechParams(technicalParams);
+      setDefaultTechParams(Fault?.defaultTechParameter[0] || {});
+
       setMachineParams(
         machine[0]?.machineParams?.map((item) => item.param_name),
       );
-      setDefaultTechParams(Fault?.defaultTechParameter[0] || {});
+
+      setTechAttachment([
+        data?.technicalDrawingAttachment,
+        Fault?.technicalDrawingAttachment,
+        Fault.faultControl?.[0].image,
+      ]);
       setIsloading(false);
+      log(data);
     } catch (error) {
       const message = getResError(error?.message);
       toast.error(`${message}`);
@@ -73,28 +88,64 @@ export default function EntryControl() {
   }, [queryParams?.id]);
 
   useEffect(() => {
-    if (!process.id || !process.frequency) return;
+    if (
+      !process.id ||
+      !process.frequency ||
+      process.status === 'FINISHED' ||
+      !techParams.length
+    ) {
+      return;
+    }
 
-    intervalRef.current = setInterval(async () => {
-      try {
-        await sendNotification({
-          workflowId: 'process-frequency',
-          data: {
-            link: `${window?.location.origin}/process/create/${process.id}`,
-          },
-        });
-      } catch (error) {
-        const message = getResError(error?.message);
-        toast.error(`${message}`);
-      }
-    }, process.frequency * 60000);
+    const intervalTime = process.frequency * 60000;
 
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [process]);
+    const storedTimes = JSON.parse(
+      localStorage.getItem('lastNotificationTimes') || '{}',
+    );
+
+    const lastNotificationTime = storedTimes[process.id];
+
+    const now = Date.now();
+    const timeSinceLastNotification = lastNotificationTime
+      ? now - parseInt(lastNotificationTime)
+      : Infinity;
+    if (timeSinceLastNotification >= intervalTime) {
+      sendNotificationNow();
+    } else {
+      setTimeout(
+        () => sendNotificationNow(),
+        intervalTime - timeSinceLastNotification,
+      );
+    }
+
+    // Start the interval
+    intervalRef.current = setInterval(sendNotificationNow, intervalTime);
+
+    return () => {};
+  }, [process.id, process.frequency, techParams.length]);
+
+  const sendNotificationNow = async () => {
+    try {
+      await sendNotification({
+        workflowId: 'process-frequency',
+        data: {
+          link: `${window?.location.origin}/process/create/${process.id}`,
+        },
+      });
+      const storedTimes = JSON.parse(
+        localStorage.getItem('lastNotificationTimes') || '{}',
+      );
+      storedTimes[process.id] = Date.now();
+      localStorage.setItem(
+        'lastNotificationTimes',
+        JSON.stringify(storedTimes),
+      );
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      clearInterval(intervalRef.current!);
+    }
+  };
 
   const onAddRow = async (val) => {
     if (!process?.machineId) {
@@ -113,8 +164,14 @@ export default function EntryControl() {
     try {
       setIsTechParams(true);
 
+      const Ort_Uretim_saat = getProcesstimeByFrequency(
+        techParams?.at(-1)?.Ort_Uretim_saat,
+        process.frequency,
+      );
+
       const { data } = await addTechParams({
         ...val,
+        Ort_Uretim_saat,
         processId: queryParams.id,
         machineId: process.machineId,
       });
@@ -158,12 +215,28 @@ export default function EntryControl() {
       setIsSubmitting(false);
     }
   };
+  const clearNotificationInterval = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+      const storedTimes = JSON.parse(
+        localStorage.getItem('lastNotificationTimes') || '{}',
+      );
+      delete storedTimes[process.id];
+      localStorage.setItem(
+        'lastNotificationTimes',
+        JSON.stringify(storedTimes),
+      );
+    }
+  };
 
   const onFinish = async () => {
     const { id, faultId } = process;
     if (!id || !faultId) return;
     try {
       setIsSubmitting(true);
+      clearNotificationInterval();
+
       await updateProcess({
         id,
         faultId,
@@ -230,9 +303,6 @@ export default function EntryControl() {
     if (key === 'arrivalDate') {
       return <p className="font-bold"> {formatDateTime(val)} </p>;
     }
-    if (key === 'technicalDrawingAttachment') {
-      return <FileViewer file={val} />;
-    }
     if (key === 'arrivalDate') {
       return <p className="font-bold"> {formatDateTime(val)} </p>;
     }
@@ -277,7 +347,18 @@ export default function EntryControl() {
                           className="mb-5 flex flex-col flex-nowrap"
                         >
                           <h4 className="mx-1 italic">{infoTranslate[key]}</h4>
-                          {renderProductInfo(key, val)}
+                          <div className="pt-2">
+                            {key === 'technicalDrawingAttachment' ? (
+                              <span className="flex gap-1">
+                                {techAttachment?.map((item, idx) => {
+                                  if (!item) return null;
+                                  return <FileViewer file={item} key={idx} />;
+                                })}
+                              </span>
+                            ) : (
+                              renderProductInfo(key, val)
+                            )}
+                          </div>
                         </div>
                       );
                     }
@@ -310,7 +391,6 @@ export default function EntryControl() {
                 fields={machineParams}
                 defaultTechParams={defaultTechParams}
                 status={process?.status}
-                frequency={process.frequency}
                 onUpdateData={(id, val) => onUpdateData(id, val)}
                 onAddRow={(val) => onAddRow(val)}
                 onRemoveRow={(val) => onRemoveRow(val)}
