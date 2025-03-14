@@ -155,7 +155,7 @@ const TechParamsTable = (props: {
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="min-w-[140px] cursor-pointer  border-b border-gray-400 px-1 text-start dark:border-white/30"
+                  className="min-w-fit cursor-pointer whitespace-nowrap break-keep  border-b border-gray-400 px-1 text-start dark:border-white/30"
                 >
                   {header.isPlaceholder
                     ? null
@@ -178,9 +178,7 @@ const TechParamsTable = (props: {
                 return (
                   <td
                     key={cell.id}
-                    className={`min-w-[70px] p-1 ${
-                      cell.getContext()?.column.id
-                    }`}
+                    className={`p-1 ${cell.getContext()?.column.id}`}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>

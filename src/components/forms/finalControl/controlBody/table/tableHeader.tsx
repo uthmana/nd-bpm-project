@@ -17,9 +17,9 @@ export default function TableHeader() {
           <b>Test Değeri </b>/ Test Value
         </td>
         <td rowSpan={2} colSpan={1}>
-          Sonuç/
+          Ortalama/
           <br />
-          <em>Result</em>
+          <em>Average</em>
         </td>
       </tr>
 
