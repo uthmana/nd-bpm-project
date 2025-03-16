@@ -8,7 +8,10 @@ import InputField from 'components/fields/InputField';
 import { deformatCurrency, formatNumberLocale } from 'utils';
 
 export default function Index({ data, onChange, variant, fault }) {
-  const [values, setValues] = useState(data || ({} as any));
+  const [values, setValues] = useState(
+    { ...data, kontrol_edilen_miktar: fault?.quantity?.toString() } ||
+      ({} as any),
+  );
 
   const [error, setError] = useState({ control: '', nakliye: '' });
 
@@ -35,9 +38,25 @@ export default function Index({ data, onChange, variant, fault }) {
       return;
     }
 
-    const newVal = { [event.target?.name]: event.target?.value };
-    setValues({ ...values, ...newVal });
-    onChange({ ...values, ...newVal });
+    const fieldName = event.target?.name;
+    let newValues = { ...values, [fieldName]: event.target?.value };
+
+    if (fieldName === 'nakliye_miktar') {
+      newValues = {
+        ...newValues,
+        hatali_miktar: (fault?.quantity - eventValue)?.toString(),
+      };
+    }
+
+    if (fieldName === 'hatali_miktar') {
+      newValues = {
+        ...newValues,
+        nakliye_miktar: (fault?.quantity - eventValue)?.toString(),
+      };
+    }
+
+    setValues(newValues);
+    onChange(newValues);
   };
 
   const resultsList = [
@@ -101,7 +120,7 @@ export default function Index({ data, onChange, variant, fault }) {
               extra={`mb-2 !rounded-none h-[32px] !p-1 border-1 !border-[#000] ${error.control}`}
               value={values?.kontrol_edilen_miktar}
               required={true}
-              disabled={variant !== 'input'}
+              disabled={true}
             />
             <InputField
               label="Nakliye Miktarı"
