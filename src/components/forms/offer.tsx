@@ -14,8 +14,6 @@ import Select from 'components/select';
 import { MdAdd } from 'react-icons/md';
 import InputField from 'components/fields/InputField';
 import DataList from 'components/fields/dataList';
-import { addOfferItem, deleteOfferItem } from 'app/lib/apiRequest';
-import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import SignaturePad from 'components/signaturePad';
 import Image from 'next/image';
@@ -38,9 +36,7 @@ export default function OfferForm(props: {
   const [formTouch, setFormTouch] = useState(isUpdate);
   const [customers, setCustomers] = useState(info || []);
   const [products, setProducts] = useState(isUpdate ? editData?.product : []);
-  const [resetFile, setResetFile] = useState(false);
   const [showAddProduct, setShowAddProduct] = useState(false);
-  const { data: session } = useSession();
 
   const currentDateTime = new Date();
   const localDateTime = new Date(
@@ -172,7 +168,6 @@ export default function OfferForm(props: {
   const onAddProduct = async (val) => {
     const newVal = [...products];
     newVal.push({ ...val });
-    setResetFile(true);
     setProducts(newVal);
 
     let totalPrice = newVal.reduce(

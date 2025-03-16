@@ -28,7 +28,8 @@ export async function PUT(req: Request) {
       data: regData,
     });
 
-    return NextResponse.json({ createdApplication }, { status: 200 });
+    const applications = await prisma.applications.findMany();
+    return NextResponse.json(applications, { status: 200 });
   } catch (e) {
     console.error('Prisma Error:', e);
     const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);

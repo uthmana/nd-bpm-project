@@ -24,9 +24,10 @@ export async function GET(req: NextRequest) {
 export async function PUT(req: Request) {
   try {
     const regData = await req.json();
-    const colors = await prisma.colors.create({
+    const color = await prisma.colors.create({
       data: regData,
     });
+    const colors = await prisma.colors.findMany();
 
     return NextResponse.json(colors, { status: 200 });
   } catch (e) {

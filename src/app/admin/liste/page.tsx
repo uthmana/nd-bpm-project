@@ -153,6 +153,15 @@ const Entry = () => {
     try {
       setIsLoading(true);
       const { data } = await getEntryWithFilters({
+        where: {
+          status: {
+            in: [
+              'GIRIS_KONTROL_RET',
+              'FINAL_KONTROL_RET',
+              'SEVKIYAT_TAMAMLANDI',
+            ],
+          },
+        },
         include: {
           customer: true,
         },

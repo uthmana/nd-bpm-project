@@ -35,6 +35,13 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       where: { id },
     });
 
+    if (!standardsTobeUpdated) {
+      return NextResponse.json(
+        { message: 'Standard to be updated not found' },
+        { status: 404 },
+      );
+    }
+
     const Updatedstandards: Standards = await prisma.standards.update({
       where: { id },
       data: {
@@ -42,7 +49,8 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       },
     });
 
-    return NextResponse.json(Updatedstandards, { status: 200 });
+    const standards = await prisma.standards.findMany();
+    return NextResponse.json(standards, { status: 200 });
   } catch (e) {
     console.error('Prisma Error:', e);
     const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
@@ -66,12 +74,19 @@ export async function DELETE(
     const standardsToBeDeleted: Standards = await prisma.standards.findUnique({
       where: { id },
     });
-    if (standardsToBeDeleted) {
-      const Deletedstandards: Standards = await prisma.standards.delete({
-        where: { id },
-      });
-      return NextResponse.json(Deletedstandards, { status: 200 });
+    if (!standardsToBeDeleted) {
+      return NextResponse.json(
+        { message: 'Standard to be deleted not found' },
+        { status: 404 },
+      );
     }
+
+    const deletedstandards: Standards = await prisma.standards.delete({
+      where: { id },
+    });
+
+    const standards = await prisma.standards.findMany();
+    return NextResponse.json(standards, { status: 200 });
   } catch (e) {
     console.error('Prisma Error:', e);
     const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);

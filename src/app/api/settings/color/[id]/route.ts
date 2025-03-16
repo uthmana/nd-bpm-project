@@ -29,19 +29,25 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
 export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
     const id = route.params.id;
-    const colors: Colors = await req.json();
+    const color: Colors = await req.json();
 
     const colorTobeUpdated: Colors = await prisma.colors.findUnique({
       where: { id },
     });
+    if (!colorTobeUpdated) {
+      return NextResponse.json({ message: 'Color not found' }, { status: 404 });
+    }
 
     const UpdatedColor: Colors = await prisma.colors.update({
       where: { id },
       data: {
-        ...colors,
+        ...color,
       },
     });
-    return NextResponse.json(UpdatedColor, { status: 200 });
+
+    const colors = await prisma.colors.findMany();
+
+    return NextResponse.json(colors, { status: 200 });
   } catch (e) {
     console.error('Prisma Error:', e);
     const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
@@ -66,11 +72,18 @@ export async function DELETE(
       where: { id },
     });
 
+    if (!colorToBeDeleted) {
+      return NextResponse.json(
+        { message: 'Color to be deleted not found' },
+        { status: 404 },
+      );
+    }
     const DeletedColor: Colors = await prisma.colors.delete({
       where: { id },
     });
+    const colors = await prisma.colors.findMany();
 
-    return NextResponse.json(DeletedColor, { status: 200 });
+    return NextResponse.json(colors, { status: 200 });
   } catch (e) {
     console.error('Prisma Error:', e);
     const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);

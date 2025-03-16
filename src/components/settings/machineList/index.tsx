@@ -1,7 +1,7 @@
 'use client';
 
 import Button from 'components/button';
-import { Suspense, useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import {
   updateMachine,
@@ -12,73 +12,89 @@ import {
 } from 'app/lib/apiRequest';
 import MachinePopup from 'components/settings/machineList/machinePopup';
 import MachineItem from './machineItem';
-import { log } from 'utils';
 import { MdAdd } from 'react-icons/md';
-import Loading from 'app/loading';
+import { getResError } from 'utils/responseError';
+import { toast } from 'react-toastify';
 
-const MachineList = () => {
+const MachineList = ({ data }) => {
   const [isShowPopUp, setIsShowPopUp] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [machines, setMachines] = useState([]);
+  const [machines, setMachines] = useState(data || []);
   const [machineEdit, setMachineEdit] = useState({} as any);
 
   const getAllMachines = async () => {
-    const { status, data } = await getMachines();
-    if (status === 200) {
+    try {
+      const { data } = await getMachines();
       setMachines(data);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
     }
   };
 
-  useEffect(() => {
-    getAllMachines();
-  }, []);
-
   const onAddMachine = async (val) => {
-    setIsSubmitting(true);
-    const { status } = await addMachineWithParams(val);
-    if (status === 200) {
+    try {
+      setIsSubmitting(true);
+      await addMachineWithParams(val);
       await getAllMachines();
       setIsShowPopUp(false);
+      setIsSubmitting(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
+  };
+
+  const handleDeleteMachine = async (id: string) => {
+    try {
+      await deleteMachine(id);
+      await getAllMachines();
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+    }
+  };
+
+  const handleDeleteTechParams = async (id: string) => {
+    try {
+      await deleteMachineParams(id);
+      await getAllMachines();
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+    }
+  };
+
+  const onEditMachine = async (val) => {
+    try {
+      setIsSubmitting(true);
+      const { machine } = val;
+
+      await updateMachine({
+        id: machineEdit.id,
+        machine_Name: machine.machine_Name,
+      });
+
+      await getAllMachines();
+      setMachineEdit({});
+      setIsShowPopUp(false);
+      setIsSubmitting(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsShowPopUp(false);
+      setIsSubmitting(false);
+    }
   };
 
   const handleShowPopup = () => {
     setIsShowPopUp(true);
   };
 
-  const handleDeleteMachine = async (id: string) => {
-    const { status } = await deleteMachine(id);
-    if (status === 200) {
-      getAllMachines();
-    }
-  };
-
-  const handleDeleteTechParams = async (id: string) => {
-    const { status } = await deleteMachineParams(id);
-    if (status === 200) {
-      getAllMachines();
-    }
-  };
-
   const showMachineEdit = async (val) => {
     setMachineEdit(val);
     setIsShowPopUp(true);
-  };
-
-  const onEditMachine = async (val) => {
-    const { machine, params } = val;
-    setIsSubmitting(true);
-    const { status } = await updateMachine({
-      id: machineEdit.id,
-      machine_Name: machine.machine_Name,
-    });
-    if (status === 200) {
-      await getAllMachines();
-      setIsShowPopUp(false);
-      setMachineEdit({});
-    }
-    setIsSubmitting(false);
   };
 
   return (
@@ -95,18 +111,17 @@ const MachineList = () => {
             icon={<MdAdd className="ml-1 h-6 w-6" />}
           />
         </div>
-        <Suspense fallback={<Loading />}>
-          <MachineItem
-            machines={machines}
-            handleDeleteMachine={(val) => handleDeleteMachine(val)}
-            handleDeleteTechParams={(val) => handleDeleteTechParams(val)}
-            handleMachineEdit={(val) => showMachineEdit(val)}
-          />
-        </Suspense>
+
+        <MachineItem
+          machines={machines}
+          handleDeleteMachine={(val) => handleDeleteMachine(val)}
+          handleDeleteTechParams={(val) => handleDeleteTechParams(val)}
+          handleMachineEdit={(val) => showMachineEdit(val)}
+        />
       </div>
       <MachinePopup
         isShowPopUp={isShowPopUp}
-        key={machineEdit?.id}
+        key={isShowPopUp as any}
         editData={machineEdit}
         setIsShowPopUp={() => setIsShowPopUp(!isShowPopUp)}
         onAddMachine={(val) => onAddMachine(val)}

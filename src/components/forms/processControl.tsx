@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { formatDateTime } from 'utils';
-import Upload from 'components/upload';
 import TextArea from 'components/fields/textArea';
 import Button from 'components/button';
 import Select from 'components/select';

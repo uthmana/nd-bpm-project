@@ -35,14 +35,21 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         where: { id },
       });
 
+    if (!ApplicationTobeUpdated) {
+      return NextResponse.json(
+        { message: 'Application to update not found' },
+        { status: 404 },
+      );
+    }
+
     const UpdatedApplication: Applications = await prisma.applications.update({
       where: { id },
       data: {
         ...resultData,
       },
     });
-
-    return NextResponse.json(UpdatedApplication, { status: 200 });
+    const applications = await prisma.applications.findMany();
+    return NextResponse.json(applications, { status: 200 });
   } catch (e) {
     console.error('Prisma Error:', e);
     const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
@@ -68,11 +75,18 @@ export async function DELETE(
         where: { id },
       });
 
-    const DeletedApplication: Applications = await prisma.applications.delete({
+    if (!ApplicationToBeDeleted) {
+      return NextResponse.json(
+        { message: 'Application to be deleted not found' },
+        { status: 404 },
+      );
+    }
+    const deletedApplication: Applications = await prisma.applications.delete({
       where: { id },
     });
+    const applications = await prisma.applications.findMany();
 
-    return NextResponse.json(DeletedApplication, { status: 200 });
+    return NextResponse.json(applications, { status: 200 });
   } catch (e) {
     console.error('Prisma Error:', e);
     const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);

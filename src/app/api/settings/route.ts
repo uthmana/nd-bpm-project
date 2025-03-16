@@ -4,17 +4,22 @@ import { extractPrismaErrorMessage } from 'utils/prismaError';
 
 export async function GET(req: NextRequest) {
   try {
-    const [applications, standards, color] = await prisma.$transaction([
-      prisma.applications.findMany(),
-      prisma.standards.findMany(),
-      prisma.colors.findMany(),
-    ]);
+    const [applications, standards, colors, machines] =
+      await prisma.$transaction([
+        prisma.applications.findMany(),
+        prisma.standards.findMany(),
+        prisma.colors.findMany(),
+        prisma.machine.findMany({
+          include: { machineParams: true },
+        }),
+      ]);
 
     return NextResponse.json(
       {
         applications,
         standards,
-        colors: color,
+        colors,
+        machines,
       },
       { status: 200 },
     );

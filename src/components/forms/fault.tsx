@@ -65,7 +65,6 @@ export default function Fault(props: {
   const [faultSettings, setFaultSettings] = useState({} as Settings);
   const [stockProduct, setStockProduct] = useState([]);
   const [newProduct, setNewProduct] = useState(null);
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
 
   const formatedTechParams = formatTechParams(
     techParameters,
@@ -135,7 +134,6 @@ export default function Fault(props: {
       if (!event.selectedData) return;
 
       const _customer = event.selectedData;
-      setSelectedCustomer(_customer);
 
       let selectedCustomer = {
         customerName: _customer?.company_name,

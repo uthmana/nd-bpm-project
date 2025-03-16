@@ -2,15 +2,12 @@
 
 import React, { useState } from 'react';
 import {
-  formatDateTime,
   platings,
   processConfirmation,
   materials,
   dirtyConfirmation,
   confirmation,
   results,
-  faultInfo,
-  infoTranslate,
 } from 'utils';
 
 import Upload from 'components/upload';

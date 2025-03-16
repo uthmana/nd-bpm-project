@@ -27,7 +27,9 @@ export async function PUT(req: Request) {
       data: regData,
     });
 
-    return NextResponse.json({ createdstandards }, { status: 200 });
+    const standards = await prisma.standards.findMany();
+
+    return NextResponse.json(standards, { status: 200 });
   } catch (e) {
     console.error('Prisma Error:', e);
     const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
