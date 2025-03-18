@@ -103,16 +103,16 @@ export async function deleteFault(id) {
 }
 
 //Notification
-export async function getNotifications(payload) {
-  return fetchAPI('notification', 'get', payload);
+export async function getNotifications(query) {
+  return fetchAPI(`notifications${query}`, 'get');
 }
 
-export async function updateNotificStatus(payload) {
-  return fetchAPI(`notification`, 'post', payload);
+export async function updateNotification(payload) {
+  return fetchAPI(`notifications`, 'put', payload);
 }
 
-export async function markAllNotifAsRead(payload) {
-  return fetchAPI(`notification`, 'put', payload);
+export async function sendNotification(payload) {
+  return fetchAPI(`notifications`, 'post', payload);
 }
 
 // Add Entry Form Control
@@ -367,9 +367,6 @@ export async function getProductList() {
   return fetchAPI(`liste`, 'get');
 }
 
-export async function sendNotification(payload) {
-  return fetchAPI(`notifications`, 'post', payload);
-}
 export async function getBarcodeBase64(payload) {
   return fetchAPI(`barcode`, 'post', payload);
 }

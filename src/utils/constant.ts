@@ -157,6 +157,15 @@ export const results = [
   { value: 'REJECT', name: 'Ret' },
 ];
 
+export const finalResultsList = [
+  { value: 'ACCEPT', name: 'Kabul' },
+  {
+    value: 'ACCEPTANCE_WITH_CONDITION',
+    name: 'Şartlı Kabul',
+  },
+  { value: 'REJECT', name: 'Red' },
+];
+
 export const faultInfo = [
   'product_barcode',
   'customerName',

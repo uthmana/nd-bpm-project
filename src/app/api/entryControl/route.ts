@@ -47,6 +47,11 @@ export async function PUT(req: Request) {
         ...faultControlData,
         Fault: { connect: { id: faultId } },
       },
+      include: {
+        Fault: {
+          include: { customer: true },
+        },
+      },
     });
 
     const updateFault = await prisma.fault.update({

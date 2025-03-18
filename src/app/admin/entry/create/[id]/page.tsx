@@ -4,7 +4,11 @@ import FaultForm from 'components/forms/fault';
 import { useParams, useRouter } from 'next/navigation';
 import { formatCurrency, removeMillisecondsAndUTC } from 'utils';
 import { toast } from 'react-toastify';
-import { getFaultById, updateFault } from 'app/lib/apiRequest';
+import {
+  getFaultById,
+  sendNotification,
+  updateFault,
+} from 'app/lib/apiRequest';
 import { FormSkeleton } from 'components/skeleton';
 import { useSession } from 'next-auth/react';
 import Card from 'components/card';
@@ -61,9 +65,17 @@ export default function Edit() {
     const newVal = { ...val, ...{ updatedBy: session?.user?.name } };
 
     try {
-      await updateFault({
+      const { data } = await updateFault({
         ...newVal,
         id: queryParams?.id,
+      });
+      await sendNotification({
+        workflowId: 'fault-entry',
+        data: {
+          link: `${window?.location.origin}/admin/entry/${data.id}`,
+          title: 'Ürün Girişi Güncelleme',
+          description: `${data?.customer?.company_name} için ${data?.product} ürününün güncellenmiştir.`,
+        },
       });
 
       toast.success('Ürün güncelleme başarılı.');

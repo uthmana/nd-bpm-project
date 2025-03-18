@@ -2,23 +2,27 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useParams, useRouter } from 'next/navigation';
+import { DetailSkeleton } from 'components/skeleton';
+import Card from 'components/card';
+import TechParamsTable from 'components/admin/data-tables/techParamsTable';
+import Button from 'components/button';
+import Popup from 'components/popup';
+import { useSession } from 'next-auth/react';
+import Select from 'components/select';
+import DetailHeader from 'components/detailHeader';
+import FileViewer from 'components/fileViewer';
+import Barcode from 'react-jsbarcode';
+import { getResError } from 'utils/responseError';
 import {
+  addTechParams,
+  updateTechParams,
+  deleteTechParams,
   getProcessById,
   updateProcess,
   getMachines,
   sendNotification,
 } from 'app/lib/apiRequest';
-import { useParams, useRouter } from 'next/navigation';
-import { DetailSkeleton } from 'components/skeleton';
-import Card from 'components/card';
-import TechParamsTable from 'components/admin/data-tables/techParamsTable';
-import {
-  addTechParams,
-  updateTechParams,
-  deleteTechParams,
-} from 'app/lib/apiRequest';
-import Button from 'components/button';
-import Popup from 'components/popup';
 import {
   faultInfo,
   formatDateTime,
@@ -26,12 +30,6 @@ import {
   infoTranslate,
   log,
 } from 'utils';
-import { useSession } from 'next-auth/react';
-import Select from 'components/select';
-import DetailHeader from 'components/detailHeader';
-import FileViewer from 'components/fileViewer';
-import Barcode from 'react-jsbarcode';
-import { getResError } from 'utils/responseError';
 
 export default function EntryControl() {
   const router = useRouter();
@@ -130,6 +128,9 @@ export default function EntryControl() {
         workflowId: 'process-frequency',
         data: {
           link: `${window?.location.origin}/process/create/${process.id}`,
+          title: 'Proses Frekansı Eklenme',
+          description: `${fault?.product} ürünün Proses Frekansı eklenmesi hatırlanmaktadır.`,
+          userId: session?.user?.id,
         },
       });
       const storedTimes = JSON.parse(
@@ -248,6 +249,8 @@ export default function EntryControl() {
         workflowId: 'process-completion',
         data: {
           link: `${window?.location.origin}/admin/entry/${faultId}`,
+          title: 'Proses Tamamlanma',
+          description: `${fault?.customerName} için ${fault?.product} ürününün prosesi tamamlandı`,
         },
       });
 

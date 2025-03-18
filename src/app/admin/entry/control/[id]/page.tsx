@@ -23,6 +23,7 @@ import { MdOutlineArrowBack } from 'react-icons/md';
 import NextLink from 'next/link';
 import { Fault } from 'app/localTypes/types';
 import { getResError } from 'utils/responseError';
+import { results } from 'utils';
 
 export default function EntryControl() {
   const router = useRouter();
@@ -104,9 +105,23 @@ export default function EntryControl() {
     if (isUpdate) {
       try {
         setIsSubmitting(true);
-        await updateFaultControl({
+        const { data } = await updateFaultControl({
           ...values,
           ...{ updatedBy: session?.user?.name },
+        });
+
+        //Notification trigger
+        const status = results?.find(
+          (item) => item.value === data.result,
+        )?.name;
+
+        await sendNotification({
+          workflowId: 'fault-control',
+          data: {
+            link: `${window?.location.origin}/admin/entry/${data.faultId}`,
+            title: `Ürün Giriş Kontrol Güncelleme| ${status}`,
+            description: `${data?.Fault?.customer?.company_name} için ${data?.product} ürününün giriş kontrolu yapıldı.`,
+          },
         });
 
         toast.success('Ürün kontrol güncelleme işlemi başarılı.');
@@ -130,10 +145,16 @@ export default function EntryControl() {
 
       //Notification trigger
       if (data.result !== 'REJECT') {
+        const status = results?.find(
+          (item) => item.value === data.result,
+        )?.name;
+
         await sendNotification({
           workflowId: 'fault-control',
           data: {
             link: `${window?.location.origin}/admin/entry/${data.faultId}`,
+            title: `Ürün Giriş Kontrolü | ${status}`,
+            description: `${data?.Fault?.customer?.company_name} için ${data?.Fault?.product} ürününün giriş kontrolu yapıldı.`,
           },
         });
       }

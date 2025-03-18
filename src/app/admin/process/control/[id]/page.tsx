@@ -21,6 +21,7 @@ import FinalControl from 'components/forms/finalControl';
 import NextLink from 'next/link';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import { getResError } from 'utils/responseError';
+import { finalResultsList } from 'utils';
 
 type UnacceptInfo = {
   unacceptableStage: string;
@@ -133,7 +134,22 @@ export default function EntryControl() {
           updatedBy: session?.user?.name,
         };
 
-        await updateProcessControl(controlUpdateValues);
+        const { data } = await updateProcessControl(controlUpdateValues);
+
+        //Notification trigger
+        const status = finalResultsList?.find(
+          (item) => item.value === data.result,
+        )?.name;
+
+        await sendNotification({
+          workflowId: 'process-control',
+          data: {
+            link: `${window?.location.origin}/admin/entry/${fault.id}`,
+            title: `Final Kontrolü Güncelleme | ${status}`,
+            description: `${fault?.customer?.company_name} için ${fault?.product} ürünün final kontrolü güncellendi`,
+          },
+        });
+
         setIsSubmitting(false);
         toast.success('Proses final kontrol güncelleme işlemi başarılı.');
         router.push(`/admin/entry/${fault.id}`);
@@ -149,11 +165,18 @@ export default function EntryControl() {
 
       const { data } = await addFinalControl(_controlValues);
 
+      //Notification trigger
       if (data.result === 'ACCEPT') {
+        const status = finalResultsList?.find(
+          (item) => item.value === data.result,
+        )?.name;
+
         await sendNotification({
           workflowId: 'process-control',
           data: {
             link: `${window?.location.origin}/admin/entry/${fault.id}`,
+            title: `Final Kontrolü | ${status}`,
+            description: `${fault?.customer?.company_name} için ${fault?.product} ürünün final kontrolü yapıldı`,
           },
         });
       }

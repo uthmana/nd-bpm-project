@@ -1,61 +1,76 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Dropdown from 'components/dropdown';
 import { IoMdNotificationsOutline } from 'react-icons/io';
 import NotificationItem from './item';
 import { useRouter } from 'next/navigation';
-import {
-  getNotifications,
-  updateNotificStatus,
-  markAllNotifAsRead,
-} from 'app/lib/apiRequest';
+import { getNotifications, updateNotification } from 'app/lib/apiRequest';
+import { convertToISO8601, log } from 'utils';
+import { useSession } from 'next-auth/react';
 
 export default function Notification({ user }) {
   const [notifications, setNotifications] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const { data: session } = useSession();
+  const [activeNotification, setActiveNotification] = useState(0);
 
   const getMyNotification = async () => {
+    if (!session?.user?.role) return;
     try {
-      const { data, status } = await getNotifications();
-      if (status === 200) {
-        setNotifications(data);
-      }
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      const userQuery = `?role=${session?.user?.role}&time=${convertToISO8601(
+        thirtyDaysAgo,
+      )}`;
+      log(userQuery);
+      const { data } = await getNotifications(userQuery);
+      setNotifications(data);
+      setActiveNotification(
+        data?.filter((item) => item.status !== 'READ')?.length,
+      );
     } catch (err) {
-      console.log('getMyNotification', err);
+      log('getMyNotification', err);
     }
   };
 
   useEffect(() => {
-    if (user?.role) {
-      getMyNotification();
-    }
-  }, [user]);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      getMyNotification();
-    }, 20000);
-
-    () => {
-      clearInterval(timer);
-    };
+    getMyNotification();
   }, []);
 
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      getMyNotification();
+    }, 30000);
+
+    () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [session?.user]);
+
   const handleNotifClick = async ({ id, link }) => {
-    const { status, data } = await updateNotificStatus({ id });
-    if (status === 200) {
+    try {
+      await updateNotification({ ids: [id] });
       getMyNotification();
       router.push(link);
       setIsOpen(false);
+    } catch (error) {
+      console.log(error);
     }
   };
 
   const handleMarkAllRead = async () => {
-    const notifIds = notifications.map((item) => item.id);
-    const { status } = await markAllNotifAsRead(notifIds);
-    if (status === 200) {
+    try {
+      const ids = notifications.map((item) => item.id);
+      await updateNotification({ ids });
       getMyNotification();
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -68,9 +83,9 @@ export default function Notification({ user }) {
             <IoMdNotificationsOutline className="h-6 w-6 text-gray-600 dark:text-white" />
           </p>
 
-          {notifications.length > 0 ? (
+          {activeNotification ? (
             <span className="absolute -right-2 -top-3 flex h-[20px] min-h-fit w-[20px] min-w-fit cursor-pointer items-center justify-center rounded-full bg-red-500 p-[2px] text-[12px] font-bold text-white">
-              {notifications.length}
+              {activeNotification}
             </span>
           ) : null}
         </>
@@ -79,16 +94,16 @@ export default function Notification({ user }) {
       classNames={'py-2 top-8 -left-[230px] md:-left-[440px] w-max'}
     >
       <div className="flex w-[360px] flex-col gap-3 rounded-[20px] bg-white p-4 shadow-xl shadow-shadow-500 dark:!bg-navy-700 dark:text-white dark:shadow-none sm:w-[460px]">
-        <div className="flex items-center justify-between p-3">
+        <div className="flex items-center justify-between border-b p-3">
           <p className="text-base font-bold text-navy-700  dark:text-white">
             BİLDİRİMLER
           </p>
-          {notifications.length > 0 ? (
+          {activeNotification ? (
             <button
               className="text-xs font-bold capitalize underline opacity-70 hover:opacity-100"
               onClick={handleMarkAllRead}
             >
-              Tümünü okunmuş olarak işaretle
+              Tümünü okundu olarak imle
             </button>
           ) : null}
         </div>

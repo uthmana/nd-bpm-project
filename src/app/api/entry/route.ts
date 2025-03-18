@@ -75,6 +75,9 @@ export async function PUT(req: Request) {
         },
         customer: { connect: { id: customerId } },
       },
+      include: {
+        customer: true,
+      },
     });
 
     if (fault) {
@@ -105,7 +108,7 @@ export async function PUT(req: Request) {
       });
     }
 
-    return NextResponse.json({ fault }, { status: 200 });
+    return NextResponse.json(fault, { status: 200 });
   } catch (e) {
     console.error('Prisma Error:', e);
     const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);

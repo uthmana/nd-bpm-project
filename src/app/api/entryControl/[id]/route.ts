@@ -52,6 +52,11 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       data: {
         ...data,
       },
+      include: {
+        Fault: {
+          include: { customer: true },
+        },
+      },
     });
 
     const faultControlAccepted =

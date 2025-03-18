@@ -311,3 +311,8 @@ export const getProcesstimeByFrequency = (time, freq) => {
   const updateDate = new Date(now.getTime() + (freq || 0) * 60000);
   return convertToISO8601(updateDate);
 };
+
+export const formatPhoneNumber = (contactNumber: string) => {
+  const sanitizedNumber = contactNumber?.replace(/\D/g, '').replace(/^0/, '');
+  return sanitizedNumber ? `+90${sanitizedNumber}` : null;
+};

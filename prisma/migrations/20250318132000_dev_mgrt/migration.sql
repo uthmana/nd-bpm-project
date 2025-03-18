@@ -11,7 +11,7 @@ CREATE TYPE "InvoiceStatus" AS ENUM ('PENDING', 'ACTIVE', 'PAID', 'NOT_PAID');
 CREATE TYPE "NotifStatus" AS ENUM ('READ', 'NOT_READ');
 
 -- CreateEnum
-CREATE TYPE "NotifReceiver" AS ENUM ('SUPER', 'NORMAL', 'TECH', 'OTHER');
+CREATE TYPE "NotifReceiver" AS ENUM ('SUPER', 'NORMAL', 'TECH', 'ADMIN', 'OTHER');
 
 -- CreateEnum
 CREATE TYPE "FaultControlResult" AS ENUM ('ACCEPT', 'ACCEPTANCE_WITH_CONDITION', 'PRE_PROCESS', 'REJECT');
@@ -300,7 +300,7 @@ CREATE TABLE "MachineParams" (
 -- CreateTable
 CREATE TABLE "TechnicalParameter" (
     "id" TEXT NOT NULL,
-    "Ort_Uretim_saat" TEXT,
+    "Ort_Uretim_saat" TIMESTAMP(3),
     "Viskozite" TEXT,
     "Besleme_Tipi" TEXT,
     "Besleme_Hizi" TEXT,
@@ -413,7 +413,7 @@ CREATE TABLE "Notification" (
     "image" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
-    "receiver" "NotifReceiver" NOT NULL DEFAULT 'NORMAL',
+    "recipient" "NotifReceiver" NOT NULL DEFAULT 'NORMAL',
     "link" TEXT,
     "status" "NotifStatus" NOT NULL DEFAULT 'NOT_READ',
 

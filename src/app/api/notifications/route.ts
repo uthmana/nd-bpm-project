@@ -1,16 +1,34 @@
-import { NextResponse } from 'next/server';
-import { Knock } from '@knocklabs/node';
-import { User } from '@prisma/client';
+import { NextRequest, NextResponse } from 'next/server';
+import { $Enums, NotifReceiver, User, UserRole } from '@prisma/client';
+import { extractPrismaErrorMessage } from 'utils/prismaError';
+import {
+  sendEmailNotification,
+  sendWhatsAppMessage,
+} from 'app/lib/notificationRequest';
+import { formatPhoneNumber } from 'utils';
 
-const knockClient = new Knock(process.env.KNOCK_SIGNING_KEY);
+type SelectedUser = Pick<
+  User,
+  'id' | 'name' | 'email' | 'role' | 'contactNumber'
+>;
+
+const getRecipientRole = (workflowId: string) => {
+  return ({
+    'fault-entry': 'SUPER',
+    'fault-control': 'TECH',
+    'process-frequency': 'TECH',
+    'process-control': 'SUPER',
+    'process-completion': 'ADMIN',
+  }[workflowId] || 'OTHER') as UserRole;
+};
 
 export async function POST(req: Request) {
-  const { workflowId, data } = await req.json();
   try {
-    const users: User[] | any = await prisma.user.findMany({
-      where: {
-        status: 'ACTIVE',
-      },
+    const { workflowId, data } = await req.json();
+    const recipientRole: UserRole = getRecipientRole(workflowId);
+
+    const users: SelectedUser[] = await prisma.user.findMany({
+      where: { status: 'ACTIVE', role: recipientRole as UserRole },
       select: {
         id: true,
         name: true,
@@ -20,37 +38,117 @@ export async function POST(req: Request) {
       },
     });
 
-    let recipients;
-    switch (workflowId) {
-      case 'fault-entry':
-        recipients = users.filter((item: User) => item.role === 'SUPER');
-        break;
-      case 'fault-control':
-        recipients = users.filter((item: User) => item.role === 'TECH');
-        break;
-      case 'process-frequency':
-        recipients = users.filter((item: User) => item.role === 'TECH');
-        break;
-      case 'process-control':
-        recipients = users.filter((item: User) => item.role === 'SUPER');
-        break;
-      case 'process-completion':
-        recipients = users.filter((item: User) => item.role === 'ADMIN');
-        break;
+    if (!users.length) return NextResponse.json({}, { status: 200 });
 
-      default:
-        recipients = users;
-    }
-
-    if (!recipients.length) {
-      return NextResponse.json({}, { status: 200 });
-    }
-    const res = await knockClient.workflows.trigger(workflowId, {
-      data,
-      recipients,
+    // In-App Notification
+    const inappNotification = await prisma.notification.create({
+      data: {
+        title: data.title,
+        description: data.description,
+        link: data.link,
+        recipient: recipientRole,
+      },
     });
-    return NextResponse.json(res, { status: 200 });
-  } catch (err) {
-    return NextResponse.json(err, { status: 404 });
+
+    // WhatsApp Notifications
+    if (workflowId === 'process-frequency' && data?.userId) {
+      const user: User = await prisma.user.findUnique({
+        where: { id: data?.userId, status: 'ACTIVE' },
+      });
+      if (user && user?.contactNumber) {
+        const phone = formatPhoneNumber(user?.contactNumber);
+        await sendWhatsAppMessage(
+          phone,
+          `${data.title} -- ${data.description}`,
+        );
+      }
+      return NextResponse.json(inappNotification, { status: 200 });
+    }
+
+    const recipientPhoneNumbers = users
+      .map((user) => formatPhoneNumber(user.contactNumber))
+      .filter(Boolean) as string[];
+
+    await Promise.all(
+      recipientPhoneNumbers.map((phone) =>
+        sendWhatsAppMessage(phone, `${data.title} -- ${data.description}`),
+      ),
+    );
+
+    // Email Notifications
+    const uniqueEmails = [...new Set(users.map((user) => user.email))];
+    await sendEmailNotification(
+      uniqueEmails,
+      data.title,
+      data.description,
+      data.link,
+    );
+
+    return NextResponse.json(inappNotification, { status: 200 });
+  } catch (error) {
+    console.error('API Error:', error);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(error);
+    return NextResponse.json(
+      { error: userMessage, details: technicalMessage },
+      { status: 500 },
+    );
+  }
+}
+
+export async function GET(req: NextRequest) {
+  try {
+    const searchParams = req.nextUrl.searchParams;
+    const role: NotifReceiver | any = searchParams.get('role');
+    const time = searchParams.get('time');
+
+    const where: any = {};
+    if (role) where.recipient = $Enums.NotifReceiver[role];
+    if (time) where.createdAt = { gte: time };
+
+    const notifications = await prisma.notification.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return NextResponse.json(notifications, { status: 200 });
+  } catch (e) {
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      { error: userMessage, details: technicalMessage },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PUT(req: Request) {
+  try {
+    const { ids } = await req.json();
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return NextResponse.json(
+        { message: 'You are missing required data' },
+        { status: 400 },
+      );
+    }
+
+    const updatedNotifications = await prisma.notification.updateMany({
+      where: { id: { in: ids } },
+      data: {
+        status: 'READ',
+      },
+    });
+
+    return NextResponse.json(updatedNotifications, { status: 200 });
+  } catch (e) {
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }

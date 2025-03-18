@@ -395,7 +395,7 @@ model Notification {
   image       String?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime?     @updatedAt
-  receiver    NotifReceiver @default(NORMAL)
+  recipient   NotifReceiver @default(NORMAL)
   link        String?
   status      NotifStatus   @default(NOT_READ)
 }
@@ -409,6 +409,7 @@ enum NotifReceiver {
   SUPER
   NORMAL
   TECH
+  ADMIN
   OTHER
 }
 

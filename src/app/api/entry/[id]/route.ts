@@ -109,6 +109,9 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
           },
         },
       },
+      include: {
+        customer: true,
+      },
     });
 
     //Tracking Stock

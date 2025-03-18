@@ -28,6 +28,8 @@ export default function Edit() {
         workflowId: 'fault-entry',
         data: {
           link: `${window?.location.origin}/admin/entry/${data.id}`,
+          title: 'Yeni Ürün Girişi',
+          description: `${data?.customer?.company_name} için ${data?.product} ürününün girişi yapıldı.`,
         },
       });
 
