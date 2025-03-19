@@ -38,12 +38,12 @@ const Invoice = () => {
       getCustomersWithFilter({
         where: {
           Fault: {
-            some: { status: 'IRSALIYE_KESIMI_BEKLIYOR' },
+            some: { status: 'IRSALIYE_KESIMI_BEKLENIYOR' },
           },
         },
         include: {
           Fault: {
-            where: { status: 'IRSALIYE_KESIMI_BEKLIYOR' },
+            where: { status: 'IRSALIYE_KESIMI_BEKLENIYOR' },
           },
         },
       }),

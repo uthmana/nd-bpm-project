@@ -64,7 +64,7 @@ export default function Invoices() {
         },
         include: {
           Fault: {
-            where: { status: 'IRSALIYE_KESIMI_BEKLIYOR' },
+            where: { status: 'IRSALIYE_KESIMI_BEKLENIYOR' },
           },
         },
       });

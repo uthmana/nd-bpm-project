@@ -84,7 +84,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
           id: result.faultId,
         },
         data: {
-          status: 'FINAL_KONTROL_BEKLIYOR',
+          status: 'FINAL_KONTROL_BEKLENIYOR',
         },
       });
     }
@@ -119,7 +119,7 @@ export async function DELETE(
     const updatedFault = await prisma.fault.update({
       where: { id: deletedProcess.faultId },
       data: {
-        status: 'PROSES_BEKLIYOR',
+        status: 'PROSES_BEKLENIYOR',
       },
     });
 

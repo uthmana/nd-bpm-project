@@ -69,7 +69,9 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         id: faultId,
       },
       data: {
-        status: faultControlAccepted ? 'PROSES_BEKLIYOR' : 'GIRIS_KONTROL_RET',
+        status: faultControlAccepted
+          ? 'PROSES_BEKLENIYOR'
+          : 'GIRIS_KONTROL_RET',
       },
     });
 

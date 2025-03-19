@@ -63,9 +63,9 @@ const Process = () => {
         where: {
           status: {
             in: [
-              'PROSES_BEKLIYOR',
+              'PROSES_BEKLENIYOR',
               'PROSES_ISLENIYOR',
-              'FINAL_KONTROL_BEKLIYOR',
+              'FINAL_KONTROL_BEKLENIYOR',
               'FINAL_KONTROL_RET',
             ],
           },

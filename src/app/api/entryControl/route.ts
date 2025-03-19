@@ -59,7 +59,9 @@ export async function PUT(req: Request) {
         id: faultId,
       },
       data: {
-        status: faultControlAccepted ? 'PROSES_BEKLIYOR' : 'GIRIS_KONTROL_RET',
+        status: faultControlAccepted
+          ? 'PROSES_BEKLENIYOR'
+          : 'GIRIS_KONTROL_RET',
       },
     });
 

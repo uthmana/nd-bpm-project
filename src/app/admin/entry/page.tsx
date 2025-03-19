@@ -31,12 +31,12 @@ const Entry = () => {
         where: {
           status: {
             in: [
-              'GIRIS_KONTROL_BEKLIYOR',
+              'GIRIS_KONTROL_BEKLENIYOR',
               'GIRIS_KONTROL_RET',
-              'PROSES_BEKLIYOR',
+              'PROSES_BEKLENIYOR',
               'PROSES_ISLENIYOR',
-              'FINAL_KONTROL_BEKLIYOR',
-              'IRSALIYE_KESIMI_BEKLIYOR',
+              'FINAL_KONTROL_BEKLENIYOR',
+              'IRSALIYE_KESIMI_BEKLENIYOR',
             ],
           },
         },

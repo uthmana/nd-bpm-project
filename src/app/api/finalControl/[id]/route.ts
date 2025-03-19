@@ -95,7 +95,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
           shipmentQty: updateFinalControl.nakliye_miktar,
           status:
             controlReult !== 'REJECT'
-              ? 'IRSALIYE_KESIMI_BEKLIYOR'
+              ? 'IRSALIYE_KESIMI_BEKLENIYOR'
               : 'FINAL_KONTROL_RET',
         },
       });
