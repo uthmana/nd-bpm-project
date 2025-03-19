@@ -162,3 +162,21 @@ body.dark::-webkit-scrollbar {
     opacity: 0;
   }
 }
+
+@media print {
+  table,
+  tr,
+  td {
+    page-break-inside: avoid;
+    overflow: visible;
+  }
+  @page {
+    margin: 10mm;
+    padding-inline: 10mm;
+    padding-block: 20mm;
+  }
+  img {
+    display: block;
+    max-width: 100%;
+  }
+}

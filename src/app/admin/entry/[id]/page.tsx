@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
   addProcess,
@@ -30,6 +30,7 @@ import FinalControl from 'components/forms/finalControl';
 import EntryControlForm from 'components/forms/faultControl';
 import { getResError } from 'utils/responseError';
 import { toast } from 'react-toastify';
+import { useReactToPrint } from 'react-to-print';
 
 export default function Edit() {
   const router = useRouter();
@@ -46,6 +47,13 @@ export default function Edit() {
   const [isPrecessSubmitting, setIsPrecessSubmitting] = useState(false);
   const [finalControl, setFinalControl] = useState([] as any);
   const [finalControlFormData, setFinalControlFormData] = useState({} as any);
+
+  //const entryControlRef = useRef(null);
+
+  const entryControlRef = useRef<HTMLDivElement>(null);
+  const frequencyTableRef = useRef<HTMLDivElement>(null);
+  const unacceptedRef = useRef<HTMLDivElement>(null);
+  const finalControlRef = useRef<HTMLDivElement>(null);
 
   const detailData = {
     title: 'Ürün Detayi',
@@ -214,15 +222,12 @@ export default function Edit() {
     printWindow.document.close();
     printWindow.print();
   };
-  const handleProcessPrint = () => {
-    console.log('Process printing.....');
-  };
-  const handleFinalControlPrint = () => {
-    console.log('Final printing.....');
-  };
-  const handleEntryUnacceptablePrint = (stage) => {
-    console.log('EntryFault printing.....');
-  };
+  const entryControlPrint = useReactToPrint({ contentRef: entryControlRef });
+  const frequencyTablePrint = useReactToPrint({
+    contentRef: frequencyTableRef,
+  });
+  const unacceptedPrint = useReactToPrint({ contentRef: unacceptedRef });
+  const finalControlPrint = useReactToPrint({ contentRef: finalControlRef });
 
   return (
     <div className="w-full">
@@ -288,8 +293,11 @@ export default function Edit() {
               ) : null}
             </Card>
 
-            <Card extra="mx-auto w-full rounded-2xl px-8 pt-10 bg-white dark:bg-[#111c44] dark:text-white">
-              <div className="mb-8 flex justify-between gap-3">
+            <Card
+              ref={entryControlRef}
+              extra="mx-auto w-full rounded-2xl px-8 pt-10 bg-white dark:bg-[#111c44] dark:text-white"
+            >
+              <div className="mb-8 flex justify-between gap-3 print:hidden">
                 <h2 className="text-2xl font-bold">
                   Ürün Giriş Kontrol Bilgileri
                 </h2>
@@ -306,7 +314,7 @@ export default function Edit() {
                   ) : null}
                   <Button
                     extra={`px-4 h-[40px] max-w-fit`}
-                    onClick={handleProcessPrint}
+                    onClick={() => entryControlPrint()}
                     text=" "
                     icon={<MdPrint className="mr-1 h-5 w-5" />}
                   />
@@ -326,8 +334,11 @@ export default function Edit() {
               )}
             </Card>
 
-            <Card extra="mx-auto pb-8 w-full rounded-2xl px-8 pt-10 bg-white dark:bg-[#111c44] dark:text-white">
-              <div className="mb-4 flex w-full justify-between">
+            <Card
+              ref={frequencyTableRef}
+              extra="mx-auto pb-8 w-full rounded-2xl px-8 pt-10 bg-white dark:bg-[#111c44] dark:text-white"
+            >
+              <div className="mb-4 flex w-full justify-between print:hidden">
                 <h2 className="mb-4 text-2xl font-bold">
                   Proses Frekans Bilgileri
                 </h2>
@@ -349,7 +360,7 @@ export default function Edit() {
                   ) : null}
                   <Button
                     extra={`px-4 h-[40px] max-w-fit`}
-                    onClick={handleProcessPrint}
+                    onClick={() => frequencyTablePrint()}
                     text=" "
                     icon={<MdPrint className="mr-1 h-5 w-5" />}
                   />
@@ -368,10 +379,10 @@ export default function Edit() {
             </Card>
 
             {fault?.unacceptable?.length > 0 ? (
-              <div className="w-full">
+              <div ref={unacceptedRef} className="w-full">
                 {fault?.unacceptable.map((item) => (
                   <Card extra="mb-10" key={item?.id}>
-                    <div className="mb-2 flex justify-between gap-3 bg-white px-7 py-5">
+                    <div className="mb-2 flex justify-between gap-3 bg-white px-7 py-5 print:hidden">
                       <h2 className="text-2xl font-bold">
                         Uygunsuz Ürün/Hizmet Formu
                       </h2>
@@ -392,15 +403,13 @@ export default function Edit() {
 
                         <Button
                           extra={`px-4 h-[40px] max-w-fit`}
-                          onClick={() =>
-                            handleEntryUnacceptablePrint(item.unacceptableStage)
-                          }
+                          onClick={() => unacceptedPrint()}
                           text=" "
                           icon={<MdPrint className="mr-1 h-5 w-5" />}
                         />
                       </div>
                     </div>
-                    <div className="page-break relative min-h-[800px] w-full bg-white px-7 py-5 print:absolute  print:top-0 print:z-[99999] print:min-h-screen print:w-full print:pl-0 print:pr-8">
+                    <div className="page-break relative min-h-[800px] w-full bg-white px-7 py-5 ">
                       <Unaccept formData={item} fault={fault} variant="value" />
                     </div>
                   </Card>
@@ -408,8 +417,11 @@ export default function Edit() {
               </div>
             ) : null}
 
-            <Card extra="mt-2 w-full rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white">
-              <div className="my-2 mb-5 flex justify-between">
+            <Card
+              ref={finalControlRef}
+              extra="mt-2 w-full rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white"
+            >
+              <div className="my-2 mb-5 flex justify-between print:hidden">
                 <h2 className="text-2xl font-bold">Final Kontrol Bilgileri</h2>
                 <div className="flex gap-2">
                   {fault?.status != 'SEVKIYAT_TAMAMLANDI' &&
@@ -428,7 +440,7 @@ export default function Edit() {
 
                   <Button
                     extra={`px-4 h-[40px] max-w-fit`}
-                    onClick={handleFinalControlPrint}
+                    onClick={() => finalControlPrint()}
                     text=" "
                     icon={<MdPrint className="mr-1 h-5 w-5" />}
                   />
