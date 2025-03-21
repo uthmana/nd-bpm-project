@@ -104,8 +104,8 @@ export default function Unaccept(props: {
   ];
 
   return (
-    <div className="w-full">
-      <div className="mb-2 flex items-center border-b border-[#000]">
+    <div className="w-full dark:bg-[#111c44] dark:text-white ">
+      <div className="mb-2 flex items-center border-b border-[#000]  dark:border-gray-900">
         <Image
           width="70"
           height="20"
@@ -162,7 +162,7 @@ export default function Unaccept(props: {
                 >
                   <span className="font-normal">{item.label}</span>
                   {variant && variant === 'value' ? (
-                    <div className="border border-[#000] px-3 py-1">
+                    <div className="border border-[#000] px-3 py-1 dark:border-gray-900">
                       {values?.unacceptableStage === item.value ? (
                         <MdCheck className="h-4 w-4" />
                       ) : (
@@ -186,11 +186,11 @@ export default function Unaccept(props: {
       </div>
 
       <div className="w-full">
-        <div className="border border-[#000] p-1 text-center text-sm font-bold">
+        <div className="border border-[#000] p-1 text-center text-sm font-bold dark:border-gray-900">
           Uygunsuzluğun Tanımı
         </div>
         {variant && variant === 'value' ? (
-          <div className="mb-3 min-h-16 border border-t-0 border-[#000000] px-2 py-1 text-sm">
+          <div className="mb-3 min-h-16 border border-t-0 border-[#000000] px-2 py-1 text-sm dark:border-gray-900">
             {values?.unacceptableDescription}
           </div>
         ) : (
@@ -199,7 +199,7 @@ export default function Unaccept(props: {
             id="unacceptableDescription"
             name="unacceptableDescription"
             placeholder=""
-            extra="mb-3 !rounded-none !border-[#000000] border-t-0"
+            extra="mb-3 !rounded-none !border-[#000000] dark:border-gray-900 border-t-0"
             value={values?.unacceptableDescription}
             rows={2}
           />
@@ -207,11 +207,11 @@ export default function Unaccept(props: {
       </div>
 
       <div className="w-full">
-        <div className="border border-[#000] p-1 text-center text-sm font-bold">
+        <div className="border border-[#000] p-1 text-center text-sm font-bold dark:border-gray-900">
           Alınan Aksiyonlar
         </div>
         {variant && variant === 'value' ? (
-          <div className="mb-3  min-h-16 border border-t-0 border-[#000000] px-2 py-1 text-sm">
+          <div className="mb-3  min-h-16 border border-t-0 border-[#000000] px-2 py-1 text-sm dark:border-gray-900">
             {values?.unacceptableAction}
           </div>
         ) : (
@@ -220,7 +220,7 @@ export default function Unaccept(props: {
             id="unacceptableAction"
             name="unacceptableAction"
             placeholder=""
-            extra="mb-3 !rounded-none !border-[#000000] border-t-0"
+            extra="mb-3 !rounded-none !border-[#000000] dark:border-gray-900 border-t-0"
             value={values?.unacceptableAction}
             rows={2}
           />
@@ -228,11 +228,11 @@ export default function Unaccept(props: {
       </div>
 
       <div className="w-full">
-        <div className="border border-[#000] p-1 text-center text-sm font-bold">
+        <div className="border border-[#000] p-1 text-center text-sm font-bold dark:border-gray-900">
           Sonuc/Karar
         </div>
         {variant && variant === 'value' ? (
-          <div className="mb-3  min-h-16 border border-t-0 border-[#000000] px-2 py-1 text-sm">
+          <div className="mb-3  min-h-16 border border-t-0 border-[#000000] px-2 py-1 text-sm dark:border-gray-900">
             {values?.result}
           </div>
         ) : (
@@ -241,7 +241,7 @@ export default function Unaccept(props: {
             id="result"
             name="result"
             placeholder=""
-            extra="mb-3 !rounded-none !border-[#000000] !border-t-0"
+            extra="mb-3 !rounded-none !border-[#000000] !border-t-0 dark:border-gray-900"
             value={values?.result}
             rows={2}
           />
@@ -249,13 +249,13 @@ export default function Unaccept(props: {
       </div>
 
       <div className="mb-5 flex w-full flex-nowrap">
-        <div className="flex min-h-[46px] border border-r-0 border-[#000000] p-3 text-center text-sm font-bold">
+        <div className="flex min-h-[46px] border border-r-0 border-[#000000] p-3 text-center text-sm font-bold dark:border-gray-900">
           Açıklama:
         </div>
 
         <div className="h-auto w-full">
           {variant && variant === 'value' ? (
-            <div className="flex min-h-[46px] items-center border border-[#000000] px-2 py-2 text-sm">
+            <div className="flex min-h-[46px] items-center border border-[#000000] px-2 py-2 text-sm dark:border-gray-900">
               {values?.description}
             </div>
           ) : (
@@ -264,7 +264,7 @@ export default function Unaccept(props: {
               id="description"
               name="description"
               placeholder=""
-              extra="!rounded-none !border-[#000000]"
+              extra="!rounded-none !border-[#000000] dark:border-gray-900"
               rows={1}
               value={values?.description}
             />

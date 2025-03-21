@@ -285,6 +285,7 @@ export default function EntryControlForm(props: {
               name="image"
               onChange={handleValues}
               value={values.image}
+              variant={variant}
             />
           </div>
 
@@ -297,6 +298,7 @@ export default function EntryControlForm(props: {
               placeholder="Açıklama"
               extra="mb-8"
               value={values.remarks}
+              variant={variant}
             />
           </div>
 

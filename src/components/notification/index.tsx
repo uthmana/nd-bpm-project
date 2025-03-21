@@ -17,7 +17,6 @@ export default function Notification({ user }) {
   const [activeNotification, setActiveNotification] = useState(0);
 
   const getMyNotification = async () => {
-    if (!session?.user?.role) return;
     try {
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -37,21 +36,26 @@ export default function Notification({ user }) {
   };
 
   useEffect(() => {
-    getMyNotification();
-  }, []);
+    if (!session?.user?.role) return;
 
-  useEffect(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    getMyNotification();
+
     intervalRef.current = setInterval(() => {
       getMyNotification();
     }, 30000);
 
-    () => {
+    return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
     };
-  }, [session?.user]);
+  }, [session?.user?.role]);
 
   const handleNotifClick = async ({ id, link }) => {
     try {

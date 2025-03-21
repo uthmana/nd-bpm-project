@@ -12,8 +12,17 @@ const Upload = (props: {
   name?: string;
   value?: string;
   label?: string;
+  variant?: string;
 }) => {
-  const { onChange, multiple = false, id, name, value, label } = props;
+  const {
+    onChange,
+    multiple = false,
+    id,
+    name,
+    value,
+    label,
+    variant = 'form',
+  } = props;
   const fileElem = useRef(null);
   const [fileName, setFileName] = useState(value ? value : '');
   const [loading, setLoading] = useState(false);
@@ -65,68 +74,101 @@ const Upload = (props: {
   };
 
   return (
-    <div className="w-full">
+    <div className="pointer-events-auto w-full">
       <h2 className="mb-3 ml-3  block w-full text-sm font-bold">{label}</h2>
-      <Card className="flex h-full w-full flex-col gap-3  rounded-[20px] bg-white/0 bg-clip-border font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none sm:flex-row">
-        <div className="h-[164px] w-full rounded-xl bg-white/0">
-          <input
-            ref={fileElem}
-            type="file"
-            name="name"
-            id={id}
-            onChange={handleOnChange}
-            hidden
-            multiple={multiple}
-            accept=".jpg,.jpeg,.png,.webp,.pdf"
-          />
-          <button
-            onClick={handleClick}
-            type="submit"
-            className="flex h-full w-full flex-col items-center justify-center rounded-xl border-[2px] border-dashed border-gray-200 py-3 dark:!border-navy-700 lg:pb-0"
-          >
-            <MdFileUpload className="text-[80px] text-brand-500 dark:text-white" />
-            <h4 className="text-xl font-bold text-brand-500 dark:text-white">
-              Dosya Yükle
-            </h4>
-            <p className="mt-2 text-sm font-medium text-gray-600">
-              PNG, JPG and pdf dosyları destekleniyor
-            </p>
-          </button>
-        </div>
 
-        <div
-          className="h-[164px] w-full overflow-hidden rounded-xl bg-white bg-contain dark:!bg-navy-800"
-          style={{
-            backgroundImage: `url(${placeholderImage.src})`,
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: 'cover',
-          }}
-        >
-          {loading ? (
-            <div className="relative bottom-0 mb-auto w-full rounded bg-gray-200">
-              <div className="shim-blue absolute top-0 h-2 w-full rounded"></div>
-            </div>
-          ) : null}
-
-          {fileName ? (
-            <div className="relative h-full w-full">
-              <button
-                onClick={handleFileDelete}
-                className="absolute left-2 top-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-gray-700 p-2 text-white hover:bg-red-600"
+      {variant !== 'form' ? (
+        <>
+          {fileName?.split('.')?.pop()?.toLowerCase() === 'pdf' ? (
+            <div>
+              <a
+                className="my-4 block text-brand-500"
+                href={fileName}
+                target="_blank"
               >
-                x
-              </button>
+                {fileName}
+              </a>
 
-              <iframe
-                src={fileName}
-                height="100%"
-                width="100%"
-                title={fileName}
-              ></iframe>
+              <div className="print:hidden">
+                <iframe
+                  src={fileName}
+                  style={{
+                    width: '100%',
+                    height: '100vh',
+                    overflow: 'hidden',
+                  }}
+                  title={fileName}
+                ></iframe>
+              </div>
             </div>
-          ) : null}
-        </div>
-      </Card>
+          ) : (
+            <div>
+              <img src={fileName} />
+            </div>
+          )}
+        </>
+      ) : (
+        <Card className="flex h-full w-full flex-col gap-3  rounded-[20px] bg-white/0 bg-clip-border font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none sm:flex-row">
+          <div className="h-[164px] w-full rounded-xl bg-white/0">
+            <input
+              ref={fileElem}
+              type="file"
+              name="name"
+              id={id}
+              onChange={handleOnChange}
+              hidden
+              multiple={multiple}
+              accept=".jpg,.jpeg,.png,.webp,.pdf"
+            />
+            <button
+              onClick={handleClick}
+              type="submit"
+              className="flex h-full w-full flex-col items-center justify-center rounded-xl border-[2px] border-dashed border-gray-200 py-3 dark:!border-navy-700 lg:pb-0"
+            >
+              <MdFileUpload className="text-[80px] text-brand-500 dark:text-white" />
+              <h4 className="text-xl font-bold text-brand-500 dark:text-white">
+                Dosya Yükle
+              </h4>
+              <p className="mt-2 text-sm font-medium text-gray-600">
+                PNG, JPG and pdf dosyları destekleniyor
+              </p>
+            </button>
+          </div>
+
+          <div
+            className="h-[164px] w-full overflow-hidden rounded-xl bg-white bg-contain dark:!bg-navy-800"
+            style={{
+              backgroundImage: `url(${placeholderImage.src})`,
+              backgroundRepeat: 'no-repeat',
+              backgroundSize: 'cover',
+            }}
+          >
+            {loading ? (
+              <div className="relative bottom-0 mb-auto w-full rounded bg-gray-200">
+                <div className="shim-blue absolute top-0 h-2 w-full rounded"></div>
+              </div>
+            ) : null}
+
+            {fileName ? (
+              <div className="relative h-full w-full">
+                <button
+                  onClick={handleFileDelete}
+                  className="absolute left-2 top-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-gray-700 p-2 text-white hover:bg-red-600"
+                >
+                  x
+                </button>
+
+                <iframe
+                  src={fileName}
+                  height="100%"
+                  width="100%"
+                  title={fileName}
+                ></iframe>
+              </div>
+            ) : null}
+          </div>
+        </Card>
+      )}
     </div>
   );
 };

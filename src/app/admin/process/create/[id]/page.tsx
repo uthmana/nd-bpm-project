@@ -119,7 +119,9 @@ export default function EntryControl() {
     // Start the interval
     intervalRef.current = setInterval(sendNotificationNow, intervalTime);
 
-    return () => {};
+    return () => {
+      clearNotificationInterval();
+    };
   }, [process.id, process.frequency, techParams.length]);
 
   const sendNotificationNow = async () => {

@@ -381,8 +381,8 @@ export default function Edit() {
             {fault?.unacceptable?.length > 0 ? (
               <div ref={unacceptedRef} className="w-full">
                 {fault?.unacceptable.map((item) => (
-                  <Card extra="mb-10" key={item?.id}>
-                    <div className="mb-2 flex justify-between gap-3 bg-white px-7 py-5 print:hidden">
+                  <Card extra="mb-10 " key={item?.id}>
+                    <div className="mb-2 flex justify-between gap-3 bg-white px-7 py-5 dark:bg-[#111c44] dark:text-white print:hidden">
                       <h2 className="text-2xl font-bold">
                         Uygunsuz Ürün/Hizmet Formu
                       </h2>
@@ -409,7 +409,7 @@ export default function Edit() {
                         />
                       </div>
                     </div>
-                    <div className="page-break relative min-h-[800px] w-full bg-white px-7 py-5 ">
+                    <div className="page-break relative min-h-[800px] w-full bg-white px-7 py-5 dark:bg-[#111c44] dark:text-white">
                       <Unaccept formData={item} fault={fault} variant="value" />
                     </div>
                   </Card>
