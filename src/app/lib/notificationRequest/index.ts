@@ -18,7 +18,7 @@ export const sendWhatsAppMessage = async (
       },
       body: JSON.stringify({
         messaging_product: 'whatsapp',
-        to: '905456432420',
+        to: phoneNumber,
         type: 'template',
         template: {
           name: 'hello_world',

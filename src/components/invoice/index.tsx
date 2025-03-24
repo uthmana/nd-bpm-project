@@ -4,12 +4,14 @@ import nd_logo from '/public/img/auth/nd_logo.webp';
 import Barcode from 'react-jsbarcode';
 import Image from 'next/image';
 import { Invoice } from 'app/localTypes/types';
+import { MdDelete } from 'react-icons/md';
 
 interface InvoiceDocProps {
   invoice: Invoice;
+  onRemove?: (val: string) => void;
 }
 
-export default function InvoiceDoc({ invoice }: InvoiceDocProps) {
+export default function InvoiceDoc({ invoice, onRemove }: InvoiceDocProps) {
   return (
     <div className="page-break mx-auto  min-h-[800px] w-full bg-white px-10  py-12 lg:w-[680px] lg:max-w-[680px] print:absolute  print:top-0 print:z-[99999] print:min-h-screen print:w-full print:pl-0 print:pr-8">
       <div className="mb-8 flex justify-between border-b-2">
@@ -104,9 +106,20 @@ export default function InvoiceDoc({ invoice }: InvoiceDocProps) {
               return (
                 <div
                   key={idx}
-                  className="grid w-full grid-cols-10 items-center gap-1 border-b py-2 text-sm font-bold text-navy-700"
+                  className="group grid w-full grid-cols-10 items-center gap-1 border-b py-2 text-sm font-bold text-navy-700"
                 >
-                  <div className="col-span-1">{idx + 1}</div>
+                  <div className="relative col-span-1 ">
+                    {onRemove && invoice?.Fault?.length !== 1 ? (
+                      <span
+                        className="absolute left-[-4px] top-0 hidden cursor-pointer bg-white group-hover:block"
+                        onClick={() => onRemove(item?.id)}
+                      >
+                        <MdDelete className="h-5 w-5 text-red-400" />
+                      </span>
+                    ) : null}
+
+                    {idx + 1}
+                  </div>
                   <div className="col-span-2">{item?.product}</div>
                   <div className="col-span-3">{item?.application}</div>
                   <div className="col-span-2">{item?.standard}</div>

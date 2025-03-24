@@ -195,6 +195,14 @@ export default function Invoices() {
     }
   };
 
+  const handleRemoveFault = (id) => {
+    const filteredFault = invoice?.Fault.filter((item) => item.id !== id);
+    setInvoice({
+      ...invoice,
+      Fault: filteredFault,
+    });
+  };
+
   return (
     <div className="w-full">
       <div className="w-full lg:mx-auto lg:w-[1000px]">
@@ -208,7 +216,7 @@ export default function Invoices() {
       ) : (
         <div className="flex w-full flex-wrap gap-5 lg:mx-auto lg:w-[1000px]">
           <div id="pdf-content">
-            <InvoiceDoc invoice={invoice} />
+            <InvoiceDoc invoice={invoice} onRemove={handleRemoveFault} />
           </div>
 
           <div className="flex min-h-[200px] w-[400px] flex-col gap-3 self-start bg-white px-2 py-4 lg:w-[calc(100%-700px)]">

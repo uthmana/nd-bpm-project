@@ -130,7 +130,46 @@ const Invoice = () => {
           {newInvoices?.length > 0 ? (
             <Card extra="mx-auto w-full mb-16 rounded-2xl bg-white p-8 dark:bg-[#111c44] dark:text-white">
               <h2 className="mb-4 text-2xl font-bold">Bekleyen İrsaliye</h2>
-              <Accordion items={newInvoices} onSubmit={onSendNewInvoice} />
+
+              {newInvoices?.map((item, idx) => (
+                <Accordion key={idx} title={item?.company_name} index={idx}>
+                  <div className="mb-4">
+                    <div className="grid w-full grid-cols-6 gap-1 border-b font-bold dark:border-gray-900">
+                      <div>#</div>
+                      <div>Ürün</div>
+                      <div>Uygulama</div>
+                      <div>Standart</div>
+                      <div>Renk</div>
+                      <div>Miktar</div>
+                    </div>
+
+                    {item.Fault?.map((faultItem, idx) => (
+                      <div
+                        key={faultItem.id}
+                        className="grid w-full grid-cols-1"
+                      >
+                        <label className="flex items-center" key={faultItem.id}>
+                          <div className="grid w-full grid-cols-6 items-center gap-1 border-b py-2 text-sm font-bold text-navy-700 dark:border-gray-900 dark:text-white">
+                            <div>{idx + 1}</div>
+                            <div>{faultItem?.product}</div>
+                            <div>{faultItem?.application}</div>
+                            <div>{faultItem?.standard}</div>
+                            <div>{faultItem?.color}</div>
+                            <div>
+                              {faultItem?.shipmentQty || faultItem?.quantity}
+                            </div>
+                          </div>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                  <Button
+                    onClick={() => onSendNewInvoice(item)}
+                    extra="mt-4 max-w-fit px-4 h-[40px] mb-4"
+                    text="İRSALİYE TAMAMLA"
+                  />
+                </Accordion>
+              ))}
             </Card>
           ) : null}
           <div className="p-4">
