@@ -48,12 +48,11 @@ export default function Edit() {
   const [finalControl, setFinalControl] = useState([] as any);
   const [finalControlFormData, setFinalControlFormData] = useState({} as any);
 
-  //const entryControlRef = useRef(null);
-
   const entryControlRef = useRef<HTMLDivElement>(null);
   const frequencyTableRef = useRef<HTMLDivElement>(null);
   const unacceptedRef = useRef<HTMLDivElement>(null);
   const finalControlRef = useRef<HTMLDivElement>(null);
+  const barcodeRef = useRef<HTMLDivElement>(null);
 
   const detailData = {
     title: 'Ürün Detayi',
@@ -121,30 +120,6 @@ export default function Edit() {
     }
   }, [queryParams?.id]);
 
-  const renderProductInfo = (key, val) => {
-    if (key === 'arrivalDate') {
-      return <p className="font-bold"> {formatDateTime(val)} </p>;
-    }
-    if (key === 'technicalDrawingAttachment') {
-      return <FileViewer file={val} />;
-    }
-    if (key === 'arrivalDate') {
-      return <p className="font-bold"> {formatDateTime(val)} </p>;
-    }
-    if (key === 'product_barcode') {
-      return (
-        <div id="product_barcode" className="max-w-[200px]">
-          <Barcode
-            className="h-full w-full"
-            value={val}
-            options={{ format: 'code128' }}
-          />
-        </div>
-      );
-    }
-    return <p className="break-all font-bold"> {val} </p>;
-  };
-
   const handleProcessStart = async () => {
     try {
       const { data } = await getMachines();
@@ -157,7 +132,6 @@ export default function Edit() {
       setIsShowMachinePopUp(false);
     }
   };
-
   const onAddMachine = async () => {
     const frequency = faultControl?.frequencyDimension;
     const { machineName, machineId } = values;
@@ -179,7 +153,6 @@ export default function Edit() {
       setIsPrecessSubmitting(false);
     }
   };
-
   const handleMachineSelect = (event) => {
     setValues(JSON.parse(event.target?.value));
   };
@@ -203,31 +176,47 @@ export default function Edit() {
   };
 
   //Handle Prints
-  const handleBarcodePrint = () => {
-    const product_barcode =
-      document.getElementById('product_barcode').innerHTML;
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write('<html><head><title>Print</title></head><body>');
-    printWindow.document.write(
-      '<div style="page-break-before: always;"></div>',
-    );
-    printWindow.document.write(
-      '<div style="page-break-before: always;"></div>',
-    );
-    printWindow.document.write(
-      '<div style="page-break-before: always;"></div>',
-    );
-    printWindow.document.write(product_barcode);
-    printWindow.document.write('</body></html>');
-    printWindow.document.close();
-    printWindow.print();
-  };
   const entryControlPrint = useReactToPrint({ contentRef: entryControlRef });
   const frequencyTablePrint = useReactToPrint({
     contentRef: frequencyTableRef,
+    documentTitle: 'ND INDUSTRIES TÜRKİYE PROSES',
   });
-  const unacceptedPrint = useReactToPrint({ contentRef: unacceptedRef });
-  const finalControlPrint = useReactToPrint({ contentRef: finalControlRef });
+  const unacceptedPrint = useReactToPrint({
+    contentRef: unacceptedRef,
+    documentTitle: 'ND INDUSTRIES TÜRKİYE PROSES',
+  });
+  const finalControlPrint = useReactToPrint({
+    contentRef: finalControlRef,
+    documentTitle: 'ND INDUSTRIES TÜRKİYE PROSES',
+  });
+  const barcodePrint = useReactToPrint({
+    contentRef: barcodeRef,
+    documentTitle: 'ND INDUSTRIES TÜRKİYE PROSES',
+  });
+
+  const renderProductInfo = (key, val) => {
+    if (key === 'arrivalDate') {
+      return <p className="font-bold"> {formatDateTime(val)} </p>;
+    }
+    if (key === 'technicalDrawingAttachment') {
+      return <FileViewer file={val} />;
+    }
+    if (key === 'arrivalDate') {
+      return <p className="font-bold"> {formatDateTime(val)} </p>;
+    }
+    if (key === 'product_barcode') {
+      return (
+        <div ref={barcodeRef} className="max-w-[200px]">
+          <Barcode
+            className="h-full w-full print:w-[500px]"
+            value={val}
+            options={{ format: 'code128' }}
+          />
+        </div>
+      );
+    }
+    return <p className="break-all font-bold"> {val} </p>;
+  };
 
   return (
     <div className="w-full">
@@ -239,14 +228,16 @@ export default function Edit() {
 
           <div className="mx-auto mb-4 grid max-w-5xl grid-cols-1 gap-4">
             <Card extra="mx-auto  w-full rounded-2xl px-8 pt-10 bg-white dark:bg-[#111c44] dark:text-white">
-              <div className="mb-4 flex w-full justify-between">
+              <div className="mb-4 flex w-full justify-between print:hidden">
                 <h2 className="mb-4 text-2xl font-bold">Ürün Bilgileri</h2>
-                <Button
-                  extra={`px-4 h-[40px] max-w-fit`}
-                  onClick={handleBarcodePrint}
-                  text="BARKODU YAZDIR"
-                  icon={<MdPrint className="mr-1 h-5 w-5" />}
-                />
+                <div className="flex gap-3">
+                  <Button
+                    extra={`px-4 h-[40px] max-w-fit`}
+                    onClick={() => barcodePrint()}
+                    text="BARKODU YAZDIR"
+                    icon={<MdPrint className="mr-1 h-5 w-5" />}
+                  />
+                </div>
               </div>
               <div className="mb-10 grid w-full grid-cols-2 gap-2  md:grid-cols-3 lg:grid-cols-4">
                 {fault && fault.id
@@ -381,7 +372,10 @@ export default function Edit() {
             {fault?.unacceptable?.length > 0 ? (
               <div ref={unacceptedRef} className="w-full">
                 {fault?.unacceptable.map((item) => (
-                  <Card extra="mb-10 " key={item?.id}>
+                  <Card
+                    extra="mb-10 dark:bg-[#111c44] dark:text-white"
+                    key={item?.id}
+                  >
                     <div className="mb-2 flex justify-between gap-3 bg-white px-7 py-5 dark:bg-[#111c44] dark:text-white print:hidden">
                       <h2 className="text-2xl font-bold">
                         Uygunsuz Ürün/Hizmet Formu

@@ -314,5 +314,5 @@ export const getProcesstimeByFrequency = (time, freq) => {
 
 export const formatPhoneNumber = (contactNumber: string) => {
   const sanitizedNumber = contactNumber?.replace(/\D/g, '').replace(/^0/, '');
-  return sanitizedNumber ? `+90${sanitizedNumber}` : null;
+  return sanitizedNumber ? `90${sanitizedNumber}` : null;
 };

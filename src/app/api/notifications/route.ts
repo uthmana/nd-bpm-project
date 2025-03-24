@@ -52,8 +52,9 @@ export async function POST(req: Request) {
 
     // WhatsApp Notifications
     if (workflowId === 'process-frequency' && data?.userId) {
+      const { userId: id } = data;
       const user: User = await prisma.user.findUnique({
-        where: { id: data?.userId, status: 'ACTIVE' },
+        where: { id },
       });
       if (user && user?.contactNumber) {
         const phone = formatPhoneNumber(user?.contactNumber);

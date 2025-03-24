@@ -174,7 +174,7 @@ const TechParamsTable = (props: {
       {data.length === 0 ? <TableEmpty /> : null}
 
       {status !== 'FINISHED' ? (
-        <div className="sticky left-0 mt-4 flex w-[120px] justify-center rounded-lg bg-blueSecondary px-3 py-2 text-center text-center text-sm font-bold text-white">
+        <div className="sticky left-0 mt-4 flex w-[120px] justify-center rounded-lg bg-blueSecondary px-3 py-2 text-center text-sm font-bold text-white">
           <FooterCell table={table} />
         </div>
       ) : null}

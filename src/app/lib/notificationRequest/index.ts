@@ -13,14 +13,28 @@ export const sendWhatsAppMessage = async (
     const response = await fetch(WHATSAPP_API_URL, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         Authorization: `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         messaging_product: 'whatsapp',
-        to: phoneNumber,
-        type: 'text',
-        text: { body: message },
+        to: '905456432420',
+        type: 'template',
+        template: {
+          name: 'hello_world',
+          language: { code: 'en_US' },
+          //   components: [
+          //     {
+          //       type: 'body',
+          //       parameters: [
+          //         {
+          //           type: 'text',
+          //           text: message,
+          //         },
+          //       ],
+          //     },
+          //   ],
+        },
       }),
     });
 
@@ -31,6 +45,8 @@ export const sendWhatsAppMessage = async (
         result.error,
       );
     }
+
+    console.log(result);
   } catch (error) {
     console.error(`Error sending WhatsApp message to ${phoneNumber}:`, error);
   }
