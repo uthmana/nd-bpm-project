@@ -17,6 +17,8 @@ export async function PUT(req: Request) {
       username: env.LOGO_USERNAME,
     };
 
+    console.log(clientinfo);
+
     const client = new ApiClient(clientinfo);
     client.requestAccessToken('token');
     console.log(client.getAccessToken());
@@ -38,7 +40,7 @@ export async function PUT(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const logodata = await req.json();
+    var logodata = await req.json();
 
     const clientinfo: ClientInfo = {
       clientId: env.LOGO_CLIENT_ID,
@@ -51,8 +53,8 @@ export async function POST(req: Request) {
 
     const client = new ApiClient(clientinfo);
     await client.requestAccessToken('token');
-    const sales = await client.post('salesDispatches', logodata);
 
+    const sales = await client.post('salesDispatches', logodata);
     return NextResponse.json({ NUMBER: sales['NUMBER'] }, { status: 200 });
   } catch (e) {
     console.error('Prisma Error:', e);
