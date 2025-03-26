@@ -59,6 +59,16 @@ export default function Notification({ user }) {
 
   const handleNotifClick = async ({ id, link }) => {
     try {
+      const user = [...notifications]?.find((item) => item.id === id);
+      if (
+        !user ||
+        user?.status === 'READ' ||
+        user?.recipient !== session?.user?.role
+      ) {
+        router.push(link);
+        return;
+      }
+
       await updateNotification({ ids: [id] });
       getMyNotification();
       router.push(link);
@@ -70,7 +80,15 @@ export default function Notification({ user }) {
 
   const handleMarkAllRead = async () => {
     try {
-      const ids = notifications.map((item) => item.id);
+      const users = [...notifications]?.filter(
+        (item) =>
+          item.status !== 'READ' && item.recipient === session?.user?.role,
+      );
+      if (!users?.length) {
+        return;
+      }
+
+      const ids = users.map((item) => item.id);
       await updateNotification({ ids });
       getMyNotification();
     } catch (error) {
