@@ -14,6 +14,7 @@ import DetailHeader from 'components/detailHeader';
 import FileViewer from 'components/fileViewer';
 import Barcode from 'react-jsbarcode';
 import { getResError } from 'utils/responseError';
+import { MdVolumeUp } from 'react-icons/md';
 import {
   addTechParams,
   updateTechParams,
@@ -50,6 +51,10 @@ export default function EntryControl() {
   const [fault, setFault] = useState({} as any);
   const [techAttachment, setTechAttachment] = useState([]);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [startTime, setStartTime] = useState(false);
+
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const getSingleProcess = async () => {
     try {
@@ -86,47 +91,35 @@ export default function EntryControl() {
   }, [queryParams?.id]);
 
   useEffect(() => {
-    if (
-      !process.id ||
-      !process.frequency ||
-      process.status === 'FINISHED' ||
-      !techParams.length
-    ) {
+    if (!startTime || !process.frequency || process.status === 'FINISHED') {
+      clearNotificationInterval();
       return;
     }
 
     const intervalTime = process.frequency * 60000;
-
-    const storedTimes = JSON.parse(
-      localStorage.getItem('lastNotificationTimes') || '{}',
-    );
-
-    const lastNotificationTime = storedTimes[process.id];
-
-    const now = Date.now();
-    const timeSinceLastNotification = lastNotificationTime
-      ? now - parseInt(lastNotificationTime)
-      : Infinity;
-    if (timeSinceLastNotification >= intervalTime) {
-      sendNotificationNow();
-    } else {
-      setTimeout(
-        () => sendNotificationNow(),
-        intervalTime - timeSinceLastNotification,
-      );
-    }
-
-    // Start the interval
     intervalRef.current = setInterval(sendNotificationNow, intervalTime);
-
     return () => {
       clearNotificationInterval();
     };
-  }, [process.id, process.frequency, techParams.length]);
+  }, [startTime, process.frequency]);
 
   const playSound = () => {
-    const audio = new Audio('/audio/intrusive-alert.mp3');
-    audio.play();
+    if (!audioRef.current) {
+      audioRef.current = new Audio('/audio/intrusive-alert.mp3');
+      audioRef.current.onended = () => setIsPlaying(false);
+    }
+    if (audioRef.current.paused) {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const stopSound = () => {
+    if (audioRef.current && !audioRef.current.paused) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
   };
 
   const sendNotificationNow = async () => {
@@ -187,6 +180,9 @@ export default function EntryControl() {
 
       setTechParams(data);
       setIsTechParams(false);
+      if (!startTime) {
+        setStartTime(true);
+      }
     } catch (error) {
       const message = getResError(error?.message);
       toast.error(`${message}`);
@@ -228,14 +224,6 @@ export default function EntryControl() {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
-      const storedTimes = JSON.parse(
-        localStorage.getItem('lastNotificationTimes') || '{}',
-      );
-      delete storedTimes[process.id];
-      localStorage.setItem(
-        'lastNotificationTimes',
-        JSON.stringify(storedTimes),
-      );
     }
   };
 
@@ -385,15 +373,29 @@ export default function EntryControl() {
           </Card>
           <Card extra="w-full px-4 pt-4 pb-8">
             <div className="w-full">
-              <div className="my-5 flex justify-between">
+              <div className="my-5 flex w-full justify-between">
                 <h2 className="text-2xl font-bold">Frekans Bilgileri</h2>
-                {process?.status !== 'FINISHED' ? (
-                  <Button
-                    extra="max-w-fit px-4 h-[40px]"
-                    text="PROSESİ TAMAMLA"
-                    onClick={handleOnFinish}
-                  />
-                ) : null}
+
+                <div className="flex gap-3">
+                  {isPlaying ? (
+                    <span>
+                      <Button
+                        extra="max-w-fit px-4 h-[40px]"
+                        text=""
+                        onClick={() => stopSound()}
+                        icon={<MdVolumeUp className="h-5 w-5" />}
+                      />
+                    </span>
+                  ) : null}
+
+                  {process?.status !== 'FINISHED' ? (
+                    <Button
+                      extra="max-w-fit px-4 h-[40px]"
+                      text="PROSESİ TAMAMLA"
+                      onClick={handleOnFinish}
+                    />
+                  ) : null}
+                </div>
               </div>
 
               <TechParamsTable

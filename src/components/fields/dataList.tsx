@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import Image from 'next/image';
+import { turkeyCities } from 'utils';
 
 export default function DataList(props: {
   placeholder?: string;
@@ -32,6 +32,7 @@ export default function DataList(props: {
   const [inputValue, setInputValue] = useState(value);
   const [options, setOptions] = useState(list);
   const [loading, setLoading] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   const handleFocus = async () => {
     if (loadOptions && options.length === 0) {
@@ -56,9 +57,15 @@ export default function DataList(props: {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
-    const selectedData = options?.filter(
+
+    const selectedData = options?.find(
       (item) => item.company_name === e.target.value,
-    )[0];
+    );
+    if (!selectedData) {
+      setSelectedItem(null);
+      return;
+    }
+    setSelectedItem(selectedData);
     onChange?.({
       target: e.target,
       value: e.target.value,
@@ -76,7 +83,7 @@ export default function DataList(props: {
         {required !== undefined ? (
           <span
             className={`${
-              required && inputValue ? 'text-green-600' : 'text-red-400'
+              required && selectedItem ? 'text-green-600' : 'text-red-400'
             }`}
           >
             *
@@ -106,9 +113,10 @@ export default function DataList(props: {
         </span>
       ) : null}
       <datalist id={listId}>
-        {options.map((item) => (
+        {options.map((item: any) => (
           <option key={item.id} value={item.company_name}>
-            {item.company_name}
+            {turkeyCities[item?.province_code]}
+            {item?.district_code ? ` | ${item?.district_code}` : ''}
           </option>
         ))}
       </datalist>

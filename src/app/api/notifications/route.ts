@@ -42,8 +42,15 @@ export async function POST(req: Request) {
 
     if (workflowId === 'process-frequency' && data?.userId) {
       const { userId: id } = data;
-      const user: User = await prisma.user.findUnique({
+      const user: SelectedUser = await prisma.user.findUnique({
         where: { id },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          contactNumber: true,
+        },
       });
       //TODO: Send OTP SMS message
       return NextResponse.json(user, { status: 200 });
