@@ -38,7 +38,16 @@ export async function POST(req: Request) {
       },
     });
 
-    if (!users.length) return NextResponse.json({}, { status: 200 });
+    if (!users.length) return NextResponse.json([], { status: 200 });
+
+    if (workflowId === 'process-frequency' && data?.userId) {
+      const { userId: id } = data;
+      const user: User = await prisma.user.findUnique({
+        where: { id },
+      });
+      //TODO: Send OTP SMS message
+      return NextResponse.json(user, { status: 200 });
+    }
 
     // In-App Notification
     const inappNotification = await prisma.notification.create({
@@ -51,30 +60,14 @@ export async function POST(req: Request) {
     });
 
     // WhatsApp Notifications
-    if (workflowId === 'process-frequency' && data?.userId) {
-      const { userId: id } = data;
-      const user: User = await prisma.user.findUnique({
-        where: { id },
-      });
-      if (user && user?.contactNumber) {
-        const phone = formatPhoneNumber(user?.contactNumber);
-        await sendWhatsAppMessage(
-          phone,
-          `${data.title} -- ${data.description}`,
-        );
-      }
-      return NextResponse.json(inappNotification, { status: 200 });
-    }
-
-    const recipientPhoneNumbers = users
-      .map((user) => formatPhoneNumber(user.contactNumber))
-      .filter(Boolean) as string[];
-
-    await Promise.all(
-      recipientPhoneNumbers.map((phone) =>
-        sendWhatsAppMessage(phone, `${data.title} -- ${data.description}`),
-      ),
-    );
+    // const recipientPhoneNumbers = users
+    //   .map((user) => formatPhoneNumber(user.contactNumber))
+    //   .filter(Boolean) as string[];
+    // await Promise.all(
+    //   recipientPhoneNumbers.map((phone) =>
+    //     sendWhatsAppMessage(phone, `${data.title} -- ${data.description}`),
+    //   ),
+    // );
 
     // Email Notifications
     const uniqueEmails = [...new Set(users.map((user) => user.email))];

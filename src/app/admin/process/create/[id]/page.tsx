@@ -33,6 +33,7 @@ import {
 
 export default function EntryControl() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const queryParams = useParams();
   const [isLoading, setIsloading] = useState(false);
@@ -44,7 +45,6 @@ export default function EntryControl() {
   const [isShowMachinePopUp, setIsShowMachinePopUp] = useState(false);
   const [machines, setMachines] = useState([]);
   const [values, setValues] = useState({} as any);
-  const { data: session } = useSession();
   const [isFrequencyPopUp, setIsFrequencyPopUp] = useState(false);
   const [defaultTechParams, setDefaultTechParams] = useState({});
   const [fault, setFault] = useState({} as any);
@@ -124,6 +124,11 @@ export default function EntryControl() {
     };
   }, [process.id, process.frequency, techParams.length]);
 
+  const playSound = () => {
+    const audio = new Audio('/audio/intrusive-alert.mp3');
+    audio.play();
+  };
+
   const sendNotificationNow = async () => {
     try {
       await sendNotification({
@@ -135,6 +140,7 @@ export default function EntryControl() {
           userId: session?.user?.id,
         },
       });
+      playSound();
       const storedTimes = JSON.parse(
         localStorage.getItem('lastNotificationTimes') || '{}',
       );
