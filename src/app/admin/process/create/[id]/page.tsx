@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { DetailSkeleton } from 'components/skeleton';
 import Card from 'components/card';
 import TechParamsTable from 'components/admin/data-tables/techParamsTable';
@@ -11,8 +11,7 @@ import Popup from 'components/popup';
 import { useSession } from 'next-auth/react';
 import Select from 'components/select';
 import DetailHeader from 'components/detailHeader';
-import FileViewer from 'components/fileViewer';
-import Barcode from 'react-jsbarcode';
+import FaultInfo from 'components/faultInfo';
 import { getResError } from 'utils/responseError';
 import { MdVolumeUp } from 'react-icons/md';
 import {
@@ -23,38 +22,47 @@ import {
   updateProcess,
   getMachines,
   sendNotification,
+  getFaultById,
+  addProcess,
 } from 'app/lib/apiRequest';
 import {
-  faultInfo,
   formatDateTime,
   getProcesstimeByFrequency,
-  infoTranslate,
   log,
+  useAudioSound,
 } from 'utils';
 
 export default function EntryControl() {
   const router = useRouter();
-  const { data: session } = useSession();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const queryParams = useParams();
+  const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const newprocess = searchParams.get('newprocess');
+
   const [isLoading, setIsloading] = useState(false);
-  const [techParams, setTechParams] = useState([]);
-  const [process, setProcess] = useState({} as any);
+  const [startTime, setStartTime] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTechParams, setIsTechParams] = useState(false);
-  const [machineParams, setMachineParams] = useState([]);
   const [isShowPopUp, setIsShowPopUp] = useState(false);
   const [isShowMachinePopUp, setIsShowMachinePopUp] = useState(false);
-  const [machines, setMachines] = useState([]);
-  const [values, setValues] = useState({} as any);
   const [isFrequencyPopUp, setIsFrequencyPopUp] = useState(false);
-  const [defaultTechParams, setDefaultTechParams] = useState({});
-  const [fault, setFault] = useState({} as any);
-  const [techAttachment, setTechAttachment] = useState([]);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const [startTime, setStartTime] = useState(false);
 
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [machines, setMachines] = useState([]);
+  const [techParams, setTechParams] = useState([]);
+  const [machineParams, setMachineParams] = useState([]);
+  const [techAttachment, setTechAttachment] = useState([] as any);
+
+  const [fault, setFault] = useState({} as any);
+  const [values, setValues] = useState({} as any);
+  const [process, setProcess] = useState({} as any);
+  const [defaultTechParams, setDefaultTechParams] = useState({});
+  const [processMachine, setProcessMachine] = useState({} as any);
+
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const { isPlaying, playSound, stopSound } = useAudioSound(
+    '/audio/intrusive-alert.mp3',
+  );
 
   const getSingleProcess = async () => {
     try {
@@ -64,8 +72,8 @@ export default function EntryControl() {
       setFault({ customerName: Fault?.customer?.company_name, ...Fault });
       setProcess(data);
       setTechParams(technicalParams);
+      setProcessMachine(machine?.[0]);
       setDefaultTechParams(Fault?.defaultTechParameter[0] || {});
-
       setMachineParams(
         machine[0]?.machineParams?.map((item) => item.param_name),
       );
@@ -83,13 +91,52 @@ export default function EntryControl() {
       setIsloading(false);
     }
   };
+  const getSingleFault = async (id) => {
+    try {
+      setIsloading(true);
+      const { data } = await getFaultById(id);
+      setFault({ customerName: data?.customer?.company_name, ...data });
+      setIsloading(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsloading(false);
+    }
+  };
 
   useEffect(() => {
-    if (queryParams.id) {
+    if (queryParams.id && newprocess === 'true') {
+      getSingleFault(queryParams.id);
+    } else {
       getSingleProcess();
     }
-  }, [queryParams?.id]);
+  }, [queryParams?.id, newprocess]);
 
+  // Handle requency Notifictaion
+  const sendNotificationNow = async () => {
+    try {
+      await sendNotification({
+        workflowId: 'process-frequency',
+        data: {
+          link: `${window?.location.origin}/process/create/${process.id}`,
+          title: 'Proses Frekansı Eklenme',
+          description: `${fault?.product} ürünün Proses Frekansı eklenmesi hatırlanmaktadır.`,
+          userId: session?.user?.id,
+        },
+      });
+      playSound();
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      clearInterval(intervalRef.current!);
+    }
+  };
+  const clearNotificationInterval = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
   useEffect(() => {
     if (!startTime || !process.frequency || process.status === 'FINISHED') {
       clearNotificationInterval();
@@ -103,69 +150,12 @@ export default function EntryControl() {
     };
   }, [startTime, process.frequency]);
 
-  const playSound = () => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio('/audio/intrusive-alert.mp3');
-      audioRef.current.onended = () => setIsPlaying(false);
-    }
-    if (audioRef.current.paused) {
-      audioRef.current.play();
-      setIsPlaying(true);
-    }
-  };
-
-  const stopSound = () => {
-    if (audioRef.current && !audioRef.current.paused) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      setIsPlaying(false);
-    }
-  };
-
-  const sendNotificationNow = async () => {
-    try {
-      await sendNotification({
-        workflowId: 'process-frequency',
-        data: {
-          link: `${window?.location.origin}/process/create/${process.id}`,
-          title: 'Proses Frekansı Eklenme',
-          description: `${fault?.product} ürünün Proses Frekansı eklenmesi hatırlanmaktadır.`,
-          userId: session?.user?.id,
-        },
-      });
-      playSound();
-      const storedTimes = JSON.parse(
-        localStorage.getItem('lastNotificationTimes') || '{}',
-      );
-      storedTimes[process.id] = Date.now();
-      localStorage.setItem(
-        'lastNotificationTimes',
-        JSON.stringify(storedTimes),
-      );
-    } catch (error) {
-      const message = getResError(error?.message);
-      toast.error(`${message}`);
-      clearInterval(intervalRef.current!);
-    }
-  };
-
   const onAddRow = async (val) => {
     if (!process?.machineId) {
-      try {
-        const { data } = await getMachines();
-        setMachines(data);
-        setIsShowMachinePopUp(true);
-      } catch (error) {
-        const message = getResError(error?.message);
-        toast.error(`${message}`);
-        setIsShowMachinePopUp(false);
-      }
       return;
     }
-
     try {
       setIsTechParams(true);
-
       const Ort_Uretim_saat = getProcesstimeByFrequency(
         techParams?.at(-1)?.Ort_Uretim_saat,
         process.frequency,
@@ -189,7 +179,6 @@ export default function EntryControl() {
       setIsTechParams(false);
     }
   };
-
   const onUpdateData = async (id, val) => {
     if (!id) return;
     try {
@@ -207,7 +196,6 @@ export default function EntryControl() {
       setIsTechParams(false);
     }
   };
-
   const onRemoveRow = async (id) => {
     try {
       setIsSubmitting(true);
@@ -220,13 +208,6 @@ export default function EntryControl() {
       setIsSubmitting(false);
     }
   };
-  const clearNotificationInterval = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  };
-
   const onFinish = async () => {
     const { id, faultId } = process;
     if (!id || !faultId) return;
@@ -260,36 +241,6 @@ export default function EntryControl() {
       setIsShowPopUp(false);
     }
   };
-
-  const onAddMachine = async () => {
-    if (!values?.machineId) return;
-    try {
-      setIsSubmitting(true);
-
-      await updateProcess({
-        id: process.id,
-        faultId: process.faultId,
-        ...values,
-        createdBy: session?.user?.name,
-      });
-
-      await getSingleProcess();
-
-      toast.success('Makine ekleme işlemi başarılı.');
-      setIsShowMachinePopUp(false);
-      setIsSubmitting(false);
-    } catch (error) {
-      const message = getResError(error?.message);
-      toast.error(`${message}`);
-      setIsShowMachinePopUp(false);
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleValues = (event) => {
-    setValues(JSON.parse(event.target?.value));
-  };
-
   const handleOnFinish = () => {
     if (process?.frequency && techParams.length === 0) {
       setIsFrequencyPopUp(true);
@@ -297,26 +248,44 @@ export default function EntryControl() {
     }
     setIsShowPopUp(true);
   };
+  const handleFinalControl = () => {
+    router.push(`/admin/process/control/${fault?.id}`);
+  };
 
-  const renderProductInfo = (key, val) => {
-    if (key === 'arrivalDate') {
-      return <p className="font-bold"> {formatDateTime(val)} </p>;
+  // Handle new Process Machine
+  const handleMachinePopup = async () => {
+    try {
+      const { data } = await getMachines();
+      setMachines(data);
+      setIsShowMachinePopUp(true);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsShowMachinePopUp(false);
     }
-    if (key === 'arrivalDate') {
-      return <p className="font-bold"> {formatDateTime(val)} </p>;
+  };
+  const handleValues = (event) => {
+    setValues(JSON.parse(event.target?.value));
+  };
+  const onAddMachine = async () => {
+    const frequency = fault?.faultControl?.[0].frequencyDimension;
+    const { machineName, machineId } = values;
+    const val = {
+      frequency,
+      machineName,
+      machineId,
+      faultId: fault.id,
+      createdBy: session?.user?.name,
+    };
+    try {
+      setIsSubmitting(true);
+      const { data } = await addProcess(val);
+      router.push(`/admin/process/create/${data.id}`);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsShowMachinePopUp(false);
     }
-    if (key === 'product_barcode') {
-      return (
-        <div id="product_barcode" className="max-w-[200px]">
-          <Barcode
-            className="h-full w-full"
-            value={val}
-            options={{ format: 'code128' }}
-          />
-        </div>
-      );
-    }
-    return <p className="break-all font-bold"> {val} </p>;
   };
 
   const detailData = {
@@ -336,45 +305,27 @@ export default function EntryControl() {
           <DetailHeader {...detailData} />
           <Card extra="w-full px-4 pt-4 pb-8">
             <h2 className="my-5 text-2xl font-bold">Ürün Bilgileri</h2>
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-              {fault && fault.id
-                ? Object.entries(fault).map(([key, val]: any, index) => {
-                    if (faultInfo.includes(key)) {
-                      return (
-                        <div
-                          key={index}
-                          className="mb-5 flex flex-col flex-nowrap"
-                        >
-                          <h4 className="mx-1 italic">{infoTranslate[key]}</h4>
-                          <div className="pt-2">
-                            {key === 'technicalDrawingAttachment' ? (
-                              <span className="flex gap-1">
-                                {techAttachment?.map((item, idx) => {
-                                  if (!item) return null;
-                                  return <FileViewer file={item} key={idx} />;
-                                })}
-                              </span>
-                            ) : (
-                              renderProductInfo(key, val)
-                            )}
-                          </div>
-                        </div>
-                      );
-                    }
-                  })
-                : null}
-              <div className="mb-5 flex flex-col flex-nowrap">
-                <h4 className="mx-1 italic">Frekans Aralığı (dk)</h4>
-                <p className="text-lg font-bold text-brand-500">
-                  {process.frequency ? process.frequency : 'Yazılmasın'}
-                </p>
-              </div>
-            </div>
+            <FaultInfo
+              fault={fault}
+              techAttachments={techAttachment}
+              frequency={process.frequency ? process.frequency : 'Yazılmasın'}
+            />
           </Card>
           <Card extra="w-full px-4 pt-4 pb-8">
             <div className="w-full">
               <div className="my-5 flex w-full justify-between">
-                <h2 className="text-2xl font-bold">Frekans Bilgileri</h2>
+                <h2 className="text-2xl font-bold">
+                  Frekans Bilgileri
+                  {processMachine?.machine_Name ? (
+                    <span>
+                      {' '}
+                      |{' '}
+                      <span className="text-brand-500">
+                        {processMachine?.machine_Name}
+                      </span>
+                    </span>
+                  ) : null}
+                </h2>
 
                 <div className="flex gap-3">
                   {isPlaying ? (
@@ -394,6 +345,20 @@ export default function EntryControl() {
                       text="PROSESİ TAMAMLA"
                       onClick={handleOnFinish}
                     />
+                  ) : (
+                    <Button
+                      extra="max-w-fit px-4 h-[40px]"
+                      text="FINAL KONTROL YAP"
+                      onClick={handleFinalControl}
+                    />
+                  )}
+
+                  {!machineParams?.length ? (
+                    <Button
+                      extra="max-w-fit px-4 h-[40px]"
+                      text="MAKİNE SEÇ"
+                      onClick={handleMachinePopup}
+                    />
                   ) : null}
                 </div>
               </div>
@@ -403,7 +368,7 @@ export default function EntryControl() {
                 techParams={techParams}
                 fields={machineParams}
                 defaultTechParams={defaultTechParams}
-                status={process?.status}
+                status={!machineParams?.length ? 'FINISHED' : process?.status}
                 onUpdateData={(id, val) => onUpdateData(id, val)}
                 onAddRow={(val) => onAddRow(val)}
                 onRemoveRow={(val) => onRemoveRow(val)}

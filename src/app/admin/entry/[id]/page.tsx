@@ -1,36 +1,22 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import {
-  addProcess,
-  getFaultByIdWithFilter,
-  getMachines,
-} from 'app/lib/apiRequest';
+import { getFaultByIdWithFilter } from 'app/lib/apiRequest';
 import { DetailSkeleton } from 'components/skeleton';
 import { useSession } from 'next-auth/react';
 import Card from 'components/card';
-import {
-  formatDateTime,
-  faultInfo,
-  infoTranslate,
-  formatCurrency,
-  techParameters,
-  formatTechParams,
-} from 'utils';
+import { formatCurrency, techParameters, formatTechParams } from 'utils';
 import Button from 'components/button';
 import { MdAdd, MdGroupWork, MdPrint } from 'react-icons/md';
-import FileViewer from 'components/fileViewer';
 import DetailHeader from 'components/detailHeader';
-import Barcode from 'react-jsbarcode';
 import Unaccept from 'components/forms/unaccept';
-import Popup from 'components/popup';
-import Select from 'components/select';
 import TechParamsTable from 'components/admin/data-tables/techParamsTable';
 import FinalControl from 'components/forms/finalControl';
 import EntryControlForm from 'components/forms/faultControl';
 import { getResError } from 'utils/responseError';
 import { toast } from 'react-toastify';
 import { useReactToPrint } from 'react-to-print';
+import FaultInfo from 'components/faultInfo';
 
 export default function Edit() {
   const router = useRouter();
@@ -41,10 +27,6 @@ export default function Edit() {
   const [defaultTechParameter, setDefaultTechParameter] = useState([] as any);
   const [process, setProcess] = useState({} as any);
   const [isLoading, setIsLoading] = useState(false);
-  const [values, setValues] = useState({} as any);
-  const [isShowMachinePopUp, setIsShowMachinePopUp] = useState(false);
-  const [machines, setMachines] = useState([]);
-  const [isPrecessSubmitting, setIsPrecessSubmitting] = useState(false);
   const [finalControl, setFinalControl] = useState([] as any);
   const [finalControlFormData, setFinalControlFormData] = useState({} as any);
 
@@ -120,46 +102,12 @@ export default function Edit() {
     }
   }, [queryParams?.id]);
 
-  const handleProcessStart = async () => {
-    try {
-      const { data } = await getMachines();
-      setMachines(data);
-      setIsShowMachinePopUp(true);
-      return;
-    } catch (error) {
-      const message = getResError(error?.message);
-      toast.error(`${message}`);
-      setIsShowMachinePopUp(false);
-    }
-  };
-  const onAddMachine = async () => {
-    const frequency = faultControl?.frequencyDimension;
-    const { machineName, machineId } = values;
-    const val = {
-      frequency,
-      machineName,
-      machineId,
-      faultId: queryParams.id,
-      createdBy: session?.user?.name,
-    };
-    setIsPrecessSubmitting(true);
-    try {
-      const { data } = await addProcess(val);
-      router.push(`/admin/process/create/${data.id}`);
-    } catch (error) {
-      const message = getResError(error?.message);
-      toast.error(`${message}`);
-      setIsShowMachinePopUp(false);
-      setIsPrecessSubmitting(false);
-    }
-  };
-  const handleMachineSelect = (event) => {
-    setValues(JSON.parse(event.target?.value));
-  };
-
   //hanle router
   const handlefaultControl = () => {
     router.push(`/admin/entry/control/${queryParams?.id}`);
+  };
+  const handleProcessStart = async () => {
+    router.push(`/admin/process/create/${fault.id}?newprocess=true`);
   };
   const handleProcessUpdate = async () => {
     router.push(`/admin/process/create/${process.id}`);
@@ -194,30 +142,6 @@ export default function Edit() {
     documentTitle: 'ND INDUSTRIES TÜRKİYE PROSES',
   });
 
-  const renderProductInfo = (key, val) => {
-    if (key === 'arrivalDate') {
-      return <p className="font-bold"> {formatDateTime(val)} </p>;
-    }
-    if (key === 'technicalDrawingAttachment') {
-      return <FileViewer file={val} />;
-    }
-    if (key === 'arrivalDate') {
-      return <p className="font-bold"> {formatDateTime(val)} </p>;
-    }
-    if (key === 'product_barcode') {
-      return (
-        <div ref={barcodeRef} className="max-w-[200px]">
-          <Barcode
-            className="h-full w-full print:w-[500px]"
-            value={val}
-            options={{ format: 'code128' }}
-          />
-        </div>
-      );
-    }
-    return <p className="break-all font-bold"> {val} </p>;
-  };
-
   return (
     <div className="w-full">
       {isLoading ? (
@@ -239,25 +163,7 @@ export default function Edit() {
                   />
                 </div>
               </div>
-              <div className="mb-10 grid w-full grid-cols-2 gap-2  md:grid-cols-3 lg:grid-cols-4">
-                {fault && fault.id
-                  ? Object.entries(fault).map(([key, val]: any, index) => {
-                      if (faultInfo.includes(key)) {
-                        return (
-                          <div
-                            key={index}
-                            className="mb-5 flex flex-col flex-nowrap"
-                          >
-                            <h4 className="mx-1 italic">
-                              {infoTranslate[key]}
-                            </h4>
-                            {renderProductInfo(key, val)}
-                          </div>
-                        );
-                      }
-                    })
-                  : null}
-              </div>
+              <FaultInfo fault={fault} />
             </Card>
 
             <Card extra="mx-auto w-full rounded-2xl px-8 pt-10 bg-white dark:bg-[#111c44] dark:text-white">
@@ -341,7 +247,7 @@ export default function Edit() {
                       onClick={
                         process?.id ? handleProcessUpdate : handleProcessStart
                       }
-                      text={process?.id ? 'PROSESE GİT' : 'PROSES BAŞLAT'}
+                      text={'PROSESE GİT'}
                       icon={<MdGroupWork className="mr-1 h-5 w-5" />}
                       disabled={
                         !faultControl?.result ||
@@ -452,52 +358,6 @@ export default function Edit() {
           </div>
         </div>
       )}
-      <Popup
-        key={1}
-        show={isShowMachinePopUp}
-        extra="flex flex-col gap-3 py-6 px-8"
-      >
-        <h1 className="text-3xl">Makine Şeçimi</h1>
-        <div className="mb-2 flex flex-col gap-3 sm:flex-row">
-          <Select
-            extra="pt-1"
-            label="Makine Seçimi"
-            onChange={handleMachineSelect}
-            name="machineName"
-          >
-            <option value="{}" selected>
-              Makine Seç
-            </option>
-            {machines.map((item, idx) => {
-              return (
-                <option
-                  value={JSON.stringify({
-                    machineId: item.id,
-                    machineName: item.machine_Name,
-                  })}
-                  key={idx}
-                >
-                  {item.machine_Name}
-                </option>
-              );
-            })}
-          </Select>
-        </div>
-
-        <div className="flex gap-4">
-          <Button
-            text="GERİ"
-            extra="w-[60px] bg-red-700 h-[40px]"
-            onClick={() => setIsShowMachinePopUp(false)}
-          />
-          <Button
-            loading={isPrecessSubmitting}
-            text="DEVAM"
-            extra="w-[60px] h-[40px]"
-            onClick={onAddMachine}
-          />
-        </div>
-      </Popup>
     </div>
   );
 }
