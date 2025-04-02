@@ -59,7 +59,7 @@ export const sendEmailNotification = async (
   link: string,
 ) => {
   const emailBody = {
-    from: 'ND Industries <info@ndindustries.com.tr>',
+    from: 'ND Industries <info@ndindustriesbmp.com>',
     to: emails,
     subject: title,
     html: `<h1>${title}</h1><p>${description}</p><p><a href="${link}">${link}</a></p>`,

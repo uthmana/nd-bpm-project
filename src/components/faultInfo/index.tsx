@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { LegacyRef, useRef } from 'react';
 import { formatDateTime, faultInfo, infoTranslate } from '../../utils';
 import FileViewer from '../fileViewer';
 import Barcode from 'react-jsbarcode';
@@ -8,9 +8,9 @@ export default function FaultInfo(props: {
   fault: Fault;
   techAttachments?: any;
   frequency?: number | null | undefined;
+  barcodeRef?: LegacyRef<HTMLDivElement>;
 }) {
-  const { fault, techAttachments, frequency } = props;
-  const barcodeRef = useRef<HTMLDivElement>(null);
+  const { fault, techAttachments, frequency, barcodeRef } = props;
 
   const renderProductInfo = (key, val) => {
     if (key === 'arrivalDate') {

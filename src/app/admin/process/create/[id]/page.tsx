@@ -208,6 +208,13 @@ export default function EntryControl() {
       setIsSubmitting(false);
     }
   };
+  const onFinishConfirm = () => {
+    if (process?.frequency && techParams.length === 0) {
+      setIsFrequencyPopUp(true);
+      return;
+    }
+    setIsShowPopUp(true);
+  };
   const onFinish = async () => {
     const { id, faultId } = process;
     if (!id || !faultId) return;
@@ -225,7 +232,7 @@ export default function EntryControl() {
       await sendNotification({
         workflowId: 'process-completion',
         data: {
-          link: `${window?.location.origin}/admin/entry/${faultId}`,
+          link: `${window?.location.origin}/admin/invoice`,
           title: 'Proses Tamamlanma',
           description: `${fault?.customerName} için ${fault?.product} ürününün prosesi tamamlandı`,
         },
@@ -241,13 +248,7 @@ export default function EntryControl() {
       setIsShowPopUp(false);
     }
   };
-  const handleOnFinish = () => {
-    if (process?.frequency && techParams.length === 0) {
-      setIsFrequencyPopUp(true);
-      return;
-    }
-    setIsShowPopUp(true);
-  };
+
   const handleFinalControl = () => {
     router.push(`/admin/process/control/${fault?.id}`);
   };
@@ -339,25 +340,27 @@ export default function EntryControl() {
                     </span>
                   ) : null}
 
-                  {process?.status !== 'FINISHED' ? (
-                    <Button
-                      extra="max-w-fit px-4 h-[40px]"
-                      text="PROSESİ TAMAMLA"
-                      onClick={handleOnFinish}
-                    />
-                  ) : (
-                    <Button
-                      extra="max-w-fit px-4 h-[40px]"
-                      text="FINAL KONTROL YAP"
-                      onClick={handleFinalControl}
-                    />
-                  )}
-
-                  {!machineParams?.length ? (
+                  {!process?.id ? (
                     <Button
                       extra="max-w-fit px-4 h-[40px]"
                       text="MAKİNE SEÇ"
                       onClick={handleMachinePopup}
+                    />
+                  ) : null}
+
+                  {process?.id && process?.status !== 'FINISHED' ? (
+                    <Button
+                      extra="max-w-fit px-4 h-[40px]"
+                      text="PROSESİ TAMAMLA"
+                      onClick={onFinishConfirm}
+                    />
+                  ) : null}
+
+                  {process?.status === 'FINISHED' ? (
+                    <Button
+                      extra="max-w-fit px-4 h-[40px]"
+                      text="FINAL KONTROL YAP"
+                      onClick={handleFinalControl}
                     />
                   ) : null}
                 </div>

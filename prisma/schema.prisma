@@ -397,6 +397,8 @@ model Notification {
   updatedAt   DateTime?     @updatedAt
   recipient   NotifReceiver @default(NORMAL)
   link        String?
+  workflowId  String?
+  isEmailSent Boolean       @default(false)
   status      NotifStatus   @default(NOT_READ)
 }
 

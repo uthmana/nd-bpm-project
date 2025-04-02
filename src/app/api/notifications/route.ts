@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { $Enums, NotifReceiver, User, UserRole } from '@prisma/client';
 import { extractPrismaErrorMessage } from 'utils/prismaError';
-import {
-  sendEmailNotification,
-  sendWhatsAppMessage,
-} from 'app/lib/notificationRequest';
-import { formatPhoneNumber } from 'utils';
+import { sendEmailNotification } from 'app/lib/notificationRequest';
 
 type SelectedUser = Pick<
   User,
@@ -19,8 +15,44 @@ const getRecipientRole = (workflowId: string) => {
     'process-frequency': 'TECH',
     'process-control': 'SUPER',
     'process-completion': 'ADMIN',
+    'entry-unattended': 'ADMIN',
   }[workflowId] || 'OTHER') as UserRole;
 };
+
+export async function GET(req: NextRequest) {
+  try {
+    const searchParams = req.nextUrl.searchParams;
+    const role: NotifReceiver | any = searchParams.get('role');
+    const time = searchParams.get('time');
+
+    const where: any = {};
+    if (role) where.recipient = $Enums.NotifReceiver[role];
+    if (time) where.createdAt = { gte: time };
+
+    let notifications = await prisma.notification.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const unreadNotifications = await prisma.notification.findMany({
+      where: {
+        workflowId: 'fault-entry',
+        status: 'NOT_READ',
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    notifications = [...notifications, ...unreadNotifications];
+
+    return NextResponse.json(notifications, { status: 200 });
+  } catch (e) {
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      { error: userMessage, details: technicalMessage },
+      { status: 500 },
+    );
+  }
+}
 
 export async function POST(req: Request) {
   try {
@@ -40,6 +72,7 @@ export async function POST(req: Request) {
 
     if (!users.length) return NextResponse.json([], { status: 200 });
 
+    // Process Frequency Notifications
     if (workflowId === 'process-frequency' && data?.userId) {
       const { userId: id } = data;
       const user: SelectedUser = await prisma.user.findUnique({
@@ -56,6 +89,28 @@ export async function POST(req: Request) {
       return NextResponse.json(user, { status: 200 });
     }
 
+    // Email Notifications
+    if (workflowId === 'entry-unattended') {
+      const uniqueEmails = [...new Set(users.map((user) => user.email))];
+      const sentNotifications = await sendEmailNotification(
+        uniqueEmails,
+        data.title,
+        data.description,
+        data.link,
+      );
+
+      if (sentNotifications) {
+        await prisma.notification.update({
+          where: { id: data.id },
+          data: {
+            isEmailSent: true,
+          },
+        });
+      }
+
+      return NextResponse.json({}, { status: 200 });
+    }
+
     // In-App Notification
     const inappNotification = await prisma.notification.create({
       data: {
@@ -63,58 +118,14 @@ export async function POST(req: Request) {
         description: data.description,
         link: data.link,
         recipient: recipientRole,
+        workflowId,
       },
     });
-
-    // WhatsApp Notifications
-    // const recipientPhoneNumbers = users
-    //   .map((user) => formatPhoneNumber(user.contactNumber))
-    //   .filter(Boolean) as string[];
-    // await Promise.all(
-    //   recipientPhoneNumbers.map((phone) =>
-    //     sendWhatsAppMessage(phone, `${data.title} -- ${data.description}`),
-    //   ),
-    // );
-
-    // Email Notifications
-    const uniqueEmails = [...new Set(users.map((user) => user.email))];
-    await sendEmailNotification(
-      uniqueEmails,
-      data.title,
-      data.description,
-      data.link,
-    );
 
     return NextResponse.json(inappNotification, { status: 200 });
   } catch (error) {
     console.error('API Error:', error);
     const { userMessage, technicalMessage } = extractPrismaErrorMessage(error);
-    return NextResponse.json(
-      { error: userMessage, details: technicalMessage },
-      { status: 500 },
-    );
-  }
-}
-
-export async function GET(req: NextRequest) {
-  try {
-    const searchParams = req.nextUrl.searchParams;
-    const role: NotifReceiver | any = searchParams.get('role');
-    const time = searchParams.get('time');
-
-    const where: any = {};
-    if (role) where.recipient = $Enums.NotifReceiver[role];
-    if (time) where.createdAt = { gte: time };
-
-    const notifications = await prisma.notification.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-    });
-
-    return NextResponse.json(notifications, { status: 200 });
-  } catch (e) {
-    console.error('Prisma Error:', e);
-    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
     return NextResponse.json(
       { error: userMessage, details: technicalMessage },
       { status: 500 },

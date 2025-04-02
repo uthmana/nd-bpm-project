@@ -243,7 +243,7 @@ export default function EntryControl() {
 
         <Popup
           show={isShowPopUp}
-          extra="flex flex-col gap-3 !top-[50%] py-6 px-8 !w-[90%] md:!w-[600px] !rounded-sm"
+          extra="flex flex-col gap-3 !top-[50%] my-6 py-6 px-8 !w-[90%] md:!w-[760px] !rounded-sm max-h-[96vh] print:max-h-auto overflow-y-auto"
         >
           <UnacceptForm
             fault={fault}

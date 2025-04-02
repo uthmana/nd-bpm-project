@@ -13,7 +13,7 @@ interface InvoiceDocProps {
 
 export default function InvoiceDoc({ invoice, onRemove }: InvoiceDocProps) {
   return (
-    <div className="page-break mx-auto  min-h-[800px] w-full bg-white px-10  py-12 lg:w-[680px] lg:max-w-[680px] print:absolute  print:top-0 print:z-[99999] print:min-h-screen print:w-full print:pl-0 print:pr-8">
+    <div className="mx-auto  min-h-[800px] w-full bg-white px-10 py-12 lg:w-[680px] lg:max-w-[680px] print:p-0">
       <div className="mb-8 flex justify-between border-b-2">
         <div className="mb-2 max-w-[200px]">
           <div className="mb-3">

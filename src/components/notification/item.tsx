@@ -11,6 +11,7 @@ export default function NotificationItem({
   status,
   onClick,
   createdAt,
+  type,
 }) {
   const handleClick = () => {
     if (onClick) onClick({ link, id });
@@ -18,11 +19,15 @@ export default function NotificationItem({
 
   return (
     <button
-      className="mb-2 flex w-full items-center border-b py-2"
+      className={`mb-2 flex w-full items-center border-b py-2`}
       onClick={handleClick}
     >
       <div className="text-md ml-2 flex h-full w-full flex-col justify-center rounded-lg px-1">
-        <p className="mb-1 justify-start text-left  font-bold text-gray-900 dark:text-white">
+        <p
+          className={`mb-1 justify-start text-left  font-bold text-gray-900 dark:text-white ${
+            type === 'other' ? 'opacity-50' : ''
+          }`}
+        >
           {title}
           <span className="ml-3 inline text-xs text-gray-700">
             {datesPasted(createdAt)} önce

@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import { MdCheck } from 'react-icons/md';
 import FormHeaderItem from './formheaderItem';
 import { Fault } from 'app/localTypes/types';
+import ControlHeader from './finalControl/controlHeader';
 
 type faultInfo = {
   customerName: string;
@@ -105,46 +106,13 @@ export default function Unaccept(props: {
 
   return (
     <div className="w-full dark:bg-[#111c44] dark:text-white ">
-      <div className="mb-2 flex items-center border-b border-[#000]  dark:border-gray-900">
-        <Image
-          width="70"
-          height="20"
-          src={logo}
-          alt="nd Industries Logo"
-          className="mr-[18%]"
+      <div className="mb-2 flex items-center  dark:border-gray-900">
+        <ControlHeader
+          data={fault}
+          variant="entry"
+          title="Uygunsuz Ürün/Hizmet Formu"
+          titleEn="Inappropriate Product/Service Form"
         />
-        <h1 className="text-lg font-bold">Uygunsuz Ürün/Hizmet Formu</h1>
-      </div>
-
-      <div className="mb-3 flex justify-between gap-3">
-        <div className="flex grow basis-0 flex-col gap-1">
-          <FormHeaderItem
-            titleTr="Müşteri"
-            value={fault?.customer?.company_name}
-            className="max-w-[100px] capitalize"
-          />
-          <FormHeaderItem titleTr="Ürün Adi" value={fault?.product} />
-          <FormHeaderItem
-            titleTr="Miktar"
-            value={fault?.quantity}
-            type="number"
-          />
-          <FormHeaderItem titleTr="Uygulama" value={fault?.application} />
-        </div>
-        <div className="flex grow basis-0 flex-col">
-          <FormHeaderItem
-            titleTr="Barkod No"
-            value={fault?.product_barcode}
-            className="max-w-[100px]"
-          />
-          <FormHeaderItem titleTr="Ürün Kodu" value={fault?.productCode} />
-          <FormHeaderItem
-            titleTr="Tarih"
-            value={fault?.createdAt}
-            type="date"
-          />
-          <FormHeaderItem titleTr="Renk" value={fault?.color} />
-        </div>
       </div>
 
       <div className="w-full pb-3">

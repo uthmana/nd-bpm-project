@@ -132,7 +132,6 @@ export default function User(props: userForm) {
         placeholder="Şifre"
         extra="mb-2"
         value={values.password}
-        required={true}
       />
       <Select extra="mb-2" label="Rol" onChange={handleValues} name="role">
         {role.map((item, idx) => {

@@ -10,7 +10,7 @@ import {
 } from 'app/lib/apiRequest';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { MdOutlinePayment, MdPrint } from 'react-icons/md';
 import InvoiceDoc from 'components/invoice';
 import Button from 'components/button';
@@ -23,6 +23,7 @@ import { useSession } from 'next-auth/react';
 import { sendDispatchToLogo } from 'app/lib/logoRequest';
 import { Invoice } from 'app/localTypes/types';
 import { getResError } from 'utils/responseError';
+import { useReactToPrint } from 'react-to-print';
 
 export default function Invoices() {
   const [isLoading, setIsLoading] = useState(false);
@@ -30,6 +31,7 @@ export default function Invoices() {
   const [value, setValues] = useState({} as { email: String });
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [isInvoiceSubmiting, setIsInvoiceSubmiting] = useState(false);
+  const invoiceContentRef = useRef<HTMLDivElement>(null);
 
   const router = useRouter();
   const { data: session } = useSession();
@@ -92,9 +94,10 @@ export default function Invoices() {
     }
   }, [queryParams?.id, newinvoice]);
 
-  const handlePrint = () => {
-    window.print();
-  };
+  const invoiceContentPrint = useReactToPrint({
+    contentRef: invoiceContentRef,
+    documentTitle: 'ND INDUSTRIES TÜRKİYE PROSES',
+  });
   const handleValues = (event) => {
     const newVal = { [event.target?.name]: event.target?.value };
     setValues({ ...value, ...newVal });
@@ -194,7 +197,6 @@ export default function Invoices() {
       return;
     }
   };
-
   const handleRemoveFault = (id) => {
     const filteredFault = invoice?.Fault.filter((item) => item.id !== id);
     setInvoice({
@@ -215,7 +217,7 @@ export default function Invoices() {
         </div>
       ) : (
         <div className="flex w-full flex-wrap gap-5 lg:mx-auto lg:w-[1000px]">
-          <div id="pdf-content">
+          <div ref={invoiceContentRef}>
             <InvoiceDoc invoice={invoice} onRemove={handleRemoveFault} />
           </div>
 
@@ -263,7 +265,7 @@ export default function Invoices() {
 
             <Button
               extra="px-8 h-[40px] max-w-[300px]"
-              onClick={handlePrint}
+              onClick={() => invoiceContentPrint()}
               text="YAZDIR"
               icon={<MdPrint className="mr-1 h-5 w-5" />}
             />

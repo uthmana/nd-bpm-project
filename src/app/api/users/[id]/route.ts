@@ -30,7 +30,15 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
     const id = route.params.id;
     const result: User = await req.json();
-    const { name, email, password, role, status, contactNumber } = result;
+    const {
+      id: userId,
+      name,
+      email,
+      password,
+      role,
+      status,
+      contactNumber,
+    } = result;
 
     if (!name || !email) {
       return NextResponse.json(
@@ -39,7 +47,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       );
     }
     const user: Partial<User> = await prisma.user.findUnique({
-      where: { email },
+      where: { id: userId },
     });
 
     let pwd = user.password;
@@ -62,7 +70,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       },
     });
 
-    return NextResponse.json({ updateUser }, { status: 200 });
+    return NextResponse.json(updateUser, { status: 200 });
   } catch (e) {
     console.error('Prisma Error:', e);
     const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);

@@ -415,6 +415,8 @@ CREATE TABLE "Notification" (
     "updatedAt" TIMESTAMP(3),
     "recipient" "NotifReceiver" NOT NULL DEFAULT 'NORMAL',
     "link" TEXT,
+    "workflowId" TEXT,
+    "isEmailSent" BOOLEAN NOT NULL DEFAULT false,
     "status" "NotifStatus" NOT NULL DEFAULT 'NOT_READ',
 
     CONSTRAINT "Notification_pkey" PRIMARY KEY ("id")

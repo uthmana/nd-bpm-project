@@ -163,7 +163,7 @@ export default function Edit() {
                   />
                 </div>
               </div>
-              <FaultInfo fault={fault} />
+              <FaultInfo fault={fault} barcodeRef={barcodeRef} />
             </Card>
 
             <Card extra="mx-auto w-full rounded-2xl px-8 pt-10 bg-white dark:bg-[#111c44] dark:text-white">
@@ -192,7 +192,7 @@ export default function Edit() {
 
             <Card
               ref={entryControlRef}
-              extra="mx-auto w-full rounded-2xl px-8 pt-10 bg-white dark:bg-[#111c44] dark:text-white"
+              extra="mx-auto w-full rounded-2xl px-8 pt-10 print:p-0 bg-white dark:bg-[#111c44] dark:text-white"
             >
               <div className="mb-8 flex justify-between gap-3 print:hidden">
                 <h2 className="text-2xl font-bold">

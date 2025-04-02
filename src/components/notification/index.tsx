@@ -4,7 +4,11 @@ import Dropdown from 'components/dropdown';
 import { IoMdNotificationsOutline } from 'react-icons/io';
 import NotificationItem from './item';
 import { useRouter } from 'next/navigation';
-import { getNotifications, updateNotification } from 'app/lib/apiRequest';
+import {
+  getNotifications,
+  sendNotification,
+  updateNotification,
+} from 'app/lib/apiRequest';
 import { convertToISO8601, log } from 'utils';
 import { useSession } from 'next-auth/react';
 
@@ -15,6 +19,28 @@ export default function Notification({ user }) {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const { data: session } = useSession();
   const [activeNotification, setActiveNotification] = useState(0);
+  const [olderNotifications, setOlderNotifictions] = useState([]);
+
+  const filterOlderNotifications = (data) => {
+    if (!data) return;
+    const now = new Date();
+    return data.filter((item) => {
+      const createdAt = new Date(item.createdAt);
+      return now.getTime() - createdAt.getTime() > 30 * 60 * 1000;
+    });
+  };
+
+  const sendEmailNotification = async (data) => {
+    if (!data) return;
+    await Promise.all(
+      data.map((item) =>
+        sendNotification({
+          workflowId: 'entry-unattended',
+          data: item,
+        }),
+      ),
+    );
+  };
 
   const getMyNotification = async () => {
     try {
@@ -24,11 +50,32 @@ export default function Notification({ user }) {
       const userQuery = `?role=${session?.user?.role}&time=${convertToISO8601(
         thirtyDaysAgo,
       )}`;
-      log(userQuery);
+
       const { data } = await getNotifications(userQuery);
-      setNotifications(data);
+      let filteredNotifications = data;
+
+      if (session?.user?.role === 'ADMIN') {
+        const adminNotifications = data.filter(
+          (item) => item.recipient === 'ADMIN',
+        );
+        const otherNotifications = data.filter(
+          (item) => item.recipient !== 'ADMIN',
+        );
+        const filteredOlderNotifications =
+          filterOlderNotifications(otherNotifications);
+        filteredNotifications = [
+          ...adminNotifications,
+          ...filteredOlderNotifications,
+        ];
+        setOlderNotifictions(filteredOlderNotifications);
+      } else {
+        filteredNotifications = data?.filter(
+          (item) => item.recipient === session?.user?.role,
+        );
+      }
+      setNotifications(filteredNotifications);
       setActiveNotification(
-        data?.filter((item) => item.status !== 'READ')?.length,
+        filteredNotifications?.filter((item) => item.status !== 'READ')?.length,
       );
     } catch (err) {
       log('getMyNotification', err);
@@ -60,6 +107,13 @@ export default function Notification({ user }) {
   const handleNotifClick = async ({ id, link }) => {
     try {
       const user = [...notifications]?.find((item) => item.id === id);
+      const otherUser = olderNotifications?.find((item) => item.id === user.id);
+      if (otherUser && !otherUser?.isEmailSent) {
+        sendEmailNotification([otherUser]);
+        router.push(link);
+        return;
+      }
+
       if (
         !user ||
         user?.status === 'READ' ||
@@ -96,6 +150,15 @@ export default function Notification({ user }) {
     }
   };
 
+  const getOtherNotificationType = (id) => {
+    if (!olderNotifications.length) return '';
+    const olderNotific = olderNotifications.find((item) => item.id === id);
+    if (olderNotific) {
+      return 'other';
+    }
+    return '';
+  };
+
   return (
     <Dropdown
       open={isOpen}
@@ -107,7 +170,7 @@ export default function Notification({ user }) {
 
           {activeNotification ? (
             <span className="absolute -right-2 -top-3 flex h-[20px] min-h-fit w-[20px] min-w-fit cursor-pointer items-center justify-center rounded-full bg-red-500 p-[2px] text-[12px] font-bold text-white">
-              {activeNotification}
+              {activeNotification > 9 ? '9+' : activeNotification}
             </span>
           ) : null}
         </>
@@ -138,9 +201,10 @@ export default function Notification({ user }) {
             {notifications?.map((item, idx) => {
               return (
                 <NotificationItem
-                  {...item}
-                  onClick={(val) => handleNotifClick(val)}
                   key={idx}
+                  {...item}
+                  type={getOtherNotificationType(item.id)}
+                  onClick={(val) => handleNotifClick(val)}
                 />
               );
             })}
