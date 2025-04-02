@@ -17,6 +17,7 @@ import { getResError } from 'utils/responseError';
 import { toast } from 'react-toastify';
 import { useReactToPrint } from 'react-to-print';
 import FaultInfo from 'components/faultInfo';
+import { exportToExcel } from 'utils/exportToExcel';
 
 export default function Edit() {
   const router = useRouter();
@@ -142,6 +143,21 @@ export default function Edit() {
     documentTitle: 'ND INDUSTRIES TÜRKİYE PROSES',
   });
 
+  const frequencyTableExport = (fields, technicalParams) => {
+    const tableData = technicalParams.map((item) => {
+      let newItem = {};
+      Object.entries(item)
+        .map(([key, value]) => {
+          if (fields.includes(key)) {
+            newItem = { ...newItem, [key]: value };
+          }
+        })
+        ?.filter(Boolean);
+      return newItem;
+    });
+    exportToExcel(tableData, `${process?.id}.xlsx`);
+  };
+
   return (
     <div className="w-full">
       {isLoading ? (
@@ -182,7 +198,9 @@ export default function Edit() {
                         <p className="mb-0 text-sm font-bold italic">
                           {item.display_name}
                         </p>
-                        <p className="min-h-6 bg-gray-100 px-1">{item.value}</p>
+                        <p className="min-h-6 rounded-sm bg-gray-100 p-1">
+                          {item.value}
+                        </p>
                       </div>
                     );
                   })}
@@ -209,12 +227,14 @@ export default function Edit() {
                       onClick={handlefaultControl}
                     />
                   ) : null}
-                  <Button
-                    extra={`px-4 h-[40px] max-w-fit`}
-                    onClick={() => entryControlPrint()}
-                    text=" "
-                    icon={<MdPrint className="mr-1 h-5 w-5" />}
-                  />
+                  {faultControl?.id ? (
+                    <Button
+                      extra={`px-4 h-[40px] max-w-fit`}
+                      onClick={() => entryControlPrint()}
+                      text=" "
+                      icon={<MdPrint className="mr-1 h-5 w-5" />}
+                    />
+                  ) : null}
                 </div>
               </div>
               {faultControl?.id ? (
@@ -255,12 +275,22 @@ export default function Edit() {
                       }
                     />
                   ) : null}
-                  <Button
-                    extra={`px-4 h-[40px] max-w-fit`}
-                    onClick={() => frequencyTablePrint()}
-                    text=" "
-                    icon={<MdPrint className="mr-1 h-5 w-5" />}
-                  />
+
+                  {process?.id && process?.technicalParams?.length ? (
+                    <Button
+                      extra={`px-4 h-[40px] max-w-fit`}
+                      onClick={() =>
+                        frequencyTableExport(
+                          process?.machine[0]?.machineParams?.map(
+                            (item) => item.param_name,
+                          ),
+                          process?.technicalParams,
+                        )
+                      }
+                      text=" "
+                      icon={<MdPrint className="mr-1 h-5 w-5" />}
+                    />
+                  ) : null}
                 </div>
               </div>
               {process?.id ? (
@@ -338,12 +368,14 @@ export default function Edit() {
                     />
                   ) : null}
 
-                  <Button
-                    extra={`px-4 h-[40px] max-w-fit`}
-                    onClick={() => finalControlPrint()}
-                    text=" "
-                    icon={<MdPrint className="mr-1 h-5 w-5" />}
-                  />
+                  {finalControl?.length ? (
+                    <Button
+                      extra={`px-4 h-[40px] max-w-fit`}
+                      onClick={() => finalControlPrint()}
+                      text=" "
+                      icon={<MdPrint className="mr-1 h-5 w-5" />}
+                    />
+                  ) : null}
                 </div>
               </div>
 
