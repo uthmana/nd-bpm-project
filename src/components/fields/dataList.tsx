@@ -10,6 +10,7 @@ export default function DataList(props: {
   listId: string;
   list?: Array<{ id: string; company_name: string }>;
   required?: boolean;
+  disabled?: boolean;
   onChange?: (e: any) => void;
   loadOptions?: () => void;
 }) {
@@ -22,6 +23,7 @@ export default function DataList(props: {
     label,
     name,
     required,
+    disabled,
     onChange,
     loadOptions,
   } = props;
@@ -81,11 +83,7 @@ export default function DataList(props: {
       >
         {label}
         {required !== undefined ? (
-          <span
-            className={`${
-              required && selectedItem ? 'text-green-600' : 'text-red-400'
-            }`}
-          >
+          <span className={`${required ? 'text-green-600' : 'text-red-400'}`}>
             *
           </span>
         ) : null}
@@ -101,8 +99,11 @@ export default function DataList(props: {
         onFocus={handleFocus}
         onBlur={handleBlur}
         placeholder={placeholderValue}
-        disabled={loading}
-        className="text-bold mt-1 flex h-10 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none focus:border-[#777777] dark:focus:!border-[#cccccc]"
+        disabled={disabled !== undefined ? disabled : loading}
+        className={`text-bold mt-1  flex h-10 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none focus:border-[#777777] dark:focus:!border-[#cccccc] ${
+          disabled ? '!bg-gray-50' : ''
+        }`}
+        title={inputValue}
       />
       {loading ? (
         <span className="pointer-events-none absolute top-7 flex h-10 w-full justify-end  text-right">

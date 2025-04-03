@@ -35,7 +35,6 @@ export async function GET(req: NextRequest) {
               gte: startOfMonth,
               lte: endOfMonth,
             },
-            status: 'ACCEPT',
           },
         }),
         query.process.count({

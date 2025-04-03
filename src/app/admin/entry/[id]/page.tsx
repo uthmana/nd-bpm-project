@@ -261,7 +261,9 @@ export default function Edit() {
                 </h2>
 
                 <div className="flex gap-2">
-                  {fault?.status != 'GIRIS_KONTROL_RET' ? (
+                  {fault?.status != 'SEVKIYAT_TAMAMLANDI' &&
+                  fault?.status != 'GIRIS_KONTROL_RET' &&
+                  session?.user?.role != 'NORMAL' ? (
                     <Button
                       extra={`px-4 h-[40px] max-w-fit`}
                       onClick={
@@ -356,7 +358,7 @@ export default function Edit() {
                 <div className="flex gap-2">
                   {fault?.status != 'SEVKIYAT_TAMAMLANDI' &&
                   process?.status === 'FINISHED' &&
-                  (session?.user?.role === 'SUPER' ||
+                  (session?.user?.role == 'SUPER' ||
                     session?.user?.role === 'ADMIN') ? (
                     <Button
                       icon={<MdAdd className="mr-1 h-5 w-5" />}

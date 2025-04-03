@@ -459,6 +459,9 @@ CREATE UNIQUE INDEX "users_token_key" ON "users"("token");
 CREATE UNIQUE INDEX "Stock_faultId_key" ON "Stock"("faultId");
 
 -- CreateIndex
+CREATE INDEX "Fault_status_idx" ON "Fault"("status");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "FaultControl_faultId_key" ON "FaultControl"("faultId");
 
 -- CreateIndex

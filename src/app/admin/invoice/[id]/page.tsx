@@ -253,14 +253,17 @@ export default function Invoices() {
                 extra="mb-2 w-full mr-3"
                 value={value.email}
               />
-              <div className="w-[120px] pt-5 lg:w-full lg:pt-0">
-                <Button
-                  extra="h-[40px]"
-                  onClick={handleSendEmail}
-                  text="GÖNDER"
-                  loading={isSubmiting}
-                />
-              </div>
+
+              {session?.user?.role !== 'NORMAL' ? (
+                <div className="w-[120px] pt-5 lg:w-full lg:pt-0">
+                  <Button
+                    extra="h-[40px]"
+                    onClick={handleSendEmail}
+                    text="GÖNDER"
+                    loading={isSubmiting}
+                  />
+                </div>
+              ) : null}
             </div>
 
             <Button
@@ -269,16 +272,19 @@ export default function Invoices() {
               text="YAZDIR"
               icon={<MdPrint className="mr-1 h-5 w-5" />}
             />
-            <Button
-              extra={`px-8 h-[40px] max-w-[300px]`}
-              onClick={onInoviceComplete}
-              text={`SEVKİYAT ${
-                invoice?.status !== 'PAID' ? 'TAMAMLA' : 'TAMAMLANDI'
-              }`}
-              icon={<MdOutlinePayment className="mr-1 h-5 w-5" />}
-              disabled={invoice?.status === 'PAIDS'}
-              loading={isInvoiceSubmiting}
-            />
+
+            {session?.user?.role !== 'NORMAL' ? (
+              <Button
+                extra={`px-8 h-[40px] max-w-[300px]`}
+                onClick={onInoviceComplete}
+                text={`SEVKİYAT ${
+                  invoice?.status !== 'PAID' ? 'TAMAMLA' : 'TAMAMLANDI'
+                }`}
+                icon={<MdOutlinePayment className="mr-1 h-5 w-5" />}
+                disabled={invoice?.status === 'PAIDS'}
+                loading={isInvoiceSubmiting}
+              />
+            ) : null}
           </div>
         </div>
       )}

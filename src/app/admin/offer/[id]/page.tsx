@@ -93,8 +93,8 @@ export default function Create() {
         <DetailHeader {...detailData} />
       </div>
 
-      <div className="mx-auto flex w-full max-w-[1200px] flex-col justify-between gap-4  lg:flex-row">
-        <div className="page-break min-h-[800px]  w-full  bg-white px-10 lg:w-[700px] lg:max-w-[700px]  print:absolute print:top-0 print:z-[99999] print:min-h-screen print:w-full print:pl-0 print:pr-8">
+      <div className="mx-auto flex w-full max-w-[1200px] flex-col justify-between gap-4 lg:flex-row">
+        <div className="mx-auto min-h-[800px]  w-full  bg-white lg:w-[700px] lg:max-w-[700px]  print:absolute print:top-0 print:z-[99999] print:min-h-screen print:w-full print:pl-0 print:pr-8">
           <OfferDoc offer={offerData} />
         </div>
         <div className="flex w-full flex-col gap-4 bg-white px-4 py-8 xl:w-1/3">

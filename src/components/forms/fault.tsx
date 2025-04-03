@@ -103,30 +103,37 @@ export default function Fault(props: {
     fetchData();
   }, []);
 
+  const resetNewProduct = (value) => {
+    const localDateTime = getCurrentDateFormat();
+    const _newProdect: any = {
+      product: '',
+      productBatchNumber: '',
+      productCode: '',
+      quantity: 1,
+      technicalDrawingAttachment: '',
+      faultDescription: '',
+      arrivalDate: localDateTime,
+    };
+
+    //handle defaultTechParameter
+    const tempValue = [...techParams].map((item) => {
+      return { ...item, value: '' };
+    });
+    setTechParams(tempValue);
+    setValues({ ...values, ..._newProdect });
+    if (value) {
+      setNewProduct(value);
+    }
+    setStockProduct([]);
+  };
+
   const handleValues = (event) => {
     setError(false);
     if (
       event.target?.name === 'product' &&
       event.target?.value === 'NEW_ENTRY'
     ) {
-      const localDateTime = getCurrentDateFormat();
-      const _newProdect: any = {
-        product: '',
-        productBatchNumber: '',
-        productCode: '',
-        quantity: 1,
-        arrivalDate: localDateTime,
-      };
-
-      //handle defaultTechParameter
-      const tempValue = [...techParams].map((item) => {
-        return { ...item, value: '' };
-      });
-      setTechParams(tempValue);
-
-      setValues({ ...values, ..._newProdect });
-      setNewProduct(event.target?.value);
-      setStockProduct([]);
+      resetNewProduct(event.target?.value);
       return;
     }
     // Handle Company change
@@ -141,46 +148,50 @@ export default function Fault(props: {
         product: '',
       };
 
-      if (_customer?.Stock?.length > 0) {
-        setStockProduct(_customer?.Stock);
-        setNewProduct(null);
-        const {
-          product_name,
-          product_code,
-          inventory,
-          date,
-          productBatchNumber,
-          defaultTechParameter,
-        } = _customer?.Stock[0];
-        const stockData = {
-          product: product_name,
-          productBatchNumber: productBatchNumber,
-          productCode: product_code,
-          quantity: inventory,
-          arrivalDate: removeMillisecondsAndUTC(date),
-        };
-        selectedCustomer = { ...selectedCustomer, ...stockData };
-
-        //handle defaultTechParameter
-        const tempValue = [...techParams].map((item) => {
-          if (defaultTechParameter[0]?.[item.param_name]) {
-            return {
-              ...item,
-              value: defaultTechParameter[0]?.[item.param_name],
-            };
-          }
-          return {
-            ...item,
-            value: '',
-          };
-        });
-        setTechParams(tempValue);
-      } else {
-        setStockProduct([]);
+      if (!_customer?.Stock?.length) {
+        resetNewProduct('NEW_ENTRY');
+        setValues({ ...values, ...selectedCustomer });
+        return;
       }
 
-      setValues({ ...values, ...selectedCustomer });
+      setStockProduct(_customer?.Stock);
+      setNewProduct(null);
+      const {
+        product_name,
+        product_code,
+        inventory,
+        date,
+        productBatchNumber,
+        defaultTechParameter,
+        description,
+        image,
+      } = _customer?.Stock[0];
+      const stockData = {
+        product: product_name,
+        productBatchNumber: productBatchNumber,
+        productCode: product_code,
+        quantity: inventory,
+        technicalDrawingAttachment: image ?? '',
+        faultDescription: description ?? '',
+        arrivalDate: removeMillisecondsAndUTC(date),
+      };
+      selectedCustomer = { ...selectedCustomer, ...stockData };
 
+      //handle defaultTechParameter
+      const tempValue = [...techParams].map((item) => {
+        if (defaultTechParameter[0]?.[item.param_name]) {
+          return {
+            ...item,
+            value: defaultTechParameter[0]?.[item.param_name],
+          };
+        }
+        return {
+          ...item,
+          value: '',
+        };
+      });
+      setTechParams(tempValue);
+      setValues({ ...values, ...selectedCustomer });
       return;
     }
 
@@ -197,12 +208,16 @@ export default function Fault(props: {
         inventory,
         productBatchNumber,
         defaultTechParameter,
+        description,
+        image,
       } = _stockData;
       const stockData = {
         product: product_name,
         productBatchNumber: productBatchNumber,
         productCode: product_code,
         quantity: inventory,
+        technicalDrawingAttachment: image ?? '',
+        faultDescription: description ?? '',
         arrivalDate: removeMillisecondsAndUTC(date),
       };
       setValues({ ...values, ...stockData });
@@ -300,6 +315,7 @@ export default function Fault(props: {
           required={true}
           value={values.customerName}
           onChange={handleValues}
+          disabled={editData?.id !== undefined}
         />
 
         {stockProduct.length > 0 && newProduct === null ? (
@@ -312,11 +328,9 @@ export default function Fault(props: {
           >
             {stockProduct?.map((item, idx) => {
               return (
-                <>
-                  <option value={item.id} key={idx} selected={idx === 0}>
-                    {item.product_name}
-                  </option>
-                </>
+                <option value={item.id} key={idx} selected={idx === 0}>
+                  {item.product_name}
+                </option>
               );
             })}
             <option value={'NEW_ENTRY'}>---Yeni Ürün Ekle</option>
@@ -389,6 +403,7 @@ export default function Fault(props: {
           label="Uygulama"
           onChange={handleValues}
           name="application"
+          key={'application'}
         >
           {faultSettings?.applications?.map((item, idx) => {
             return (
@@ -406,6 +421,7 @@ export default function Fault(props: {
         </Select>
 
         <Select
+          key={'Standart'}
           required={true}
           extra="pt-1"
           label="Standart"
@@ -433,6 +449,7 @@ export default function Fault(props: {
           label="Renk Seçimi"
           onChange={handleValues}
           name="color"
+          key={'color'}
         >
           {faultSettings?.colors?.map((item, idx) => {
             return (
@@ -478,6 +495,7 @@ export default function Fault(props: {
           name="technicalDrawingAttachment"
           onChange={handleValues}
           value={values.technicalDrawingAttachment}
+          key={values.technicalDrawingAttachment}
         />
       </div>
 

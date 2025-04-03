@@ -121,6 +121,8 @@ model Fault {
   updatedBy                  String?
   Invoice                    Invoice?             @relation(fields: [invoiceId], references: [id])
   invoiceId                  String?
+
+  @@index([status])
 }
 
 model FaultControl {
