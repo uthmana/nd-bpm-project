@@ -720,7 +720,7 @@ function MainTable({
         </div>
 
         <div className="flex gap-2">
-          {onSync ? (
+          {process.env.NEXT_PUBLIC_LOGO_INTEGRATION === 'true' && onSync ? (
             <Button
               text="SYNC"
               extra="!w-[140px] h-[38px] font-bold mb-3"

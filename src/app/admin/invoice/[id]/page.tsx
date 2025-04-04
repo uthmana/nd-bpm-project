@@ -186,10 +186,15 @@ export default function Invoices() {
       }
 
       //send To Logo
-      const { data }: any = await sendDispatchToLogo(currentInvoice);
+      if (process.env.NEXT_PUBLIC_LOGO_INTEGRATION === 'true') {
+        const { data }: any = await sendDispatchToLogo(currentInvoice);
+        setIsInvoiceSubmiting(false);
+        toast.success(`Logoya gönderme işlemi başarılı ${data.NUMBER}`);
+        router.push(`/admin/invoice/${currentInvoice?.id}`);
+      }
+
       setIsInvoiceSubmiting(false);
-      toast.success(`Logoya gönderme işlemi başarılı ${data.NUMBER}`);
-      router.push(`/admin/invoice/${currentInvoice?.id}`);
+      router.push(`/admin/invoice`);
     } catch (err) {
       const message = getResError(err?.message);
       toast.error(`Logoya başarıyla içeriye alamadı ${message}`);
