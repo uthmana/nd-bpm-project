@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Dropdown from 'components/dropdown';
 import { IoMdNotificationsOutline } from 'react-icons/io';
 import NotificationItem from './item';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import {
   getNotifications,
   sendNotification,
@@ -13,11 +13,12 @@ import { convertToISO8601, log } from 'utils';
 import { useSession } from 'next-auth/react';
 
 export default function Notification({ user }) {
-  const [notifications, setNotifications] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const pathname = usePathname();
   const { data: session } = useSession();
+  const [isOpen, setIsOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [activeNotification, setActiveNotification] = useState(0);
   const [olderNotifications, setOlderNotifictions] = useState([]);
 
@@ -26,7 +27,7 @@ export default function Notification({ user }) {
     const now = new Date();
     return data.filter((item) => {
       const createdAt = new Date(item.createdAt);
-      return now.getTime() - createdAt.getTime() > 30 * 60 * 1000;
+      return now.getTime() - createdAt.getTime() > 1 * 60 * 1000;
     });
   };
 
@@ -72,6 +73,16 @@ export default function Notification({ user }) {
         filteredNotifications = data?.filter(
           (item) => item.recipient === session?.user?.role,
         );
+
+        const filteredOlderNotifications = filterOlderNotifications(
+          filteredNotifications,
+        );
+        const unreadOlderNotification = filteredOlderNotifications?.filter(
+          (item) => item.status === 'NOT_READ' && !item.isEmailSent,
+        );
+        if (unreadOlderNotification?.length) {
+          sendEmailNotification(unreadOlderNotification);
+        }
       }
       setNotifications(filteredNotifications);
       setActiveNotification(
@@ -104,6 +115,26 @@ export default function Notification({ user }) {
     };
   }, [session?.user?.role]);
 
+  useEffect(() => {
+    const onUpdateNotification = async () => {
+      const fullpath = `${window.location.origin}${pathname}`;
+      const notificationDetail = notifications?.filter(
+        (item) =>
+          fullpath === item.link &&
+          item.status !== 'READ' &&
+          item.recipient === session?.user?.role,
+      );
+      if (notificationDetail?.length) {
+        const ids = notificationDetail.map((item) => item.id);
+        await updateNotification({ ids });
+        getMyNotification();
+      }
+    };
+
+    if (!session?.user?.role || !notifications) return;
+    onUpdateNotification();
+  }, [pathname, notifications, session]);
+
   const handleNotifClick = async ({ id, link }) => {
     try {
       const user = [...notifications]?.find((item) => item.id === id);
@@ -113,18 +144,6 @@ export default function Notification({ user }) {
         router.push(link);
         return;
       }
-
-      if (
-        !user ||
-        user?.status === 'READ' ||
-        user?.recipient !== session?.user?.role
-      ) {
-        router.push(link);
-        return;
-      }
-
-      await updateNotification({ ids: [id] });
-      getMyNotification();
       router.push(link);
       setIsOpen(false);
     } catch (error) {

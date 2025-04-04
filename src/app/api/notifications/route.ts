@@ -15,7 +15,7 @@ const getRecipientRole = (workflowId: string) => {
     'process-frequency': 'TECH',
     'process-control': 'SUPER',
     'process-completion': 'ADMIN',
-    'entry-unattended': 'ADMIN',
+    'entry-unattended': 'SUPER',
   }[workflowId] || 'OTHER') as UserRole;
 };
 
@@ -38,10 +38,14 @@ export async function GET(req: NextRequest) {
       where: {
         workflowId: 'fault-entry',
         status: 'NOT_READ',
+        isEmailSent: false,
       },
       orderBy: { createdAt: 'desc' },
     });
-    notifications = [...notifications, ...unreadNotifications];
+    notifications = [
+      ...notifications,
+      ...(role === 'ADMIN' ? unreadNotifications : []),
+    ];
 
     return NextResponse.json(notifications, { status: 200 });
   } catch (e) {
