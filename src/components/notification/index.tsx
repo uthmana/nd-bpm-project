@@ -27,7 +27,7 @@ export default function Notification({ user }) {
     const now = new Date();
     return data.filter((item) => {
       const createdAt = new Date(item.createdAt);
-      return now.getTime() - createdAt.getTime() > 1 * 60 * 1000;
+      return now.getTime() - createdAt.getTime() > 180 * 60 * 1000;
     });
   };
 
