@@ -1,7 +1,7 @@
 import { TableCell } from './tableCell';
 import { EditCell } from './editCell';
 import { createColumnHelper } from '@tanstack/react-table';
-import { techParameters } from '../../../../utils';
+import { techParameters } from '../../../utils';
 const columnHelper = createColumnHelper<any>();
 
 const newCol = [
