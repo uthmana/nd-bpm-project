@@ -8,10 +8,8 @@ import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { log } from 'utils';
 import Card from 'components/card';
-// import OfferTemplete from 'emails/offer';
-// import ReactDOMServer from 'react-dom/server';
-
 import UploadOfferPDF from 'components/offer/pdfDoc';
+import { getResError } from 'utils/responseError';
 
 export default function Create() {
   const [customers, setCustomers] = useState([]);
@@ -21,12 +19,14 @@ export default function Create() {
 
   useEffect(() => {
     const getAllCustomer = async () => {
-      const { status, data } = await getCustomers();
-
-      if (status === 200) {
+      try {
+        const { data } = await getCustomers();
         setCustomers(
           data.sort((a, b) => (a.company_name > b.company_name ? 1 : -1)),
         );
+      } catch (error) {
+        const message = getResError(error?.message);
+        toast.error(`${message}`);
       }
     };
     getAllCustomer();
@@ -43,28 +43,25 @@ export default function Create() {
 
     delete val.company_name;
     delete val.companyName;
-    setIsSubmitting(true);
-    const addOfferResponse: any = await addOffer({
-      ...val,
-      docPath: newPdf.url,
-    });
-    const { status, data, response } = addOfferResponse;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Teklif oluştu, E-posta gönderimde hata oluştu!.' + message);
-      log(detail);
+
+    try {
+      setIsSubmitting(true);
+      await addOffer({
+        ...val,
+        docPath: newPdf.url,
+      });
+
+      setIsSubmitting(false);
+      toast.success('Teklif oluşturma işlemi başarılı.');
+      router.push('/admin/offer');
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
       setTimeout(() => {
         router.push('/admin/offer');
         setIsSubmitting(false);
       }, 4000);
-      return;
     }
-
-    if (status === 200) {
-      toast.success('Teklif oluşturma işlemi başarılı.');
-      router.push('/admin/offer');
-    }
-    setIsSubmitting(false);
   };
 
   const handleChange = (val) => {

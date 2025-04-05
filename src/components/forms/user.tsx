@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import NextLink from 'next/link';
 import InputField from 'components/fields/InputField';
-import Button from 'components/button/button';
-import Select from 'components/select/page';
+import Button from 'components/button';
+import Select from 'components/select';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import { log } from 'utils';
 
@@ -12,6 +12,7 @@ type data = {
   name: string;
   email: string;
   password: string;
+  contactNumber: string;
   role: string;
   status: string;
 };
@@ -23,14 +24,23 @@ type userForm = {
   loading: boolean;
 };
 
-export default function User({ onSubmit, data, title, loading }: userForm) {
+export default function User(props: userForm) {
+  const { onSubmit, data, title, loading } = props;
+
   const role = ['ADMIN', 'SUPER', 'NORMAL', 'TECH'];
   const status = ['ACTIVE', 'PASSIVE'];
   const [error, setError] = useState(false);
 
   const initialValues = data
     ? data
-    : { name: '', email: '', password: '', role: 'NORMAL', status: 'ACTIVE' };
+    : {
+        name: '',
+        email: '',
+        contactNumber: '',
+        password: '',
+        role: 'NORMAL',
+        status: 'ACTIVE',
+      };
   const [values, setValues] = useState(initialValues);
 
   const handleValues = (event) => {
@@ -51,7 +61,7 @@ export default function User({ onSubmit, data, title, loading }: userForm) {
       setError(true);
       return;
     }
-
+    log(values);
     onSubmit(values);
   };
 
@@ -91,6 +101,18 @@ export default function User({ onSubmit, data, title, loading }: userForm) {
         required={true}
       />
       <InputField
+        label="Telefon"
+        onChange={handleValues}
+        type="phone"
+        id="phone"
+        name="contactNumber"
+        placeholder="(5XX) XXX XX XX"
+        extra="mb-2"
+        value={values.contactNumber}
+        required={true}
+      />
+
+      <InputField
         label="E-posta"
         onChange={handleValues}
         type="email"
@@ -110,7 +132,6 @@ export default function User({ onSubmit, data, title, loading }: userForm) {
         placeholder="Şifre"
         extra="mb-2"
         value={values.password}
-        required={true}
       />
       <Select extra="mb-2" label="Rol" onChange={handleValues} name="role">
         {role.map((item, idx) => {

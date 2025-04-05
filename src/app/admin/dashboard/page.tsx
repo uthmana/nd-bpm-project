@@ -1,5 +1,5 @@
 'use client';
-import MiniCalendar from 'components/calendar/MiniCalendar';
+import MiniCalendar from 'components/calendar';
 import WeeklyRevenue from 'components/weeklyRevenue';
 import TotalSpent from 'components/totalSpent';
 import {
@@ -16,13 +16,14 @@ import MiniTable from 'components/admin/data-tables/miniTable';
 import { getDashboard } from '../../lib/apiRequest';
 import { useEffect, useState } from 'react';
 import {
-  log,
   getMonthlySum,
   getMonthAndWeekDates,
   convertToISO8601,
   formatNumberLocale,
 } from 'utils';
 import { NewDashboardSkeleton } from 'components/skeleton';
+import { getResError } from 'utils/responseError';
+import { toast } from 'react-toastify';
 
 const Dashboard = () => {
   const [widgetData, setWidgetData] = useState({} as any);
@@ -34,13 +35,14 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { startOfMonth, endOfMonth } = getMonthAndWeekDates();
-      setLoading(true);
-      const { data, status } = await getDashboard({
-        startOfMonth: convertToISO8601(startOfMonth),
-        endOfMonth: convertToISO8601(endOfMonth),
-      });
-      if (status === 200) {
+      try {
+        setLoading(true);
+        const { startOfMonth, endOfMonth } = getMonthAndWeekDates();
+        const { data } = await getDashboard({
+          startOfMonth: convertToISO8601(startOfMonth),
+          endOfMonth: convertToISO8601(endOfMonth),
+        });
+
         setWidgetData(data?.widget);
 
         const monthlyEntry = {
@@ -62,12 +64,20 @@ const Dashboard = () => {
             color: '#6AD2Fa',
           },
         ]);
-        setRecentProcess(data?.recentProcess);
+
+        setRecentProcess(
+          data?.recentProcess?.map((item) => {
+            const { Fault, ...rest } = item;
+            return { ...Fault, ...rest };
+          }),
+        );
         setRecentCustomer(data?.recentCustomer);
         setLoading(false);
-        return;
+      } catch (error) {
+        const message = getResError(error?.message);
+        toast.error(`${message}`);
+        setLoading(false);
       }
-      log(data, status);
     };
     fetchData();
   }, []);

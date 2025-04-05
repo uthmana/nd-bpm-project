@@ -2,38 +2,38 @@
 
 import React, { useState } from 'react';
 import {
-  formatDateTime,
   platings,
   processConfirmation,
   materials,
   dirtyConfirmation,
   confirmation,
   results,
-  faultInfo,
-  infoTranslate,
 } from 'utils';
 
 import Upload from 'components/upload';
 import TextArea from 'components/fields/textArea';
-import Button from 'components/button/button';
-import Select from 'components/select/page';
+import Button from 'components/button';
+import Select from 'components/select';
 import Radio from 'components/radio';
 import InputField from 'components/fields/InputField';
 import ControlHeader from './finalControl/controlHeader';
+import { useSession } from 'next-auth/react';
 
-export default function EntryControlForm({
-  info,
-  data,
-  title,
-  onSubmit,
-  isSubmitting,
+export default function EntryControlForm(props: {
+  info: any;
+  data: any;
+  title?: string;
+  onSubmit?: (e: any, f: boolean) => void;
+  isSubmitting?: boolean;
+  variant?: string;
 }) {
+  const { info, data, title, onSubmit, isSubmitting, variant = 'form' } = props;
+
   const isUpdate = data && data?.id ? true : false;
   const [fault, setFault] = useState(info || {});
   const [error, setError] = useState(false);
-  const [file, setFile] = useState('');
   const [formTouch, setFormTouch] = useState(isUpdate);
-
+  const { data: session } = useSession();
   const [values, setValues] = useState(
     isUpdate
       ? data
@@ -42,18 +42,21 @@ export default function EntryControlForm({
           result: '',
           plating: '',
           product: '',
-          quantity: 0,
+          deformity: '',
+          remarks: '',
           productCode: '',
+          dirtyThreads: '',
           productDimension: '',
           productBatchNumber: '',
           processFrequency: '',
           dimensionConfirmation: '',
-          dirtyThreads: '',
           quantityConfirmation: '',
-          remarks: '',
           faultId: info?.id,
-          frequencyDimension: '',
-          deformity: '',
+          quantity: 0,
+          frequencyDimension: 0,
+          createdBy: session?.user?.name,
+          createdAt: new Date(),
+          updatedBy: session?.user?.name,
         },
   );
 
@@ -66,23 +69,27 @@ export default function EntryControlForm({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { result } = values;
-    if (!result) {
+    const { result, processFrequency, frequencyDimension } = values;
+    if (
+      !result ||
+      (processFrequency === 'Yazılsın' && parseInt(frequencyDimension) === 0)
+    ) {
       setError(true);
       window.scroll(100, 0);
       return;
     }
-
     onSubmit(
       {
         ...values,
-        image: file,
-        dimensionConfirmation:
-          values.dimensionConfirmation?.toString() === 'true',
-        dirtyThreads: values.dirtyThreads?.toString() === 'true',
-        deformity: values.deformity?.toString() === 'true',
-        quantityConfirmation:
-          values.quantityConfirmation?.toString() === 'true',
+        dimensionConfirmation: values.dimensionConfirmation === true.toString(),
+        dirtyThreads: values.dirtyThreads === true.toString(),
+        deformity: values.deformity === true.toString(),
+        quantityConfirmation: values.quantityConfirmation === true.toString(),
+        frequencyDimension:
+          values.processFrequency === 'Yazılmasın'
+            ? 0
+            : parseInt(values.frequencyDimension),
+        updatedBy: session?.user?.name,
       },
       isUpdate,
     );
@@ -90,7 +97,9 @@ export default function EntryControlForm({
 
   return (
     <>
-      <div className="w-full">
+      <div
+        className={`w-full ${variant != 'form' ? 'pointer-events-none' : ''}`}
+      >
         <ControlHeader
           data={fault}
           variant="entry"
@@ -99,7 +108,7 @@ export default function EntryControlForm({
         />
         {error ? (
           <p className="mb-3 w-full rounded-md bg-red-500 p-2 text-center text-sm  font-bold text-white">
-            Lütfen ilgili kontrol alanları boş bırakılmamalı.
+            Lütfen Frekans Aralığını doldurun.
           </p>
         ) : null}
 
@@ -256,9 +265,9 @@ export default function EntryControlForm({
 
             {values.processFrequency === 'Yazılsın' ? (
               <InputField
-                label="Frekans Aralığı"
+                label="Frekans Aralığı (dk)"
                 onChange={handleValues}
-                type="text"
+                type="number"
                 id="frequencyDimension"
                 name="frequencyDimension"
                 placeholder="0"
@@ -270,15 +279,13 @@ export default function EntryControlForm({
           </div>
 
           <div className="mb-6">
-            <h2 className="mb-3 ml-3  block w-full text-sm font-bold">
-              İlgili Doküman
-            </h2>
             <Upload
-              onChange={(val) => setFile(val)}
-              fileType="all"
-              multiple={false}
-              _fileName={values.image}
-              _filePath={isUpdate ? '/uploads/' + values.image : ''}
+              label="İlgili Doküman"
+              id="image"
+              name="image"
+              onChange={handleValues}
+              value={values.image}
+              variant={variant}
             />
           </div>
 
@@ -291,6 +298,7 @@ export default function EntryControlForm({
               placeholder="Açıklama"
               extra="mb-8"
               value={values.remarks}
+              variant={variant}
             />
           </div>
 
@@ -317,31 +325,15 @@ export default function EntryControlForm({
               })}
             </div>
           </div>
-
-          <Button
-            disabled={formTouch}
-            loading={isSubmitting}
-            extra="mt-4"
-            text="KAYDET"
-          />
+          {variant != 'form' ? null : (
+            <Button
+              disabled={formTouch}
+              loading={isSubmitting}
+              extra="mt-4"
+              text="KAYDET"
+            />
+          )}
         </form>
-      </div>
-
-      <div className="mt-8 flex justify-between text-sm font-bold opacity-40">
-        <div>
-          <p>Oluşturan: {data?.createdBy}</p>
-          <p>
-            Oluşturulma Tarihi:{' '}
-            {data?.createdAt ? formatDateTime(data?.createdAt) : ''}
-          </p>
-        </div>
-        <div>
-          <p>Güncelleyen: {data?.updatedBy}</p>
-          <p>
-            Güncelleme Tarihi:{' '}
-            {data?.updatedAt ? formatDateTime(data?.updatedAt) : ''}
-          </p>
-        </div>
       </div>
     </>
   );

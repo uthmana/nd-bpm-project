@@ -21,6 +21,7 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table';
+import TableEmpty from './tableEmpty';
 
 function MiniTable({
   tableData,
@@ -61,8 +62,8 @@ function MiniTable({
           columnHelper.accessor('id', {
             id: 'id',
             header: () => (
-              <p className="group  relative min-w-[60px] max-w-fit whitespace-nowrap break-keep text-sm font-bold text-gray-600 dark:text-white">
-                SİRA NO.
+              <p className="group  relative max-w-fit whitespace-nowrap break-keep text-sm font-bold text-gray-600 dark:text-white">
+                #
               </p>
             ),
             cell: ({ row }) => (
@@ -100,7 +101,6 @@ function MiniTable({
               </p>
             ),
           }),
-
           columnHelper.accessor('rep_name', {
             id: 'rep_name',
             header: () => (
@@ -192,14 +192,30 @@ function MiniTable({
           columnHelper.accessor('id', {
             id: 'id',
             header: () => (
-              <p className="whitespace-nowrap  break-keep text-sm font-bold text-gray-600 dark:text-white">
-                SİRA NO.
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                #
               </p>
             ),
             cell: ({ row }) => (
-              <p className="min-w-[60px] text-sm font-bold text-navy-700 dark:text-white">
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
                 {(row.index + 1).toString()}
               </p>
+            ),
+          }),
+          columnHelper.accessor('status', {
+            id: 'status',
+            header: () => (
+              <p className="min-w-[120px]  whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
+                PROSES DURUMU
+              </p>
+            ),
+            cell: (info: any) => (
+              <div className="flex min-w-[100px] items-center">
+                {statusbgColor(info.getValue())}
+                <p className="text-sm font-bold text-navy-700 dark:text-white">
+                  {entryStatus[info.getValue()]}
+                </p>
+              </div>
             ),
           }),
           columnHelper.accessor('product', {
@@ -260,36 +276,6 @@ function MiniTable({
               </p>
             ),
           }),
-          columnHelper.accessor('status', {
-            id: 'status',
-            header: () => (
-              <p className="min-w-[120px]  whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
-                PROSES DURUMU
-              </p>
-            ),
-            cell: (info: any) => (
-              <div className="flex min-w-[100px] items-center">
-                {statusbgColor(info.getValue())}
-                <p className="text-sm font-bold text-navy-700 dark:text-white">
-                  {entryStatus[info.getValue()]}
-                </p>
-              </div>
-            ),
-          }),
-          columnHelper.accessor('quantity', {
-            id: 'quantity',
-            header: () => (
-              <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-                Miktar
-              </p>
-            ),
-            cell: (info: any) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {formatNumberLocale(info.getValue())}
-              </p>
-            ),
-          }),
-
           columnHelper.accessor('machineName', {
             id: 'machineName',
             header: () => (
@@ -303,6 +289,19 @@ function MiniTable({
                 className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white"
               >
                 {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('quantity', {
+            id: 'quantity',
+            header: () => (
+              <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+                Miktar
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {formatNumberLocale(info.getValue())}
               </p>
             ),
           }),
@@ -339,7 +338,6 @@ function MiniTable({
       <h2 className="text-lg font-bold text-navy-700 dark:text-white">
         {title}
       </h2>
-
       <div
         className="custom-scrollbar--hidden mt-2 overflow-x-scroll"
         onMouseDown={handleMouseDown}
@@ -387,7 +385,7 @@ function MiniTable({
                   >
                     {row.getVisibleCells().map((cell) => {
                       return (
-                        <td key={cell.id} className="p-3">
+                        <td key={cell.id} className="py-3 pr-2">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),
@@ -400,6 +398,7 @@ function MiniTable({
               })}
           </tbody>
         </table>
+        {data.length === 0 ? <TableEmpty /> : null}
       </div>
     </Card>
   );

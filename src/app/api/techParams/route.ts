@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '../../lib/db';
-import { hash } from 'bcryptjs';
-import { checkUserRole } from 'utils/auth';
-import { Prisma, Process } from '@prisma/client';
+import prisma from 'app/lib/db';
+import { Process } from '@prisma/client';
+import { extractPrismaErrorMessage } from 'utils/prismaError';
 
 //All TechParams
 export async function GET(req: NextRequest) {
@@ -13,15 +12,15 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(techParams, { status: 200 });
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -31,7 +30,7 @@ export async function PUT(req: Request) {
     const reqBody: any = await req.json();
 
     const { machineId, processId } = reqBody;
-    if (!machineId) {
+    if (!machineId || !processId) {
       return NextResponse.json(
         { message: 'You are missing a required data' },
         { status: 401 },
@@ -42,21 +41,30 @@ export async function PUT(req: Request) {
       data: reqBody,
     });
 
-    //Update process when tech Params is added
-    const process: Process = await prisma.process.findUnique({
-      where: { id: processId },
-    });
-    if (process && process.status === 'PENDING') {
-      const updatedProcess = await prisma.process.update({
-        where: {
-          id: process.id,
+    if (!techParams) {
+      return NextResponse.json(
+        {
+          message:
+            'Error occured when creating technicalParameter, Please try again later',
         },
-        data: {
-          ...process,
-          status: 'PROCESSING',
-        },
-      });
+        { status: 401 },
+      );
     }
+    //Update process when tech Params is added
+    // const process: Process = await prisma.process.findUnique({
+    //   where: { id: processId },
+    // });
+    // if (process && process.status === 'PENDING') {
+    //   const updatedProcess = await prisma.process.update({
+    //     where: {
+    //       id: process.id,
+    //     },
+    //     data: {
+    //       ...process,
+    //       status: 'PROCESSING',
+    //     },
+    //   });
+    // }
 
     const techParamsData = await prisma.technicalParameter.findMany({
       where: { processId },
@@ -64,14 +72,14 @@ export async function PUT(req: Request) {
     });
     return NextResponse.json(techParamsData, { status: 200 });
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }

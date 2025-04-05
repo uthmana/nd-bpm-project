@@ -3,11 +3,10 @@
 import React, { useState } from 'react';
 import NextLink from 'next/link';
 import InputField from 'components/fields/InputField';
-import Button from 'components/button/button';
-import Select from 'components/select/page';
+import Button from 'components/button';
+import Select from 'components/select';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import TextArea from 'components/fields/textArea';
-import { log } from 'utils';
 import { CustomerObj } from '../../app/localTypes/table-types';
 
 type userForm = {
@@ -17,7 +16,8 @@ type userForm = {
   loading?: boolean;
 };
 
-export default function Customer({ onSubmit, data, title, loading }: userForm) {
+export default function Customer(props: userForm) {
+  const { onSubmit, data, title, loading } = props;
   const initialValues = data
     ? data
     : {

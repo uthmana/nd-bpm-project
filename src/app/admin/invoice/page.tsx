@@ -4,16 +4,22 @@ import InvoiceTable from 'components/admin/data-tables/invoiceTable';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { log } from 'utils';
 import { useEffect, useState } from 'react';
-import { deleteInvoice, getInvoice } from 'app/lib/apiRequest';
+import {
+  deleteInvoice,
+  getCustomersWithFilter,
+  getInvoice,
+} from 'app/lib/apiRequest';
 import { TableSkeleton } from 'components/skeleton';
 import { toast } from 'react-toastify';
 import Popup from 'components/popup';
-import Button from 'components/button/button';
+import Button from 'components/button';
 import { useSession } from 'next-auth/react';
+import Accordion from 'components/accordion';
+import Card from 'components/card';
 
 const Invoice = () => {
   const router = useRouter();
-  const [invoices, setInvoices] = useState([]);
+
   const [isShowPopUp, setIsShowPopUp] = useState(false);
   const [faultId, setFaultId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,28 +29,39 @@ const Invoice = () => {
   const searchVal = searchParams.get('q');
   const [searchText, setSearchText] = useState(searchVal || '');
 
+  const [newInvoices, setNewInvoices] = useState([]);
+  const [invoices, setInvoices] = useState([]);
+
   const getAllInvoice = async () => {
     setIsLoading(true);
-    const { status, data } = await getInvoice();
-    if (status === 200) {
-      const newData = data?.map((item) => {
-        const customerName = item?.customer?.company_name;
-        const products = item?.process
-          ?.map((item, idx) => {
-            return `${item.product}`;
-          })
-          ?.join('');
+    const [newInvoiceRes, invoiceRes] = await Promise.all([
+      getCustomersWithFilter({
+        where: {
+          Fault: {
+            some: { status: 'IRSALIYE_KESIMI_BEKLENIYOR' },
+          },
+        },
+        include: {
+          Fault: {
+            where: { status: 'IRSALIYE_KESIMI_BEKLENIYOR' },
+          },
+        },
+      }),
+      getInvoice(),
+    ]);
 
-        item.products = products;
-        item.customerName = customerName;
-        item.address = item?.customer?.address;
-        item.tolalQty = item?.process.reduce((a, b) => a + b.shipmentQty, 0);
+    setNewInvoices(newInvoiceRes.data);
+    setInvoices(
+      invoiceRes?.data?.map((item) => {
+        return {
+          ...item,
+          customerName: item?.customer?.company_name,
+          products: item?.Fault?.length,
+          address: item?.customer?.address,
+        };
+      }),
+    );
 
-        return item;
-      });
-
-      setInvoices(newData);
-    }
     setIsLoading(false);
   };
 
@@ -61,7 +78,7 @@ const Invoice = () => {
   };
 
   const onEdit = (val) => {
-    router.push(`/admin/invoice/create/${val}`);
+    router.push(`/admin/invoice/${val}`);
   };
 
   const onControl = (val) => {
@@ -100,21 +117,74 @@ const Invoice = () => {
     setIsShowPopUp(false);
   };
 
+  const onSendNewInvoice = (val: any) => {
+    router.push(`/admin/invoice/${val.id}?newinvoice=true`);
+  };
+
   return (
     <div className="mt-3 w-full">
       {isLoading ? (
         <TableSkeleton />
       ) : (
-        <InvoiceTable
-          onAdd={onAdd}
-          onDelete={onComfirm}
-          onEdit={onEdit}
-          tableData={invoices as any}
-          variant={session?.user?.role}
-          onControl={onControl}
-          searchValue={searchText}
-          key={searchVal}
-        />
+        <>
+          {newInvoices?.length > 0 ? (
+            <Card extra="mx-auto w-full mb-16 rounded-2xl bg-white p-8 dark:bg-[#111c44] dark:text-white">
+              <h2 className="mb-4 text-2xl font-bold">Bekleyen İrsaliye</h2>
+
+              {newInvoices?.map((item, idx) => (
+                <Accordion key={idx} title={item?.company_name} index={idx}>
+                  <div className="mb-4">
+                    <div className="grid w-full grid-cols-6 gap-1 border-b font-bold dark:border-gray-900">
+                      <div>#</div>
+                      <div>Ürün</div>
+                      <div>Uygulama</div>
+                      <div>Standart</div>
+                      <div>Renk</div>
+                      <div>Miktar</div>
+                    </div>
+
+                    {item.Fault?.map((faultItem, idx) => (
+                      <div
+                        key={faultItem.id}
+                        className="grid w-full grid-cols-1"
+                      >
+                        <label className="flex items-center" key={faultItem.id}>
+                          <div className="grid w-full grid-cols-6 items-center gap-1 border-b py-2 text-sm font-bold text-navy-700 dark:border-gray-900 dark:text-white">
+                            <div>{idx + 1}</div>
+                            <div>{faultItem?.product}</div>
+                            <div>{faultItem?.application}</div>
+                            <div>{faultItem?.standard}</div>
+                            <div>{faultItem?.color}</div>
+                            <div>
+                              {faultItem?.shipmentQty || faultItem?.quantity}
+                            </div>
+                          </div>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                  <Button
+                    onClick={() => onSendNewInvoice(item)}
+                    extra="mt-4 max-w-fit px-4 h-[40px] mb-4"
+                    text="İRSALİYE TAMAMLA"
+                  />
+                </Accordion>
+              ))}
+            </Card>
+          ) : null}
+          <div className="p-4">
+            <InvoiceTable
+              onAdd={onAdd}
+              onDelete={onComfirm}
+              onEdit={onEdit}
+              tableData={invoices as any}
+              variant={session?.user?.role}
+              onControl={onControl}
+              searchValue={searchText}
+              key={searchVal}
+            />
+          </div>
+        </>
       )}
 
       <Popup show={isShowPopUp} extra="flex flex-col gap-3 py-6 px-8">

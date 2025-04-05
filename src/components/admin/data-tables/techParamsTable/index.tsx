@@ -8,6 +8,7 @@ import {
 import { FooterCell } from './footerCell';
 import { columns } from './column';
 import { formatDateTime } from 'utils';
+import TableEmpty from '../tableEmpty';
 
 type Student = {
   studentId: number;
@@ -90,26 +91,23 @@ const TechParamsTable = (props: {
         setData(updateFunc);
       },
       addRow: () => {
-        let val = {};
-        const rowKeys = filteredColumns.map((item: any) => {
+        let val: Record<string, unknown> = {};
+
+        filteredColumns.forEach((item: any) => {
           let defaultVal: string | unknown = '';
-          if (item.accessorKey !== undefined) {
-            if (item.accessorKey === 'Ort_Uretim_saat') {
-              defaultVal = formatDateTime(new Date())?.slice(11);
+
+          if (item.accessorKey) {
+            if (Object.keys(defaultTechParams).length > 0) {
+              const techValue = defaultTechParams[item.accessorKey];
+              if (techValue !== undefined) {
+                defaultVal = techValue;
+              }
             }
-            if (JSON.stringify(defaultTechParams) !== '{}') {
-              Object.entries(defaultTechParams).forEach(([key, value]) => {
-                if (
-                  key === item.accessorKey &&
-                  item.accessorKey !== 'Ort_Uretim_saat'
-                ) {
-                  defaultVal = value;
-                }
-              });
-            }
-            return (val[item.accessorKey] = defaultVal);
+
+            val[item.accessorKey] = defaultVal;
           }
         });
+
         onAddRow(val);
       },
       removeRow: (rowIndex: number) => {
@@ -140,7 +138,7 @@ const TechParamsTable = (props: {
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="min-w-[140px] cursor-pointer  border-b border-gray-400 px-1 text-start dark:border-white/30"
+                  className="min-w-fit cursor-pointer whitespace-nowrap break-keep  border-b border-gray-400 px-1 text-start dark:border-white/30"
                 >
                   {header.isPlaceholder
                     ? null
@@ -159,31 +157,24 @@ const TechParamsTable = (props: {
               key={row.id}
               className="border-b border-gray-100 hover:bg-lightPrimary dark:border-gray-900 dark:hover:bg-navy-700"
             >
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="min-w-[70px] p-1">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
+              {row.getVisibleCells().map((cell) => {
+                return (
+                  <td
+                    key={cell.id}
+                    className={`p-1 ${cell.getContext()?.column.id}`}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>
-
-        {data.length === 0 ? (
-          <tfoot>
-            <tr>
-              <th
-                className="py-8 font-normal opacity-40"
-                colSpan={table.getCenterLeafColumns().length}
-                align="center"
-              >
-                Henüz teknik parametreleri eklenmedi
-              </th>
-            </tr>
-          </tfoot>
-        ) : null}
       </table>
+      {data.length === 0 ? <TableEmpty /> : null}
+
       {status !== 'FINISHED' ? (
-        <div className="sticky left-0 mt-4 flex w-[120px] justify-center rounded-lg bg-blueSecondary px-3 py-2 text-center text-center text-sm font-bold text-white">
+        <div className="sticky left-0 mt-4 flex w-[120px] justify-center rounded-lg bg-blueSecondary px-3 py-2 text-center text-sm font-bold text-white">
           <FooterCell table={table} />
         </div>
       ) : null}

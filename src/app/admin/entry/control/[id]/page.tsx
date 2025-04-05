@@ -3,54 +3,72 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import {
-  getFaultById,
   addControl,
   updateFaultControl,
   addUnacceptable,
   updateUnacceptable,
   deleteUnacceptable,
   sendNotification,
+  getFaultByIdWithFilter,
 } from 'app/lib/apiRequest';
 import { useParams, useRouter } from 'next/navigation';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
 import EntryControlForm from 'components/forms/faultControl';
 import { useSession } from 'next-auth/react';
 import Card from 'components/card';
-import { log } from 'utils';
 import Popup from 'components/popup';
 import UnacceptForm from 'components/forms/unaccept';
 import { UnacceptInfo } from 'app/localTypes/table-types';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import NextLink from 'next/link';
+import { Fault } from 'app/localTypes/types';
+import { getResError } from 'utils/responseError';
+import { results } from 'utils';
 
 export default function EntryControl() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const queryParams = useParams();
   const [isLoading, setIsloading] = useState(false);
-  const [fault, setFault] = useState({} as any);
+  const [fault, setFault] = useState({} as Fault);
   const [faultcontrol, setFaultcontrol] = useState({} as any);
   const { data: session } = useSession();
   const [isShowPopUp, setIsShowPopUp] = useState(false);
   const [controlValues, setControlValues] = useState([]);
   const [unacceptable, setUnacceptable] = useState({} as UnacceptInfo);
-  const [unacceptableFormData, setUnacceptableFormData] = useState({});
   const [isSubmitControl, setIsSubmitControl] = useState(false);
   const [isSubmittingUnaccept, setIsSubmittingUnaccept] = useState(false);
 
   useEffect(() => {
     const getSingleFault = async () => {
-      setIsloading(true);
-      const { status, data } = await getFaultById(queryParams.id);
-      if (status === 200) {
+      try {
+        setIsloading(true);
+        const { data } = await getFaultByIdWithFilter({
+          id: queryParams.id,
+          filters: {
+            customer: true,
+            unacceptable: true,
+            faultControl: true,
+          },
+        });
+
         setFault(data);
-        setFaultcontrol(data?.faultControl ? data?.faultControl[0] : {});
-        setUnacceptable(data?.unacceptable ? data?.unacceptable[0] : {});
+        setFaultcontrol(
+          data?.faultControl.length > 0 ? data?.faultControl[0] : {},
+        );
+        setUnacceptable(
+          data?.unacceptable?.length > 0
+            ? data?.unacceptable?.find(
+                (item) => item.unacceptableStage === 'ENTRY',
+              )
+            : { unacceptableStage: 'ENTRY', createdBy: session?.user?.name },
+        );
         setIsloading(false);
-        return;
+      } catch (error) {
+        const message = getResError(error?.message);
+        toast.error(`${message}`);
+        setIsloading(false);
       }
-      setIsloading(true);
-      //TODO: handle error
     };
     if (queryParams.id) {
       getSingleFault();
@@ -67,78 +85,87 @@ export default function EntryControl() {
     const [values, isUpdate] = val;
     if (values.result !== 'ACCEPT' && !isSubmitControl) {
       setControlValues(val);
-      setUnacceptableFormData({
-        fault,
-        unacceptable: { ...unacceptable, createdBy: session?.user?.name },
-      });
       setIsShowPopUp(true);
       return;
     }
 
     //Handle unacceptable when accepted
     if (values.result === 'ACCEPT' && unacceptable?.id) {
-      const { status, data } = await deleteUnacceptable(unacceptable?.id);
-      if (status === 200) {
+      try {
+        await deleteUnacceptable(unacceptable?.id);
         toast.success('Uygunsuz kayıt güncelleme işlemi başarılı.');
+        setIsSubmitting(false);
+      } catch (error) {
+        const message = getResError(error?.message);
+        toast.error(`${message}`);
+        setIsSubmitting(false);
       }
     }
 
-    setIsSubmitting(true);
     if (isUpdate) {
-      const resData: any = await updateFaultControl({
-        ...values,
-        ...{ updatedBy: session?.user?.name },
-      });
+      try {
+        setIsSubmitting(true);
+        const { data } = await updateFaultControl({
+          ...values,
+          ...{ updatedBy: session?.user?.name },
+        });
 
-      const { status, response } = resData;
-      if (response?.error) {
-        const { message, detail } = response?.error;
-        toast.error('Hata oluştu!.' + message);
-        log(detail);
-        setIsSubmitting(false);
-        return;
-      }
+        //Notification trigger
+        const status = results?.find(
+          (item) => item.value === data.result,
+        )?.name;
 
-      if (status === 200) {
+        await sendNotification({
+          workflowId: 'fault-control',
+          data: {
+            link: `${window?.location.origin}/admin/entry/${data.faultId}`,
+            title: `Ürün Giriş Kontrol Güncelleme| ${status}`,
+            description: `${data?.Fault?.customer?.company_name} için ${data?.product} ürününün giriş kontrolu yapıldı.`,
+          },
+        });
+
         toast.success('Ürün kontrol güncelleme işlemi başarılı.');
-        router.push('/admin/entry');
+        router.push(`/admin/entry/${fault?.id}`);
         setIsSubmitting(false);
-        return;
+      } catch (error) {
+        const message = getResError(error?.message);
+        toast.error(`${message}`);
+        setIsSubmitting(false);
       }
+      return;
     }
 
     // add new entry control
-    const resControl: any = await addControl({
-      ...values,
-      ...{ createdBy: session?.user?.name },
-    });
-    const { status, response, data } = resControl;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Hata oluştu!.' + message);
-      log(detail);
-      setIsSubmitting(false);
-      return;
-    }
-    if (status === 200) {
-      toast.success('Ürün girişi kontrol işlemi başarılı.');
-      setIsSubmitting(false);
+    try {
+      setIsSubmitting(true);
+      const { data } = await addControl({
+        ...values,
+        ...{ createdBy: session?.user?.name },
+      });
+
       //Notification trigger
       if (data.result !== 'REJECT') {
-        try {
-          await sendNotification({
-            workflowId: 'fault-control',
-            data: {
-              link: `${window?.location.origin}/admin/entry/${data.faultId}`,
-            },
-          });
-        } catch (err) {
-          console.log(err);
-        }
+        const status = results?.find(
+          (item) => item.value === data.result,
+        )?.name;
+
+        await sendNotification({
+          workflowId: 'fault-control',
+          data: {
+            link: `${window?.location.origin}/admin/entry/${data.faultId}`,
+            title: `Ürün Giriş Kontrolü | ${status}`,
+            description: `${data?.Fault?.customer?.company_name} için ${data?.Fault?.product} ürününün giriş kontrolu yapıldı.`,
+          },
+        });
       }
 
-      router.push('/admin/entry');
-      return;
+      toast.success('Ürün girişi kontrol işlemi başarılı.');
+      router.push(`/admin/entry/${data.faultId}`);
+      setIsSubmitting(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
     }
   };
 
@@ -146,39 +173,40 @@ export default function EntryControl() {
     setIsSubmitControl(false);
     setIsSubmittingUnaccept(true);
 
-    //handle Update
-    if (unacceptable?.id) {
-      const { status, data } = await updateUnacceptable({
-        ...val,
-        faultId: fault.id,
-        id: unacceptable?.id,
-        updatedBy: session?.user?.name,
-      });
+    try {
+      //handle Update
+      if (unacceptable?.id) {
+        const { data } = await updateUnacceptable({
+          ...val,
+          faultId: fault.id,
+          updatedBy: session?.user?.name,
+        });
 
-      if (status === 200) {
+        setUnacceptable(data);
         setIsShowPopUp(false);
-        toast.success('Uygunsuz kayıt güncelleme işlemi başarılı.');
         setIsSubmitControl(true);
         setIsSubmittingUnaccept(false);
+        toast.success('Uygunsuz kayıt güncelleme işlemi başarılı.');
+        return;
       }
 
-      return;
-    }
+      //handle new Unacceptable
+      const { data } = await addUnacceptable({
+        ...val,
+        faultId: fault.id,
+      });
 
-    //handle new Unacceptable
-    const { status, data } = await addUnacceptable({
-      ...val,
-      faultId: fault.id,
-      createdBy: session?.user?.name,
-    });
-    if (status === 200) {
+      setUnacceptable(data);
       setIsShowPopUp(false);
+      setIsSubmitControl(true);
+      setIsSubmittingUnaccept(false);
       toast.success('Uygunsuz kayıt işlemi başarılı.');
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
       setIsSubmitControl(true);
       setIsSubmittingUnaccept(false);
     }
-
-    return;
   };
 
   const handleClose = () => {
@@ -190,13 +218,13 @@ export default function EntryControl() {
     <>
       <div className="mx-auto flex max-w-[800px] justify-end">
         <NextLink
-          href="/admin/entry"
+          href={`/admin/entry/${fault?.id}`}
           className="mb-3 flex w-fit items-center gap-2 text-sm dark:text-white"
         >
           <span>
             <MdOutlineArrowBack />
           </span>
-          Ürün Girişe
+          Ürün Detay
         </NextLink>
       </div>
 
@@ -215,10 +243,11 @@ export default function EntryControl() {
 
         <Popup
           show={isShowPopUp}
-          extra="flex flex-col gap-3 !top-[50%] py-6 px-8 !w-[90%] md:!w-[600px] !rounded-sm"
+          extra="flex flex-col gap-3 !top-[50%] my-6 py-6 px-8 !w-[90%] md:!w-[760px] !rounded-sm max-h-[96vh] print:max-h-auto overflow-y-auto"
         >
           <UnacceptForm
-            formData={unacceptableFormData as any}
+            fault={fault}
+            formData={unacceptable as any}
             handleClose={handleClose}
             onSaveUnacceptable={(val) => onSaveUnacceptable(val)}
             isSubmittingUnaccept={isSubmittingUnaccept}

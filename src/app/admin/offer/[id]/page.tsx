@@ -5,12 +5,11 @@ import DetailHeader from 'components/detailHeader';
 import { updateOffer, getOfferById } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import { useParams } from 'next/navigation';
-import Button from 'components/button/button';
+import Button from 'components/button';
 import { MdOutlinePayment, MdPrint } from 'react-icons/md';
 import { OfferObj } from 'app/localTypes/table-types';
 import { formatCurrency, log } from 'utils';
-// import OfferTemplete from 'emails/offer';
-// import ReactDOMServer from 'react-dom/server';
+import { getResError } from 'utils/responseError';
 
 export default function Create() {
   const [offerData, setOfferData] = useState({} as OfferObj);
@@ -19,9 +18,9 @@ export default function Create() {
   const [isLoading, setIsLoading] = useState(false);
 
   const getSingleOffer = async (id) => {
-    setIsLoading(true);
-    const { status, data } = await getOfferById(id);
-    if (status === 200) {
+    try {
+      setIsLoading(true);
+      const { data } = await getOfferById(id);
       const offerProduct = data?.product.map((item) => {
         return {
           ...item,
@@ -37,7 +36,10 @@ export default function Create() {
         totalAmount: formatCurrency(parseFloat(data.totalAmount)),
       });
       setIsLoading(false);
-      return;
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsLoading(false);
     }
   };
 
@@ -52,22 +54,21 @@ export default function Create() {
   };
 
   const onOfferComplete = async () => {
-    setIsSubmitting(true);
-    const updateResponse: any = await updateOffer({
-      ...offerData,
-      status: 'SENT',
-    });
-    const { status, data, response } = updateResponse;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Hata oluştu!.' + message);
-      log(detail);
+    try {
+      setIsSubmitting(true);
+      const { data } = await updateOffer({
+        ...offerData,
+        status: 'SENT',
+      });
+
+      getSingleOffer(data?.id);
       setIsSubmitting(false);
-      return;
+      toast.success('Teklif gönderme işlemi başarılı');
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
     }
-    toast.success('Teklif gönderme işlemi başarılı');
-    getSingleOffer(data?.id);
-    return;
   };
 
   let detailData = {
@@ -92,15 +93,8 @@ export default function Create() {
         <DetailHeader {...detailData} />
       </div>
 
-      <div className="mx-auto flex w-full max-w-[1200px] flex-col justify-between gap-4  lg:flex-row">
-        <div className="page-break min-h-[800px]  w-full  bg-white px-10 lg:w-[700px] lg:max-w-[700px]  print:absolute print:top-0 print:z-[99999] print:min-h-screen print:w-full print:pl-0 print:pr-8">
-          {/* <iframe
-              width="100%"
-              height="1000px"
-              srcDoc={ReactDOMServer.renderToString(
-                <OfferTemplete offer={offerData} />,
-              )}
-            ></iframe> */}
+      <div className="mx-auto flex w-full max-w-[1200px] flex-col justify-between gap-4 lg:flex-row">
+        <div className="mx-auto min-h-[800px]  w-full  bg-white lg:w-[700px] lg:max-w-[700px]  print:absolute print:top-0 print:z-[99999] print:min-h-screen print:w-full print:pl-0 print:pr-8">
           <OfferDoc offer={offerData} />
         </div>
         <div className="flex w-full flex-col gap-4 bg-white px-4 py-8 xl:w-1/3">

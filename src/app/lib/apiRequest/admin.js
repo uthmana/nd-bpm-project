@@ -1,24 +1,18 @@
-import { Prisma } from '@prisma/client';
 import { fetchAPI } from './request';
-import { strict } from 'assert';
-import axios from 'axios';
-import { log } from '../../../utils/log';
-import { getSession } from 'next-auth/react';
-//import { Session } from 'inspector';
-//Users
+
 export async function getUsers() {
-  return fetchAPI('user');
+  return fetchAPI('users');
 }
 export async function getUserById(id) {
-  return fetchAPI(`user/${id}`);
+  return fetchAPI(`users/${id}`);
 }
 
 export async function updateUser(payload) {
-  return fetchAPI(`user/${payload.id}`, 'put', payload);
+  return fetchAPI(`users/${payload.id}`, 'put', payload);
 }
 
 export async function deleteUser(id) {
-  return fetchAPI(`user/${id}`, 'delete');
+  return fetchAPI(`users/${id}`, 'delete');
 }
 
 //Stocks
@@ -55,6 +49,10 @@ export async function getCustomers() {
   return fetchAPI('customer');
 }
 
+export async function getCustomersWithFilter(payload) {
+  return fetchAPI('customer', 'post', payload);
+}
+
 export async function getCustomersWithStock() {
   return fetchAPI('customer?stock=true');
 }
@@ -89,6 +87,10 @@ export async function getFaultById(id) {
   return fetchAPI(`entry/${id}`);
 }
 
+export async function getFaultByIdWithFilter(payload) {
+  return fetchAPI(`entry/${payload.id}`, 'post', payload.filters);
+}
+
 export async function getHistoryById(id) {
   return fetchAPI(`liste/${id}`);
 }
@@ -101,16 +103,16 @@ export async function deleteFault(id) {
 }
 
 //Notification
-export async function getNotifications(payload) {
-  return fetchAPI('notification', 'get', payload);
+export async function getNotifications(query) {
+  return fetchAPI(`notifications${query}`, 'get');
 }
 
-export async function updateNotificStatus(payload) {
-  return fetchAPI(`notification`, 'post', payload);
+export async function updateNotification(payload) {
+  return fetchAPI(`notifications`, 'put', payload);
 }
 
-export async function markAllNotifAsRead(payload) {
-  return fetchAPI(`notification`, 'put', payload);
+export async function sendNotification(payload) {
+  return fetchAPI(`notifications`, 'post', payload);
 }
 
 // Add Entry Form Control
@@ -123,6 +125,10 @@ export async function getEntryControlByfaultId(id) {
 }
 export async function updateFaultControl(payload) {
   return fetchAPI(`entryControl/${payload.id}`, 'put', payload);
+}
+
+export async function getEntryWithFilters(payload) {
+  return fetchAPI('entry', 'post', payload);
 }
 
 // Process
@@ -260,7 +266,7 @@ export async function getFaultSettings() {
 }
 
 // Final Control
-export async function addProcessControl(payload) {
+export async function addFinalControl(payload) {
   return fetchAPI('finalControl', 'put', payload);
 }
 
@@ -361,9 +367,6 @@ export async function getProductList() {
   return fetchAPI(`liste`, 'get');
 }
 
-export async function sendNotification(payload) {
-  return fetchAPI(`notifications`, 'post', payload);
-}
 export async function getBarcodeBase64(payload) {
   return fetchAPI(`barcode`, 'post', payload);
 }

@@ -1,8 +1,7 @@
-import { Prisma } from '@prisma/client';
-import NextAuth from 'next-auth/next';
 import { NextResponse } from 'next/server';
 import { env } from 'process';
-import ApiClient, { AccessTokenResponse, ClientInfo } from 'utils/logorequests';
+import ApiClient, { ClientInfo } from 'app/lib/logoRequest/request';
+import { extractPrismaErrorMessage } from 'utils/prismaError';
 
 export async function GET(req: Request) {
   try {
@@ -19,14 +18,14 @@ export async function GET(req: Request) {
     const sales = await client.get('salesorders');
     return NextResponse.json(sales);
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }

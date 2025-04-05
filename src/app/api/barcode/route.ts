@@ -29,8 +29,6 @@ export async function POST(req: NextRequest) {
       });
     });
     const invoiceBarCode = pngBuffer.toString('base64');
-
-    console.log(invoiceBarCode);
     return NextResponse.json({ code: invoiceBarCode }, { status: 200 });
   } catch (e) {
     return NextResponse.json(e, { status: 500 });

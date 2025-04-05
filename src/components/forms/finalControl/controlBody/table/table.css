@@ -1,9 +1,9 @@
 .test--table__wrapper {
-  @apply overflow-x-auto;
+  @apply overflow-x-auto print:overflow-visible;
 }
 
 .test-table tbody {
-  @apply max-w-[800px];
+  @apply w-full max-w-[1024px] print:w-full print:overflow-visible;
 }
 
 .test-table thead tr td,

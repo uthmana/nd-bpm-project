@@ -4,32 +4,56 @@ import EntryTable from 'components/admin/data-tables/entryTable';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { log } from 'utils';
 import { useEffect, useState } from 'react';
-import { deleteFault, getFaults } from 'app/lib/apiRequest';
+import { deleteFault, getEntryWithFilters } from 'app/lib/apiRequest';
 import { TableSkeleton } from 'components/skeleton';
 import { toast } from 'react-toastify';
 import Popup from 'components/popup';
-import Button from 'components/button/button';
+import Button from 'components/button';
 import { useSession } from 'next-auth/react';
+import { getResError } from 'utils/responseError';
 
 const Entry = () => {
   const router = useRouter();
+  const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const searchVal = searchParams.get('q');
   const [faults, setFaults] = useState([]);
   const [isShowPopUp, setIsShowPopUp] = useState(false);
   const [faultId, setFaultId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { data: session } = useSession();
-  const searchParams = useSearchParams();
-  const searchVal = searchParams.get('q');
   const [searchText, setSearchText] = useState(searchVal || '');
 
   const getAllFaults = async () => {
-    setIsLoading(true);
-    const { status, data } = await getFaults();
-    if (status === 200) {
+    try {
+      setIsLoading(true);
+      const { data } = await getEntryWithFilters({
+        where: {
+          status: {
+            in: [
+              'GIRIS_KONTROL_BEKLENIYOR',
+              'GIRIS_KONTROL_RET',
+              'PROSES_BEKLENIYOR',
+              'PROSES_ISLENIYOR',
+              'FINAL_KONTROL_BEKLENIYOR',
+              'IRSALIYE_KESIMI_BEKLENIYOR',
+            ],
+          },
+        },
+        include: {
+          customer: true,
+        },
+        orderBy: {
+          updatedAt: 'desc',
+        },
+      });
       setFaults(data);
+      setIsLoading(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -39,14 +63,6 @@ const Entry = () => {
   useEffect(() => {
     setSearchText(searchVal || '');
   }, [searchVal]);
-
-  const onAdd = () => {
-    router.push('/admin/entry/create');
-  };
-
-  const onEdit = (val) => {
-    router.push(`/admin/entry/create/${val}`);
-  };
 
   const onControl = (val) => {
     router.push(`/admin/entry/${val}`);
@@ -90,14 +106,13 @@ const Entry = () => {
         <TableSkeleton />
       ) : (
         <EntryTable
-          onAdd={onAdd}
           onDelete={onComfirm}
-          onEdit={onEdit}
           tableData={faults as any}
           variant={session?.user?.role}
           onControl={onControl}
           searchValue={searchText}
           key={searchVal}
+          addLink={'/admin/entry/create'}
         />
       )}
 

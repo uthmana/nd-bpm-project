@@ -24,6 +24,7 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table';
+import TableEmpty from './tableEmpty';
 
 function ProcessTable({
   tableData,
@@ -44,12 +45,6 @@ function ProcessTable({
   const columns = useMemo(() => {
     let col: any;
 
-    const entryStatus = {
-      PENDING: 'Beklemede',
-      PROCESSING: "Proses'te",
-      FINISHED: 'Bitti',
-    };
-
     const statusbgColor = (status: string) => {
       if (status === 'FINISHED') {
         return (
@@ -65,6 +60,19 @@ function ProcessTable({
     };
 
     col = [
+      columnHelper.accessor('id', {
+        id: 'id',
+        header: () => (
+          <p className="whitespace-nowrap  break-keep text-sm font-bold text-gray-600 dark:text-white">
+            #{' '}
+          </p>
+        ),
+        cell: ({ row }) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {(row.index + 1).toString()}
+          </p>
+        ),
+      }),
       columnHelper.accessor('id', {
         id: 'id',
         header: () => (
@@ -90,49 +98,35 @@ function ProcessTable({
           </div>
         ),
       }),
-      columnHelper.accessor('id', {
-        id: 'id',
+      columnHelper.accessor('status', {
+        id: 'status',
         header: () => (
-          <p className="whitespace-nowrap  break-keep text-sm font-bold text-gray-600 dark:text-white">
-            SİRA NO.
+          <p className="whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
+            DURUM
           </p>
         ),
-        cell: ({ row }) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {(row.index + 1).toString()}
-          </p>
+        cell: (info: any) => (
+          <div className="flex min-w-[100px] items-center">
+            {statusbgColor(info.getValue())}
+            <p className="whitespace-nowrap  break-keep   text-xs font-bold text-blue-700 dark:text-white">
+              {info.getValue()}
+            </p>
+          </div>
         ),
       }),
       columnHelper.accessor('product_barcode', {
         id: 'product_barcode',
         header: () => (
-          <p className="min-w-[150px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-fit text-sm font-bold uppercase text-gray-600 dark:text-white">
             BARKODU
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p className="min-w-fit whitespace-nowrap break-keep text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
       }),
-      // columnHelper.accessor('faultId', {
-      //   id: 'faultId',
-      //   header: () => (
-      //     <p className="min-w-[150px] text-sm font-bold text-gray-600 dark:text-white">
-      //       BARKOD
-      //     </p>
-      //   ),
-      //   cell: (info: any) => (
-      //     <p className="text-sm font-bold text-navy-700 dark:text-white">
-      //       <Barcode
-      //         className="h-full w-full"
-      //         value={info.getValue()}
-      //         options={{ format: 'code128' }}
-      //       />
-      //     </p>
-      //   ),
-      // }),
       columnHelper.accessor('productCode', {
         id: 'productCode',
         header: () => (
@@ -142,22 +136,6 @@ function ProcessTable({
         ),
         cell: (info: any) => (
           <p className="min-w-[150px]  whitespace-nowrap break-keep text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
-          </p>
-        ),
-      }),
-      columnHelper.accessor('customerName', {
-        id: 'customerName',
-        header: () => (
-          <p className="min-w-[200px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Müşteri
-          </p>
-        ),
-        cell: (info: any) => (
-          <p
-            title={info.getValue()}
-            className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white"
-          >
             {info.getValue()}
           </p>
         ),
@@ -175,7 +153,6 @@ function ProcessTable({
           </p>
         ),
       }),
-
       columnHelper.accessor('quantity', {
         id: 'quantity',
         header: () => (
@@ -189,7 +166,6 @@ function ProcessTable({
           </p>
         ),
       }),
-
       columnHelper.accessor('application', {
         id: 'application',
         header: () => (
@@ -246,59 +222,6 @@ function ProcessTable({
           >
             {info.getValue()}
           </p>
-        ),
-      }),
-      // columnHelper.accessor('technicalDrawingAttachment', {
-      //   id: 'technicalDrawingAttachment',
-      //   header: () => (
-      //     <p className="min-w-[110px]  whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
-      //       İLGİLİ DOKÜMAN
-      //     </p>
-      //   ),
-      //   cell: (info: any) => (
-      //     <p className="text-sm font-bold text-navy-700 dark:text-white">
-      //       {info.getValue() ? <FileViewer file={info.getValue()} /> : null}
-      //     </p>
-      //   ),
-      // }),
-      columnHelper.accessor('newtechparam', {
-        id: 'newtechparam',
-        header: () => (
-          <p className="min-w-[110px]  whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
-            İLGİLİ DOKÜMAN
-          </p>
-        ),
-        cell: (info: any) => (
-          <div className="flex">
-            {info
-              .getValue()
-              .toString()
-              .split(';')
-              .map((url, index) => (
-                <span
-                  key={index}
-                  className="text-sm font-bold text-navy-700 dark:text-white"
-                >
-                  {info.getValue() ? <FileViewer file={url} /> : null}
-                </span>
-              ))}
-          </div>
-        ),
-      }),
-      columnHelper.accessor('status', {
-        id: 'status',
-        header: () => (
-          <p className="whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
-            DURUM
-          </p>
-        ),
-        cell: (info: any) => (
-          <div className="flex min-w-[100px] items-center">
-            {statusbgColor(info.getValue())}
-            <p className="whitespace-nowrap  break-keep  text-sm font-bold text-navy-700 dark:text-white">
-              {entryStatus[info.getValue()]}
-            </p>
-          </div>
         ),
       }),
     ];
@@ -389,7 +312,7 @@ function ProcessTable({
                     >
                       {row.getVisibleCells().map((cell, idx) => {
                         return (
-                          <td key={cell.id + idx} className="p-2">
+                          <td key={cell.id + idx} className="py-2 pr-2">
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext(),
@@ -402,6 +325,7 @@ function ProcessTable({
                 })}
             </tbody>
           </table>
+          {data.length === 0 ? <TableEmpty /> : null}
           <TablePagination table={table} />
         </div>
       </Card>

@@ -1,14 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  formatDateTime,
-  removeMillisecondsAndUTC,
-  convertToISO8601,
-} from 'utils';
+import { formatDateTime, convertToISO8601 } from 'utils';
 import TextArea from 'components/fields/textArea';
-import Button from 'components/button/button';
-import Select from 'components/select/page';
+import Button from 'components/button';
+import Select from 'components/select';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import NextLink from 'next/link';
 import InputField from 'components/fields/InputField';

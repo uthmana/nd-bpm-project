@@ -3,7 +3,7 @@ import InputField from 'components/fields/InputField';
 import Default from 'components/auth/variants/DefaultAuthLayout';
 import { useRouter } from 'next/navigation';
 import NextLink from 'next/link';
-import Button from 'components/button/button';
+import Button from 'components/button';
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import nd_logo from '/public/img/auth/nd_logo.webp';

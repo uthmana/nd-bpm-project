@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
 
 const MachineList = ({
@@ -21,7 +20,7 @@ const MachineList = ({
   }
 
   return (
-    <div className="grid max-h-[480px] grid-cols-1 items-start gap-4 overflow-y-auto px-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    <div className="grid min-h-[480px] grid-cols-1 items-start gap-4 overflow-y-auto px-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {machines.map((item, idx) => {
         return (
           <div

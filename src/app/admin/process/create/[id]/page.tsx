@@ -1,260 +1,300 @@
 'use client';
 
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import {
-  getProcessById,
-  addProcess,
-  updateProcess,
-  getMachines,
-  sendNotification,
-} from 'app/lib/apiRequest';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { DetailSkeleton } from 'components/skeleton';
 import Card from 'components/card';
 import TechParamsTable from 'components/admin/data-tables/techParamsTable';
+import Button from 'components/button';
+import Popup from 'components/popup';
+import { useSession } from 'next-auth/react';
+import Select from 'components/select';
+import DetailHeader from 'components/detailHeader';
+import FaultInfo from 'components/faultInfo';
+import { getResError } from 'utils/responseError';
+import { MdVolumeUp } from 'react-icons/md';
 import {
   addTechParams,
   updateTechParams,
   deleteTechParams,
+  getProcessById,
+  updateProcess,
+  getMachines,
+  sendNotification,
+  getFaultById,
+  addProcess,
 } from 'app/lib/apiRequest';
-import Button from 'components/button/button';
-import Popup from 'components/popup';
-import { formatDateTime, log } from 'utils';
-import { useSession } from 'next-auth/react';
-import Select from 'components/select/page';
-import DetailHeader from 'components/detailHeader';
+import {
+  formatDateTime,
+  getProcesstimeByFrequency,
+  log,
+  useAudioSound,
+} from 'utils';
 
 export default function EntryControl() {
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const queryParams = useParams();
+  const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const newprocess = searchParams.get('newprocess');
+
   const [isLoading, setIsloading] = useState(false);
-  const [techParams, setTechParams] = useState([]);
-  const [process, setProcess] = useState({} as any);
+  const [startTime, setStartTime] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTechParams, setIsTechParams] = useState(false);
-  const [machineParams, setMachineParams] = useState([]);
   const [isShowPopUp, setIsShowPopUp] = useState(false);
   const [isShowMachinePopUp, setIsShowMachinePopUp] = useState(false);
-  const [machines, setMachines] = useState([]);
-  const [values, setValues] = useState({} as any);
-  const { data: session } = useSession();
   const [isFrequencyPopUp, setIsFrequencyPopUp] = useState(false);
+
+  const [machines, setMachines] = useState([]);
+  const [techParams, setTechParams] = useState([]);
+  const [machineParams, setMachineParams] = useState([]);
+  const [techAttachment, setTechAttachment] = useState([] as any);
+
+  const [fault, setFault] = useState({} as any);
+  const [values, setValues] = useState({} as any);
+  const [process, setProcess] = useState({} as any);
   const [defaultTechParams, setDefaultTechParams] = useState({});
+  const [processMachine, setProcessMachine] = useState({} as any);
 
-  const productInfo = [
-    'faultId',
-    'customerName',
-    'product',
-    'quantity',
-    'application',
-    'standard',
-    'color',
-    'machineName',
-  ];
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const infoTranslate = {
-    customerName: 'Müşteri',
-    product: 'Ürün adı',
-    quantity: 'Miktar',
-    application: 'Uygulama',
-    standard: 'Standart',
-    color: 'Renk',
-    machineName: 'Makine',
-    faultId: 'Takıp Kodu',
-  };
-
-  const detailData = {
-    title: 'Proses Detayi',
-    seeAllLink: '/admin/process',
-    seeAllText: 'Tüm Proses',
-  };
+  const { isPlaying, playSound, stopSound } = useAudioSound(
+    '/audio/intrusive-alert.mp3',
+  );
 
   const getSingleProcess = async () => {
-    setIsloading(true);
-    const { status, data } = await getProcessById(queryParams.id);
-    if (status === 200) {
+    try {
+      setIsloading(true);
+      const { data } = await getProcessById(queryParams.id);
+      const { Fault, machine, technicalParams } = data;
+      setFault({ customerName: Fault?.customer?.company_name, ...Fault });
       setProcess(data);
-      setTechParams(data?.technicalParams);
-      setMachineParams(data.machineParams.map((item) => item.param_name));
-      setDefaultTechParams(data?.defaultTechParam || {});
+      setTechParams(technicalParams);
+      setProcessMachine(machine?.[0]);
+      setDefaultTechParams(Fault?.defaultTechParameter[0] || {});
+      setMachineParams(
+        machine[0]?.machineParams?.map((item) => item.param_name),
+      );
+
+      setTechAttachment([
+        data?.technicalDrawingAttachment,
+        Fault?.technicalDrawingAttachment,
+        Fault.faultControl?.[0].image,
+      ]);
       setIsloading(false);
-      return;
+      log(data);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsloading(false);
     }
-    setIsloading(false);
-    //TODO: handle error
+  };
+  const getSingleFault = async (id) => {
+    try {
+      setIsloading(true);
+      const { data } = await getFaultById(id);
+      setFault({ customerName: data?.customer?.company_name, ...data });
+      setIsloading(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsloading(false);
+    }
   };
 
   useEffect(() => {
-    if (queryParams.id) {
+    if (queryParams.id && newprocess === 'true') {
+      getSingleFault(queryParams.id);
+    } else {
       getSingleProcess();
     }
-  }, [queryParams?.id]);
+  }, [queryParams?.id, newprocess]);
 
-  useEffect(() => {
-    if (process && (!process.machineName || !process.frequency)) {
-      return;
-    }
-    const frequencyDimension = parseInt(process.frequency.split(':')[1]);
-    if (!frequencyDimension) {
-      return;
-    }
-    const intervalId = setInterval(async () => {
-      try {
-        await sendNotification({
-          workflowId: 'process-frequency',
-          data: {
-            link: `${window?.location.origin}/process/create/${process.id}`,
-          },
-        });
-      } catch (err) {
-        console.log(err);
-      }
-    }, frequencyDimension * 60000);
-
-    () => {
-      clearInterval(intervalId);
-    };
-  }, [process]);
-
-  const onUpdateData = async (id, val) => {
-    if (!id) return;
-    setIsTechParams(true);
-    const resData: any = await updateTechParams(val);
-    const { status, data, response } = resData;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Ürün güncelleme başarısız.' + message);
-      log(detail);
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (status === 200) {
-      setTechParams(data);
-      setIsTechParams(false);
-      return;
+  // Handle requency Notifictaion
+  const sendNotificationNow = async () => {
+    try {
+      await sendNotification({
+        workflowId: 'process-frequency',
+        data: {
+          link: `${window?.location.origin}/process/create/${process.id}`,
+          title: 'Proses Frekansı Eklenme',
+          description: `${fault?.product} ürünün Proses Frekansı eklenmesi hatırlanmaktadır.`,
+          userId: session?.user?.id,
+        },
+      });
+      playSound();
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      clearInterval(intervalRef.current!);
     }
   };
+  const clearNotificationInterval = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+  useEffect(() => {
+    if (!startTime || !process.frequency || process.status === 'FINISHED') {
+      clearNotificationInterval();
+      return;
+    }
+
+    const intervalTime = process.frequency * 60000;
+    intervalRef.current = setInterval(sendNotificationNow, intervalTime);
+    return () => {
+      clearNotificationInterval();
+    };
+  }, [startTime, process.frequency]);
 
   const onAddRow = async (val) => {
     if (!process?.machineId) {
-      const { status, data } = await getMachines();
-      if (status === 200) {
-        setMachines(data);
-        setIsShowMachinePopUp(true);
-        return;
-      }
-    }
-
-    setIsTechParams(true);
-    const resData: any = await addTechParams({
-      ...val,
-      processId: queryParams.id,
-      machineId: process.machineId,
-    });
-
-    const { status, data, response } = resData;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Parametre ekleme işlemi başarısız.' + message);
-      log(detail);
-      setIsSubmitting(false);
       return;
     }
+    try {
+      setIsTechParams(true);
+      const Ort_Uretim_saat = getProcesstimeByFrequency(
+        techParams?.at(-1)?.Ort_Uretim_saat,
+        process.frequency,
+      );
 
-    if (status === 200) {
+      const { data } = await addTechParams({
+        ...val,
+        Ort_Uretim_saat,
+        processId: queryParams.id,
+        machineId: process.machineId,
+      });
+
       setTechParams(data);
       setIsTechParams(false);
-      return;
-    }
-  };
-  const onRemoveRow = async (val) => {
-    const resData: any = await deleteTechParams(val);
-    const { status, data, response } = resData;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Parametre silme işlemi başarısız.' + message);
-      log(detail);
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (status === 200) {
-      setTechParams(data);
-      return;
-    }
-  };
-
-  const onFinish = async () => {
-    const { id, faultId } = process;
-    if (!id || !faultId) return;
-
-    setIsSubmitting(true);
-    const resData: any = await updateProcess({
-      id,
-      faultId,
-      status: 'FINISHED',
-      updatedBy: session?.user?.name,
-    });
-    const { status, response } = resData;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Proses güncelleme işlemi başarısız.' + message);
-      log(detail);
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (status === 200) {
-      await getSingleProcess();
-      setIsShowPopUp(false);
-      try {
-        await sendNotification({
-          workflowId: 'process-completion',
-          data: {
-            link: `${window?.location.origin}/admin/process/${id}`,
-          },
-        });
-      } catch (err) {
-        console.log(err);
+      if (!startTime) {
+        setStartTime(true);
       }
-      router.push(`/admin/process/${process.id}`);
-      return;
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsTechParams(false);
     }
   };
-
-  const onAddMachine = async () => {
-    if (!values?.machineId) return;
-    setIsSubmitting(true);
-    const { status } = await updateProcess({
-      id: process.id,
-      faultId: process.faultId,
-      ...values,
-      createdBy: session?.user?.name,
-    });
-    if (status === 200) {
-      await getSingleProcess();
-      toast.success('Makine ekleme işlemi başarılı.');
-      setIsShowMachinePopUp(false);
+  const onUpdateData = async (id, val) => {
+    if (!id) return;
+    try {
+      setIsTechParams(true);
+      const { data } = await updateTechParams({
+        ...val,
+        processId: queryParams.id,
+        machineId: process.machineId,
+      });
+      setTechParams(data);
+      setIsTechParams(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsTechParams(false);
+    }
+  };
+  const onRemoveRow = async (id) => {
+    try {
+      setIsSubmitting(true);
+      const { data } = await deleteTechParams(id);
+      setTechParams(data);
       setIsSubmitting(false);
-      return;
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
     }
-    toast.error('Bir hata oluştu, tekrar deneyin !');
-    return;
   };
-
-  const handleValues = (event) => {
-    setValues(JSON.parse(event.target?.value));
-  };
-
-  const handleOnFinish = () => {
-    if (process?.frequency === 'Yazılsın' && techParams.length === 0) {
+  const onFinishConfirm = () => {
+    if (process?.frequency && techParams.length === 0) {
       setIsFrequencyPopUp(true);
       return;
     }
-
     setIsShowPopUp(true);
+  };
+  const onFinish = async () => {
+    const { id, faultId } = process;
+    if (!id || !faultId) return;
+    try {
+      setIsSubmitting(true);
+      clearNotificationInterval();
+
+      await updateProcess({
+        id,
+        faultId,
+        status: 'FINISHED',
+        updatedBy: session?.user?.name,
+      });
+
+      await sendNotification({
+        workflowId: 'process-completion',
+        data: {
+          link: `${window?.location.origin}/admin/invoice`,
+          title: 'Proses Tamamlanma',
+          description: `${fault?.customerName} için ${fault?.product} ürününün prosesi tamamlandı`,
+        },
+      });
+
+      setIsShowPopUp(false);
+      setIsSubmitting(false);
+      router.push(`/admin/entry/${faultId}`);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
+      setIsShowPopUp(false);
+    }
+  };
+
+  const handleFinalControl = () => {
+    router.push(`/admin/process/control/${fault?.id}`);
+  };
+
+  // Handle new Process Machine
+  const handleMachinePopup = async () => {
+    try {
+      const { data } = await getMachines();
+      setMachines(data);
+      setIsShowMachinePopUp(true);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsShowMachinePopUp(false);
+    }
+  };
+  const handleValues = (event) => {
+    setValues(JSON.parse(event.target?.value));
+  };
+  const onAddMachine = async () => {
+    const frequency = fault?.faultControl?.[0].frequencyDimension;
+    const { machineName, machineId } = values;
+    const val = {
+      frequency,
+      machineName,
+      machineId,
+      faultId: fault.id,
+      createdBy: session?.user?.name,
+    };
+    try {
+      setIsSubmitting(true);
+      const { data } = await addProcess(val);
+      router.push(`/admin/process/create/${data.id}`);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsShowMachinePopUp(false);
+    }
+  };
+
+  const detailData = {
+    title: 'Detay',
+    seeAllLink: '/admin/process',
+    seeAllText: 'Tüm Proses',
+    actionText: 'ÜRÜN DETAY',
+    actionLink: `/admin/entry/${fault?.id}`,
   };
 
   return (
@@ -266,40 +306,72 @@ export default function EntryControl() {
           <DetailHeader {...detailData} />
           <Card extra="w-full px-4 pt-4 pb-8">
             <h2 className="my-5 text-2xl font-bold">Ürün Bilgileri</h2>
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-              {Object.entries(process).map(([key, value], idx) => {
-                if (productInfo.includes(key)) {
-                  return (
-                    <div className="" key={idx}>
-                      <h2 className="font-bold capitalize italic">
-                        {infoTranslate[key]}
-                      </h2>
-                      <> {value as ReactNode}</>
-                    </div>
-                  );
-                }
-              })}
-            </div>
+            <FaultInfo
+              fault={fault}
+              techAttachments={techAttachment}
+              frequency={process.frequency ? process.frequency : 'Yazılmasın'}
+            />
           </Card>
           <Card extra="w-full px-4 pt-4 pb-8">
             <div className="w-full">
-              <div className="my-5 flex justify-between">
-                <h2 className="text-2xl font-bold">Frekans Bilgileri</h2>
-                {process?.status !== 'FINISHED' ? (
-                  <Button
-                    extra="max-w-fit px-4 h-[40px]"
-                    text="PROSESİ TAMAMLA"
-                    onClick={handleOnFinish}
-                  />
-                ) : null}
+              <div className="my-5 flex w-full justify-between">
+                <h2 className="text-2xl font-bold">
+                  Frekans Bilgileri
+                  {processMachine?.machine_Name ? (
+                    <span>
+                      {' '}
+                      |{' '}
+                      <span className="text-brand-500">
+                        {processMachine?.machine_Name}
+                      </span>
+                    </span>
+                  ) : null}
+                </h2>
+
+                <div className="flex gap-3">
+                  {isPlaying ? (
+                    <span>
+                      <Button
+                        extra="max-w-fit px-4 h-[40px]"
+                        text=""
+                        onClick={() => stopSound()}
+                        icon={<MdVolumeUp className="h-5 w-5" />}
+                      />
+                    </span>
+                  ) : null}
+
+                  {!process?.id ? (
+                    <Button
+                      extra="max-w-fit px-4 h-[40px]"
+                      text="MAKİNE SEÇ"
+                      onClick={handleMachinePopup}
+                    />
+                  ) : null}
+
+                  {process?.id && process?.status !== 'FINISHED' ? (
+                    <Button
+                      extra="max-w-fit px-4 h-[40px]"
+                      text="PROSESİ TAMAMLA"
+                      onClick={onFinishConfirm}
+                    />
+                  ) : null}
+
+                  {process?.status === 'FINISHED' ? (
+                    <Button
+                      extra="max-w-fit px-4 h-[40px]"
+                      text="FINAL KONTROL YAP"
+                      onClick={handleFinalControl}
+                    />
+                  ) : null}
+                </div>
               </div>
 
               <TechParamsTable
                 key={isTechParams as any}
-                fields={machineParams}
                 techParams={techParams}
+                fields={machineParams}
                 defaultTechParams={defaultTechParams}
-                status={process?.status}
+                status={!machineParams?.length ? 'FINISHED' : process?.status}
                 onUpdateData={(id, val) => onUpdateData(id, val)}
                 onAddRow={(val) => onAddRow(val)}
                 onRemoveRow={(val) => onRemoveRow(val)}

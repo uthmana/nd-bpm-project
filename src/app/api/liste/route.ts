@@ -1,67 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import prisma from 'app/lib/db';
 import { Prisma } from '@prisma/client';
+import prisma from 'app/lib/db';
+import { NextRequest, NextResponse } from 'next/server';
+import { extractPrismaErrorMessage } from 'utils/prismaError';
 import { validateCustomerSchema } from 'utils/validate';
-import { checkUserRole } from 'utils/auth';
-import FinalControl from 'components/forms/finalControl';
 
-//All Lists1
-// export async function GET1(req: NextRequest) {
-//   try {
-//     const transactions = await prisma.process.findMany({
-//       include: {
-//         finalControl: {
-//           select: { createdAt: true, createdBy: true, gorunum_kontrol: true },
-//         },
-//         Invoice: {
-//           select: {
-//             createdAt: true,
-//             createdBy: true,
-//             amount: true,
-//             status: true,
-//             address: true,
-//           },
-//         },
-//         technicalParams: { select: { createdAt: true, createdBy: true } },
-//         unacceptable: {
-//           select: {
-//             unacceptableAction: true,
-//             description: true,
-//             unacceptableStage: true,
-//           },
-//         },
-//       },
-//     });
-
-//     if (transactions) {
-//       const flattendtransaction = transactions.map((transaction) => ({
-//         //  ...transaction,
-//         ...transaction.finalControl,
-//         ...transaction.Invoice,
-//         ...transaction.technicalParams,
-//         // Remove the nested objects to avoid duplication
-//         finalControl: undefined,
-//         Invoice: undefined,
-//         technicalParams: undefined,
-//         unacceptable: undefined,
-//       }));
-
-//       return NextResponse.json({ flattendtransaction }, { status: 200 });
-//     }
-
-//     return NextResponse.json({}, { status: 200 });
-//   } catch (e) {
-//     if (
-//       e instanceof Prisma.PrismaClientKnownRequestError ||
-//       e instanceof Prisma.PrismaClientUnknownRequestError ||
-//       e instanceof Prisma.PrismaClientValidationError ||
-//       e instanceof Prisma.PrismaClientRustPanicError
-//     ) {
-//       return NextResponse.json(e, { status: 403 });
-//     }
-//     return NextResponse.json(e, { status: 500 });
-//   }
-// }
 // GET All the Report on the fault
 export async function GET(req: NextRequest) {
   try {
@@ -84,8 +26,6 @@ export async function GET(req: NextRequest) {
         select: {
           createdAt: true,
           createdBy: true,
-          shipmentQty: true,
-          product_barcode: true,
           status: true,
         },
       }),
@@ -104,10 +44,8 @@ export async function GET(req: NextRequest) {
         select: {
           invoiceDate: true,
           amount: true,
-          address: true,
           createdAt: true,
           createdBy: true,
-          tax_Office: true,
           status: true,
           totalAmount: true,
         },
@@ -138,29 +76,21 @@ export async function GET(req: NextRequest) {
       { status: 200 },
     );
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }
 
 // Create Customer
 export async function PUT(req: Request) {
   try {
-    const allowedRoles = ['SUPER', 'ADMIN'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json(
-        { message: 'Access forbidden' },
-        { status: 403 },
-      );
-    }
     const result: Prisma.CustomerCreateInput = await req.json();
     // Validate the fields against the customer schema
     const validationErrors = await validateCustomerSchema(result);
@@ -183,14 +113,14 @@ export async function PUT(req: Request) {
 
     return NextResponse.json(customer, { status: 200 });
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }

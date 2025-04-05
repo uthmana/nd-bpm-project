@@ -37,9 +37,9 @@ export default function Mikrokapsul({ data, variant = 'input', onChange }) {
             return (
               <tr key={idx}>
                 <td
-                  rowSpan={3}
+                  rowSpan={4}
                   className={`w-[20px] text-center font-bold [writing-mode:vertical-lr] ${
-                    idx !== 0 && idx !== 3 ? 'hidden' : ''
+                    idx !== 0 && idx !== 4 ? 'hidden' : ''
                   }`}
                 >
                   {idx == 0 ? 'Yüksüz Test' : 'Yüklü Test'}

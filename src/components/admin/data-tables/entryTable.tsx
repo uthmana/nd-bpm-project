@@ -22,11 +22,13 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import Search from 'components/search/search';
-import Button from 'components/button/button';
+import Button from 'components/button';
 import { formatDateTime, useDrage, formatNumberLocale } from 'utils';
 import FileViewer from 'components/fileViewer';
 import { FaultObj, MainTable } from 'app/localTypes/table-types';
 import TablePagination from './tablePagination';
+import TableEmpty from './tableEmpty';
+import NextLink from 'next/link';
 
 function EntryTable({
   tableData,
@@ -34,8 +36,8 @@ function EntryTable({
   onDelete,
   onAdd,
   onControl,
+  addLink,
   variant,
-  searchValue,
 }: MainTable) {
   let defaultData = tableData;
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -44,20 +46,13 @@ function EntryTable({
     useDrage();
 
   const columns = useMemo(() => {
-    const entryStatus = {
-      PENDING: 'Beklemede',
-      REJECT: 'Ret',
-      ACCEPT: 'Kabul',
-      ACCEPTANCE_WITH_CONDITION: 'Şartlı Kabul',
-      PRE_PROCESS: 'Ön İşlem Gerekli',
-    };
     const statusbgColor = (status: string) => {
-      if (status === 'ACCEPT' || status === 'ACCEPTANCE_WITH_CONDITION') {
+      if (status === 'SEVKIYAT_TAMAMLANDI') {
         return (
           <MdCheckCircle className="me-1 text-green-500 dark:text-green-300" />
         );
       }
-      if (status === 'REJECT') {
+      if (status === 'GIRIS_KONTROL_RET' || status === 'FINAL_KONTROL_RET') {
         return <MdCancel className="me-1 text-red-500 dark:text-red-300" />;
       }
       return (
@@ -69,14 +64,28 @@ function EntryTable({
       columnHelper.accessor('id', {
         id: 'id',
         header: () => (
+          <p className="group relative min-w-fit max-w-fit  whitespace-nowrap break-keep  text-sm font-bold text-gray-600 dark:text-white">
+            #{' '}
+            <span className="absolute right-0 top-0 hidden group-hover:block">
+              <MdOutlineKeyboardDoubleArrowDown />
+            </span>
+          </p>
+        ),
+        cell: ({ row }) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {(row.index + 1).toString()}
+          </p>
+        ),
+      }),
+      columnHelper.accessor('id', {
+        id: 'id',
+        header: () => (
           <p className="min-w-[80px] text-sm font-bold uppercase text-gray-600 dark:text-white">
             AKSİYON
           </p>
         ),
         cell: (info: any) => {
-          const isAccept =
-            info.row.original.status === 'ACCEPT' ||
-            info.row.original.status === 'ACCEPTANCE_WITH_CONDITION';
+          const isAccept = info.row.original.status === 'SEVKIYAT_TAMAMLANDI';
           return (
             <div className="flex gap-1">
               <button
@@ -85,15 +94,33 @@ function EntryTable({
               >
                 <MdPreview className="h-5 w-5 text-white" />
               </button>
-              <button
-                className={`rounded-md bg-green-600 px-2 py-1 hover:bg-green-700 ${
-                  isAccept ? 'disabled:opacity-25' : ''
-                }`}
-                onClick={() => onEdit(info.getValue())}
-                disabled={isAccept}
-              >
-                <MdModeEdit className="h-5 w-5 text-white" />
-              </button>
+
+              {addLink != undefined ? (
+                <NextLink
+                  href={`${addLink}/${info.getValue()}`}
+                  className="flex items-center gap-2 text-sm dark:text-white"
+                >
+                  <button
+                    className={`rounded-md bg-green-600 px-2 py-1 hover:bg-green-700 ${
+                      isAccept ? 'disabled:opacity-25' : ''
+                    }`}
+                    disabled={isAccept}
+                  >
+                    <MdModeEdit className="h-5 w-5 text-white" />
+                  </button>
+                </NextLink>
+              ) : (
+                <button
+                  className={`rounded-md bg-green-600 px-2 py-1 hover:bg-green-700 ${
+                    isAccept ? 'disabled:opacity-25' : ''
+                  }`}
+                  onClick={() => onEdit(info.getValue())}
+                  disabled={isAccept}
+                >
+                  <MdModeEdit className="h-5 w-5 text-white" />
+                </button>
+              )}
+
               <button
                 className={`rounded-md bg-red-600 px-2 py-1 hover:bg-red-700 ${
                   isAccept ? 'disabled:opacity-25' : ''
@@ -107,26 +134,45 @@ function EntryTable({
           );
         },
       }),
-      columnHelper.accessor('id', {
-        id: 'id',
+      columnHelper.accessor('status', {
+        id: 'status',
         header: () => (
-          <p className="group relative min-w-[65px] max-w-fit  whitespace-nowrap break-keep  text-sm font-bold text-gray-600 dark:text-white">
-            SİRA NO.{' '}
+          <p className="min-w-fit whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
+            DURUMU
+          </p>
+        ),
+        cell: (info: any) => (
+          <div className="flex items-center">
+            {statusbgColor(info.getValue())}
+            <p className="text-xs font-bold text-blue-700 dark:text-white">
+              {info.getValue()}
+            </p>
+          </div>
+        ),
+      }),
+      columnHelper.accessor('product', {
+        id: 'product',
+        header: () => (
+          <p className="group relative min-w-[160px] max-w-[180px] whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
+            Ürün İsmi{' '}
             <span className="absolute right-0 top-0 hidden group-hover:block">
               <MdOutlineKeyboardDoubleArrowDown />
             </span>
           </p>
         ),
-        cell: ({ row }) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {(row.index + 1).toString()}
+        cell: (info: any) => (
+          <p
+            title={info.getValue()}
+            className="clamp-1 text-sm font-bold text-navy-700 dark:text-white"
+          >
+            {info.getValue()}
           </p>
         ),
       }),
       columnHelper.accessor('product_barcode', {
         id: 'product_barcode',
         header: () => (
-          <p className="group relative min-w-[150px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="group relative min-w-fit text-sm font-bold uppercase text-gray-600 dark:text-white">
             BARKOD{' '}
             <span className="absolute right-0 top-0 hidden group-hover:block">
               <MdOutlineKeyboardDoubleArrowDown />
@@ -134,7 +180,7 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="min-w-[180px]  text-sm font-bold text-navy-700 dark:text-white">
+          <p className="min-w-fit whitespace-nowrap break-keep text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -158,7 +204,7 @@ function EntryTable({
       columnHelper.accessor('productBatchNumber', {
         id: 'productBatchNumber',
         header: () => (
-          <p className="group relative min-w-[100px] whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="group relative min-w-fit whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
             Parti No.{' '}
             <span className="absolute right-0 top-0 hidden group-hover:block">
               <MdOutlineKeyboardDoubleArrowDown />
@@ -166,45 +212,7 @@ function EntryTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="min-w-[180px] text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()}
-          </p>
-        ),
-      }),
-      columnHelper.accessor('customerName', {
-        id: 'customerName',
-        header: () => (
-          <p className="group relative min-w-[200px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Müşteri{' '}
-            <span className="absolute right-0 top-0 hidden group-hover:block">
-              <MdOutlineKeyboardDoubleArrowDown />
-            </span>
-          </p>
-        ),
-        cell: (info: any) => (
-          <p
-            title={info.getValue()}
-            className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white"
-          >
-            {info.getValue()}
-          </p>
-        ),
-      }),
-      columnHelper.accessor('product', {
-        id: 'product',
-        header: () => (
-          <p className="group relative min-w-[160px] max-w-[180px] whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Ürün İsmi{' '}
-            <span className="absolute right-0 top-0 hidden group-hover:block">
-              <MdOutlineKeyboardDoubleArrowDown />
-            </span>
-          </p>
-        ),
-        cell: (info: any) => (
-          <p
-            title={info.getValue()}
-            className="clamp-1 text-sm font-bold text-navy-700 dark:text-white"
-          >
+          <p className="min-w-fit whitespace-nowrap break-keep text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -225,7 +233,6 @@ function EntryTable({
           </p>
         ),
       }),
-
       columnHelper.accessor('arrivalDate', {
         id: 'arrivalDate',
         header: () => (
@@ -331,22 +338,6 @@ function EntryTable({
           </p>
         ),
       }),
-      columnHelper.accessor('status', {
-        id: 'status',
-        header: () => (
-          <p className="min-w-[130px] whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
-            KONTROL DURUMU
-          </p>
-        ),
-        cell: (info: any) => (
-          <div className="flex items-center">
-            {statusbgColor(info.getValue())}
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {entryStatus[info.getValue()]}
-            </p>
-          </div>
-        ),
-      }),
     ];
   }, []);
 
@@ -383,10 +374,20 @@ function EntryTable({
             onChange={(val) => setGlobalFilter(val)}
           />
         </div>
-        {variant === 'NORMAL' ||
-        variant === 'TECH' ||
-        variant === 'SUPER' ||
-        variant === 'ADMIN' ? (
+
+        {addLink ? (
+          <NextLink
+            href={addLink}
+            className="flex items-center gap-2 text-sm dark:text-white"
+          >
+            <Button
+              text="EKLE"
+              extra="!w-[140px] h-[38px] font-bold mb-3"
+              onClick={onAdd}
+              icon={<MdAdd className="ml-1 h-6 w-6" />}
+            />
+          </NextLink>
+        ) : onAdd ? (
           <Button
             text="EKLE"
             extra="!w-[140px] h-[38px] font-bold mb-3"
@@ -447,7 +448,7 @@ function EntryTable({
                     >
                       {row.getVisibleCells().map((cell, idx) => {
                         return (
-                          <td key={cell.id + idx} className="p-2">
+                          <td key={cell.id + idx} className="py-2 pr-2">
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext(),
@@ -460,6 +461,7 @@ function EntryTable({
                 })}
             </tbody>
           </table>
+          {data.length === 0 ? <TableEmpty /> : null}
           <TablePagination table={table} />
         </div>
       </Card>

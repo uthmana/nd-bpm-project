@@ -1,203 +1,213 @@
 'use client';
 
 import {
+  addInvoice,
   getBarcodeBase64,
+  getCustomersWithFilter,
   getInvoiceById,
-  postlogoDispatch,
   sendInvoice,
   updateInvoice,
 } from 'app/lib/apiRequest';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
-import { useParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
+import React, { useEffect, useRef, useState } from 'react';
 import { MdOutlinePayment, MdPrint } from 'react-icons/md';
 import InvoiceDoc from 'components/invoice';
-import Button from 'components/button/button';
+import Button from 'components/button';
 import DetailHeader from 'components/detailHeader';
 import InputField from 'components/fields/InputField';
 import { toast } from 'react-toastify';
-import { log } from 'utils';
+import { generateSKU, log } from 'utils';
 import UploadInvoicePDF from 'components/invoice/invoicePdf';
+import { useSession } from 'next-auth/react';
+import { sendDispatchToLogo } from 'app/lib/logoRequest';
+import { Invoice } from 'app/localTypes/types';
+import { getResError } from 'utils/responseError';
+import { useReactToPrint } from 'react-to-print';
 
-export default function Invoice() {
+export default function Invoices() {
   const [isLoading, setIsLoading] = useState(false);
-  const [invoice, setInvoice] = useState({} as any);
-  const [value, setValues] = useState({} as any);
+  const [invoice, setInvoice] = useState({} as Invoice | any);
+  const [value, setValues] = useState({} as { email: String });
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [isInvoiceSubmiting, setIsInvoiceSubmiting] = useState(false);
+  const invoiceContentRef = useRef<HTMLDivElement>(null);
+
+  const router = useRouter();
+  const { data: session } = useSession();
+  const searchParams = useSearchParams();
   const queryParams = useParams();
-
-  const getSingleInvoice = async (id) => {
-    setIsLoading(true);
-    const { status, data } = await getInvoiceById(id);
-    if (status === 200) {
-      setInvoice(data);
-      setValues({ email: data?.customer?.email });
-    }
-    setIsLoading(false);
-  };
-
-  useEffect(() => {
-    if (queryParams?.id) {
-      getSingleInvoice(queryParams?.id);
-    }
-  }, [queryParams?.id]);
-
-  const handlePrint = () => {
-    window.print();
-  };
-
-  const handleValues = (event) => {
-    const newVal = { [event.target?.name]: event.target?.value };
-    setValues({ ...value, ...newVal });
-  };
-
-  const SendDispatchToLogo = async () => {
-    if (!invoice) {
-      return;
-    }
-
-    //At maximum it accepts 10 characters. the Invoice number needs to be unique. It will be changed to use their invoice scheme if all is ready to be used
-    function generateUniqueId() {
-      const prefix = 'TES';
-      const timestamp = Date.now().toString(); // Current time in milliseconds
-      const randomSuffix = Math.floor(100 + Math.random() * 900); // Random 3-digit number
-      return `${prefix}${timestamp.slice(-7)}${randomSuffix}`;
-    }
-
-    const logodata = {
-      INTERNAL_REFERENCE: null,
-      GRPCODE: 2,
-      TYPE: 8,
-      IOCODE: 3,
-      NUMBER: `${generateUniqueId()}`,
-      DATE: '2024-10-02T00:00:00', //formData.invoiceDate
-      //NUMBER: '~',
-
-      DOC_NUMBER: `SİLMEYİN11Test${invoice.barcode}`,
-
-      ARP_CODE: invoice.customer.code, //'S.00055', //customerinfo.response.data.code
-
-      CANCELLED: 1,
-
-      PRINT_COUNTER: 0,
-
-      CURRSEL_TOTALS: 1,
-      TRANSACTIONS: {
-        items: [
-          {
-            TYPE: 0,
-            QUANTITY: invoice.process[0].quantity,
-            MASTER_CODE: invoice.process[0].productCode,
-            DISP_STATUS: 1,
-            CANCEL_EXP: 'test amaçlı kesilmiştir.',
-            VATEXCEPT_REASON: 'bedelsiz',
-            UNIT_CODE: 'ADET',
-            TAX_FREE_CHECK: 0,
-            TOTAL_NET_STR: 'Sıfır TL',
-            IS_OKC_FICHE: 0,
-            LABEL_LIST: {},
-          },
-        ],
-      },
-      EDESPATCH: 1,
-      EDESPATCH_PROFILEID: 1,
-      EINVOICE: 1,
-      EINVOICE_PROFILEID: 1,
-      EINVOICE_DRIVERNAME1: '.',
-      EINVOICE_DRIVERSURNAME1: '.',
-      EINVOICE_DRIVERTCKNO1: '.',
-      EINVOICE_PLATENUM1: '.',
-      EINVOICE_CHASSISNUM1: '.',
-    };
-
-    const respponse = await postlogoDispatch(JSON.stringify(logodata));
-    return respponse;
-  };
-  const handleSendEmail = async () => {
-    setIsSubmiting(true);
-
-    if (!invoice.id) return;
-    const { data: barcodeData, status: barcodeStatus } = await getBarcodeBase64(
-      {
-        code: invoice.barcode,
-      },
-    );
-    if (barcodeStatus !== 200) return;
-    const newPdf = await UploadInvoicePDF({
-      invoice: { ...invoice, barcodeImage: barcodeData.code },
-    });
-
-    if (newPdf.status !== 200) {
-      toast.error('Hata oluştu. Daha sonra tekrar deneyin!');
-      setIsSubmiting(false);
-      return;
-    }
-
-    const invoiceRes: any = await sendInvoice({
-      type: 'invoice',
-      email: value.email,
-      subject: 'İrsaliye',
-      data: invoice,
-      text: '',
-      docPath: newPdf?.url,
-    });
-    const { status, response } = invoiceRes;
-
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Hata oluştu!.' + message);
-      log(detail);
-      setIsSubmiting(false);
-      return;
-    }
-    if (status === 200) {
-      toast.success('İrsaliye gönderme işlemi başarılı');
-    }
-    setIsSubmiting(false);
-  };
-
-  const onInoviceComplete = async () => {
-    setIsInvoiceSubmiting(true);
-    const { status, data } = await updateInvoice({
-      ...invoice,
-      id: queryParams?.id,
-      status: 'PAID',
-    });
-
-    if (status === 200) {
-      getSingleInvoice(queryParams?.id);
-    }
-    //send To Logo
-    //Logoya gönderme
-    try {
-      const logores = await SendDispatchToLogo();
-
-      console.log('Logo sonucu' + logores);
-      if (logores != null) {
-        // const logoresJson = await logores.json();
-        console.log(logores.NUMBER);
-        toast.success(`Logoya gönderme işlemi başarılı ${logores.NUMBER}`);
-        console.log(`Logoya gönderme sonucu:`);
-      } else {
-        //const logoresText = await logores.text();
-        const logoresJson = await logores.json();
-        toast.error(
-          `Logoya başarıyla içeriye alamadı ${logoresJson.response.data}`,
-        );
-      }
-    } catch (error) {
-      console.error('Logoya gönderme hatası:', error);
-      toast.error(`Logoya başarıyla içeriye alamadı: ${error}`);
-    }
-    setIsInvoiceSubmiting(false);
-  };
+  const newinvoice = searchParams.get('newinvoice');
 
   const detailData = {
     title: 'İrsaliye Detayi',
     seeAllLink: '/admin/invoice',
     seeAllText: 'Tüm İrsaliye',
-    actionLink: '/admin/invoice/create/' + queryParams?.id,
+  };
+
+  const getSingleInvoice = async (id) => {
+    setIsLoading(true);
+    try {
+      const { data } = await getInvoiceById(id);
+      setInvoice(data);
+      setValues({ email: data?.customer?.email });
+      setIsLoading(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(message);
+      setIsLoading(false);
+    }
+  };
+  const getNewInvoice = async (id) => {
+    try {
+      const { data } = await getCustomersWithFilter({
+        where: {
+          id: id,
+        },
+        include: {
+          Fault: {
+            where: { status: 'IRSALIYE_KESIMI_BEKLENIYOR' },
+          },
+        },
+      });
+      const { Fault, ...rest } = data[0];
+      setInvoice({
+        customer: rest,
+        Fault,
+        createdAt: new Date(),
+        invoiceDate: new Date(),
+        barcode: generateSKU('IRS', rest.company_name, Fault?.length),
+      });
+      setValues({ email: rest?.email });
+    } catch (err) {
+      const message = getResError(err?.message);
+      toast.error(message);
+    }
+  };
+
+  useEffect(() => {
+    if (!queryParams?.id) return;
+    if (newinvoice && newinvoice === 'true') {
+      getNewInvoice(queryParams?.id);
+    } else {
+      getSingleInvoice(queryParams?.id);
+    }
+  }, [queryParams?.id, newinvoice]);
+
+  const invoiceContentPrint = useReactToPrint({
+    contentRef: invoiceContentRef,
+    documentTitle: 'ND INDUSTRIES TÜRKİYE PROSES',
+  });
+  const handleValues = (event) => {
+    const newVal = { [event.target?.name]: event.target?.value };
+    setValues({ ...value, ...newVal });
+  };
+  const handleSendEmail = async () => {
+    try {
+      setIsSubmiting(true);
+
+      if (!invoice.id || !value.email) {
+        setIsSubmiting(false);
+        return;
+      }
+      let docPath = invoice?.docPath;
+      if (!invoice?.docPath) {
+        const { data: barcodeData } = await getBarcodeBase64({
+          code: invoice.barcode,
+        });
+        const newPdf = await UploadInvoicePDF({
+          invoice: { ...invoice, barcodeImage: barcodeData.code },
+        });
+
+        docPath = newPdf?.url;
+        const { data } = await updateInvoice({
+          ...invoice,
+          docPath,
+          updatedBy: session?.user?.name,
+        });
+        setInvoice(data);
+      }
+
+      const invoiceRes: any = await sendInvoice({
+        type: 'invoice',
+        email: value.email,
+        subject: 'İrsaliye',
+        data: invoice,
+        text: '',
+        docPath: docPath,
+      });
+      toast.success('İrsaliye e-posta gönderme işlemi başarılı');
+      setIsSubmiting(false);
+      router.push(`/admin/invoice`);
+    } catch (error) {
+      toast.error('Hata oluştu!.' + error);
+      setIsSubmiting(false);
+    }
+  };
+  const onInoviceComplete = async () => {
+    setIsInvoiceSubmiting(true);
+
+    try {
+      let currentInvoice: Invoice;
+      let docPath = invoice?.docPath;
+      const invoiceData = {
+        ...invoice,
+        status: 'PAID',
+      };
+
+      // create invoice pdf
+      if (!invoice?.docPath) {
+        const { data: barcodeData } = await getBarcodeBase64({
+          code: invoice.barcode,
+        });
+        const newPdf = await UploadInvoicePDF({
+          invoice: { ...invoice, barcodeImage: barcodeData.code },
+        });
+        docPath = newPdf?.url;
+      }
+
+      if (!invoice?.id) {
+        // Add invoice
+        const { data } = await addInvoice({
+          ...invoiceData,
+          createdBy: session?.user?.name,
+          docPath,
+        });
+        currentInvoice = data;
+      } else {
+        // Update invoice
+        const { data } = await updateInvoice({
+          ...invoiceData,
+          id: queryParams?.id,
+          docPath,
+          updatedBy: session?.user?.name,
+        });
+        currentInvoice = data;
+      }
+
+      //send To Logo
+      if (process.env.NEXT_PUBLIC_LOGO_INTEGRATION === 'true') {
+        const { data }: any = await sendDispatchToLogo(currentInvoice);
+        setIsInvoiceSubmiting(false);
+        toast.success(`Logoya gönderme işlemi başarılı ${data.NUMBER}`);
+        router.push(`/admin/invoice/${currentInvoice?.id}`);
+      }
+
+      setIsInvoiceSubmiting(false);
+      router.push(`/admin/invoice`);
+    } catch (err) {
+      const message = getResError(err?.message);
+      toast.error(`Logoya başarıyla içeriye alamadı ${message}`);
+      setIsInvoiceSubmiting(false);
+      return;
+    }
+  };
+  const handleRemoveFault = (id) => {
+    const filteredFault = invoice?.Fault.filter((item) => item.id !== id);
+    setInvoice({
+      ...invoice,
+      Fault: filteredFault,
+    });
   };
 
   return (
@@ -212,11 +222,11 @@ export default function Invoice() {
         </div>
       ) : (
         <div className="flex w-full flex-wrap gap-5 lg:mx-auto lg:w-[1000px]">
-          <div id="pdf-content">
-            <InvoiceDoc invoice={invoice} />
+          <div ref={invoiceContentRef}>
+            <InvoiceDoc invoice={invoice} onRemove={handleRemoveFault} />
           </div>
 
-          <div className="flex min-h-[200px] w-full flex-col gap-3 self-start bg-white px-2 py-4 lg:w-[calc(100%-700px)]">
+          <div className="flex min-h-[200px] w-[400px] flex-col gap-3 self-start bg-white px-2 py-4 lg:w-[calc(100%-700px)]">
             <div className="flex w-full flex-col gap-3 border-b px-3 py-4 text-sm">
               <h3 className="mb-2 border-b text-lg">Müşteri Bilgileri</h3>
               <div className="flex flex-col flex-nowrap">
@@ -248,34 +258,38 @@ export default function Invoice() {
                 extra="mb-2 w-full mr-3"
                 value={value.email}
               />
-              <div className="w-[120px] pt-5 lg:w-full lg:pt-0">
-                <Button
-                  extra="h-[40px]"
-                  onClick={handleSendEmail}
-                  text="GÖNDER"
-                  loading={isSubmiting}
-                />
-              </div>
+
+              {session?.user?.role !== 'NORMAL' ? (
+                <div className="w-[120px] pt-5 lg:w-full lg:pt-0">
+                  <Button
+                    extra="h-[40px]"
+                    onClick={handleSendEmail}
+                    text="GÖNDER"
+                    loading={isSubmiting}
+                  />
+                </div>
+              ) : null}
             </div>
 
             <Button
               extra="px-8 h-[40px] max-w-[300px]"
-              onClick={handlePrint}
+              onClick={() => invoiceContentPrint()}
               text="YAZDIR"
               icon={<MdPrint className="mr-1 h-5 w-5" />}
             />
-            <Button
-              extra={`px-8 h-[40px] max-w-[300px] ${
-                invoice.status === 'PAID' ? 'opacity-25' : ''
-              }`}
-              onClick={onInoviceComplete}
-              text={`SEVKİYAT ${
-                invoice.status !== 'PAID' ? 'TAMAMLA' : 'TAMAMLANDI'
-              }`}
-              icon={<MdOutlinePayment className="mr-1 h-5 w-5" />}
-              disabled={invoice.status === 'PAID'}
-              loading={isInvoiceSubmiting}
-            />
+
+            {session?.user?.role !== 'NORMAL' ? (
+              <Button
+                extra={`px-8 h-[40px] max-w-[300px]`}
+                onClick={onInoviceComplete}
+                text={`SEVKİYAT ${
+                  invoice?.status !== 'PAID' ? 'TAMAMLA' : 'TAMAMLANDI'
+                }`}
+                icon={<MdOutlinePayment className="mr-1 h-5 w-5" />}
+                disabled={invoice?.status === 'PAIDS'}
+                loading={isInvoiceSubmiting}
+              />
+            ) : null}
           </div>
         </div>
       )}

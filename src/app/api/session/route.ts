@@ -2,8 +2,7 @@ import { authOptions } from '../../lib/authOptions';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 
-//import prisma  from "../../lib/db1";
-export async function GET(request: Request) {
+export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
 
   if (!session) {

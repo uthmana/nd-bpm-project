@@ -132,7 +132,10 @@ export type PrimaryTable = {
   onEdit?: (e: any) => void;
   onDelete?: (e: any) => void;
   onAdd?: (e: any) => void;
+  addLink?: string;
   onSearch?: (e: any) => void;
+  onSync?: (e: any) => void;
+  syncLoading?: boolean;
   title?: string;
 };
 
@@ -151,6 +154,7 @@ export type UserObj = {
   id: string;
   name: string;
   email: string;
+  contactNumber: string;
   role: string;
   status: string;
   createdAt: string;
@@ -181,9 +185,10 @@ export type InvoiceTypeTable = {
 export type MainTable = {
   tableData: FaultObj[];
   variant: string;
-  onEdit: (e: any) => void;
+  addLink?: string;
+  onEdit?: (e: any) => void;
   onDelete: (e: any) => void;
-  onAdd: (e: any) => void;
+  onAdd?: (e: any) => void;
   onControl: (e: any) => void;
   searchValue: string;
 };

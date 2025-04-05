@@ -23,6 +23,7 @@ import Search from 'components/search/search';
 import { formatDateTime, useDrage, formatNumberLocale } from 'utils';
 import { InvoiceObj, InvoiceTypeTable } from 'app/localTypes/table-types';
 import TablePagination from './tablePagination';
+import TableEmpty from './tableEmpty';
 
 function InvoiceTable({
   tableData,
@@ -71,6 +72,19 @@ function InvoiceTable({
       columnHelper.accessor('id', {
         id: 'id',
         header: () => (
+          <p className="whitespace-nowrap break-keep text-sm font-bold text-gray-600 dark:text-white">
+            #{' '}
+          </p>
+        ),
+        cell: ({ row }) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {(row.index + 1).toString()}
+          </p>
+        ),
+      }),
+      columnHelper.accessor('id', {
+        id: 'id',
+        header: () => (
           <p className="min-w-[80px] text-sm font-bold uppercase text-gray-600 dark:text-white">
             AKSİYON
           </p>
@@ -107,17 +121,20 @@ function InvoiceTable({
           );
         },
       }),
-      columnHelper.accessor('id', {
-        id: 'id',
+      columnHelper.accessor('status', {
+        id: 'status',
         header: () => (
-          <p className="min-w-[60px] whitespace-nowrap break-keep text-sm font-bold text-gray-600 dark:text-white">
-            SİRA NO.
+          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+            DURUM
           </p>
         ),
-        cell: ({ row }) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {(row.index + 1).toString()}
-          </p>
+        cell: (info: any) => (
+          <div className="flex min-w-[90px] items-center">
+            {statusbgColor(info.getValue())}
+            <p className="text-sm font-bold text-navy-700 dark:text-white">
+              {invoiceStatus[info.getValue()]}
+            </p>
+          </div>
         ),
       }),
       columnHelper.accessor('barcode', {
@@ -128,7 +145,7 @@ function InvoiceTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p className="min-w-fit whitespace-nowrap  break-keep text-sm font-bold text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -153,28 +170,15 @@ function InvoiceTable({
         id: 'products',
         header: () => (
           <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            ÜRÜN
+            ÜRÜN SAYISI
           </p>
         ),
         cell: (info: any) => (
           <p
             title={info.getValue()}
-            className="line-clamp-1 min-w-[150px] text-sm font-bold text-navy-700 dark:text-white"
+            className="line-clamp-1 min-w-[90px] text-sm font-bold text-navy-700 dark:text-white"
           >
             {info.getValue()}
-          </p>
-        ),
-      }),
-      columnHelper.accessor('tolalQty', {
-        id: 'tolalQty',
-        header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Miktar
-          </p>
-        ),
-        cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {formatNumberLocale(info.getValue())}
           </p>
         ),
       }),
@@ -195,7 +199,7 @@ function InvoiceTable({
         id: 'invoiceDate',
         header: () => (
           <p className="min-w-[120px] whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
-            İrsalye Tarihi
+            Sevkiyat Tarihi
           </p>
         ),
         cell: (info: any) => (
@@ -218,38 +222,6 @@ function InvoiceTable({
           >
             {info.getValue()}
           </p>
-        ),
-      }),
-      columnHelper.accessor('description', {
-        id: 'description',
-        header: () => (
-          <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            Açıklama
-          </p>
-        ),
-        cell: (info: any) => (
-          <p
-            title={info.getValue()}
-            className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white"
-          >
-            {info.getValue()}
-          </p>
-        ),
-      }),
-      columnHelper.accessor('status', {
-        id: 'status',
-        header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-            DURUM
-          </p>
-        ),
-        cell: (info: any) => (
-          <div className="flex min-w-[90px] items-center">
-            {statusbgColor(info.getValue())}
-            <p className="text-sm font-bold text-navy-700 dark:text-white">
-              {invoiceStatus[info.getValue()]}
-            </p>
-          </div>
         ),
       }),
     ];
@@ -339,7 +311,7 @@ function InvoiceTable({
                     >
                       {row.getVisibleCells().map((cell, idx) => {
                         return (
-                          <td key={cell.id + idx} className="p-2">
+                          <td key={cell.id + idx} className="py-2 pr-2">
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext(),
@@ -352,6 +324,7 @@ function InvoiceTable({
                 })}
             </tbody>
           </table>
+          {data.length === 0 ? <TableEmpty /> : null}
           <TablePagination table={table} />
         </div>
       </Card>

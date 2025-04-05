@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
-import { Machine, Prisma } from '@prisma/client';
+import { Machine } from '@prisma/client';
+import { extractPrismaErrorMessage } from 'utils/prismaError';
 
 //Get single  machine
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
@@ -14,15 +15,15 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
     });
     return NextResponse.json(machine, { status: 200 });
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -31,7 +32,6 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
     const id = route.params.id;
     const result: any = await req.json();
-    //TODO: validate reqBody
     const { machine_Name, id: machineId } = result;
 
     if (!machineId || !machine_Name) {
@@ -54,15 +54,15 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
 
     return NextResponse.json(updatedMachine, { status: 200 });
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -72,7 +72,6 @@ export async function DELETE(
   route: { params: { id: string } },
 ) {
   try {
-    //TODO: restrict unathorized user : only normal and admin allowed
     const id = route.params.id;
     const deletedmachine = await prisma.machine.delete({
       where: {
@@ -81,14 +80,14 @@ export async function DELETE(
     });
     return NextResponse.json(deletedmachine, { status: 200 });
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }

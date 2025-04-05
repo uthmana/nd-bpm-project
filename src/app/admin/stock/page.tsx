@@ -1,47 +1,44 @@
 'use client';
 
 import MainTable from 'components/admin/data-tables/mainTable';
-import { useRouter } from 'next/navigation';
 import { log } from 'utils';
 import { useEffect, useState } from 'react';
 import { deleteStock, getStocks } from 'app/lib/apiRequest';
 import { TableSkeleton } from 'components/skeleton';
 import { toast } from 'react-toastify';
 import Popup from 'components/popup';
-import Button from 'components/button/button';
+import Button from 'components/button';
+import { stockSync } from 'app/lib/logoRequest';
+import { getResError } from 'utils/responseError';
 
 const Stock = () => {
-  const router = useRouter();
   const [stocks, setStocks] = useState([]);
   const [isShowPopUp, setIsShowPopUp] = useState(false);
   const [stockId, setStockId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [syncLoading, setSyncLoading] = useState(false);
 
   const getAllStocks = async () => {
-    setIsLoading(true);
-    const { status, data } = await getStocks();
-    if (status === 200) {
+    try {
+      setIsLoading(true);
+      const { data } = await getStocks();
       setStocks(
         data?.map((item) => {
           return { ...item, customerName: item?.customer?.company_name };
         }),
       );
+      setIsLoading(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {
     getAllStocks();
   }, []);
-
-  const onAdd = () => {
-    router.push('/admin/stock/create');
-  };
-
-  const onEdit = (val) => {
-    router.push(`/admin/stock/create/${val}`);
-  };
 
   const onComfirm = async (val) => {
     setStockId(val);
@@ -49,25 +46,20 @@ const Stock = () => {
   };
 
   const onDelete = async () => {
-    setIsSubmitting(true);
-    const resData: any = await deleteStock(stockId);
+    try {
+      setIsSubmitting(true);
+      await deleteStock(stockId);
 
-    const { status, response } = resData;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Ürün silme işlemi başarısız.' + message);
-      log(detail);
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (status === 200) {
-      toast.success('Ürün silme işlemi başarılı.');
-      setIsSubmitting(false);
-      setIsShowPopUp(false);
       setStocks([]);
       getAllStocks();
-      return;
+      setIsSubmitting(false);
+      setIsShowPopUp(false);
+
+      toast.success('Ürün silme işlemi başarılı.');
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
     }
   };
 
@@ -75,17 +67,32 @@ const Stock = () => {
     setIsShowPopUp(false);
   };
 
+  const onSync = async (val: string) => {
+    if (!val) return;
+    setSyncLoading(true);
+    try {
+      const data = await stockSync();
+      console.log(data);
+      getAllStocks();
+      setSyncLoading(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setSyncLoading(false);
+    }
+  };
   return (
     <div className="mt-3 w-full">
       {isLoading ? (
         <TableSkeleton />
       ) : (
         <MainTable
-          onAdd={onAdd}
+          addLink={'/admin/stock/create'}
           onDelete={onComfirm}
-          onEdit={onEdit}
           tableData={stocks}
           variant="stock"
+          onSync={onSync}
+          syncLoading={syncLoading}
         />
       )}
 

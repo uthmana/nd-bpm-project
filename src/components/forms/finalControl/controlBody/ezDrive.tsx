@@ -22,7 +22,7 @@ export default function EzDrive({ data, variant = 'input', onChange }) {
       <table className="ez-drive test-table">
         <TableHeader />
         <tbody>
-          {tableData.map((item: any, idx) => {
+          {tableData?.map((item: any, idx) => {
             const {
               id,
               createdAt,

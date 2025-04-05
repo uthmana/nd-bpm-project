@@ -1,5 +1,6 @@
 import { useState, useEffect, ChangeEvent } from 'react';
 import './table.css';
+import { formatDateTime } from 'utils';
 
 type Option = {
   label: string;
@@ -25,6 +26,9 @@ export const TableCell = ({ getValue, row, column, table }) => {
     tableMeta?.updateData(row.index, column.id, e.target.value);
   };
 
+  const _value =
+    column.id === 'Ort_Uretim_saat' ? formatDateTime(value)?.slice(11) : value;
+
   if (tableMeta?.editedRows[row.id]) {
     return columnMeta?.type === 'select' ? (
       <select onChange={onSelectChange} value={initialValue}>
@@ -36,12 +40,15 @@ export const TableCell = ({ getValue, row, column, table }) => {
       </select>
     ) : (
       <input
-        value={value}
+        value={_value}
         onChange={(e) => setValue(e.target.value)}
         onBlur={onBlur}
         type={columnMeta?.type || 'text'}
       />
     );
   }
-  return <span>{value}</span>;
+
+  return (
+    <span className="block whitespace-nowrap break-keep py-1">{_value}</span>
+  );
 };

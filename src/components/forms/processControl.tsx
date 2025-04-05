@@ -2,10 +2,9 @@
 
 import React, { useState } from 'react';
 import { formatDateTime } from 'utils';
-import Upload from 'components/upload';
 import TextArea from 'components/fields/textArea';
-import Button from 'components/button/button';
-import Select from 'components/select/page';
+import Button from 'components/button';
+import Select from 'components/select';
 import Radio from 'components/radio';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import NextLink from 'next/link';
@@ -266,19 +265,6 @@ export default function ProcessControlForm({
               value={values.paketleme}
             />
           </div>
-
-          {/* <div className="mb-6">
-            <h2 className="mb-3 ml-3  block w-full text-sm font-bold">
-              İlgili Doküman
-            </h2>
-            <Upload
-              onChange={(val) => setFile(val)}
-              fileType="all"
-              multiple={false}
-              _fileName={values.image}
-              _filePath={isUpdate ? '/uploads/' + values.image : ''}
-            />
-          </div> */}
 
           <div className="w-full">
             <TextArea

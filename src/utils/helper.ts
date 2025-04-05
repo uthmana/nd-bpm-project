@@ -88,7 +88,7 @@ export const generateSKU = (
     .slice(0, 2)}-${formattedQuantity}-${formattedDate
     .replaceAll('/', '')
     .replaceAll(':', '')
-    .replace(',', '-')}`;
+    .replaceAll(',', '-')}`;
   return sku;
 };
 
@@ -238,18 +238,6 @@ export async function validateCustomerSchema(data) {
   return errors;
 }
 
-export async function postToLogo(Data) {
-  const res = await fetch('/api/logoapi/postdata', {
-    method: 'POST',
-    body: Data,
-  });
-  if (!res.ok) {
-    return { status: res.status, message: res.text() };
-  }
-  const data = await res.json();
-  return { ...data, status: res.status };
-}
-
 export const formatCurrency = (value, type = 'float') => {
   if (!value) return '';
   if (type === 'int') {
@@ -261,18 +249,6 @@ export const formatCurrency = (value, type = 'float') => {
     .replace('.', ',')
     .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 };
-/*
-export const deformatCurrency = (value, type): number => {
-  if (!value) return 0;
-
-  if (type === 'int') {
-    const val = value?.replace('.', '') || 0;
-    return parseInt(val);
-  }
-  const val = value?.replace('.', '')?.replace(',', '.');
-  return parseFloat(val);
-};
-*/
 
 export const deformatCurrency = (
   value: string | null | undefined,
@@ -280,15 +256,14 @@ export const deformatCurrency = (
 ): number => {
   if (!value) return 0;
 
-  // Normalize the value by removing thousands separators and converting commas to dots
   const normalizedValue = value?.replaceAll('.', '').replaceAll(',', '.');
 
   if (type === 'int') {
-    return parseInt(normalizedValue, 10) || 0; // Ensure we return a valid integer
+    return parseInt(normalizedValue, 10) || 0;
   }
 
   if (type === 'float') {
-    return parseFloat(normalizedValue) || 0; // Ensure we return a valid float
+    return parseFloat(normalizedValue) || 0;
   }
 
   throw new Error(
@@ -299,10 +274,33 @@ export const deformatCurrency = (
 export const generateProductCode = (name, index) => {
   const companyName = name?.toUpperCase() || '';
   const firstLetter = companyName.charAt(0);
-  const middleLetter = companyName.charAt(Math.floor(companyName.length / 2)); // Middle letter
-  const lastLetter = companyName.charAt(companyName.length - 1); // Last letter
+  const middleLetter = companyName.charAt(Math.floor(companyName.length / 2));
+  const lastLetter = companyName.charAt(companyName.length - 1);
 
   return `${firstLetter}${middleLetter}${lastLetter}.${
     !index ? '000' : String(index + 1).padStart(3, '0')
   }`;
+};
+
+export const generateRandomThreeDigitNumber = () => {
+  return Math.floor(Math.random() * 900) + 100;
+};
+
+export const generateUniqueId = () => {
+  const prefix = 'TES';
+  const timestamp = Date.now().toString();
+  const randomSuffix = Math.floor(100 + Math.random() * 900);
+  return `${prefix}${timestamp.slice(-7)}${randomSuffix}`;
+};
+
+export const getProcesstimeByFrequency = (time, freq) => {
+  const parsedDate = new Date(time);
+  const now = time && !isNaN(parsedDate.getTime()) ? parsedDate : new Date();
+  const updateDate = new Date(now.getTime() + (freq || 0) * 60000);
+  return convertToISO8601(updateDate);
+};
+
+export const formatPhoneNumber = (contactNumber: string) => {
+  const sanitizedNumber = contactNumber?.replace(/\D/g, '').replace(/^0/, '');
+  return sanitizedNumber ? `90${sanitizedNumber}` : null;
 };

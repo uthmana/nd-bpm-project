@@ -23,11 +23,12 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import Search from 'components/search/search';
-import Button from 'components/button/button';
+import Button from 'components/button';
 import { formatDateTime, useDrage } from 'utils';
 import FileViewer from 'components/fileViewer';
 import { FaultObj, ListeInfo } from 'app/localTypes/table-types';
 import TablePagination from './tablePagination';
+import TableEmpty from './tableEmpty';
 
 function ListeTable({
   tableData,
@@ -68,6 +69,22 @@ function ListeTable({
     };
 
     return [
+      columnHelper.accessor('id', {
+        id: 'id',
+        header: () => (
+          <p className="group relative max-w-fit  whitespace-nowrap break-keep  text-sm font-bold text-gray-600 dark:text-white">
+            #{' '}
+            <span className="absolute right-0 top-0 hidden group-hover:block">
+              <MdOutlineKeyboardDoubleArrowDown />
+            </span>
+          </p>
+        ),
+        cell: ({ row }) => (
+          <p className="text-sm font-bold text-navy-700 dark:text-white">
+            {(row.index + 1).toString()}
+          </p>
+        ),
+      }),
       columnHelper.accessor('id', {
         id: 'id',
         header: () => (
@@ -114,22 +131,6 @@ function ListeTable({
             </div>
           );
         },
-      }),
-      columnHelper.accessor('id', {
-        id: 'id',
-        header: () => (
-          <p className="group relative min-w-[65px] max-w-fit  whitespace-nowrap break-keep  text-sm font-bold text-gray-600 dark:text-white">
-            SİRA NO.{' '}
-            <span className="absolute right-0 top-0 hidden group-hover:block">
-              <MdOutlineKeyboardDoubleArrowDown />
-            </span>
-          </p>
-        ),
-        cell: ({ row }) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
-            {(row.index + 1).toString()}
-          </p>
-        ),
       }),
       columnHelper.accessor('product_barcode', {
         id: 'product_barcode',
@@ -233,7 +234,6 @@ function ListeTable({
           </p>
         ),
       }),
-
       columnHelper.accessor('arrivalDate', {
         id: 'arrivalDate',
         header: () => (
@@ -452,7 +452,7 @@ function ListeTable({
                     >
                       {row.getVisibleCells().map((cell, idx) => {
                         return (
-                          <td key={cell.id + idx} className="p-2">
+                          <td key={cell.id + idx} className="py-2 pr-2">
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext(),
@@ -465,6 +465,7 @@ function ListeTable({
                 })}
             </tbody>
           </table>
+          {data.length === 0 ? <TableEmpty /> : null}
           <TablePagination table={table} />
         </div>
       </Card>

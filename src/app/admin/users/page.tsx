@@ -8,10 +8,10 @@ import { useEffect, useState } from 'react';
 import { TableSkeleton } from 'components/skeleton';
 import { toast } from 'react-toastify';
 import Popup from 'components/popup';
-import Button from 'components/button/button';
+import Button from 'components/button';
+import { getResError } from 'utils/responseError';
 
 const Users = () => {
-  const router = useRouter();
   const [users, setUsers] = useState([]);
   const [isShowPopUp, setIsShowPopUp] = useState(false);
   const [userId, setUserId] = useState('');
@@ -19,22 +19,21 @@ const Users = () => {
   const [isLoading, setIsloading] = useState(false);
 
   const getAllUsers = async () => {
-    setIsloading(true);
-    const { status, data } = await getUsers();
-    if (status === 200) {
+    try {
+      setIsloading(true);
+      const { data } = await getUsers();
       setUsers(data);
+      setIsloading(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsloading(false);
     }
-    setIsloading(false);
   };
 
   useEffect(() => {
     getAllUsers();
   }, []);
-
-  const onAdd = () => {
-    router.push('/admin/users/create');
-    log('onAdd');
-  };
 
   const onComfirm = async (val) => {
     setUserId(val);
@@ -42,34 +41,24 @@ const Users = () => {
   };
 
   const onDelete = async () => {
-    setIsSubmitting(true);
-    const resData: any = await deleteUser(userId);
-
-    const { status, response } = resData;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Kullanıcı silme işlemi başarısız' + message);
-      log(detail);
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (status === 200) {
-      toast.success('Kullanıcı silme işlemi başarılı.');
-      setIsSubmitting(false);
-      setIsShowPopUp(false);
+    try {
+      setIsSubmitting(true);
+      await deleteUser(userId);
       setUsers([]);
       getAllUsers();
-      return;
+      setIsSubmitting(false);
+      setIsShowPopUp(false);
+      toast.success('Kullanıcı silme işlemi başarılı.');
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
+      setIsShowPopUp(false);
     }
   };
 
   const handleClose = (val: string) => {
     setIsShowPopUp(false);
-  };
-
-  const onEdit = (val: string) => {
-    router.push(`/admin/users/create/${val}`);
   };
 
   return (
@@ -78,9 +67,8 @@ const Users = () => {
         <TableSkeleton />
       ) : (
         <MainTable
-          onAdd={onAdd}
+          addLink={'/admin/users/create'}
           onDelete={onComfirm}
-          onEdit={onEdit}
           tableData={users}
           variant="user"
         />

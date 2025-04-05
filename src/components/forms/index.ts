@@ -1,0 +1,12 @@
+export * as FinalControlForm from './finalControl/index';
+export * as CustomerForm from './customer';
+export * as FaultForm from './fault';
+export * as FaultControlForm from './faultControl';
+export * as FormheaderItem from './formheaderItem';
+export * as HistoryForm from './history';
+export * as InvoiceForm from './invoice';
+export * as OfferForm from './offer';
+export * as ProcessControlForm from './processControl';
+export * as StockForm from './stock';
+export * as UnacceptForm from './unaccept';
+export * as UserForm from './user';

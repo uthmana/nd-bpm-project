@@ -1,0 +1,74 @@
+.tech-table tbody tr:nth-of-type(even) {
+  background-color: #f6f6f6;
+}
+
+.tech-table .edit-cell-container button {
+  border-radius: 50px;
+  height: 26px;
+  width: 26px;
+  border: 1px solid #ccc;
+}
+
+.tech-table .edit-cell-action button {
+  margin: 0px 4px;
+}
+
+.tech-table .edit-cell-action button[name='edit'] {
+  color: #4bbd7f;
+}
+
+.tech-table .edit-cell-action button[name='cancel'] {
+  color: #7b7b7b;
+}
+
+.tech-table .edit-cell-action button[name='done'] {
+  color: #4bbd7f;
+}
+
+.tech-table input,
+select {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px;
+  background-color: transparent;
+}
+
+.tech-table .edit-cell {
+  display: flex;
+  gap: 5px;
+}
+
+.tech-table .footer-buttons button {
+  border: none;
+  background-color: transparent;
+}
+
+.tech-table .add-button {
+  color: #4bbd7f;
+}
+
+.tech-table .edit-cell-action button[name='remove'] {
+  color: red;
+}
+.tech-table .edit-cell-action button[name='remove']:hover {
+  background-color: rgb(230, 208, 208);
+}
+
+.tech-table .edit-cell-action {
+  display: flex;
+  gap: 5px;
+}
+.tech-table .edit-cell-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px;
+}
+
+.tech-table input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+}
+.tech-table .remove-button {
+  color: #e44747;
+}

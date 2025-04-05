@@ -1,29 +1,35 @@
 'use client';
 
 import MainTable from 'components/admin/data-tables/mainTable';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { deleteCustomer, getCustomers } from 'app/lib/apiRequest';
 import { toast } from 'react-toastify';
 import Popup from 'components/popup';
-import Button from 'components/button/button';
+import Button from 'components/button';
 import { TableSkeleton } from 'components/skeleton';
+import { customerSync } from 'app/lib/logoRequest';
+import { log } from 'utils';
+import { getResError } from 'utils/responseError';
 
 const Customers = () => {
-  const router = useRouter();
   const [customers, setCustomers] = useState([]);
   const [isShowPopUp, setIsShowPopUp] = useState(false);
   const [customerId, setCustomerId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsloading] = useState(false);
+  const [syncLoading, setSyncLoading] = useState(false);
 
   const getAllCustomers = async () => {
     setIsloading(true);
-    const { status, data } = await getCustomers();
-    if (status === 200) {
+    try {
+      const { data } = await getCustomers();
       setCustomers(data);
+      setIsloading(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsloading(false);
     }
-    setIsloading(false);
   };
 
   useEffect(() => {
@@ -37,16 +43,17 @@ const Customers = () => {
 
   const onDelete = async () => {
     setIsSubmitting(true);
-    const { status, data } = await deleteCustomer(customerId);
-    if (status === 200) {
+    try {
+      await deleteCustomer(customerId);
       toast.success('Kullanıcı silme işlemi başarılı.');
       setIsSubmitting(false);
       setIsShowPopUp(false);
       setCustomers([]);
       getAllCustomers();
-      return;
-    } else {
-      toast.error('Bir hata oluştu, tekrar deneyin !');
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
     }
   };
 
@@ -54,12 +61,19 @@ const Customers = () => {
     setIsShowPopUp(false);
   };
 
-  const onAdd = () => {
-    router.push('/admin/customer/create');
-  };
-
-  const onEdit = (val: string) => {
-    router.push(`/admin/customer/create/${val}`);
+  const onSync = async (val: string) => {
+    if (!val) return;
+    setSyncLoading(true);
+    try {
+      const data = await customerSync();
+      log(data);
+      getAllCustomers();
+      setSyncLoading(false);
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setSyncLoading(false);
+    }
   };
 
   return (
@@ -68,9 +82,10 @@ const Customers = () => {
         <TableSkeleton />
       ) : (
         <MainTable
-          onAdd={onAdd}
+          addLink={'/admin/customer/create'}
           onDelete={onComfirm}
-          onEdit={onEdit}
+          onSync={onSync}
+          syncLoading={syncLoading}
           tableData={customers}
           variant="customer"
         />

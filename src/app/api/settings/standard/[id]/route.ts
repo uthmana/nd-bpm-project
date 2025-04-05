@@ -1,17 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
-import { checkUserRole } from 'utils/auth';
-import { Prisma, Standards } from '@prisma/client';
+import { Standards } from '@prisma/client';
+import { extractPrismaErrorMessage } from 'utils/prismaError';
 
 //Get single  standards
 export async function GET(req: NextRequest, route: { params: { id: string } }) {
   try {
-    //Allow only Admin to make changes
-    const allowedRoles = ['ADMIN'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json({ message: 'Access forbidden', status: 403 });
-    }
     const id = route.params.id;
     const standards: Standards = await prisma.standards.findUnique({
       where: { id: id },
@@ -19,33 +13,34 @@ export async function GET(req: NextRequest, route: { params: { id: string } }) {
 
     return NextResponse.json(standards, { status: 200 });
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }
 
 //Update  standardss
 export async function PUT(req: NextRequest, route: { params: { id: string } }) {
   try {
-    //Allow only Admin to make changes
-    const allowedRoles = ['ADMIN'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json({ message: 'Access forbidden', status: 403 });
-    }
     const id = route.params.id;
     const resultData: Standards = await req.json();
 
     const standardsTobeUpdated: Standards = await prisma.standards.findUnique({
       where: { id },
     });
+
+    if (!standardsTobeUpdated) {
+      return NextResponse.json(
+        { message: 'Standard to be updated not found' },
+        { status: 404 },
+      );
+    }
 
     const Updatedstandards: Standards = await prisma.standards.update({
       where: { id },
@@ -54,17 +49,18 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
       },
     });
 
-    return NextResponse.json(Updatedstandards, { status: 200 });
+    const standards = await prisma.standards.findMany();
+    return NextResponse.json(standards, { status: 200 });
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -74,31 +70,32 @@ export async function DELETE(
   route: { params: { id: string } },
 ) {
   try {
-    //Allow only Admin to make changes
-    const allowedRoles = ['ADMIN'];
-    const hasrole = await checkUserRole(allowedRoles);
-    if (!hasrole) {
-      return NextResponse.json({ message: 'Access forbidden', status: 403 });
-    }
     const id = route.params.id;
     const standardsToBeDeleted: Standards = await prisma.standards.findUnique({
       where: { id },
     });
-    if (standardsToBeDeleted) {
-      const Deletedstandards: Standards = await prisma.standards.delete({
-        where: { id },
-      });
-      return NextResponse.json(Deletedstandards, { status: 200 });
+    if (!standardsToBeDeleted) {
+      return NextResponse.json(
+        { message: 'Standard to be deleted not found' },
+        { status: 404 },
+      );
     }
+
+    const deletedstandards: Standards = await prisma.standards.delete({
+      where: { id },
+    });
+
+    const standards = await prisma.standards.findMany();
+    return NextResponse.json(standards, { status: 200 });
   } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError ||
-      e instanceof Prisma.PrismaClientUnknownRequestError ||
-      e instanceof Prisma.PrismaClientValidationError ||
-      e instanceof Prisma.PrismaClientRustPanicError
-    ) {
-      return NextResponse.json(e, { status: 403 });
-    }
-    return NextResponse.json(e, { status: 500 });
+    console.error('Prisma Error:', e);
+    const { userMessage, technicalMessage } = extractPrismaErrorMessage(e);
+    return NextResponse.json(
+      {
+        error: userMessage,
+        details: technicalMessage,
+      },
+      { status: 500 },
+    );
   }
 }

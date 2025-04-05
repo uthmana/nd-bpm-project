@@ -12,18 +12,11 @@ import {
 import { toast } from 'react-toastify';
 import { useParams } from 'next/navigation';
 import { LatestInvoicesSkeleton } from 'components/skeleton';
-import {
-  log,
-  removeMillisecondsAndUTC,
-  formatCurrency,
-  deformatCurrency,
-  generateAndSendPDF,
-} from 'utils';
+import { log, removeMillisecondsAndUTC, formatCurrency } from 'utils';
 import { useRouter } from 'next/navigation';
-// import OfferTemplete from 'emails/offer';
-// import ReactDOMServer from 'react-dom/server';
 import Card from 'components/card';
 import UploadOfferPDF from 'components/offer/pdfDoc';
+import { getResError } from 'utils/responseError';
 
 export default function Create() {
   const [customers, setCustomers] = useState([]);
@@ -36,13 +29,13 @@ export default function Create() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const [offerResponse, customerResponse] = await Promise.all([
-        getOfferById(queryParams?.id),
-        getCustomers(),
-      ]);
-      const { status: offerStatus, data: offerData } = offerResponse;
-      const { status: custStatus, data: custData } = customerResponse;
-      if (offerStatus === 200 && custStatus === 200) {
+      try {
+        const [offerResponse, customerResponse] = await Promise.all([
+          getOfferById(queryParams?.id),
+          getCustomers(),
+        ]);
+        const { data: offerData } = offerResponse;
+        const { data: custData } = customerResponse;
         setCustomers(custData);
         const customerName = offerData.Customer.company_name;
         const offerProduct = offerData?.product.map((item) => {
@@ -66,8 +59,11 @@ export default function Create() {
         });
 
         setIsLoading(false);
+      } catch (error) {
+        const message = getResError(error?.message);
+        toast.error(`${message}`);
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
     fetchData();
   }, [queryParams?.id]);
@@ -90,48 +86,37 @@ export default function Create() {
       }
     }
 
-    if (isEdit) {
-      const updateOfferResponse: any = await updateOffer({
-        ...val,
-        docPath: newPdf.url,
-      });
-      const { status, data, response } = updateOfferResponse;
-      if (response?.error) {
-        const { message, detail } = response?.error;
-        toast.error('Hata oluştu!.' + message);
-        log(detail);
+    try {
+      if (isEdit) {
+        await updateOffer({
+          ...val,
+          docPath: newPdf.url,
+        });
+
+        toast.success('Teklif düzenleme işlemi başarılı.');
+        router.push('/admin/offer');
         setIsSubmitting(false);
         return;
       }
-      toast.success('Teklif düzenleme işlemi başarılı.');
-      router.push('/admin/offer');
-      setIsSubmitting(false);
-      return;
-    }
 
-    //Create new offer from old data
-    delete val.id;
-    delete val.status;
-    const product = val.product?.map((item) => {
-      const { name, application, standard, quantity, price } = item;
-      return { name, application, standard, quantity, price };
-    });
+      //Create new offer from old data
+      delete val.id;
+      delete val.status;
+      const product = val.product?.map((item) => {
+        const { name, application, standard, quantity, price } = item;
+        return { name, application, standard, quantity, price };
+      });
 
-    const addOfferResponse: any = await addOffer({ ...val, product });
-    const { status, data, response } = addOfferResponse;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Hata oluştu!.' + message);
-      log(detail);
-      setIsSubmitting(false);
-      return;
-    }
-    if (status === 200) {
+      await addOffer({ ...val, product });
+
       toast.success('Teklif oluşturma işlemi başarılı.');
+      setIsSubmitting(false);
       router.push('/admin/offer');
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
-    return;
   };
 
   const handleChange = (val) => {

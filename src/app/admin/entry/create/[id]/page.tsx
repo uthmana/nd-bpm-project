@@ -2,13 +2,18 @@
 import React, { useEffect, useState } from 'react';
 import FaultForm from 'components/forms/fault';
 import { useParams, useRouter } from 'next/navigation';
-import { formatCurrency, log } from 'utils';
+import { formatCurrency, removeMillisecondsAndUTC } from 'utils';
 import { toast } from 'react-toastify';
-import { getFaultById, updateFault } from 'app/lib/apiRequest';
+import {
+  getFaultById,
+  sendNotification,
+  updateFault,
+} from 'app/lib/apiRequest';
 import { FormSkeleton } from 'components/skeleton';
 import { useSession } from 'next-auth/react';
 import Card from 'components/card';
 import DetailHeader from 'components/detailHeader';
+import { getResError } from 'utils/responseError';
 
 export default function Edit() {
   const router = useRouter();
@@ -18,18 +23,36 @@ export default function Edit() {
   const [fault, setFault] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  const detailData = {
+    title: '',
+    seeAllLink: '/admin/entry',
+    seeAllText: 'Tüm Ürünler Girişleri',
+  };
+
   useEffect(() => {
     const getSingleFault = async () => {
-      setIsLoading(true);
-      const { status, data } = await getFaultById(queryParams.id);
-      if (status === 200) {
-        delete data.faultControl;
+      try {
+        setIsLoading(true);
+        const { data } = await getFaultById(queryParams.id);
+        const customerName = data?.customer.company_name;
+        const customerId = data?.customer.id;
 
-        setFault({ ...data, quantity: formatCurrency(data.quantity, 'int') });
+        delete data.faultControl;
+        delete data.customer;
+
+        setFault({
+          ...data,
+          customerName,
+          customerId,
+          quantity: formatCurrency(data.quantity, 'int'),
+          arrivalDate: removeMillisecondsAndUTC(data.arrivalDate),
+        });
         setIsLoading(false);
-        return;
+      } catch (error) {
+        const message = getResError(error?.message);
+        toast.error(`${message}`);
+        setIsLoading(true);
       }
-      setIsSubmitting(false);
     };
     if (queryParams.id) {
       getSingleFault();
@@ -41,30 +64,28 @@ export default function Edit() {
     if (!val) return;
     const newVal = { ...val, ...{ updatedBy: session?.user?.name } };
 
-    const resData: any = await updateFault({
-      ...newVal,
-      id: queryParams?.id,
-    });
-    const { status, response } = resData;
-    if (response?.error) {
-      const { message, detail } = response?.error;
-      toast.error('Ürün güncelleme başarısız.' + message);
-      log(detail);
-      setIsSubmitting(false);
-      return;
-    }
+    try {
+      const { data } = await updateFault({
+        ...newVal,
+        id: queryParams?.id,
+      });
+      await sendNotification({
+        workflowId: 'fault-entry',
+        data: {
+          link: `${window?.location.origin}/admin/entry/${data.id}`,
+          title: 'Ürün Girişi Güncelleme',
+          description: `${data?.customer?.company_name} için ${data?.product} ürününün güncellenmiştir.`,
+        },
+      });
 
-    if (status === 200) {
       toast.success('Ürün güncelleme başarılı.');
-      router.push('/admin/entry');
+      router.push(`/admin/entry/${queryParams?.id}`);
       setIsSubmitting(false);
-      return;
+    } catch (error) {
+      const message = getResError(error?.message);
+      toast.error(`${message}`);
+      setIsSubmitting(false);
     }
-  };
-  const detailData = {
-    title: '',
-    seeAllLink: '/admin/entry',
-    seeAllText: 'Tüm Ürünler Girişleri',
   };
 
   return (

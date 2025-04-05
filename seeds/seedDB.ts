@@ -1,11 +1,7 @@
 import fs from 'fs';
 import csvParser from 'csv-parser';
 import prisma from 'app/lib/db';
-import { users } from './modals/users';
-import { machines } from './modals/machines';
-import { colors } from './modals/colors';
-import { applications } from './modals/application';
-import { standards } from './modals/standard';
+import { users, machines, colors, applications, standards } from './modals';
 import { $Enums, Prisma } from '@prisma/client';
 
 //Seeding of Users from users type script file
@@ -19,8 +15,7 @@ async function Users() {
         password: users[i].password,
         role: users[i].role,
         email: users[i].email,
-        address: {},
-        contactInfo: {},
+        contactNumber: users[i].contactNumber,
         createdAt: new Date(),
       },
     });

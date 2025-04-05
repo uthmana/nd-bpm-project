@@ -7,6 +7,7 @@ import {
   MdOutlineDelete,
   MdAdd,
   MdOutlineKeyboardDoubleArrowDown,
+  MdSync,
 } from 'react-icons/md';
 
 import {
@@ -20,7 +21,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import Search from 'components/search/search';
-import Button from 'components/button/button';
+import Button from 'components/button';
 import { formatDateTime, useDrage, formatNumberLocale } from 'utils';
 import TablePagination from './tablePagination';
 import {
@@ -29,12 +30,17 @@ import {
   CustomerObj,
   UserObj,
 } from '../../../app/localTypes/table-types';
+import TableEmpty from './tableEmpty';
+import NextLink from 'next/link';
 
 function MainTable({
   tableData,
   onEdit,
   onDelete,
   onAdd,
+  onSync,
+  addLink,
+  syncLoading,
   variant = 'user',
 }: PrimaryTable) {
   let defaultData = tableData;
@@ -52,7 +58,7 @@ function MainTable({
             id: 'id',
             header: () => (
               <p className="group relative max-w-fit whitespace-nowrap  break-keep text-sm font-bold text-gray-600 dark:text-white">
-                SİRA NO.
+                #
                 <span className="absolute right-0 top-0 hidden group-hover:block">
                   <MdOutlineKeyboardDoubleArrowDown />
                 </span>
@@ -62,6 +68,42 @@ function MainTable({
               <p className="text-sm font-bold text-navy-700 dark:text-white">
                 {row.index + 1}
               </p>
+            ),
+          }),
+          columnHelper.accessor('id', {
+            id: 'id',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                DÜZENLE
+              </p>
+            ),
+            cell: (info) => (
+              <div className="flex gap-1">
+                {addLink != undefined ? (
+                  <NextLink
+                    href={`${addLink}/${info.getValue()}`}
+                    className="flex items-center gap-2 text-sm dark:text-white"
+                  >
+                    <button className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700">
+                      <MdModeEdit className="h-5 w-5 text-white" />
+                    </button>
+                  </NextLink>
+                ) : (
+                  <button
+                    className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
+                    onClick={() => onEdit(info.getValue())}
+                  >
+                    <MdModeEdit className="h-5 w-5 text-white" />
+                  </button>
+                )}
+
+                <button
+                  className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
+                  onClick={() => onDelete(info.getValue())}
+                >
+                  <MdOutlineDelete className="h-5 w-5 text-white" />
+                </button>
+              </div>
             ),
           }),
           columnHelper.accessor('code', {
@@ -134,7 +176,6 @@ function MainTable({
               </p>
             ),
           }),
-
           columnHelper.accessor('address', {
             id: 'address',
             header: () => (
@@ -170,7 +211,6 @@ function MainTable({
               </p>
             ),
           }),
-
           columnHelper.accessor('postalCode', {
             id: 'postalCode',
             header: () => (
@@ -187,7 +227,6 @@ function MainTable({
               </p>
             ),
           }),
-
           columnHelper.accessor('country_code', {
             id: 'country_code',
             header: () => (
@@ -220,7 +259,6 @@ function MainTable({
               </p>
             ),
           }),
-
           columnHelper.accessor('district_code', {
             id: 'district_code',
             header: () => (
@@ -253,7 +291,6 @@ function MainTable({
               </p>
             ),
           }),
-
           columnHelper.accessor('tax_Office', {
             id: 'tax_Office',
             header: () => (
@@ -289,7 +326,6 @@ function MainTable({
               </p>
             ),
           }),
-
           columnHelper.accessor('cardType', {
             id: 'cardType',
             header: () => (
@@ -342,22 +378,49 @@ function MainTable({
               </p>
             ),
           }),
-
+        ];
+        break;
+      case 'stock':
+        col = [
           columnHelper.accessor('id', {
             id: 'id',
             header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
+              <p className=" whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
+                #{' '}
+              </p>
+            ),
+            cell: ({ row }) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
+                {row.index + 1}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('id', {
+            id: 'id',
+            header: () => (
+              <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
                 DÜZENLE
               </p>
             ),
             cell: (info) => (
               <div className="flex gap-1">
-                <button
-                  className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
-                  onClick={() => onEdit(info.getValue())}
-                >
-                  <MdModeEdit className="h-5 w-5 text-white" />
-                </button>
+                {addLink != undefined ? (
+                  <NextLink
+                    href={`${addLink}/${info.getValue()}`}
+                    className="flex items-center gap-2 text-sm dark:text-white"
+                  >
+                    <button className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700">
+                      <MdModeEdit className="h-5 w-5 text-white" />
+                    </button>
+                  </NextLink>
+                ) : (
+                  <button
+                    className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
+                    onClick={() => onEdit(info.getValue())}
+                  >
+                    <MdModeEdit className="h-5 w-5 text-white" />
+                  </button>
+                )}
                 <button
                   className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
                   onClick={() => onDelete(info.getValue())}
@@ -367,27 +430,10 @@ function MainTable({
               </div>
             ),
           }),
-        ];
-        break;
-      case 'stock':
-        col = [
-          columnHelper.accessor('id', {
-            id: 'id',
-            header: () => (
-              <p className="min-w-[70px] whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
-                Sira No.
-              </p>
-            ),
-            cell: ({ row }) => (
-              <p className="text-sm font-bold text-navy-700 dark:text-white">
-                {row.index + 1}
-              </p>
-            ),
-          }),
           columnHelper.accessor('product_code', {
             id: 'product_code',
             header: () => (
-              <p className="group relative min-w-[100px] whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
+              <p className="group relative min-w-fit whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
                 Ürün Kodu{' '}
                 <span className="absolute right-0 top-0 hidden group-hover:block">
                   <MdOutlineKeyboardDoubleArrowDown />
@@ -395,7 +441,7 @@ function MainTable({
               </p>
             ),
             cell: (info: any) => (
-              <p className="min-w-[180px] text-sm font-bold text-navy-700 dark:text-white">
+              <p className="min-w-fit whitespace-nowrap break-keep text-sm font-bold text-navy-700 dark:text-white">
                 {info.getValue()}
               </p>
             ),
@@ -403,7 +449,7 @@ function MainTable({
           columnHelper.accessor('product_barcode', {
             id: 'product_barcode',
             header: () => (
-              <p className="group relative min-w-[180px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+              <p className="group relative min-w-fit text-sm font-bold uppercase text-gray-600 dark:text-white">
                 Barkodu{' '}
                 <span className="absolute right-0 top-0 hidden group-hover:block">
                   <MdOutlineKeyboardDoubleArrowDown />
@@ -411,7 +457,7 @@ function MainTable({
               </p>
             ),
             cell: (info: any) => (
-              <p className="max-w-[180px] text-sm font-bold  text-navy-700 dark:text-white">
+              <p className="max-w-fit whitespace-nowrap break-keep text-sm font-bold  text-navy-700 dark:text-white">
                 {info.getValue()}
               </p>
             ),
@@ -505,30 +551,6 @@ function MainTable({
               </p>
             ),
           }),
-          columnHelper.accessor('id', {
-            id: 'id',
-            header: () => (
-              <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
-                DÜZENLE
-              </p>
-            ),
-            cell: (info) => (
-              <div className="flex gap-1">
-                <button
-                  className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
-                  onClick={() => onEdit(info.getValue())}
-                >
-                  <MdModeEdit className="h-5 w-5 text-white" />
-                </button>
-                <button
-                  className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
-                  onClick={() => onDelete(info.getValue())}
-                >
-                  <MdOutlineDelete className="h-5 w-5 text-white" />
-                </button>
-              </div>
-            ),
-          }),
         ];
         break;
       case 'user':
@@ -537,13 +559,48 @@ function MainTable({
             id: 'id',
             header: () => (
               <p className="whitespace-nowrap break-keep text-sm font-bold text-gray-600 dark:text-white">
-                Sira No.
+                #
               </p>
             ),
             cell: ({ row }) => (
               <p className="text-sm font-bold text-navy-700 dark:text-white">
                 {row.index + 1}
               </p>
+            ),
+          }),
+          columnHelper.accessor('id', {
+            id: 'id',
+            header: () => (
+              <p className="text-sm font-bold text-gray-600 dark:text-white">
+                DÜZENLE
+              </p>
+            ),
+            cell: (info) => (
+              <div className="flex gap-2">
+                {addLink != undefined ? (
+                  <NextLink
+                    href={`${addLink}/${info.getValue()}`}
+                    className="flex items-center gap-2 text-sm dark:text-white"
+                  >
+                    <button className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700">
+                      <MdModeEdit className="h-5 w-5 text-white" />
+                    </button>
+                  </NextLink>
+                ) : (
+                  <button
+                    className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
+                    onClick={() => onEdit(info.getValue())}
+                  >
+                    <MdModeEdit className="h-5 w-5 text-white" />
+                  </button>
+                )}
+                <button
+                  className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
+                  onClick={() => onDelete(info.getValue())}
+                >
+                  <MdOutlineDelete className="h-5 w-5 text-white" />
+                </button>
+              </div>
             ),
           }),
           columnHelper.accessor('name', {
@@ -555,6 +612,19 @@ function MainTable({
             ),
             cell: (info: any) => (
               <p className="whitespace-nowrap text-sm font-bold text-navy-700 dark:text-white">
+                {info.getValue()}
+              </p>
+            ),
+          }),
+          columnHelper.accessor('contactNumber', {
+            id: 'contactNumber',
+            header: () => (
+              <p className="whitespace-nowrap break-keep text-sm font-bold text-gray-600 dark:text-white">
+                TELEFON
+              </p>
+            ),
+            cell: (info: any) => (
+              <p className="text-sm font-bold text-navy-700 dark:text-white">
                 {info.getValue()}
               </p>
             ),
@@ -611,30 +681,6 @@ function MainTable({
               </p>
             ),
           }),
-          columnHelper.accessor('id', {
-            id: 'id',
-            header: () => (
-              <p className="text-sm font-bold text-gray-600 dark:text-white">
-                DÜZENLE
-              </p>
-            ),
-            cell: (info) => (
-              <div className="flex gap-2">
-                <button
-                  className="rounded-md bg-green-600 px-2 py-1 hover:bg-green-700"
-                  onClick={() => onEdit(info.getValue())}
-                >
-                  <MdModeEdit className="h-5 w-5 text-white" />
-                </button>
-                <button
-                  className="rounded-md bg-red-600  px-2 py-1 hover:bg-red-700"
-                  onClick={() => onDelete(info.getValue())}
-                >
-                  <MdOutlineDelete className="h-5 w-5 text-white" />
-                </button>
-              </div>
-            ),
-          }),
         ];
     }
     return col;
@@ -673,12 +719,37 @@ function MainTable({
           />
         </div>
 
-        <Button
-          text="EKLE"
-          extra="!w-[140px] h-[38px] font-bold mb-3"
-          onClick={onAdd}
-          icon={<MdAdd className="ml-1 h-6 w-6" />}
-        />
+        <div className="flex gap-2">
+          {process.env.NEXT_PUBLIC_LOGO_INTEGRATION === 'true' && onSync ? (
+            <Button
+              text="SYNC"
+              extra="!w-[140px] h-[38px] font-bold mb-3"
+              onClick={() => onSync(variant)}
+              loading={syncLoading}
+              icon={<MdSync className="ml-1 h-6 w-6" />}
+            />
+          ) : null}
+
+          {addLink ? (
+            <NextLink
+              href={addLink}
+              className="flex items-center gap-2 text-sm dark:text-white"
+            >
+              <Button
+                text="EKLE"
+                extra="!w-[140px] h-[38px] font-bold mb-3"
+                icon={<MdAdd className="ml-1 h-6 w-6" />}
+              />
+            </NextLink>
+          ) : onAdd ? (
+            <Button
+              text="EKLE"
+              extra="!w-[140px] h-[38px] font-bold mb-3"
+              onClick={onAdd}
+              icon={<MdAdd className="ml-1 h-6 w-6" />}
+            />
+          ) : null}
+        </div>
       </header>
       <Card extra={'w-full h-full sm:overflow-auto px-6 pb-3'}>
         <div
@@ -728,11 +799,10 @@ function MainTable({
                     <tr
                       key={row.id}
                       className="border-b border-gray-100 hover:bg-lightPrimary dark:border-gray-900 dark:hover:bg-navy-700"
-                      // onDoubleClick={() => onDoubleClick(row.original.id)}
                     >
                       {row.getVisibleCells().map((cell, indx) => {
                         return (
-                          <td key={cell.id + indx} className="p-2">
+                          <td key={cell.id + indx} className="py-2 pr-2">
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext(),
@@ -745,6 +815,7 @@ function MainTable({
                 })}
             </tbody>
           </table>
+          {data.length === 0 ? <TableEmpty /> : null}
           <TablePagination table={table} />
         </div>
       </Card>

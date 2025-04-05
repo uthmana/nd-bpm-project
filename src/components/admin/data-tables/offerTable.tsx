@@ -21,15 +21,11 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import Search from 'components/search/search';
-import Button from 'components/button/button';
-import {
-  formatDateTime,
-  useDrage,
-  formatNumberLocale,
-  formatCurrency,
-} from 'utils';
+import Button from 'components/button';
+import { formatDateTime, useDrage, formatCurrency } from 'utils';
 import { OfferObj, OfferTypeTable } from 'app/localTypes/table-types';
 import TablePagination from './tablePagination';
+import TableEmpty from './tableEmpty';
 
 function OfferTable({
   tableData,
@@ -73,9 +69,7 @@ function OfferTable({
       columnHelper.accessor('id', {
         id: 'id',
         header: () => (
-          <p className="min-w-[60px] text-sm font-bold text-gray-600 dark:text-white">
-            SİRA NO.
-          </p>
+          <p className="text-sm font-bold text-gray-600 dark:text-white">#</p>
         ),
         cell: ({ row }) => (
           <p className="text-sm font-bold text-navy-700 dark:text-white">
@@ -83,19 +77,45 @@ function OfferTable({
           </p>
         ),
       }),
-      // columnHelper.accessor('OfferType', {
-      //   id: 'OfferType',
-      //   header: () => (
-      //     <p className="min-w-[100px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-      //       TEKLİF
-      //     </p>
-      //   ),
-      //   cell: (info: any) => (
-      //     <p className="text-sm font-bold text-navy-700 dark:text-white">
-      //       {info.getValue()}
-      //     </p>
-      //   ),
-      // }),
+      columnHelper.accessor('id', {
+        id: 'id',
+        header: () => (
+          <p className="min-w-fit text-sm font-bold uppercase text-gray-600 dark:text-white">
+            AKSİYON
+          </p>
+        ),
+        cell: (info: any) => {
+          const isAccept = info.row.original.status === 'PAID';
+          return (
+            <div className="flex gap-1">
+              <button
+                className="rounded-md bg-blue-600 px-2 py-1 hover:bg-blue-700"
+                onClick={() => onControl(info.getValue())}
+              >
+                <MdPreview className="h-5 w-5 text-white" />
+              </button>
+              <button
+                className={`rounded-md bg-green-600 px-2 py-1 hover:bg-green-700 ${
+                  isAccept ? 'disabled:opacity-25' : ''
+                }`}
+                onClick={() => onEdit(info.getValue())}
+                disabled={isAccept}
+              >
+                <MdModeEdit className="h-5 w-5 text-white" />
+              </button>
+              <button
+                className={`rounded-md bg-red-600 px-2 py-1 hover:bg-red-700 ${
+                  isAccept ? 'disabled:opacity-25' : ''
+                }`}
+                onClick={() => onDelete(info.getValue())}
+                disabled={isAccept}
+              >
+                <MdOutlineDelete className="h-5 w-5 text-white" />
+              </button>
+            </div>
+          );
+        },
+      }),
       columnHelper.accessor('customerName', {
         id: 'customerName',
         header: () => (
@@ -115,14 +135,15 @@ function OfferTable({
       columnHelper.accessor('products', {
         id: 'products',
         header: () => (
-          <p className="min-w-[180px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-fit text-sm font-bold uppercase text-gray-600 dark:text-white">
             UYGULAMA
           </p>
         ),
         cell: (info: any) => (
           <p
-            className="text-sm font-bold text-navy-700 dark:text-white"
+            className="line-clamp-2  whitespace-nowrap break-keep text-sm font-bold text-navy-700 dark:text-white"
             dangerouslySetInnerHTML={{ __html: info.getValue() }}
+            title={info.getValue()}
           ></p>
         ),
       }),
@@ -186,7 +207,7 @@ function OfferTable({
           </p>
         ),
         cell: (info: any) => (
-          <p className="text-sm font-bold text-navy-700 dark:text-white">
+          <p className="line-clamp-1 text-sm font-bold  text-navy-700 dark:text-white">
             {info.getValue()}
           </p>
         ),
@@ -206,45 +227,6 @@ function OfferTable({
             </p>
           </div>
         ),
-      }),
-      columnHelper.accessor('id', {
-        id: 'id',
-        header: () => (
-          <p className="min-w-[80px] text-sm font-bold uppercase text-gray-600 dark:text-white">
-            AKSİYON
-          </p>
-        ),
-        cell: (info: any) => {
-          const isAccept = info.row.original.status === 'PAID';
-          return (
-            <div className="flex gap-1">
-              <button
-                className="rounded-md bg-blue-600 px-2 py-1 hover:bg-blue-700"
-                onClick={() => onControl(info.getValue())}
-              >
-                <MdPreview className="h-5 w-5 text-white" />
-              </button>
-              <button
-                className={`rounded-md bg-green-600 px-2 py-1 hover:bg-green-700 ${
-                  isAccept ? 'disabled:opacity-25' : ''
-                }`}
-                onClick={() => onEdit(info.getValue())}
-                disabled={isAccept}
-              >
-                <MdModeEdit className="h-5 w-5 text-white" />
-              </button>
-              <button
-                className={`rounded-md bg-red-600 px-2 py-1 hover:bg-red-700 ${
-                  isAccept ? 'disabled:opacity-25' : ''
-                }`}
-                onClick={() => onDelete(info.getValue())}
-                disabled={isAccept}
-              >
-                <MdOutlineDelete className="h-5 w-5 text-white" />
-              </button>
-            </div>
-          );
-        },
       }),
     ];
   }, []);
@@ -339,7 +321,7 @@ function OfferTable({
                     >
                       {row.getVisibleCells().map((cell, idx) => {
                         return (
-                          <td key={cell.id + idx} className="p-2">
+                          <td key={cell.id + idx} className="py-2 pr-2">
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext(),
@@ -352,6 +334,7 @@ function OfferTable({
                 })}
             </tbody>
           </table>
+          {data.length === 0 ? <TableEmpty /> : null}
           <TablePagination table={table} />
         </div>
       </Card>

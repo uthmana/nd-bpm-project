@@ -7,10 +7,12 @@ import crypto from 'crypto';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
+  //TODO: add trycatch
+
   const formData = await request.json();
 
   const emailBody: any = {
-    from: 'ND Industries<info@ndindustries.com.tr>',
+    from: 'ND Industries <info@ndindustriesbmp.com>',
     to: formData.email,
     subject: formData.subject,
     text: formData.text,
