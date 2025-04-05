@@ -12,7 +12,7 @@ export async function POST(request: Request) {
   const formData = await request.json();
 
   const emailBody: any = {
-    from: 'ND Industries <info@ndindustriesbmp.com>',
+    from: `ND Industries <info@${process.env.VERIFIED_DOMAIN}>`,
     to: formData.email,
     subject: formData.subject,
     text: formData.text,
