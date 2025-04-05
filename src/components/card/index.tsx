@@ -14,7 +14,7 @@ const Card = forwardRef<
 
   return (
     <div
-      ref={ref} // ✅ Now properly typed
+      ref={ref}
       className={`!z-5 relative flex flex-col rounded-xl bg-white bg-clip-border shadow-3xl ${
         props.default
           ? 'shadow-shadow-500 dark:shadow-none'
@@ -27,4 +27,5 @@ const Card = forwardRef<
   );
 });
 
+Card.displayName = 'Card';
 export default Card;
