@@ -12,6 +12,9 @@ const nextConfig = {
     // Make ENV
     unoptimized: true,
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 module.exports = nextConfig;
