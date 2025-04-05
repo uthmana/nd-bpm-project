@@ -8,11 +8,10 @@ import InputField from 'components/fields/InputField';
 import { deformatCurrency, formatNumberLocale } from 'utils';
 
 export default function Index({ data, onChange, variant, fault }) {
-  const [values, setValues] = useState(
-    { ...data, kontrol_edilen_miktar: fault?.quantity?.toString() } ||
-      ({} as any),
-  );
-
+  const [values, setValues] = useState(() => ({
+    ...(data || {}),
+    kontrol_edilen_miktar: fault?.quantity?.toString() || '',
+  }));
   const [error, setError] = useState({ control: '', nakliye: '' });
 
   const handleResultValues = (event) => {
