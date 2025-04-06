@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { hash } from 'bcryptjs';
 import { extractPrismaErrorMessage } from 'utils/prismaError';
 import { User } from '@prisma/client';
+import prisma from 'app/lib/db';
 
 export async function POST(req: Request) {
   const body = await req.json();

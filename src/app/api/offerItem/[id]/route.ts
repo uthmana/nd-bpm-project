@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Offer, OfferItem } from '@prisma/client';
 import { extractPrismaErrorMessage } from 'utils/prismaError';
+import prisma from 'app/lib/db';
 
 //Get single offer
 export async function GET(req: NextRequest, route: { params: { id: string } }) {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { $Enums, NotifReceiver, User, UserRole } from '@prisma/client';
 import { extractPrismaErrorMessage } from 'utils/prismaError';
 import { sendEmailNotification } from 'app/lib/notificationRequest';
+import prisma from 'app/lib/db';
 
 type SelectedUser = Pick<
   User,

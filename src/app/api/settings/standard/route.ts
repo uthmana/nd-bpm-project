@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { extractPrismaErrorMessage } from 'utils/prismaError';
+import prisma from 'app/lib/db';
 
 //All standards
 export async function GET(req: NextRequest) {
