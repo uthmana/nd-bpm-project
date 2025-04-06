@@ -109,7 +109,9 @@ export default function InvoiceDoc({ invoice, onRemove }: InvoiceDocProps) {
                   className="group grid w-full grid-cols-10 items-center gap-1 border-b py-2 text-sm font-bold text-navy-700"
                 >
                   <div className="relative col-span-1 ">
-                    {onRemove && invoice?.Fault?.length !== 1 ? (
+                    {onRemove &&
+                    invoice?.Fault?.length !== 1 &&
+                    invoice?.status !== 'PAID' ? (
                       <span
                         className="absolute left-[-4px] top-0 hidden cursor-pointer bg-white group-hover:block"
                         onClick={() => onRemove(item?.id)}

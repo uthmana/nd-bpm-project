@@ -47,14 +47,20 @@ export default function ControlHeader({
           <HeaderItem
             tilteEn={'Quantity'}
             titleTr={'Miktar'}
-            value={formatNumberLocale(data?.quantity)}
+            value={
+              !data?.quantity?.length
+                ? formatNumberLocale(data?.quantity)
+                : data?.quantity
+            }
           />
 
           <HeaderItem
             titleTr={variant !== 'entry' ? 'Proses Tarihi' : 'Giriş Tarihi'}
             tilteEn={variant !== 'entry' ? 'Process Date' : 'Entry Date'}
             value={formatDateTime(
-              data?.process ? data?.process[0]?.updatedAt : data?.createdAt,
+              data?.process?.length > 0
+                ? data?.process[0]?.updatedAt
+                : data?.createdAt,
             )}
           />
         </div>

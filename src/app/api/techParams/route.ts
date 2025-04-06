@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from 'app/lib/db';
-import { Process } from '@prisma/client';
 import { extractPrismaErrorMessage } from 'utils/prismaError';
 
 //All TechParams

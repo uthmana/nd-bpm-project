@@ -371,7 +371,11 @@ export default function EntryControl() {
                 techParams={techParams}
                 fields={machineParams}
                 defaultTechParams={defaultTechParams}
-                status={!machineParams?.length ? 'FINISHED' : process?.status}
+                status={
+                  !machineParams?.length || !process.frequency
+                    ? 'FINISHED'
+                    : process?.status
+                }
                 onUpdateData={(id, val) => onUpdateData(id, val)}
                 onAddRow={(val) => onAddRow(val)}
                 onRemoveRow={(val) => onRemoveRow(val)}
