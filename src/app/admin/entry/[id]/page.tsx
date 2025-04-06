@@ -31,9 +31,13 @@ export default function Edit() {
   const [finalControl, setFinalControl] = useState([] as any);
   const [finalControlFormData, setFinalControlFormData] = useState({} as any);
 
+  const [entryUnacceptable, setEntryUnacceptable] = useState({} as any);
+  const [finalUnacceptable, setFinalUnacceptable] = useState({} as any);
+
   const entryControlRef = useRef<HTMLDivElement>(null);
   const frequencyTableRef = useRef<HTMLDivElement>(null);
-  const unacceptedRef = useRef<HTMLDivElement>(null);
+  const entryunacceptedRef = useRef<HTMLDivElement>(null);
+  const finalunacceptedRef = useRef<HTMLDivElement>(null);
   const finalControlRef = useRef<HTMLDivElement>(null);
   const barcodeRef = useRef<HTMLDivElement>(null);
 
@@ -83,6 +87,17 @@ export default function Edit() {
         setProcess(data?.process?.[0]);
         setFaultControl(data?.faultControl?.[0]);
         setFinalControl(data?.finalControl);
+        setEntryUnacceptable(
+          data?.unacceptable?.find(
+            (item) => item.unacceptableStage === 'ENTRY',
+          ),
+        );
+        setFinalUnacceptable(
+          data?.unacceptable?.find(
+            (item) => item.unacceptableStage === 'FINAL',
+          ),
+        );
+
         setDefaultTechParameter(
           formatTechParams(techParameters, data?.defaultTechParameter?.[0]),
         );
@@ -126,12 +141,12 @@ export default function Edit() {
 
   //Handle Prints
   const entryControlPrint = useReactToPrint({ contentRef: entryControlRef });
-  const frequencyTablePrint = useReactToPrint({
-    contentRef: frequencyTableRef,
+  const entryUnacceptedPrint = useReactToPrint({
+    contentRef: entryunacceptedRef,
     documentTitle: 'ND INDUSTRIES TÜRKİYE PROSES',
   });
-  const unacceptedPrint = useReactToPrint({
-    contentRef: unacceptedRef,
+  const finalunacceptedPrint = useReactToPrint({
+    contentRef: finalunacceptedRef,
     documentTitle: 'ND INDUSTRIES TÜRKİYE PROSES',
   });
   const finalControlPrint = useReactToPrint({
@@ -142,7 +157,6 @@ export default function Edit() {
     contentRef: barcodeRef,
     documentTitle: 'ND INDUSTRIES TÜRKİYE PROSES',
   });
-
   const frequencyTableExport = (fields, technicalParams) => {
     const tableData = technicalParams.map((item) => {
       let newItem = {};
@@ -251,6 +265,49 @@ export default function Edit() {
               )}
             </Card>
 
+            {entryUnacceptable?.id ? (
+              <Card
+                ref={entryunacceptedRef}
+                className="w-full"
+                extra="mb-10 dark:bg-[#111c44] dark:text-white"
+              >
+                <div className="flex justify-between gap-3 bg-white px-7 py-5 dark:bg-[#111c44] dark:text-white print:hidden">
+                  <h2 className="text-2xl font-bold">
+                    Uygunsuz Ürün/Hizmet Formu
+                  </h2>
+                  <div className="flex gap-2">
+                    {fault?.status != 'SEVKIYAT_TAMAMLANDI' ? (
+                      <Button
+                        extra={`px-4 h-[40px] !max-w-fit`}
+                        onClick={() =>
+                          handleUnacceptableEdit(
+                            fault.id,
+                            entryUnacceptable.unacceptableStage,
+                          )
+                        }
+                        text="DÜZENLE"
+                        icon={<MdAdd className="mr-1 h-5 w-5" />}
+                      />
+                    ) : null}
+
+                    <Button
+                      extra={`px-4 h-[40px] max-w-fit`}
+                      onClick={() => entryUnacceptedPrint()}
+                      text=" "
+                      icon={<MdPrint className="mr-1 h-5 w-5" />}
+                    />
+                  </div>
+                </div>
+                <div className="page-break relative min-h-[800px] w-full bg-white px-7 py-5 dark:bg-[#111c44] dark:text-white">
+                  <Unaccept
+                    formData={entryUnacceptable}
+                    fault={fault}
+                    variant="value"
+                  />
+                </div>
+              </Card>
+            ) : null}
+
             <Card
               ref={frequencyTableRef}
               extra="mx-auto pb-8 w-full rounded-2xl px-8 pt-10 bg-white dark:bg-[#111c44] dark:text-white"
@@ -307,48 +364,6 @@ export default function Edit() {
               ) : null}
             </Card>
 
-            {fault?.unacceptable?.length > 0 ? (
-              <div ref={unacceptedRef} className="w-full">
-                {fault?.unacceptable.map((item) => (
-                  <Card
-                    extra="mb-10 dark:bg-[#111c44] dark:text-white"
-                    key={item?.id}
-                  >
-                    <div className="mb-2 flex justify-between gap-3 bg-white px-7 py-5 dark:bg-[#111c44] dark:text-white print:hidden">
-                      <h2 className="text-2xl font-bold">
-                        Uygunsuz Ürün/Hizmet Formu
-                      </h2>
-                      <div className="flex gap-2">
-                        {fault?.status != 'SEVKIYAT_TAMAMLANDI' ? (
-                          <Button
-                            extra={`px-4 h-[40px] !max-w-fit`}
-                            onClick={() =>
-                              handleUnacceptableEdit(
-                                fault.id,
-                                item.unacceptableStage,
-                              )
-                            }
-                            text="DÜZENLE"
-                            icon={<MdAdd className="mr-1 h-5 w-5" />}
-                          />
-                        ) : null}
-
-                        <Button
-                          extra={`px-4 h-[40px] max-w-fit`}
-                          onClick={() => unacceptedPrint()}
-                          text=" "
-                          icon={<MdPrint className="mr-1 h-5 w-5" />}
-                        />
-                      </div>
-                    </div>
-                    <div className="page-break relative min-h-[800px] w-full bg-white px-7 py-5 dark:bg-[#111c44] dark:text-white">
-                      <Unaccept formData={item} fault={fault} variant="value" />
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            ) : null}
-
             <Card
               ref={finalControlRef}
               extra="mt-2 w-full rounded-2xl bg-white px-8 py-10 dark:bg-[#111c44] dark:text-white"
@@ -389,6 +404,49 @@ export default function Edit() {
                 <FinalControl data={finalControlFormData} variant="data" />
               )}
             </Card>
+
+            {finalUnacceptable?.id ? (
+              <Card
+                ref={finalunacceptedRef}
+                className="w-full"
+                extra="mb-10 dark:bg-[#111c44] dark:text-white"
+              >
+                <div className="flex justify-between gap-3 bg-white px-7 py-5 dark:bg-[#111c44] dark:text-white print:hidden">
+                  <h2 className="text-2xl font-bold">
+                    Uygunsuz Ürün/Hizmet Formu
+                  </h2>
+                  <div className="flex gap-2">
+                    {fault?.status != 'SEVKIYAT_TAMAMLANDI' ? (
+                      <Button
+                        extra={`px-4 h-[40px] !max-w-fit`}
+                        onClick={() =>
+                          handleUnacceptableEdit(
+                            fault.id,
+                            finalUnacceptable.unacceptableStage,
+                          )
+                        }
+                        text="DÜZENLE"
+                        icon={<MdAdd className="mr-1 h-5 w-5" />}
+                      />
+                    ) : null}
+
+                    <Button
+                      extra={`px-4 h-[40px] max-w-fit`}
+                      onClick={() => finalunacceptedPrint()}
+                      text=" "
+                      icon={<MdPrint className="mr-1 h-5 w-5" />}
+                    />
+                  </div>
+                </div>
+                <div className="page-break relative min-h-[800px] w-full bg-white px-7 py-5 dark:bg-[#111c44] dark:text-white">
+                  <Unaccept
+                    formData={finalUnacceptable}
+                    fault={fault}
+                    variant="value"
+                  />
+                </div>
+              </Card>
+            ) : null}
           </div>
         </div>
       )}
