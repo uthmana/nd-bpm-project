@@ -34,7 +34,9 @@ export default function DataList(props: {
   const [inputValue, setInputValue] = useState(value);
   const [options, setOptions] = useState(list);
   const [loading, setLoading] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(
+    list.find((item) => item.company_name === value) || null,
+  );
 
   const handleFocus = async () => {
     if (loadOptions && options.length === 0) {
@@ -59,7 +61,6 @@ export default function DataList(props: {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
-
     const selectedData = options?.find(
       (item) => item.company_name === e.target.value,
     );
@@ -67,6 +68,7 @@ export default function DataList(props: {
       setSelectedItem(null);
       return;
     }
+
     setSelectedItem(selectedData);
     onChange?.({
       target: e.target,
@@ -83,7 +85,13 @@ export default function DataList(props: {
       >
         {label}
         {required !== undefined ? (
-          <span className={`${required ? 'text-green-600' : 'text-red-400'}`}>
+          <span
+            className={`${
+              required && (selectedItem || disabled)
+                ? 'text-green-600'
+                : 'text-red-400'
+            }`}
+          >
             *
           </span>
         ) : null}

@@ -3,6 +3,7 @@ import MainTable from 'components/admin/data-tables/mainTable';
 export type FaultObj = {
   id?: string;
   customerName: string;
+  customerId: string;
   traceabilityCode: string;
   arrivalDate: string;
   invoiceDate: string;

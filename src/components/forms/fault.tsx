@@ -255,14 +255,16 @@ export default function Fault(props: {
     }
 
     //handle defaultTechParameter
-    let defaultTechParameter = resetDafaultParams([...techParams]);
-    defaultTechParameter =
-      JSON.stringify(defaultTechParameter) !== '{}'
-        ? { ...defaultTechParameter, machineId: 'defaultparams_' + Date.now() }
-        : { Ort_Uretim_saat: null, machineId: 'defaultparams_' + Date.now() };
+    let tempDefaultTechParameter = resetDafaultParams([...techParams]);
+    let defaultTechParameter: any = {
+      ...tempDefaultTechParameter,
+      Ort_Uretim_saat: null,
+      machineId: 'defaultparams_' + Date.now(),
+    };
+
     if (editData?.defaultTechParameter && editData?.defaultTechParameter[0]) {
       defaultTechParameter = {
-        ...defaultTechParameter,
+        ...tempDefaultTechParameter,
         id: editData?.defaultTechParameter[0].id,
       };
     }
@@ -280,14 +282,14 @@ export default function Fault(props: {
   };
 
   const handleTechValues = (event) => {
-    const temp = [...techParams];
-    const value = temp.map((item) => {
-      if (item.param_name === event.target?.name) {
-        return { ...item, value: event.target?.value };
-      }
-      return item;
-    });
-    setTechParams(value);
+    const { name, value } = event.target || {};
+    if (!name) return;
+
+    const updatedParams = techParams.map((item) =>
+      item.param_name === name ? { ...item, value } : item,
+    );
+    console.log(updatedParams);
+    setTechParams(updatedParams);
   };
 
   return (
@@ -469,10 +471,10 @@ export default function Fault(props: {
         <h2 className="mb-3 font-bold">Teknikal Params </h2>
 
         <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
-          {techParams.map((item, idx) => {
+          {techParams.map((item) => {
             return (
               <InputField
-                key={idx}
+                key={item.param_name}
                 label={item.display_name}
                 onChange={handleTechValues}
                 type="text"
