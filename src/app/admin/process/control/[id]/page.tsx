@@ -142,7 +142,7 @@ export default function EntryControl() {
         )?.name;
 
         await sendNotification({
-          workflowId: 'process-control',
+          workflowId: 'process-completion',
           data: {
             link: `${window?.location.origin}/admin/entry/${fault.id}`,
             title: `Final Kontrolü Güncelleme | ${status}`,
@@ -172,7 +172,7 @@ export default function EntryControl() {
         )?.name;
 
         await sendNotification({
-          workflowId: 'process-control',
+          workflowId: 'process-completion',
           data: {
             link: `${window?.location.origin}/admin/entry/${fault.id}`,
             title: `Final Kontrolü | ${status}`,

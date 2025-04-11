@@ -137,10 +137,23 @@ function InvoiceTable({
           </div>
         ),
       }),
+      columnHelper.accessor('logoId', {
+        id: 'logoId',
+        header: () => (
+          <p className="min-w-fit text-sm font-bold uppercase text-gray-600 dark:text-white">
+            LogoID
+          </p>
+        ),
+        cell: (info: any) => (
+          <p className="min-w-fit whitespace-nowrap  break-keep text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
+          </p>
+        ),
+      }),
       columnHelper.accessor('barcode', {
         id: 'barcode',
         header: () => (
-          <p className="min-w-[150px] text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="min-w-fit text-sm font-bold uppercase text-gray-600 dark:text-white">
             BARKODU
           </p>
         ),
@@ -169,7 +182,7 @@ function InvoiceTable({
       columnHelper.accessor('products', {
         id: 'products',
         header: () => (
-          <p className="text-sm font-bold uppercase text-gray-600 dark:text-white">
+          <p className="whitespace-nowrap text-sm font-bold uppercase text-gray-600 dark:text-white">
             ÜRÜN SAYISI
           </p>
         ),

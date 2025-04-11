@@ -230,7 +230,7 @@ export default function EntryControl() {
       });
 
       await sendNotification({
-        workflowId: 'process-completion',
+        workflowId: 'process-control',
         data: {
           link: `${window?.location.origin}/admin/invoice`,
           title: 'Proses Tamamlanma',

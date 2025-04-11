@@ -136,11 +136,12 @@ export default function Invoices() {
         text: '',
         docPath: docPath,
       });
-      toast.success('İrsaliye e-posta gönderme işlemi başarılı');
+      toast.success('İrsaliye gönderme işlemi başarılı');
       setIsSubmiting(false);
       router.push(`/admin/invoice`);
-    } catch (error) {
-      toast.error('Hata oluştu!.' + error);
+    } catch (err) {
+      const message = getResError(err?.message);
+      toast.error('Hata oluştu!.' + message);
       setIsSubmiting(false);
     }
   };
@@ -188,17 +189,26 @@ export default function Invoices() {
       //send To Logo
       if (process.env.NEXT_PUBLIC_LOGO_INTEGRATION === 'true') {
         const { data }: any = await sendDispatchToLogo(currentInvoice);
+        log({ logores: data });
+        await updateInvoice({
+          id: queryParams?.id,
+          logoId: data?.NUMBER?.toString(),
+        });
+
         setIsInvoiceSubmiting(false);
         toast.success(`Logoya gönderme işlemi başarılı ${data.NUMBER}`);
         router.push(`/admin/invoice/${currentInvoice?.id}`);
       }
 
       setIsInvoiceSubmiting(false);
-      router.push(`/admin/invoice`);
+      router.push(`/admin/invoice/${currentInvoice?.id}`);
     } catch (err) {
       const message = getResError(err?.message);
       toast.error(`Logoya başarıyla içeriye alamadı ${message}`);
-      setIsInvoiceSubmiting(false);
+      setTimeout(() => {
+        setIsInvoiceSubmiting(false);
+        router.push(`/admin/invoice`);
+      }, 5000);
       return;
     }
   };
@@ -266,6 +276,7 @@ export default function Invoices() {
                     onClick={handleSendEmail}
                     text="GÖNDER"
                     loading={isSubmiting}
+                    disabled={invoice?.status !== 'PAID'}
                   />
                 </div>
               ) : null}
@@ -286,7 +297,7 @@ export default function Invoices() {
                   invoice?.status !== 'PAID' ? 'TAMAMLA' : 'TAMAMLANDI'
                 }`}
                 icon={<MdOutlinePayment className="mr-1 h-5 w-5" />}
-                disabled={invoice?.status === 'PAIDS'}
+                disabled={invoice?.status === 'PAID'}
                 loading={isInvoiceSubmiting}
               />
             ) : null}

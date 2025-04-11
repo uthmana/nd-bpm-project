@@ -13,7 +13,7 @@ export default function FaultInfo(props: {
   const { fault, techAttachments, frequency, barcodeRef } = props;
 
   const renderProductInfo = (key, val) => {
-    if (key === 'arrivalDate') {
+    if (key === 'arrivalDate' || key === 'invoiceDate') {
       return <p className="font-bold"> {formatDateTime(val)} </p>;
     }
     if (key === 'technicalDrawingAttachment') {
@@ -29,9 +29,6 @@ export default function FaultInfo(props: {
       }
 
       return <FileViewer file={val} />;
-    }
-    if (key === 'arrivalDate') {
-      return <p className="font-bold"> {formatDateTime(val)} </p>;
     }
     if (key === 'product_barcode') {
       return (
