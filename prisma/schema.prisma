@@ -321,6 +321,7 @@ model Invoice {
   vat         Float?
   totalAmount Float?
   description String?
+  logoId      String?
   Fault       Fault[]
   status      InvoiceStatus @default(PENDING)
   customer    Customer      @relation(fields: [customerId], references: [id])

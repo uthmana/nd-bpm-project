@@ -343,6 +343,7 @@ CREATE TABLE "Invoice" (
     "vat" DOUBLE PRECISION,
     "totalAmount" DOUBLE PRECISION,
     "description" TEXT,
+    "logoId" TEXT,
     "status" "InvoiceStatus" NOT NULL DEFAULT 'PENDING',
     "customerId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

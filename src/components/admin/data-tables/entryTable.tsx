@@ -252,6 +252,29 @@ function EntryTable({
           </p>
         ),
       }),
+      ...(variant === 'liste'
+        ? [
+            columnHelper.accessor('invoiceDate', {
+              id: 'invoiceDate',
+              header: () => (
+                <p className="group relative min-w-[120px] whitespace-nowrap break-keep text-sm font-bold uppercase text-gray-600 dark:text-white">
+                  BİTİŞ TARİHİ{' '}
+                  <span className="absolute right-0 top-0 hidden group-hover:block">
+                    <MdOutlineKeyboardDoubleArrowDown />
+                  </span>
+                </p>
+              ),
+              cell: (info: any) => (
+                <p
+                  title={formatDateTime(info.getValue())}
+                  className="line-clamp-1 text-sm font-bold text-navy-700 dark:text-white"
+                >
+                  {formatDateTime(info.getValue())}
+                </p>
+              ),
+            }),
+          ]
+        : []),
       columnHelper.accessor('application', {
         id: 'application',
         header: () => (

@@ -108,7 +108,7 @@ const Entry = () => {
         <EntryTable
           onDelete={onComfirm}
           tableData={faults as any}
-          variant={session?.user?.role}
+          variant={'entry'}
           onControl={onControl}
           searchValue={searchText}
           key={searchVal}

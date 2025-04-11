@@ -56,6 +56,7 @@ export async function PUT(req: Request) {
         },
         data: {
           status: 'SEVKIYAT_TAMAMLANDI',
+          invoiceDate: invoice.createdAt,
         },
       });
 

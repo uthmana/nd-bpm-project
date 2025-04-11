@@ -1,7 +1,6 @@
 export * from './techParamsTable/index';
 export * from './entryTable';
 export * from './invoiceTable';
-export * from './listeTable';
 export * from './mainTable';
 export * from './miniTable';
 export * from './offerTable';
