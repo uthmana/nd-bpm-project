@@ -75,6 +75,7 @@ export async function PUT(req: NextRequest, route: { params: { id: string } }) {
         },
         data: {
           status: 'SEVKIYAT_TAMAMLANDI',
+          invoiceDate: invoice.createdAt,
         },
       });
 

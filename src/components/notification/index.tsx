@@ -116,6 +116,7 @@ export default function Notification({ user }) {
   }, [session?.user?.role]);
 
   useEffect(() => {
+    //Update Notification as read is user visit the link
     const onUpdateNotification = async () => {
       const fullpath = `${window.location.origin}${pathname}`;
       const notificationDetail = notifications?.filter(
@@ -205,7 +206,7 @@ export default function Notification({ user }) {
           {activeNotification ? (
             <button
               className="text-xs font-bold capitalize underline opacity-70 hover:opacity-100"
-              onClick={handleMarkAllRead}
+              onClick={() => handleMarkAllRead()}
             >
               Tümünü okundu olarak imle
             </button>

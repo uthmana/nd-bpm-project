@@ -28,6 +28,7 @@ export type InvoiceObj = {
   id: string;
   barcode: string;
   invoiceDate: string;
+  logoId: string;
   currency: string;
   amount: number;
   vat: number;

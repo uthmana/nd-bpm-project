@@ -1,4 +1,5 @@
 export const formatDateTime = (data) => {
+  if (!data) return null;
   return new Date(data).toLocaleString('tr-TR')?.slice(0, -3);
 };
 

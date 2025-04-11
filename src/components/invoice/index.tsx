@@ -76,12 +76,12 @@ export default function InvoiceDoc({ invoice, onRemove }: InvoiceDocProps) {
         <div className="flex flex-col justify-center gap-5 bg-[#f5f4f4] px-10 py-5 text-sm">
           <div className="flex justify-between gap-3">
             <h2 className="font-bold">Düzenlenme Tarihi</h2>
-            <p>{formatDateTime(invoice?.createdAt).split(' ')[0]}</p>
+            <p>{formatDateTime(invoice?.createdAt)?.split(' ')[0]}</p>
           </div>
 
           <div className="flex justify-between gap-3">
             <h2 className="font-bold">Fiili Sevk Tarihi</h2>
-            <p>{formatDateTime(invoice?.invoiceDate).split(' ')[0]}</p>
+            <p>{formatDateTime(invoice?.invoiceDate)?.split(' ')[0]}</p>
           </div>
         </div>
       </div>

@@ -231,9 +231,9 @@ export default function Edit() {
                   Ürün Giriş Kontrol Bilgileri
                 </h2>
                 <div className="flex gap-2">
-                  {(fault?.status != 'SEVKIYAT_TAMAMLANDI' &&
-                    session?.user?.role === 'SUPER') ||
-                  session?.user?.role === 'ADMIN' ? (
+                  {fault?.status != 'SEVKIYAT_TAMAMLANDI' &&
+                  (session?.user?.role === 'SUPER' ||
+                    session?.user?.role === 'ADMIN') ? (
                     <Button
                       icon={<MdAdd className="mr-1 h-5 w-5" />}
                       extra="max-w-fit px-4  h-[40px]"
