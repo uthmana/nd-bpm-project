@@ -13,5 +13,5 @@ export async function changePassword(payload) {
 }
 
 export async function register(payload) {
-  return fetchAPI('user', 'put', payload);
+  return fetchAPI('users', 'put', payload);
 }
